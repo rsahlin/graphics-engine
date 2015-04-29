@@ -45,9 +45,9 @@ public abstract class Sprite {
      */
     public final static int Z_POS = 2;
 
-    public final static int GRAVITY_X = 3;
-    public final static int GRAVITY_Y = 4;
-    public final static int GRAVITY_Z = 5;
+    public final static int MOVE_VECTOR_X = 3;
+    public final static int MOVE_VECTOR_Y = 4;
+    public final static int MOVE_VECTOR_Z = 5;
     public final static int FRAME = 6;
     public final static int ROTATION = 7; // z axis rotation angle
 
@@ -56,16 +56,15 @@ public abstract class Sprite {
      */
     public final static int SPRITE_FLOAT_COUNT = ROTATION;
 
-    public final static int MIN_FLOAT_COUNT = 16;
-    public final static int MIN_INT_COUNT = 0;
-
+    public Logic logic;
     /**
      * All sprites can move using a vector
      */
     public Vector2D moveVector = new Vector2D();
     public float[] floatData;
     public int[] intData;
-    public Logic logic;
+    public final static int MIN_FLOAT_COUNT = 16;
+    public final static int MIN_INT_COUNT = 0;
 
     /**
      * Creates a new sprite with storage for MIN_FLOAT_COUNT floats and MIN_INT_COUNT ints
@@ -106,9 +105,9 @@ public abstract class Sprite {
      */
     public void move(float deltaTime) {
         floatData[X_POS] += deltaTime * moveVector.vector[VecMath.X] * moveVector.vector[Vector2D.MAGNITUDE] +
-                floatData[GRAVITY_X] * deltaTime;
+                floatData[MOVE_VECTOR_X] * deltaTime;
         floatData[Y_POS] += deltaTime * moveVector.vector[VecMath.Y] * moveVector.vector[Vector2D.MAGNITUDE] +
-                floatData[GRAVITY_Y] * deltaTime;
+                floatData[MOVE_VECTOR_Y] * deltaTime;
         prepare();
     }
 
@@ -133,28 +132,29 @@ public abstract class Sprite {
     }
 
     /**
-     * Sets the gravity movement for x, y and z axis. Use this to for instance clear the current
-     * gravity movement.
+     * Sets the movement vector for x, y and z axis. Use this to for instance clear the current movement, or to change
+     * movement / direction
      * 
-     * @param x X axis gravity movement
-     * @param y Y axis gravity movement
-     * @paran z Z axis gravity movement
+     * @param x X axis movement
+     * @param y Y axis movement
+     * @paran z Z axis movement
      */
-    public void setGravityMovement(float x, float y, float z) {
-        floatData[GRAVITY_X] = x;
-        floatData[GRAVITY_Y] = y;
-        floatData[GRAVITY_Z] = z;
+    public void setMoveVector(float x, float y, float z) {
+        floatData[MOVE_VECTOR_X] = x;
+        floatData[MOVE_VECTOR_Y] = y;
+        floatData[MOVE_VECTOR_Z] = z;
     }
 
     /**
-     * Updates the gravity movement according to the specified gravity (x and y axis) and time
+     * Updates the movement according to the specified acceleration (x and y axis) and time
      * 
-     * @param x Gravity on x axis
-     * @param y Gravity on y axis
-     * @param deltaTime Time since last time gravity movement was updated, ie elapsed time.
+     * @param x Acceleration on x axis
+     * @param y Acceleration on y axis
+     * @param deltaTime Time since last time movement was updated, ie elapsed time.
      */
-    public void updateGravity(float x, float y, float deltaTime) {
-        floatData[GRAVITY_X] += x * deltaTime;
-        floatData[GRAVITY_Y] += y * deltaTime;
+    public void accelerate(float x, float y, float deltaTime) {
+        floatData[MOVE_VECTOR_X] += x * deltaTime;
+        floatData[MOVE_VECTOR_Y] += y * deltaTime;
     }
+
 }

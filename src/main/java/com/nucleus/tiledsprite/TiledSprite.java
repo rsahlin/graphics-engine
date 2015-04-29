@@ -13,6 +13,7 @@ public class TiledSprite extends Sprite {
 
     /**
      * Ref to sprite data, use with offset.
+     * This sprites data is only one part of the whole array.
      */
     float[] attributeData;
     int offset;
@@ -58,8 +59,6 @@ public class TiledSprite extends Sprite {
      * Stores the position and data of this sprite into the attribute array (in the Mesh) used when rendering this
      * sprite. This must be called before this sprite is updated on screen.
      * 
-     * @param xpos
-     * @param ypos
      */
     @Override
     public void prepare() {

@@ -1,8 +1,10 @@
 package com.nucleus.tiledsprite;
 
+import com.nucleus.geometry.AttributeUpdater;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.VertexBuffer;
 import com.nucleus.opengl.GLES20Wrapper.GLES20;
+import com.nucleus.sprite.SpriteController;
 import com.nucleus.texturing.Texture2D;
 
 /**
@@ -15,7 +17,7 @@ import com.nucleus.texturing.Texture2D;
  * @author Richard Sahlin
  *
  */
-public class TiledSpriteController {
+public class TiledSpriteController extends SpriteController implements AttributeUpdater {
 
     /**
      * Number of floats for each tiled sprite in the attribute data.
@@ -23,38 +25,38 @@ public class TiledSpriteController {
     public final static int SPRITE_ATTRIBUTE_DATA = TiledSpriteProgram.PER_VERTEX_DATA
             * TiledSpriteProgram.VERTICES_PER_SPRITE;
 
-    TiledSprite[] sprites;
     private Mesh mesh;
     /**
      * Contains attribute data for all sprites.
+     * This data must be mapped into the mesh for changes to take place.
      */
     float[] attributeData;
-    int count;
 
     /**
      * Creates a TiledSpriteController with the specified number of sprites, each sprite can be seen as a portion of the
      * Mesh it belongs to. Each tiled sprite will be created.
      * Before the sprites can be rendered the Mesh must be created, by calling createMesh()
      * 
-     * @param count Number of tiled sprites to create.
+     * @param count Number of tiled sprites to create. Each tiled sprite will be created.
      * 
      */
     public TiledSpriteController(int count) {
-        this.count = count;
-        sprites = new TiledSprite[count];
+        super(count);
+    }
+
+    @Override
+    protected void createSprites() {
         attributeData = new float[count * SPRITE_ATTRIBUTE_DATA];
-        int frame = 0;
         for (int i = 0; i < count; i++) {
             sprites[i] = new TiledSprite(attributeData, i * SPRITE_ATTRIBUTE_DATA);
         }
-
     }
 
     /**
      * Creates the Mesh to be rendered, after this call the all the sprites in this controller can be rendered
      * by fetching the mesh and rendering it.
-     * Note that the attributeData in this class must be stored in the mesh before rendering, otherwise sprites
-     * will not be updated.
+     * Note that this class will be set as AttributeUpdater in the mesh in order for the sprites to be displayed
+     * properly.
      * 
      * @param program
      * @param texture
@@ -68,16 +70,11 @@ public class TiledSpriteController {
             int framesY) {
         mesh = program.buildTileSpriteMesh(count, width, height, 0, GLES20.GL_FLOAT, 1f / framesX, 1f / framesY);
         mesh.setTexture(texture, Texture2D.TEXTURE_0);
+        mesh.setAttributeUpdater(this);
         return mesh;
     }
 
-    /**
-     * Stores the attribute data from this class (position, rotation, offset) in the generic vertex bufffer
-     * needed to render the mesh.
-     * 
-     * @return The mesh to render
-     */
-    public Mesh prepareToRender() {
+    public Mesh setAttributes() {
         VertexBuffer positions = getMesh().getVerticeBuffer(1);
         positions.setArray(getData(), 0, 0, count * SPRITE_ATTRIBUTE_DATA);
         return getMesh();
@@ -99,17 +96,9 @@ public class TiledSpriteController {
      * 
      * @return
      */
+    @Override
     public int getCount() {
         return count;
-    }
-
-    /**
-     * Returns the array containing the sprites.
-     * 
-     * @return The array containing all sprites.
-     */
-    public TiledSprite[] getSprites() {
-        return sprites;
     }
 
     /**
