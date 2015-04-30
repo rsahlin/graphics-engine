@@ -26,7 +26,8 @@ public abstract class SpriteController {
     /**
      * Internal method to create all the sprite instances for the controller.
      * When this method returns all objects in the array shall be created and ready to be used.
-     * 
+     * This method will be called by the constructor in this class, ie subclasses must call
+     * super(count) in their constructor.
      */
     protected abstract void createSprites();
 
