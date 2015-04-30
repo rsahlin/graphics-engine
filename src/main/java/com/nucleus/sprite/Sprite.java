@@ -54,7 +54,7 @@ public abstract class Sprite {
     /**
      * Number of float data values reserved for sprite, first free index is SPRITE_FLOAT_COUNT
      */
-    public final static int SPRITE_FLOAT_COUNT = ROTATION;
+    public final static int SPRITE_FLOAT_COUNT = ROTATION + 1;
 
     public Logic logic;
     /**
