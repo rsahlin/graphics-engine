@@ -1,5 +1,6 @@
 package com.nucleus.tiledsprite;
 
+import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.sprite.Sprite;
 
 /**
@@ -28,30 +29,8 @@ public class TiledSprite extends Sprite {
     TiledSprite(float[] data, int offset) {
         this.attributeData = data;
         this.offset = offset;
-        prepareUV();
-    }
-
-    /**
-     * Set the UV indexes in attribute data, do this at setup so that the tex fraction size can be multiplied by FRAME
-     * at each
-     * vertice to get the correct UV coordinate.
-     * This method is chosen to move as much processing as possible to the GPU - the UV of each sprite could be
-     * calculated at runtime
-     * but that would give a higher CPU impact when a large number of sprites are animated.
-     */
-    protected void prepareUV() {
-        int index = offset;
-        attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_U_INDEX] = 0;
-        attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_V_INDEX] = 0;
-        index += TiledSpriteProgram.PER_VERTEX_DATA;
-        attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_U_INDEX] = 1;
-        attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_V_INDEX] = 0;
-        index += TiledSpriteProgram.PER_VERTEX_DATA;
-        attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_U_INDEX] = 1;
-        attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_V_INDEX] = 1;
-        index += TiledSpriteProgram.PER_VERTEX_DATA;
-        attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_U_INDEX] = 0;
-        attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_V_INDEX] = 1;
+        MeshBuilder.prepareTiledUV(attributeData, offset, TiledSpriteProgram.ATTRIBUTE_SPRITE_U_INDEX,
+                TiledSpriteProgram.ATTRIBUTE_SPRITE_V_INDEX, TiledSpriteProgram.ATTRIBUTES_PER_VERTEX);
     }
 
     /**
@@ -73,7 +52,7 @@ public class TiledSprite extends Sprite {
             attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_Y_INDEX] = ypos;
             attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_FRAME_INDEX] = frameIndex;
             attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_ROTATION_INDEX] = rotation;
-            index += TiledSpriteProgram.PER_VERTEX_DATA;
+            index += TiledSpriteProgram.ATTRIBUTES_PER_VERTEX;
         }
 
     }

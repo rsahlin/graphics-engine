@@ -19,12 +19,6 @@ import com.nucleus.texturing.Texture2D;
  */
 public class TiledSpriteController extends SpriteController implements AttributeUpdater {
 
-    /**
-     * Number of floats for each tiled sprite in the attribute data.
-     */
-    public final static int SPRITE_ATTRIBUTE_DATA = TiledSpriteProgram.PER_VERTEX_DATA
-            * TiledSpriteProgram.VERTICES_PER_SPRITE;
-
     private Mesh mesh;
     /**
      * Contains attribute data for all sprites.
@@ -46,9 +40,9 @@ public class TiledSpriteController extends SpriteController implements Attribute
 
     @Override
     protected void createSprites() {
-        attributeData = new float[count * SPRITE_ATTRIBUTE_DATA];
+        attributeData = new float[count * TiledSpriteProgram.ATTRIBUTES_PER_SPRITE];
         for (int i = 0; i < count; i++) {
-            sprites[i] = new TiledSprite(attributeData, i * SPRITE_ATTRIBUTE_DATA);
+            sprites[i] = new TiledSprite(attributeData, i * TiledSpriteProgram.ATTRIBUTES_PER_SPRITE);
         }
     }
 
@@ -59,35 +53,31 @@ public class TiledSpriteController extends SpriteController implements Attribute
      * properly.
      * 
      * @param program
-     * @param texture
-     * @param width
-     * @param height
+     * @param texture The texture to use for sprites
+     * @param width Width for each sprite
+     * @param height Height for each sprite
+     * @param z Zpos
      * @param framesX Number of frames on the x axis in the sprite sheet image.
      * @param framesY Number of frames on the y axis in the sprite sheet image.
      * @return
      */
-    public Mesh createMesh(TiledSpriteProgram program, Texture2D texture, float width, float height, int framesX,
+    public Mesh createMesh(TiledSpriteProgram program, Texture2D texture, float width, float height, float z,
+            int framesX,
             int framesY) {
-        mesh = program.buildTileSpriteMesh(count, width, height, 0, GLES20.GL_FLOAT, 1f / framesX, 1f / framesY);
+        mesh = program.buildTileSpriteMesh(count, width, height, z, GLES20.GL_FLOAT, 1f / framesX, 1f / framesY);
         mesh.setTexture(texture, Texture2D.TEXTURE_0);
         mesh.setAttributeUpdater(this);
         return mesh;
     }
 
-    public Mesh setAttributes() {
+    @Override
+    public void setAttributeData() {
         VertexBuffer positions = getMesh().getVerticeBuffer(1);
-        positions.setArray(getData(), 0, 0, count * SPRITE_ATTRIBUTE_DATA);
-        return getMesh();
+        positions.setArray(getAttributeData(), 0, 0, count * TiledSpriteProgram.ATTRIBUTES_PER_SPRITE);
     }
 
-    /**
-     * Returns the attribute data for all sprites, there is normally no need to access this data.
-     * It is used by sprite implementations to update position, frame, rotation and read when the mesh is
-     * rendered.
-     * 
-     * @return Attribute data containing generic attribute data (not vertices)
-     */
-    public float[] getData() {
+    @Override
+    public float[] getAttributeData() {
         return attributeData;
     }
 
