@@ -16,7 +16,7 @@ import com.nucleus.shader.ShaderVariable.VariableType;
  * @author Richard Sahlin
  *
  */
-public class CharmapProgram extends ShaderProgram {
+public class PlayfieldProgram extends ShaderProgram {
 
     /**
      * Number of vertices per char - this is for a quad that is created using element buffer.
@@ -55,8 +55,8 @@ public class CharmapProgram extends ShaderProgram {
     /**
      * Number of floats for each char in the attribute data.
      */
-    protected final static int ATTRIBUTES_PER_CHAR = CharmapProgram.ATTRIBUTES_PER_VERTEX
-            * CharmapProgram.VERTICES_PER_CHAR;
+    protected final static int ATTRIBUTES_PER_CHAR = PlayfieldProgram.ATTRIBUTES_PER_VERTEX
+            * PlayfieldProgram.VERTICES_PER_CHAR;
 
     protected final static int ATTRIBUTE_1_OFFSET = 0;
     protected final static int ATTRIBUTE_2_OFFSET = 4;
@@ -106,7 +106,7 @@ public class CharmapProgram extends ShaderProgram {
     private final static String VERTEX_SHADER_NAME = "assets/charmapvertex.essl";
     private final static String FRAGMENT_SHADER_NAME = "assets/charmapfragment.essl";
 
-    public CharmapProgram() {
+    public PlayfieldProgram() {
         super();
     }
 
@@ -130,12 +130,14 @@ public class CharmapProgram extends ShaderProgram {
         gles.glVertexAttribPointer(attrib.getLocation(), buffer.getComponentCount(), buffer.getDataType(), false,
                 buffer.getByteStride(), buffer.getBuffer().position(0));
         GLUtils.handleError(gles, "glVertexAttribPointer1 ");
+
         ShaderVariable attrib2 = getShaderVariable(VARIABLES.aCharset.index);
         gles.glEnableVertexAttribArray(attrib2.getLocation());
         GLUtils.handleError(gles, "glEnableVertexAttribArray2 ");
         VertexBuffer buffer2 = mesh.getVerticeBuffer(1);
         gles.glVertexAttribPointer(attrib2.getLocation(), buffer2.getComponentCount(), buffer2.getDataType(), false,
                 buffer2.getByteStride(), buffer2.getBuffer().position(ATTRIBUTE_1_OFFSET));
+
         ShaderVariable attrib3 = getShaderVariable(VARIABLES.aCharset2.index);
         if (attrib3 != null) {
             gles.glEnableVertexAttribArray(attrib3.getLocation());
@@ -168,6 +170,8 @@ public class CharmapProgram extends ShaderProgram {
      * charmaps using one drawcall.
      * Vertex buffer will have storage for XYZ + UV.
      * 
+     * param mesh The mesh to build buffers for, this can be rendered after this call.
+     * 
      * @param charCount Number of chars to build, this is NOT the vertex count.
      * @param width The width of a char, the char will be centered in the middle.
      * @param height The height of a char, the char will be centered in the middle.
@@ -176,15 +180,15 @@ public class CharmapProgram extends ShaderProgram {
      * @param Texture U fraction for each char frame, if sheet is 5 frames wide this is 1/5
      * @param Texture V fraction for each char frame, if sheet is 3 frames high this is 1/3
      * 
-     * @return The mesh that can be rendered.
      * @throws IllegalArgumentException if type is not GLES20.GL_FLOAT
      */
-    public Mesh buildCharsetMesh(int charCount, float width, float height, float z, int type, float fractionU,
+    public void buildCharsetMesh(Mesh mesh, int charCount, float width, float height, float z, int type,
+            float fractionU,
             float fractionV) {
 
         int vertexStride = DEFAULT_COMPONENTS;
         float[] quadPositions = MeshBuilder.buildQuadPositionsIndexed(width, height, z, 0, 0, vertexStride);
-        Mesh mesh = MeshBuilder.buildQuadMeshIndexed(this, charCount, quadPositions, ATTRIBUTES_PER_VERTEX);
+        MeshBuilder.buildQuadMeshIndexed(mesh, this, charCount, quadPositions, ATTRIBUTES_PER_VERTEX);
 
         setUniformArrays(mesh, getShaderVariable(VARIABLES.uCharsetData.index),
                 getShaderVariable(VARIABLES.uMVPMatrix.index));
@@ -193,8 +197,6 @@ public class CharmapProgram extends ShaderProgram {
         uniformVectors[UNIFORM_TEX_FRACTION_S_INDEX] = fractionU;
         uniformVectors[UNIFORM_TEX_FRACTION_T_INDEX] = fractionV;
         uniformVectors[UNIFORM_TEX_ONEBY_S_INDEX] = (int) (1 / fractionU);
-
-        return mesh;
     }
 
     @Override

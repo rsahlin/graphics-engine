@@ -167,6 +167,7 @@ public class TiledSpriteProgram extends ShaderProgram {
      * sprites using one drawcall.
      * Vertex buffer will have storage for XYZ + UV.
      * 
+     * @param mesh The mesh to build buffers for, this mesh can be rendered after this call.
      * @param spriteCount Number of sprites to build, this is NOT the vertex count.
      * @param width The width of a sprite, the sprite will be centered in the middle.
      * @param height The height of a sprite, the sprite will be centered in the middle.
@@ -178,13 +179,14 @@ public class TiledSpriteProgram extends ShaderProgram {
      * @return The mesh that can be rendered.
      * @throws IllegalArgumentException if type is not GLES20.GL_FLOAT
      */
-    public Mesh buildTileSpriteMesh(int spriteCount, float width, float height, float z, int type, float fractionU,
+    public void buildTileSpriteMesh(Mesh mesh, int spriteCount, float width, float height, float z, int type,
+            float fractionU,
             float fractionV) {
 
         int vertexStride = DEFAULT_COMPONENTS;
         float[] quadPositions = MeshBuilder.buildQuadPositionsIndexed(width, height, z, width / 2, height / 2,
                 vertexStride);
-        Mesh mesh = MeshBuilder.buildQuadMeshIndexed(this, spriteCount, quadPositions, ATTRIBUTES_PER_VERTEX);
+        MeshBuilder.buildQuadMeshIndexed(mesh, this, spriteCount, quadPositions, ATTRIBUTES_PER_VERTEX);
 
         setUniformArrays(mesh, getShaderVariable(VARIABLES.uSpriteData.index),
                 getShaderVariable(VARIABLES.uMVPMatrix.index));
@@ -193,8 +195,6 @@ public class TiledSpriteProgram extends ShaderProgram {
         uniformVectors[UNIFORM_TEX_FRACTION_S_INDEX] = fractionU;
         uniformVectors[UNIFORM_TEX_FRACTION_T_INDEX] = fractionV;
         uniformVectors[UNIFORM_TEX_ONEBY_S_INDEX] = (int) (1 / fractionU);
-
-        return mesh;
     }
 
     @Override
