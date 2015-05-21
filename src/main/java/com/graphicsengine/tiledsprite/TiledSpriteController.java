@@ -1,6 +1,6 @@
-package com.nucleus.tiledsprite;
+package com.graphicsengine.tiledsprite;
 
-import com.nucleus.sprite.SpriteController;
+import com.graphicsengine.sprite.SpriteController;
 
 /**
  * Controller for tiled sprites, this controller creates the tiled sprite objects.

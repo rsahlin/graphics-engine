@@ -1,7 +1,7 @@
-package com.nucleus.tiledsprite;
+package com.graphicsengine.tiledsprite;
 
+import com.graphicsengine.sprite.Sprite;
 import com.nucleus.geometry.MeshBuilder;
-import com.nucleus.sprite.Sprite;
 
 /**
  * A tiled sprite object, this is a type of sprite that uses one Mesh (drawcall) to draw all sprites.

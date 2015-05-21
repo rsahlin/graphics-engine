@@ -1,4 +1,4 @@
-package com.nucleus.charset;
+package com.graphicsengine.charset;
 
 import com.graphicsengine.dataflow.ArrayInput;
 

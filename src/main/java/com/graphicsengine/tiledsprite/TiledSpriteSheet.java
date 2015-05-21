@@ -1,10 +1,10 @@
-package com.nucleus.tiledsprite;
+package com.graphicsengine.tiledsprite;
 
+import com.graphicsengine.sprite.SpriteController;
 import com.nucleus.geometry.AttributeUpdater;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.VertexBuffer;
 import com.nucleus.opengl.GLES20Wrapper.GLES20;
-import com.nucleus.sprite.SpriteController;
 import com.nucleus.texturing.Texture2D;
 
 /**

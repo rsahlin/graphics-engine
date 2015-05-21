@@ -1,4 +1,4 @@
-package com.nucleus.charset;
+package com.graphicsengine.charset;
 
 import com.nucleus.geometry.AttributeUpdater;
 import com.nucleus.geometry.Mesh;

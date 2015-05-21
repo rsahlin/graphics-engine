@@ -1,4 +1,4 @@
-package com.nucleus.tiledsprite;
+package com.graphicsengine.tiledsprite;
 
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshBuilder;

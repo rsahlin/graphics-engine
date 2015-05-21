@@ -1,4 +1,4 @@
-package com.nucleus.sprite;
+package com.graphicsengine.sprite;
 
 import com.nucleus.vecmath.VecMath;
 import com.nucleus.vecmath.Vector2D;

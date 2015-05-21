@@ -1,4 +1,4 @@
-package com.nucleus.sprite;
+package com.graphicsengine.sprite;
 
 /**
  * Controller for a set of sprites.
