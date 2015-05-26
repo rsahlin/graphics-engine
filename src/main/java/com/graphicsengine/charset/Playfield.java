@@ -132,15 +132,18 @@ public class Playfield extends Mesh implements AttributeUpdater {
 
     /**
      * Copies char frame index data from the source into this charmap, source data should only include char number.
+     * Note that there will be conversion from int[] to float values as the char data is copied.
+     * Do NOT use this method for a large number of data.
      * 
      * @param charRows Row based char data, each value is the frame index for a char.
      * @param startOffset Offset into charRows where data is read.
      * @param startChar Put data at this char index, 0 for first char, 10 for the thenth etc.
      * @throws ArrayIndexOutOfBoundsException If source or destination does not contain enough data.
      */
-    public void setPlayfieldData(float[] charRows, int startOffset, int startChar, int count) {
+    public void setPlayfieldData(int[] charRows, int startOffset, int startChar, int count) {
 
-        int destIndex = startChar * PlayfieldProgram.ATTRIBUTES_PER_CHAR + PlayfieldProgram.ATTRIBUTE_CHARMAP_FRAME_INDEX;
+        int destIndex = startChar * PlayfieldProgram.ATTRIBUTES_PER_CHAR
+                + PlayfieldProgram.ATTRIBUTE_CHARMAP_FRAME_INDEX;
         float c;
         for (int i = 0; i < count; i++) {
             c = charRows[startOffset++];
