@@ -7,7 +7,7 @@ import java.util.List;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import com.graphicsengine.scene.SceneFactory;
+import com.graphicsengine.scene.SceneSerializer;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node;
 
@@ -17,19 +17,23 @@ import com.nucleus.scene.Node;
  * @author Richard Sahlin
  *
  */
-public class JSONSceneFactory implements SceneFactory {
+public class JSONSceneFactory implements SceneSerializer {
 
     public final static String SCENE_KEY = "scene";
     private NucleusRenderer renderer;
     private JSONNodeParser nodeParser;
 
-    public JSONSceneFactory(NucleusRenderer renderer) {
-        this.renderer = renderer;
-        nodeParser = new JSONNodeParser(renderer);
+    /**
+     * Empty constructor
+     */
+    public JSONSceneFactory() {
     }
 
     @Override
     public Node importScene(String filename, String sceneName) throws IOException {
+        if (renderer == null) {
+            throw new IllegalStateException(RENDERER_NOT_SET_ERROR);
+        }
         ClassLoader loader = getClass().getClassLoader();
         Node node = new Node(sceneName);
         List<JSONObject> nodes = JSONUtils.readJSONArrayByKey(loader.getResourceAsStream(filename), sceneName);
@@ -52,5 +56,14 @@ public class JSONSceneFactory implements SceneFactory {
             System.out.println(jsonScene);
         }
 
+    }
+
+    @Override
+    public void setRenderer(NucleusRenderer renderer) {
+        if (renderer == null) {
+            throw new IllegalArgumentException(NULL_RENDERER_ERROR);
+        }
+        this.renderer = renderer;
+        nodeParser = new JSONNodeParser(renderer);
     }
 }
