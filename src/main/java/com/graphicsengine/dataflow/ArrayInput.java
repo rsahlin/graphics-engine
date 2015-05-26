@@ -128,7 +128,7 @@ public class ArrayInput {
         int destIndex = 0;
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < w; x++) {
-                dest[destIndex] = source[sourceIndex];
+                dest[destIndex + x] = source[sourceIndex + x];
             }
             destIndex += lineWidth;
             sourceIndex += this.lineWidth;
