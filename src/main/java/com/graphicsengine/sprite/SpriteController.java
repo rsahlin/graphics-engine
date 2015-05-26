@@ -1,38 +1,89 @@
 package com.graphicsengine.sprite;
 
+import com.graphicsengine.sprite.Sprite.Logic;
+import com.nucleus.renderer.BaseRenderer;
+import com.nucleus.scene.Node;
+
 /**
  * Controller for a set of sprites.
+ * This can be added as a node to the scenegraph.
  * 
  * @author Richard Sahlin
  *
  */
-public abstract class SpriteController {
+public abstract class SpriteController extends Node {
+
+    private final static String LOGICRESOLVER_NOT_SET = "LogicResolver not set, must set before calling.";
+
+    /**
+     * Interface used to find a Sprite logic class from String/Binary id
+     * 
+     * @author Richard Sahlin
+     *
+     */
+    public interface LogicResolver {
+
+        /**
+         * Returns the sprite logic class for the specified id, this is normally done when loading scene or when
+         * creating logic from loaded data.
+         * 
+         * @param id The id of the sprite object
+         * @return The sprite logic object or null if not found
+         */
+        Logic getLogic(String id);
+
+    }
 
     protected Sprite[] sprites;
     protected int count;
+    protected LogicResolver logicResolver;
 
     /**
-     * Creates a TiledSpriteController with an array of the specified size and creates all of the sprite objects.
+     * Creates a TiledSpriteController with an array of the specified size.
+     * Each sprite must be created by calling createSprites()
      * 
+     * @param id Id of the node
      * @param count Number of sprites to create.
-     * @param data Optional object passed on when createSprites() is called
      * 
      */
-    public SpriteController(int count, Object data) {
+    protected void create(String id, int count) {
+        setId(id);
         this.count = count;
         sprites = new Sprite[count];
-        createSprites(data);
+    }
+
+    /**
+     * Adds a resolver to find implementing logic (sprite) classes from ids.
+     * This shall be done programatically (from the code) to avoid binding classname to the leveldata, as this will
+     * prevent proper obfuscation of the code.
+     * 
+     * @param resolver The resolver to add, used when createSprites() is called.
+     */
+    public void setLogicResolver(LogicResolver resolver) {
+        logicResolver = resolver;
     }
 
     /**
      * Internal method to create all the sprite instances for the controller.
      * When this method returns all objects in the array shall be created and ready to be used.
-     * This method will be called by the constructor in this class, ie subclasses must call
-     * super(count) in their constructor.
+     * Before calling this method it is necessary to add logic resolvers. Do this separate from loaded leveldata, ie
+     * from code, to prevent referencing classnames in leveldata.
      * 
-     * @param data Optional data object
+     * @param renderer The renderer to use with this controller
+     * @param setup The logic instance for sprite classes.
+     * @throws IllegalArgumentException If a logic resolver has not been set.
      */
-    protected abstract void createSprites(Object data);
+    public abstract void createSprites(BaseRenderer renderer, SpriteControllerSetup setup);
+
+    /**
+     * Internal method to check if a logic resolver has been set, call this in implementations of the createSprites()
+     * method to check that a resolver exist.
+     */
+    protected void validateResolver() {
+        if (logicResolver == null) {
+            throw new IllegalArgumentException(LOGICRESOLVER_NOT_SET);
+        }
+    }
 
     /**
      * Returns the number of sprites in this controller
