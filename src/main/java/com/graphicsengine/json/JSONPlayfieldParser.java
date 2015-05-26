@@ -10,7 +10,6 @@ import com.graphicsengine.charset.PlayfieldSetup;
 import com.graphicsengine.common.StringUtils;
 import com.graphicsengine.dataflow.ArrayInput;
 import com.nucleus.renderer.BaseRenderer;
-import com.nucleus.texturing.TextureSetup;
 
 /**
  * Utilities for CharMap to/from JSON
@@ -22,18 +21,6 @@ public class JSONPlayfieldParser extends JSONParser {
 
     private final static String CHARMAP_KEY = "charmap";
 
-    private final static int PLAYFIELD_DATA = 0;
-    private final static int WIDTH = 1;
-    private final static int HEIGHT = 2;
-    private final static int XPOS = 3;
-    private final static int YPOS = 4;
-    private final static int ZPOS = 5;
-    private final static int CHAR_WIDTH = 6;
-    private final static int CHAR_HEIGHT = 7;
-    private final static int TEXTURE_SOURCE = 8;
-    private final static int TEXTURE_FRAMES_X = 9;
-    private final static int TEXTURE_FRAMES_Y = 10;
-
     public JSONPlayfieldParser(BaseRenderer renderer) {
         super(renderer);
     }
@@ -44,8 +31,9 @@ public class JSONPlayfieldParser extends JSONParser {
         if (JSONcharmap == null) {
             return null;
         }
-        PlayfieldSetup charmapData = getCharMapData(JSONcharmap, nodes);
-        return PlayfieldFactory.createCharmap(renderer, charmapData);
+        PlayfieldSetup playfieldSetup = new PlayfieldSetup();
+        getSetup(JSONcharmap, nodes, playfieldSetup);
+        return PlayfieldFactory.create(renderer, playfieldSetup);
     }
 
     /**
@@ -54,9 +42,9 @@ public class JSONPlayfieldParser extends JSONParser {
      * @param charmap
      * @return
      */
-    public PlayfieldSetup getCharMapData(JSONObject charmap, List<JSONObject> nodes) throws IOException {
+    public void getSetup(JSONObject charmap, List<JSONObject> nodes, PlayfieldSetup playfieldSetup) throws IOException {
         String[] data = StringUtils.getStringArray((String) charmap.get(DATA_KEY));
-        return getCharMapData(data, nodes);
+        getSetup(data, nodes, playfieldSetup);
     }
 
     /**
@@ -65,17 +53,14 @@ public class JSONPlayfieldParser extends JSONParser {
      * @param data
      * @return
      */
-    public static PlayfieldSetup getCharMapData(String[] data, List<JSONObject> nodes) throws IOException {
-        // Fetch ref to input
-        JSONObject jsonInput = JSONUtils.getObjectByKey(nodes, data[PLAYFIELD_DATA]);
-        ArrayInput input = JSONArrayInputParser.parseArrayInput(jsonInput, nodes);
-        PlayfieldSetup charmap = new PlayfieldSetup(data[WIDTH], data[HEIGHT], data[XPOS], data[YPOS],
-                data[ZPOS],
-                data[CHAR_WIDTH], data[CHAR_HEIGHT]);
-        TextureSetup texSetup = JSONTextureParser.getTextureSetup(data[TEXTURE_SOURCE], nodes);
-        charmap.setTextureSource(texSetup, data[TEXTURE_FRAMES_X], data[TEXTURE_FRAMES_Y]);
-        charmap.setPlayFieldData(input);
-        return charmap;
+    public void getSetup(String[] data, List<JSONObject> nodes, PlayfieldSetup playfieldSetup) throws IOException {
+        super.getSetup(data, nodes, playfieldSetup);
+        JSONObject jsonInput = JSONUtils.getObjectByKey(nodes, playfieldSetup.getPlayfieldSource());
+        if (jsonInput != null) {
+            ArrayInput input = JSONArrayInputParser.parseArrayInput(jsonInput, nodes);
+
+            playfieldSetup.setPlayFieldData(input);
+        }
     }
 
     @Override

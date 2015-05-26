@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.json.simple.JSONObject;
 
+import com.graphicsengine.charset.TiledSetup;
 import com.graphicsengine.common.StringUtils;
 import com.nucleus.renderer.BaseRenderer;
 import com.nucleus.texturing.TextureParameter;
@@ -44,8 +45,8 @@ public class JSONTextureParser extends JSONParser {
      * @param jsonTexture
      * @return
      */
-    public static TextureSetup getTextureSetup(JSONObject jsonTexture) {
-        TextureSetup texSetup = getTextureSetup(StringUtils.getStringArray((String) jsonTexture.get(DATA_KEY)));
+    public static TextureSetup createTextureSetup(JSONObject jsonTexture) {
+        TextureSetup texSetup = createTextureSetup(StringUtils.getStringArray((String) jsonTexture.get(DATA_KEY)), 0);
         TextureParameter params = getTextureParameters(jsonTexture);
         if (params != null) {
             texSetup.setTextureParameter(params);
@@ -65,22 +66,32 @@ public class JSONTextureParser extends JSONParser {
         if (texParams == null) {
             return null;
         }
-        String[] params = StringUtils.getStringArray(texParams);
-        return new TextureParameter(params);
+        String[] data = StringUtils.getStringArray(texParams);
+        TextureParameter params = new TextureParameter();
+        params.importData(data, 0);
+        return params;
     }
 
-    public static TextureSetup getTextureSetup(String[] data) {
-        TextureSetup texdata = new TextureSetup(data[SOURCENAME],
-                com.nucleus.resource.ResourceBias.RESOLUTION.valueOf(data[RESOLUTION]), Integer.parseInt(data[LEVELS]));
+    public static TextureSetup createTextureSetup(String[] data, int offset) {
+        TextureSetup texdata = new TextureSetup();
+        texdata.importData(data, offset);
 
         return texdata;
     }
 
-    public static TextureSetup getTextureSetup(String textureRef, List<JSONObject> nodes) {
+    /**
+     * Creates the texture setup and sets it in the tiled setup class.
+     * 
+     * @param tiled
+     * @param nodes
+     * @return The TiledSetup containing the texture setup
+     */
+    public static TiledSetup createTextureSetup(TiledSetup tiled, List<JSONObject> nodes) {
 
-        JSONObject tex = JSONUtils.getObjectByKey(nodes, textureRef);
-        System.out.println(tex);
-        return JSONTextureParser.getTextureSetup(tex);
+        JSONObject tex = JSONUtils.getObjectByKey(nodes, tiled.getTextureRef());
+        TextureSetup texSetup = JSONTextureParser.createTextureSetup(tex);
+        tiled.setTexture(texSetup);
+        return tiled;
 
     }
 

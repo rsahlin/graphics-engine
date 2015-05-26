@@ -5,6 +5,9 @@ import java.util.List;
 
 import org.json.simple.JSONObject;
 
+import com.graphicsengine.charset.TiledSetup;
+import com.graphicsengine.common.StringUtils;
+import com.graphicsengine.sprite.SpriteControllerSetup;
 import com.nucleus.renderer.BaseRenderer;
 
 public abstract class JSONParser {
@@ -13,6 +16,8 @@ public abstract class JSONParser {
      * Store the data for an object in this key.
      */
     protected final static String DATA_KEY = "data";
+    protected final static String LOGIC_DATA_KEY = "logic-data";
+    protected final static String TILE_DATA_KEY = "tile-data";
 
     protected BaseRenderer renderer;
 
@@ -126,6 +131,45 @@ public abstract class JSONParser {
             return null;
         }
         return JSONUtils.getObjectByKey(nodes, name);
+    }
+
+    /**
+     * Provides the mapping between JSON data and the tiled charmap data using the TiledSetup class.
+     * 
+     * @param charmap
+     * @param nodes
+     * @param tiledSetup The object where the imported data is stored.
+     * @return
+     */
+    public void getSetup(JSONObject charmap, List<JSONObject> nodes, TiledSetup tiledSetup)
+            throws IOException {
+        String[] data = StringUtils.getStringArray((String) charmap.get(TILE_DATA_KEY));
+        getSetup(data, nodes, tiledSetup);
+    }
+
+    /**
+     * Provides mapping between JSON data (as an array) and the TiledSetup class used to create tiled charmap.
+     * 
+     * @param data
+     * @param nodes
+     * @param tiledSetup The object where the imported data is stored.
+     * @return
+     */
+    public void getSetup(String[] data, List<JSONObject> nodes, TiledSetup tiledSetup)
+            throws IOException {
+        tiledSetup.importData(data, 0);
+        JSONTextureParser.createTextureSetup(tiledSetup, nodes);
+    }
+
+    public void getSetup(JSONObject spriteController, List<JSONObject> nodes, SpriteControllerSetup controllerSetup)
+            throws IOException {
+        String[] data = StringUtils.getStringArray((String) spriteController.get(LOGIC_DATA_KEY));
+        getSetup(data, nodes, controllerSetup);
+    }
+
+    public void getSetup(String[] data, List<JSONObject> nodes, SpriteControllerSetup controllerSetup)
+            throws IOException {
+        controllerSetup.importData(data, 0);
     }
 
 }

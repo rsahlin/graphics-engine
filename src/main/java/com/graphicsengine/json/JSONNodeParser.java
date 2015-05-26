@@ -7,6 +7,7 @@ import java.util.List;
 import org.json.simple.JSONObject;
 
 import com.graphicsengine.charset.Playfield;
+import com.nucleus.geometry.Mesh;
 import com.nucleus.renderer.BaseRenderer;
 import com.nucleus.scene.Node;
 
@@ -36,9 +37,20 @@ public class JSONNodeParser extends JSONParser {
         if (JSONnode == null) {
             return callParsers(jsonKey, json, nodes);
         }
-        Node node = new Node((String) JSONnode.get(ID_KEY));
+        Node node = createNode(JSONnode);
         parse(node, JSONnode, nodes);
         return node;
+    }
+
+    /**
+     * Internal utility method to create new node from the JSON object, automatically fetch the ID from the object and
+     * set.
+     * 
+     * @param JSONnode
+     * @return
+     */
+    protected Node createNode(JSONObject JSONnode) {
+        return new Node((String) JSONnode.get(ID_KEY));
     }
 
     /**
@@ -83,7 +95,9 @@ public class JSONNodeParser extends JSONParser {
      */
     private void addToNode(Node node, Object obj) {
         if (obj instanceof Playfield) {
-            node.addMesh((Playfield) obj);
+            Mesh mesh = ((Playfield) obj);
+            System.out.println("Adding playfield mesh: " + mesh.getId() + " to " + node.getId());
+            node.addMesh(mesh);
         } else if (obj instanceof Node) {
             System.out.println("Adding node: " + ((Node) obj).getId() + " to " + node.getId());
             node.addChild((Node) obj);
