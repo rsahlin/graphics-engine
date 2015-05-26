@@ -1,6 +1,6 @@
 package com.graphicsengine.tiledsprite;
 
-import com.graphicsengine.sprite.SpriteController;
+import com.graphicsengine.charset.TiledSetup;
 import com.nucleus.geometry.AttributeUpdater;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.VertexBuffer;
@@ -25,19 +25,26 @@ public class TiledSpriteSheet extends Mesh implements AttributeUpdater {
     int count;
 
     /**
-     * Controller for the sprites
-     */
-    SpriteController spriteController;
-
-    /**
      * Creates a new sprite sheet using one mesh, the mesh must be created before being used.
      * 
      * @param spriteCount
      */
     public TiledSpriteSheet(int spriteCount) {
+        setup(spriteCount);
+    }
+
+    /**
+     * Creates a new tiledspritesheet from data in the setup class.
+     * 
+     * @param setup Config of the tiledspritesheet, number of sprites etc.
+     */
+    public TiledSpriteSheet(TiledSetup setup) {
+        setup(setup.getTileCount());
+    }
+
+    private void setup(int spriteCount) {
         count = spriteCount;
         attributeData = new float[count * TiledSpriteProgram.ATTRIBUTES_PER_SPRITE];
-        spriteController = new TiledSpriteController(count, attributeData);
     }
 
     /**
@@ -56,8 +63,7 @@ public class TiledSpriteSheet extends Mesh implements AttributeUpdater {
      * @return
      */
     public void createMesh(TiledSpriteProgram program, Texture2D texture, float width, float height, float z,
-            int framesX,
-            int framesY) {
+            int framesX, int framesY) {
         program.buildTileSpriteMesh(this, count, width, height, z, GLES20.GL_FLOAT, 1f / framesX, 1f / framesY);
         setTexture(texture, Texture2D.TEXTURE_0);
         setAttributeUpdater(this);
@@ -77,15 +83,6 @@ public class TiledSpriteSheet extends Mesh implements AttributeUpdater {
     @Override
     public void destroy() {
         attributeData = null;
-    }
-
-    /**
-     * Returns the spritecontroller containing the sprite (logic) objects
-     * 
-     * @return The controller for sprites rendered with this spritesheet
-     */
-    public SpriteController getSpriteController() {
-        return spriteController;
     }
 
 }
