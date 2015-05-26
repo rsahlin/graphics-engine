@@ -14,12 +14,20 @@ import com.nucleus.texturing.Texture2D;
  */
 public class PlayfieldFactory {
 
-    public static Playfield createCharmap(BaseRenderer baseRenderer, PlayfieldSetup constructor) throws IOException {
+    /**
+     * Factory method for creating a playfield
+     * 
+     * @param baseRenderer
+     * @param constructor
+     * @return
+     * @throws IOException
+     */
+    public static Playfield create(BaseRenderer baseRenderer, PlayfieldSetup constructor) throws IOException {
 
         Playfield map = new Playfield(constructor.mapWidth * constructor.mapHeight);
         PlayfieldProgram program = new PlayfieldProgram();
         baseRenderer.createProgram(program);
-        Texture2D texture = AssetManager.getInstance().getTexture(baseRenderer, constructor.textureSource);
+        Texture2D texture = AssetManager.getInstance().getTexture(baseRenderer, constructor.textureSetup);
         map.createMesh(program, texture, constructor.tileWidth, constructor.tileHeight, constructor.zpos,
                 constructor.textureFramesX, constructor.textureFramesY);
         map.setupPlayfield(constructor.mapWidth, constructor.mapHeight, constructor.xpos, constructor.ypos);
