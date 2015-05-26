@@ -8,7 +8,7 @@ import org.json.simple.JSONObject;
 
 import com.graphicsengine.charset.Playfield;
 import com.nucleus.geometry.Mesh;
-import com.nucleus.renderer.BaseRenderer;
+import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node;
 
 /**
@@ -24,7 +24,7 @@ public class JSONNodeParser extends JSONParser {
 
     List<JSONParser> parsers = new ArrayList<JSONParser>();
 
-    public JSONNodeParser(BaseRenderer renderer) {
+    public JSONNodeParser(NucleusRenderer renderer) {
         super(renderer);
         parsers.add(new JSONPlayfieldParser(renderer));
         parsers.add(new JSONTextureParser(renderer));

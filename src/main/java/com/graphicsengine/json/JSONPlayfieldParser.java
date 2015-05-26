@@ -9,7 +9,7 @@ import com.graphicsengine.charset.PlayfieldFactory;
 import com.graphicsengine.charset.PlayfieldSetup;
 import com.graphicsengine.common.StringUtils;
 import com.graphicsengine.dataflow.ArrayInput;
-import com.nucleus.renderer.BaseRenderer;
+import com.nucleus.renderer.NucleusRenderer;
 
 /**
  * Utilities for CharMap to/from JSON
@@ -21,7 +21,7 @@ public class JSONPlayfieldParser extends JSONParser {
 
     private final static String CHARMAP_KEY = "charmap";
 
-    public JSONPlayfieldParser(BaseRenderer renderer) {
+    public JSONPlayfieldParser(NucleusRenderer renderer) {
         super(renderer);
     }
 

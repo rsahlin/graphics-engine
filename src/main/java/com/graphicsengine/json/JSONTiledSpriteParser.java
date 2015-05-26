@@ -10,7 +10,7 @@ import com.graphicsengine.sprite.SpriteController;
 import com.graphicsengine.sprite.SpriteControllerFactory;
 import com.graphicsengine.sprite.SpriteControllerFactory.SpriteControllers;
 import com.graphicsengine.tiledsprite.TiledSpriteSetup;
-import com.nucleus.renderer.BaseRenderer;
+import com.nucleus.renderer.NucleusRenderer;
 
 /**
  * Utilities for TiledSpriteController to/from JSON
@@ -22,9 +22,7 @@ public class JSONTiledSpriteParser extends JSONParser {
 
     private final static String TILEDSPRITECONTROLLER_KEY = "tiledspritecontroller";
 
-    private final static int TILEDSPRITE_DATA = 0;
-
-    public JSONTiledSpriteParser(BaseRenderer renderer) {
+    public JSONTiledSpriteParser(NucleusRenderer renderer) {
         super(renderer);
     }
 

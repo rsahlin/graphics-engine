@@ -1,7 +1,7 @@
 package com.graphicsengine.sprite;
 
 import com.graphicsengine.sprite.Sprite.Logic;
-import com.nucleus.renderer.BaseRenderer;
+import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node;
 
 /**
@@ -74,7 +74,7 @@ public abstract class SpriteController extends Node {
      * @param setup The logic instance for sprite classes.
      * @throws IllegalArgumentException If a logic resolver has not been set.
      */
-    public abstract void createSprites(BaseRenderer renderer, SpriteControllerSetup setup);
+    public abstract void createSprites(NucleusRenderer renderer, SpriteControllerSetup setup);
 
     /**
      * Internal method to check if a logic resolver has been set, call this in implementations of the createSprites()

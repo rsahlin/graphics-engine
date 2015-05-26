@@ -8,7 +8,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.graphicsengine.scene.SceneFactory;
-import com.nucleus.renderer.BaseRenderer;
+import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node;
 
 /**
@@ -20,10 +20,10 @@ import com.nucleus.scene.Node;
 public class JSONSceneFactory implements SceneFactory {
 
     public final static String SCENE_KEY = "scene";
-    private BaseRenderer renderer;
+    private NucleusRenderer renderer;
     private JSONNodeParser nodeParser;
 
-    public JSONSceneFactory(BaseRenderer renderer) {
+    public JSONSceneFactory(NucleusRenderer renderer) {
         this.renderer = renderer;
         nodeParser = new JSONNodeParser(renderer);
     }

@@ -3,10 +3,10 @@ package com.graphicsengine.assets;
 import java.io.IOException;
 import java.util.Hashtable;
 
-import com.nucleus.renderer.BaseRenderer;
+import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.texturing.Texture2D;
-import com.nucleus.texturing.TextureSetup;
 import com.nucleus.texturing.TextureFactory;
+import com.nucleus.texturing.TextureSetup;
 
 /**
  * Loading and unloading assets, mainly textures.
@@ -55,7 +55,7 @@ public class AssetManager {
         public void destroy();
     }
 
-    public Texture2D getTexture(BaseRenderer renderer, TextureSetup source) throws IOException {
+    public Texture2D getTexture(NucleusRenderer renderer, TextureSetup source) throws IOException {
 
         Texture2D texture = textures.get(source.getSourceName());
         if (texture != null) {

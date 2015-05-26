@@ -8,7 +8,7 @@ import org.json.simple.JSONObject;
 import com.graphicsengine.charset.TiledSetup;
 import com.graphicsengine.common.StringUtils;
 import com.graphicsengine.sprite.SpriteControllerSetup;
-import com.nucleus.renderer.BaseRenderer;
+import com.nucleus.renderer.NucleusRenderer;
 
 public abstract class JSONParser {
 
@@ -19,9 +19,9 @@ public abstract class JSONParser {
     protected final static String LOGIC_DATA_KEY = "logic-data";
     protected final static String TILE_DATA_KEY = "tile-data";
 
-    protected BaseRenderer renderer;
+    protected NucleusRenderer renderer;
 
-    public JSONParser(BaseRenderer renderer) {
+    public JSONParser(NucleusRenderer renderer) {
         this.renderer = renderer;
     }
 

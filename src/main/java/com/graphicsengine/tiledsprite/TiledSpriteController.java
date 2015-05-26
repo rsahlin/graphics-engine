@@ -6,7 +6,7 @@ import com.graphicsengine.charset.TiledSetup;
 import com.graphicsengine.sprite.SpriteController;
 import com.graphicsengine.sprite.SpriteControllerSetup;
 import com.nucleus.geometry.Mesh;
-import com.nucleus.renderer.BaseRenderer;
+import com.nucleus.renderer.NucleusRenderer;
 
 /**
  * Controller for tiled sprites, this controller creates the tiled sprite objects.
@@ -28,12 +28,12 @@ public class TiledSpriteController extends SpriteController {
      * @param renderer
      * @param constructor
      */
-    public void createMesh(BaseRenderer renderer, TiledSetup constructor) throws IOException {
+    public void createMesh(NucleusRenderer renderer, TiledSetup constructor) throws IOException {
         spriteSheet = TiledSpriteFactory.create(renderer, constructor);
     }
 
     @Override
-    public void createSprites(BaseRenderer renderer, SpriteControllerSetup setup) {
+    public void createSprites(NucleusRenderer renderer, SpriteControllerSetup setup) {
         validateResolver();
         create(setup.getId(), setup.getCount());
         try {

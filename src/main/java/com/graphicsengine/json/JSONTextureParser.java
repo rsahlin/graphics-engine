@@ -7,7 +7,7 @@ import org.json.simple.JSONObject;
 
 import com.graphicsengine.charset.TiledSetup;
 import com.graphicsengine.common.StringUtils;
-import com.nucleus.renderer.BaseRenderer;
+import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.texturing.TextureParameter;
 import com.nucleus.texturing.TextureSetup;
 
@@ -23,7 +23,7 @@ public class JSONTextureParser extends JSONParser {
     private final static int RESOLUTION = 1;
     private final static int LEVELS = 2;
 
-    public JSONTextureParser(BaseRenderer renderer) {
+    public JSONTextureParser(NucleusRenderer renderer) {
         super(renderer);
     }
 

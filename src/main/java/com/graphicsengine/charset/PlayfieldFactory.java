@@ -3,7 +3,7 @@ package com.graphicsengine.charset;
 import java.io.IOException;
 
 import com.graphicsengine.assets.AssetManager;
-import com.nucleus.renderer.BaseRenderer;
+import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.texturing.Texture2D;
 
 /**
@@ -22,7 +22,7 @@ public class PlayfieldFactory {
      * @return
      * @throws IOException
      */
-    public static Playfield create(BaseRenderer baseRenderer, PlayfieldSetup constructor) throws IOException {
+    public static Playfield create(NucleusRenderer baseRenderer, PlayfieldSetup constructor) throws IOException {
 
         Playfield map = new Playfield(constructor.mapWidth * constructor.mapHeight);
         PlayfieldProgram program = new PlayfieldProgram();
