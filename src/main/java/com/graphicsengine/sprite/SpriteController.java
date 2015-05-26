@@ -14,6 +14,7 @@ import com.nucleus.scene.Node;
 public abstract class SpriteController extends Node {
 
     private final static String LOGICRESOLVER_NOT_SET = "LogicResolver not set, must set before calling.";
+    private final static String LOGIC_NOT_FOUND_ERROR = "Logic not found for id: ";
 
     /**
      * Interface used to find a Sprite logic class from String/Binary id
@@ -102,6 +103,42 @@ public abstract class SpriteController extends Node {
      */
     public Sprite[] getSprites() {
         return sprites;
+    }
+
+    /**
+     * Sets the logic for the sprites as defined in the setup class.
+     * The sprites must be created before calling this method.
+     * 
+     * @param setup Setup containing the logic id, offset and count, for the sprites.
+     */
+    public void setLogic(SpriteControllerSetup setup) {
+        String[] logicId = setup.getLogicId();
+        int[] offsets = setup.getLogicOffset();
+        int[] counts = setup.getLogicCount();
+        setLogic(logicId, offsets, counts);
+
+    }
+
+    /**
+     * Sets the logic for sprite objects, the sprites must be created before calling this method.
+     * 
+     * @param logicIds The logic ids for logic, used together with offsets and counts.
+     * @param offsets The offset into sprite list for the logic to set.
+     * @param counts The number of sprite logic to set at offset.
+     */
+    public void setLogic(String[] logicIds, int[] offsets, int[] counts) {
+        for (int i = 0; i < logicIds.length; i++) {
+            int offset = offsets[i];
+            int count = counts[i];
+            Logic l = logicResolver.getLogic(logicIds[i]);
+            if (l == null) {
+                throw new IllegalArgumentException(LOGIC_NOT_FOUND_ERROR + logicIds[i]);
+            }
+            for (int loop = 0; loop < count; loop++) {
+                sprites[offset++].logic = l;
+            }
+        }
+
     }
 
 }
