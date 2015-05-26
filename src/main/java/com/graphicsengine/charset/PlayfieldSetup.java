@@ -5,11 +5,33 @@ import com.graphicsengine.dataflow.ArrayInput;
 /**
  * The data needed to create a charmap, use this to make it easier to abstract seralization/creation of maps
  * from loaded data.
+ * This class can be used with serialization to decouple io from implementation
  * 
  * @author Richard Sahlin
  *
  */
 public class PlayfieldSetup extends TiledSetup {
+
+    public enum PlayfieldMapping implements Indexer {
+        PLAYFIELDSOURCE(0),
+        WIDTH(1),
+        HEIGHT(2),
+        XPOS(3),
+        YPOS(4),
+        ZPOS(5);
+
+        private final int index;
+
+        PlayfieldMapping(int index) {
+            this.index = index;
+        }
+
+        @Override
+        public int getIndex() {
+            return index;
+        }
+
+    }
 
     /**
      * Number of components for playfield data.
@@ -19,7 +41,7 @@ public class PlayfieldSetup extends TiledSetup {
     /**
      * The data, ie the chars for the playfield.
      */
-    float[] data;
+    int[] data;
 
     /**
      * Width of map in characters
@@ -43,34 +65,35 @@ public class PlayfieldSetup extends TiledSetup {
     float zpos;
 
     /**
-     * Creates a new CharMapData from String sources, playfield data storage will be created to fit width and height.
-     * 
-     * @param width Integer width of map
-     * @param height Integer height of map
-     * @param xpos float xpos of map (origin)
-     * @param ypos float ypos of map (origin)
-     * @param zpos float zpos of map
-     * @param charWidth float character width
-     * @param charHeight float character height
+     * Reference to node containing the data for the playfield.
      */
-    public PlayfieldSetup(String width, String height, String xpos, String ypos, String zpos, String charWidth,
-            String charHeight) {
-        super(charWidth, charHeight);
-        mapWidth = Integer.parseInt(width);
-        mapHeight = Integer.parseInt(height);
-        this.xpos = Float.parseFloat(xpos);
-        this.ypos = Float.parseFloat(ypos);
-        this.zpos = Float.parseFloat(zpos);
-        createPlayFied();
+    String playfieldSource;
+
+    /**
+     * Empty constructor, fill with data by calling importData() method.
+     */
+    public PlayfieldSetup() {
+        super();
     }
 
     /**
      * Internal method to create the playfield storage, will create storage for mapWidth * mapHeight floats.
      */
     private void createPlayFied() {
-        data = new float[mapWidth * mapHeight];
+        data = new int[mapWidth * mapHeight];
     }
 
+    /**
+     * Playfield setup
+     * 
+     * @param width
+     * @param height
+     * @param xpos Maps xposition, note - not tile xpos
+     * @param ypos Maps yposition, note - not tile xpos
+     * @param zpos Maps zposition, note - not tile xpos
+     * @param charWidth
+     * @param charHeight
+     */
     public PlayfieldSetup(int width, int height, float xpos, float ypos, float zpos, float charWidth, float charHeight) {
         super(width * height, charWidth, charHeight);
         this.mapWidth = width;
@@ -88,6 +111,29 @@ public class PlayfieldSetup extends TiledSetup {
      */
     public void setPlayFieldData(ArrayInput source) {
         source.copyArray(data, COMPONENTS, mapWidth, mapHeight);
+    }
+
+    @Override
+    public int importData(String[] data, int offset) {
+        int read = super.importData(data, offset);
+        offset += read;
+        mapWidth = getInt(data, offset, PlayfieldMapping.WIDTH);
+        mapHeight = getInt(data, offset, PlayfieldMapping.HEIGHT);
+        this.data = new int[mapWidth * mapHeight];
+        xpos = getFloat(data, offset, PlayfieldMapping.XPOS);
+        ypos = getFloat(data, offset, PlayfieldMapping.YPOS);
+        zpos = getFloat(data, offset, PlayfieldMapping.ZPOS);
+        playfieldSource = getString(data, offset, PlayfieldMapping.PLAYFIELDSOURCE);
+        return read + PlayfieldMapping.values().length;
+    }
+
+    /**
+     * Returns the name of the playfield source data
+     * 
+     * @return
+     */
+    public String getPlayfieldSource() {
+        return playfieldSource;
     }
 
 }
