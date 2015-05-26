@@ -1,6 +1,12 @@
 package com.graphicsengine.tiledsprite;
 
+import java.io.IOException;
+
+import com.graphicsengine.charset.TiledSetup;
 import com.graphicsengine.sprite.SpriteController;
+import com.graphicsengine.sprite.SpriteControllerSetup;
+import com.nucleus.geometry.Mesh;
+import com.nucleus.renderer.BaseRenderer;
 
 /**
  * Controller for tiled sprites, this controller creates the tiled sprite objects.
@@ -13,29 +19,33 @@ import com.graphicsengine.sprite.SpriteController;
  *
  */
 public class TiledSpriteController extends SpriteController {
-    /**
-     * Reference to float array with attribute data, this is the data that is used to update the mesh
-     */
-    private float[] attributeData;
+
+    private TiledSpriteSheet spriteSheet;
 
     /**
-     * Creates a TiledSpriteController with the specified number of sprites, each sprite can be seen as a portion of the
-     * Mesh it belongs to. Each tiled sprite will be created.
-     * Before the sprites can be rendered the Mesh must be created, by calling createMesh()
+     * Creates the spritesheet used by this controller, this must be called before the sprites can be rendered.
      * 
-     * @param count Number of tiled sprites to create. Each tiled sprite will be created.
-     * @param tiledSprites Ref to the tiled spritesheet.
-     * 
+     * @param renderer
+     * @param constructor
      */
-    public TiledSpriteController(int count, float[] attributeData) {
-        super(count, attributeData);
+    public void createMesh(BaseRenderer renderer, TiledSetup constructor) throws IOException {
+        spriteSheet = TiledSpriteFactory.create(renderer, constructor);
     }
 
     @Override
-    protected void createSprites(Object data) {
-        attributeData = (float[]) data;
-        for (int i = 0; i < count; i++) {
-            sprites[i] = new TiledSprite(attributeData, i * TiledSpriteProgram.ATTRIBUTES_PER_SPRITE);
+    public void createSprites(BaseRenderer renderer, SpriteControllerSetup setup) {
+        validateResolver();
+        create(setup.getId(), setup.getCount());
+        try {
+            createMesh(renderer, ((TiledSpriteSetup) setup).getTiledSetup());
+            addMesh(spriteSheet);
+            for (int i = 0; i < count; i++) {
+                sprites[i] = new TiledSprite(spriteSheet.getAttributeData(), i
+                        * TiledSpriteProgram.ATTRIBUTES_PER_SPRITE);
+            }
+            setLogic(setup);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -47,6 +57,15 @@ public class TiledSpriteController extends SpriteController {
     @Override
     public int getCount() {
         return count;
+    }
+
+    /**
+     * Returns the renderable object for this spritecontroller.
+     * 
+     * @return
+     */
+    public Mesh getSpriteSheet() {
+        return spriteSheet;
     }
 
 }
