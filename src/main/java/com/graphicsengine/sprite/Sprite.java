@@ -56,7 +56,11 @@ public abstract class Sprite {
      */
     public final static int SPRITE_FLOAT_COUNT = ROTATION + 1;
 
+    /**
+     * The sprite logic implementation
+     */
     public Logic logic;
+
     /**
      * All sprites can move using a vector
      */
