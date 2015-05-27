@@ -1,7 +1,5 @@
 package com.graphicsengine.scene;
 
-import com.graphicsengine.json.JSONSceneFactory;
-
 /**
  * Creates the sceneserializer implementations
  * 
@@ -11,8 +9,7 @@ import com.graphicsengine.json.JSONSceneFactory;
 public class SceneSerializerFactory {
 
     /**
-     * Returns an implementation of the SceneSerializer interface, pass null to get the default platform serializer.
-     * Pass classname for a specific implementation.
+     * Returns an implementation of the SceneSerializer interface, callers must know the implementing class.
      * 
      * @param className Implementing classname or null for default.
      * @return The scene serializer implementation
@@ -22,10 +19,6 @@ public class SceneSerializerFactory {
      */
     public static SceneSerializer getSerializer(String className) throws ClassNotFoundException,
             InstantiationException, IllegalAccessException {
-
-        if (className == null) {
-            return new JSONSceneFactory();
-        }
         return (SceneSerializer) Class.forName(className).newInstance();
     }
 
