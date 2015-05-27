@@ -114,4 +114,10 @@ public class SpriteControllerSetup extends DataSetup {
         }
         return read;
     }
+
+    @Override
+    public String exportDataAsString() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

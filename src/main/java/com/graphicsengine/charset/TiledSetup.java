@@ -191,4 +191,10 @@ public class TiledSetup extends DataSetup {
         textureFramesY = getInt(data, offset, TiledMapping.TEXTURE_FRAMES_Y);
         return TiledMapping.values().length;
     }
+
+    @Override
+    public String exportDataAsString() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }
