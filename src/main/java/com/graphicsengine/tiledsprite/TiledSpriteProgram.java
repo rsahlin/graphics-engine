@@ -9,6 +9,8 @@ import com.nucleus.opengl.GLUtils;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.shader.ShaderVariable;
 import com.nucleus.shader.ShaderVariable.VariableType;
+import com.nucleus.texturing.Texture2D;
+import com.nucleus.texturing.TiledTexture2D;
 
 /**
  * This class defines the mappings for the tile sprite vertex and fragment shaders.
@@ -168,20 +170,18 @@ public class TiledSpriteProgram extends ShaderProgram {
      * Vertex buffer will have storage for XYZ + UV.
      * 
      * @param mesh The mesh to build buffers for, this mesh can be rendered after this call.
+     * @param texture Must be {@link TiledTexture2D} if tiling shall work
      * @param spriteCount Number of sprites to build, this is NOT the vertex count.
      * @param width The width of a sprite, the sprite will be centered in the middle.
      * @param height The height of a sprite, the sprite will be centered in the middle.
      * @param z The z position for each vertice.
      * @param type The datatype for attribute data - GLES20.GL_FLOAT
-     * @param Texture U fraction for each sprite frame, if sheet is 5 frames wide this is 1/5
-     * @param Texture V fraction for each sprite frame, if sheet is 3 frames high this is 1/3
      * 
      * @return The mesh that can be rendered.
      * @throws IllegalArgumentException if type is not GLES20.GL_FLOAT
      */
-    public void buildTileSpriteMesh(Mesh mesh, int spriteCount, float width, float height, float z, int type,
-            float fractionU,
-            float fractionV) {
+    public void buildTileSpriteMesh(Mesh mesh, Texture2D texture, int spriteCount, float width, float height, float z,
+            int type) {
 
         int vertexStride = DEFAULT_COMPONENTS;
         float[] quadPositions = MeshBuilder.buildQuadPositionsIndexed(width, height, z, width / 2, height / 2,
@@ -192,9 +192,13 @@ public class TiledSpriteProgram extends ShaderProgram {
                 getShaderVariable(VARIABLES.uMVPMatrix.index));
 
         float[] uniformVectors = mesh.getUniformVectors();
-        uniformVectors[UNIFORM_TEX_FRACTION_S_INDEX] = fractionU;
-        uniformVectors[UNIFORM_TEX_FRACTION_T_INDEX] = fractionV;
-        uniformVectors[UNIFORM_TEX_ONEBY_S_INDEX] = (int) (1 / fractionU);
+        if (texture instanceof TiledTexture2D) {
+            setTextureUniforms((TiledTexture2D) texture, uniformVectors, UNIFORM_TEX_FRACTION_S_INDEX);
+        } else {
+            uniformVectors[UNIFORM_TEX_FRACTION_S_INDEX] = 1f;
+            uniformVectors[UNIFORM_TEX_FRACTION_T_INDEX] = 1f;
+            uniformVectors[UNIFORM_TEX_ONEBY_S_INDEX] = 1f;
+        }
     }
 
     @Override

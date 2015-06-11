@@ -6,6 +6,7 @@ import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.VertexBuffer;
 import com.nucleus.opengl.GLES20Wrapper.GLES20;
 import com.nucleus.texturing.Texture2D;
+import com.nucleus.texturing.TiledTexture2D;
 
 /**
  * A number of sprites that will be rendered using the same Mesh, ie all sprites in this class are rendered using one
@@ -54,17 +55,14 @@ public class TiledSpriteSheet extends Mesh implements AttributeUpdater {
      * properly.
      * 
      * @param program
-     * @param texture The texture to use for sprites
+     * @param texture The texture to use for sprites, must be {@link TiledTexture2D} otherwise tiling will not work.
      * @param width Width for each sprite
      * @param height Height for each sprite
      * @param z Zpos
-     * @param framesX Number of frames on the x axis in the sprite sheet image.
-     * @param framesY Number of frames on the y axis in the sprite sheet image.
      * @return
      */
-    public void createMesh(TiledSpriteProgram program, Texture2D texture, float width, float height, float z,
-            int framesX, int framesY) {
-        program.buildTileSpriteMesh(this, count, width, height, z, GLES20.GL_FLOAT, 1f / framesX, 1f / framesY);
+    public void createMesh(TiledSpriteProgram program, Texture2D texture, float width, float height, float z) {
+        program.buildTileSpriteMesh(this, texture, count, width, height, z, GLES20.GL_FLOAT);
         setTexture(texture, Texture2D.TEXTURE_0);
         setAttributeUpdater(this);
     }

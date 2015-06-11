@@ -17,6 +17,14 @@ public class TiledSpriteSetup extends SpriteControllerSetup {
      */
     TiledSetup tiledSetup;
 
+    public TiledSpriteSetup() {
+        super();
+    }
+
+    public TiledSpriteSetup(TiledSpriteController spriteController) {
+        super(spriteController);
+    }
+
     /**
      * Sets the tiled setup, as needed by when creating a tiled sprite controller (mesh)
      * 

@@ -29,7 +29,7 @@ public class TiledSpriteFactory {
         renderer.createProgram(program);
         Texture2D texture = AssetManager.getInstance().getTexture(renderer, constructor.getTexture());
         sprites.createMesh(program, texture, constructor.getTileWidth(), constructor.getTileHeight(),
-                constructor.getTileZPos(), constructor.getFramesX(), constructor.getFramesY());
+                constructor.getTileZPos());
         return sprites;
 
     }

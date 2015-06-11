@@ -1,7 +1,10 @@
 package com.graphicsengine.charset;
 
+import com.graphicsengine.assets.AssetManager;
 import com.nucleus.io.DataSetup;
-import com.nucleus.texturing.TextureSetup;
+import com.nucleus.io.ExternalReference;
+import com.nucleus.texturing.TiledTexture2D;
+import com.nucleus.texturing.TiledTextureSetup;
 
 /**
  * The data for a tiled sheet, used for sprites or characters
@@ -24,10 +27,7 @@ public class TiledSetup extends DataSetup {
         TILEZPOS(1),
         TILEWIDTH(2),
         TILEHEIGHT(3),
-        TEXTURESOURCE(4),
-        TEXTURE_FRAMES_X(5),
-        TEXTURE_FRAMES_Y(6);
-
+        TEXTURESOURCE(4);
         private final int index;
 
         private TiledMapping(int index) {
@@ -61,20 +61,14 @@ public class TiledSetup extends DataSetup {
      * The texture source name
      */
     String textureRef;
-    /**
-     * Number of frames horizontally in texture
-     */
-    int textureFramesX;
-    /**
-     * Number of frames vertically in texture
-     */
-    int textureFramesY;
 
     /**
      * This must be imported separately by using textureRef, exactly how this is implemented is up to the
      * importer/exporter
+     * This is only a reference used when charmap is created - not used when exporting.
+     * TODO Maybe replace this with a reference to the texture ID and the texture is fetched from assetmanager.
      */
-    TextureSetup textureSetup;
+    TiledTextureSetup textureSetup;
 
     /**
      * Default constructor
@@ -84,12 +78,41 @@ public class TiledSetup extends DataSetup {
     }
 
     /**
+     * Creates a new tiled setup with id.
+     * 
+     * @param id
+     */
+    public TiledSetup(String id) {
+        super(id);
+    }
+
+    void setup(String id, int count, float zpos, float width, float height) {
+        this.setId(id);
+        this.count = count;
+        this.tileZPos = zpos;
+        this.tileWidth = width;
+        this.tileHeight = height;
+    }
+
+    /**
+     * Sets the texture source reference from an existing texture, use when exporting.
+     * 
+     * @param texture
+     * @throws IllegalArgumentException If texture source could not be found for the id.
+     */
+    void setTextureRef(TiledTexture2D texture) {
+        ExternalReference source = AssetManager.getInstance().getSourceReference(texture.getId());
+        textureRef = source.getId();
+    }
+
+    /**
+     * Sets number of tiles, tile width and height
      * 
      * @param count
      * @param width
      * @param height
      */
-    public TiledSetup(int count, float width, float height) {
+    void setup(int count, float width, float height) {
         this.count = count;
         tileWidth = width;
         tileHeight = height;
@@ -132,26 +155,6 @@ public class TiledSetup extends DataSetup {
     }
 
     /**
-     * Returns the number of frames horizontally in the texture, ie 10 if there are 10 frames horizontally in the
-     * texture.
-     * 
-     * @return Number of frames on x axis in texture.
-     */
-    public int getFramesX() {
-        return textureFramesX;
-    }
-
-    /**
-     * Returns the number of frames vertically in the texture, ie 10 if there are 10 frames horizontally in the
-     * texture.
-     * 
-     * @return Number of frames on y axis in texture.
-     */
-    public int getFramesY() {
-        return textureFramesY;
-    }
-
-    /**
      * Returns the base zposition for each tile.
      * 
      * @return
@@ -165,7 +168,7 @@ public class TiledSetup extends DataSetup {
      * 
      * @param textureSetup texture setup data, shall contain imported data.
      */
-    public void setTexture(TextureSetup textureSetup) {
+    public void setTexture(TiledTextureSetup textureSetup) {
         this.textureSetup = textureSetup;
     }
 
@@ -174,7 +177,7 @@ public class TiledSetup extends DataSetup {
      * 
      * @return The texture setup, or null if not set.
      */
-    public TextureSetup getTexture() {
+    public TiledTextureSetup getTexture() {
         return textureSetup;
     }
 
@@ -187,14 +190,13 @@ public class TiledSetup extends DataSetup {
         tileWidth = getFloat(data, offset, TiledMapping.TILEWIDTH);
         tileHeight = getFloat(data, offset, TiledMapping.TILEHEIGHT);
         textureRef = getString(data, offset, TiledMapping.TEXTURESOURCE);
-        textureFramesX = getInt(data, offset, TiledMapping.TEXTURE_FRAMES_X);
-        textureFramesY = getInt(data, offset, TiledMapping.TEXTURE_FRAMES_Y);
         return TiledMapping.values().length;
     }
 
     @Override
     public String exportDataAsString() {
-        // TODO Auto-generated method stub
-        return null;
+        String d = DEFAULT_DELIMITER;
+        return toString(count) + d + toString(tileZPos) + d + toString(tileWidth) + d + toString(tileHeight) + d
+                + textureRef;
     }
 }
