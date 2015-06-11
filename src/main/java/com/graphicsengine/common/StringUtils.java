@@ -40,7 +40,6 @@ public class StringUtils {
             result[index++] = Float.parseFloat(s);
         }
         return result;
-
     }
 
     public static int[] getIntArray(String str) {
@@ -51,7 +50,6 @@ public class StringUtils {
             result[index++] = Integer.parseInt(s);
         }
         return result;
-
     }
 
     public static short[] getShortArray(String str) {
@@ -62,7 +60,5 @@ public class StringUtils {
             result[index++] = Short.parseShort(s);
         }
         return result;
-
     }
-
 }
