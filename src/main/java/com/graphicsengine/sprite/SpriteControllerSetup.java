@@ -36,6 +36,20 @@ public class SpriteControllerSetup extends DataSetup {
         }
     }
 
+    public SpriteControllerSetup() {
+        super();
+    }
+
+    /**
+     * Creates setup from the existing sprite controller, used when exporting.
+     * TODO not finished
+     * 
+     * @param spriteController
+     */
+    public SpriteControllerSetup(SpriteController spriteController) {
+        this.count = spriteController.getCount();
+    }
+
     /**
      * Total number of sprites in controller
      */
@@ -53,10 +67,6 @@ public class SpriteControllerSetup extends DataSetup {
      * Number of sprites to create
      */
     int[] logicCount;
-
-    public SpriteControllerSetup() {
-        super();
-    }
 
     /**
      * Returns the logic ids to be used for a sprite, this is an array with String ids for the logic.
@@ -117,7 +127,6 @@ public class SpriteControllerSetup extends DataSetup {
 
     @Override
     public String exportDataAsString() {
-        // TODO Auto-generated method stub
-        return null;
+        return toString(count);
     }
 }

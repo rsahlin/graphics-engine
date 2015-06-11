@@ -1,6 +1,7 @@
 package com.graphicsengine.scene;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 import com.nucleus.renderer.NucleusRenderer;
@@ -40,6 +41,17 @@ public interface SceneSerializer {
      * @throws IllegalStateException If the renderer has not been set before calling this method.
      */
     public Node importScene(String filename, String name) throws IOException;
+
+    /**
+     * Creates a named node from a scene, the scene will be loaded from the inputstream.
+     * Same as calling {@link #importScene(String, String)} but with stream instead of filename.
+     * 
+     * @param is Inputstream containing the scene data
+     * @param name Name of scene to create
+     * @return The scene node with matching name, including all defined children.
+     * @throws IOException If there is an exception loading the data.
+     */
+    public Node importScene(InputStream is, String name) throws IOException;
 
     /**
      * Exports a scene in the same format as this serializer can import.
