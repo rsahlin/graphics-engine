@@ -9,6 +9,8 @@ import com.nucleus.opengl.GLUtils;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.shader.ShaderVariable;
 import com.nucleus.shader.ShaderVariable.VariableType;
+import com.nucleus.texturing.Texture2D;
+import com.nucleus.texturing.TiledTexture2D;
 
 /**
  * This class defines the mappings for the charset vertex and fragment shaders.
@@ -169,34 +171,35 @@ public class PlayfieldProgram extends ShaderProgram {
      * Builds a mesh with data that can be rendered using a tiled charmap renderer, this will draw a number of
      * charmaps using one drawcall.
      * Vertex buffer will have storage for XYZ + UV.
+     * Before using the mesh the chars needs to be positioned, this call just creates the buffers. All chars will
+     * have a position of 0.
      * 
-     * param mesh The mesh to build buffers for, this can be rendered after this call.
-     * 
+     * @param mesh The mesh to build buffers for
+     * @param texture The texture source, if tiling shall be used it must be {@link TiledTexture2D}
      * @param charCount Number of chars to build, this is NOT the vertex count.
-     * @param width The width of a char, the char will be centered in the middle.
-     * @param height The height of a char, the char will be centered in the middle.
-     * @param z The z position for each vertice.
+     * @param width The width of a char, the char will be left aligned.
+     * @param height The height of a char, the char will be top aligned.
+     * @param zPos The zpos for the mesh, all chars will have this zpos.
      * @param type The datatype for attribute data - GLES20.GL_FLOAT
-     * @param Texture U fraction for each char frame, if sheet is 5 frames wide this is 1/5
-     * @param Texture V fraction for each char frame, if sheet is 3 frames high this is 1/3
      * 
      * @throws IllegalArgumentException if type is not GLES20.GL_FLOAT
      */
-    public void buildCharsetMesh(Mesh mesh, int charCount, float width, float height, float z, int type,
-            float fractionU,
-            float fractionV) {
+    public void createMesh(Mesh mesh, Texture2D texture, int charCount, float width, float height, float zPos, int type) {
 
         int vertexStride = DEFAULT_COMPONENTS;
-        float[] quadPositions = MeshBuilder.buildQuadPositionsIndexed(width, height, z, 0, 0, vertexStride);
+        float[] quadPositions = MeshBuilder.buildQuadPositionsIndexed(width, height, zPos, 0, 0, vertexStride);
         MeshBuilder.buildQuadMeshIndexed(mesh, this, charCount, quadPositions, ATTRIBUTES_PER_VERTEX);
 
         setUniformArrays(mesh, getShaderVariable(VARIABLES.uCharsetData.index),
                 getShaderVariable(VARIABLES.uMVPMatrix.index));
-
         float[] uniformVectors = mesh.getUniformVectors();
-        uniformVectors[UNIFORM_TEX_FRACTION_S_INDEX] = fractionU;
-        uniformVectors[UNIFORM_TEX_FRACTION_T_INDEX] = fractionV;
-        uniformVectors[UNIFORM_TEX_ONEBY_S_INDEX] = (int) (1 / fractionU);
+        if (texture instanceof TiledTexture2D) {
+            setTextureUniforms((TiledTexture2D) texture, uniformVectors, UNIFORM_TEX_FRACTION_S_INDEX);
+        } else {
+            uniformVectors[UNIFORM_TEX_FRACTION_S_INDEX] = 1f;
+            uniformVectors[UNIFORM_TEX_FRACTION_T_INDEX] = 1f;
+            uniformVectors[UNIFORM_TEX_ONEBY_S_INDEX] = 1f;
+        }
     }
 
     @Override

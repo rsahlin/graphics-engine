@@ -1,6 +1,8 @@
 package com.graphicsengine.charset;
 
 import com.graphicsengine.dataflow.ArrayInput;
+import com.nucleus.texturing.Texture2D;
+import com.nucleus.texturing.TiledTexture2D;
 
 /**
  * The data needed to create a charmap, use this to make it easier to abstract seralization/creation of maps
@@ -71,9 +73,11 @@ public class PlayfieldSetup extends TiledSetup {
 
     /**
      * Empty constructor, fill with data by calling importData() method.
+     * 
+     * @param id The id of this object
      */
-    public PlayfieldSetup() {
-        super();
+    public PlayfieldSetup(String id) {
+        super(id);
     }
 
     /**
@@ -81,6 +85,29 @@ public class PlayfieldSetup extends TiledSetup {
      */
     private void createPlayFied() {
         data = new int[mapWidth * mapHeight];
+    }
+
+    /**
+     * Creates a setup from existing playfield, this is used when exporting.
+     * 
+     * @param playfield
+     */
+    public PlayfieldSetup(Playfield playfield) {
+        setup(playfield);
+    }
+
+    /**
+     * Sets the data from an existing playfield, used when exporting.
+     * 
+     * @param playfield
+     */
+    void setup(Playfield playfield) {
+        this.setId(playfield.getId());
+        float[] pos = new float[2];
+        playfield.getPosition(0, pos, 0);
+        setup(playfield.getWidth(), playfield.getHeight(), pos[0], pos[1], playfield.getZPos(),
+                playfield.getTileWidth(), playfield.getTileHeight());
+        setTextureRef((TiledTexture2D) playfield.getTexture(Texture2D.TEXTURE_0));
     }
 
     /**
@@ -94,8 +121,8 @@ public class PlayfieldSetup extends TiledSetup {
      * @param charWidth
      * @param charHeight
      */
-    public PlayfieldSetup(int width, int height, float xpos, float ypos, float zpos, float charWidth, float charHeight) {
-        super(width * height, charWidth, charHeight);
+    void setup(int width, int height, float xpos, float ypos, float zpos, float charWidth, float charHeight) {
+        super.setup(width * height, charWidth, charHeight);
         this.mapWidth = width;
         this.mapHeight = height;
         this.xpos = xpos;
@@ -117,14 +144,26 @@ public class PlayfieldSetup extends TiledSetup {
     public int importData(String[] data, int offset) {
         int read = super.importData(data, offset);
         offset += read;
+        playfieldSource = getString(data, offset, PlayfieldMapping.PLAYFIELDSOURCE);
         mapWidth = getInt(data, offset, PlayfieldMapping.WIDTH);
         mapHeight = getInt(data, offset, PlayfieldMapping.HEIGHT);
         this.data = new int[mapWidth * mapHeight];
         xpos = getFloat(data, offset, PlayfieldMapping.XPOS);
         ypos = getFloat(data, offset, PlayfieldMapping.YPOS);
         zpos = getFloat(data, offset, PlayfieldMapping.ZPOS);
-        playfieldSource = getString(data, offset, PlayfieldMapping.PLAYFIELDSOURCE);
         return read + PlayfieldMapping.values().length;
+    }
+
+    @Override
+    public String exportDataAsString() {
+        String str = super.exportDataAsString();
+        // If the playfieldSource is null then set a default name.
+        if (playfieldSource == null) {
+            playfieldSource = "playfield-data-" + getId();
+        }
+        String d = DEFAULT_DELIMITER;
+        return str + d + playfieldSource + d + toString(mapWidth) + d + toString(mapHeight) + d + toString(xpos) + d
+                + toString(ypos) + d + toString(zpos);
     }
 
     /**

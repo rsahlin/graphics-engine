@@ -6,6 +6,7 @@ import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.VertexBuffer;
 import com.nucleus.opengl.GLES20Wrapper.GLES20;
 import com.nucleus.texturing.Texture2D;
+import com.nucleus.texturing.TiledTexture2D;
 
 /**
  * Old school charactermap based rendering using a texture and quad mesh, the normal way to use the charmap is to create
@@ -29,6 +30,12 @@ public class Playfield extends Mesh implements AttributeUpdater {
      * Height of one char, in world units
      */
     private float charHeight;
+
+    /**
+     * Zposition of playfield, by default all chars will have same zpos.
+     * It is possible to go into the mesh and change the vertices z position but this is not adviced.
+     */
+    private float zPos;
 
     /**
      * Width of playfield in chars
@@ -56,7 +63,8 @@ public class Playfield extends Mesh implements AttributeUpdater {
      * 
      * @param charCount Number of chars to create attribute storage for.
      */
-    public Playfield(int charCount) {
+    public Playfield(String id, int charCount) {
+        setId(id);
         this.charCount = charCount;
         attributeData = new float[(charCount * PlayfieldProgram.ATTRIBUTES_PER_CHAR)];
         int offset = 0;
@@ -72,30 +80,28 @@ public class Playfield extends Mesh implements AttributeUpdater {
      * Texture UV is set using 1 / framesX and 1/ framesY
      * 
      * @param program
-     * @param texture
+     * @param texture If tiling should be used this must be instance of {@link TiledTexture2D}
      * @param charWidth Width of one char in world units.
      * @param charHeight Height of one char in world units.
      * @param z Z position of chars
-     * @param framesX Number of frames on the x axis
-     * @param framesY Number of frames on the y axis
      * @return The mesh ready to be rendered
      */
-    public void createMesh(PlayfieldProgram program, Texture2D texture, float charWidth, float charHeight, float z,
-            int framesX, int framesY) {
-        program.buildCharsetMesh(this, charCount, charWidth, charHeight, z, GLES20.GL_FLOAT, 1f / framesX,
-                1f / framesY);
+    public void createMesh(PlayfieldProgram program, Texture2D texture, PlayfieldSetup setup) {
+        this.charWidth = setup.tileWidth;
+        this.charHeight = setup.tileHeight;
+        this.zPos = setup.zpos;
+        program.createMesh(this, texture, charCount, charWidth, charHeight, setup.zpos, GLES20.GL_FLOAT);
         setTexture(texture, Texture2D.TEXTURE_0);
         setAttributeUpdater(this);
-        this.charWidth = charWidth;
-        this.charHeight = charHeight;
     }
 
     /**
      * Positions the characters using width and height number of chars, starting at xpos, ypos
-     * This will set the position for each character (it's vertices), the map can be moved by translating
+     * This will set the position for each character, the map can be moved by translating
      * the node it is attached to.
-     * Use this emthod to layout the characters on your visible screen as needed.
+     * Use this method to layout the characters on your visible screen as needed.
      * The chars will be laid out sequentially across the x axis (row based)
+     * Before rendering the attributes in the mesh must be updated with attribute data from this class.
      * 
      * @param width Width in characters, eg 10 will position 10 chars horizontally beginning at xpos.
      * @param height Height in characters, eg 10 will position 10 chars vertically beginning at ypos.
@@ -191,6 +197,49 @@ public class Playfield extends Mesh implements AttributeUpdater {
      */
     public int getHeight() {
         return height;
+    }
+
+    /**
+     * Returns the width of each character in the playfield.
+     * 
+     * @return
+     */
+    public float getTileWidth() {
+        return charWidth;
+    }
+
+    /**
+     * Returns the height of one character in the playfield.
+     * 
+     * @return
+     */
+    public float getTileHeight() {
+        return charHeight;
+    }
+
+    /**
+     * Returns the base zpos for the playfield.
+     * This will be the same across all chars unless the z position of vertices has been changed in the mesh.
+     * 
+     * @return The base z position of the chars, as specified when calling
+     * {@link #createMesh(PlayfieldProgram, Texture2D, PlayfieldSetup)}
+     */
+    public float getZPos() {
+        return zPos;
+    }
+
+    /**
+     * Returns the character x and y position as set in this playfield. This does not take any node transform into
+     * account.
+     * 
+     * @param charNumber charNumber to get position for, must be > 0 < charCount
+     * @param result x and y position of char stored here, note this does not include node transforms.
+     * @param offset Offset into result where values are stored.
+     */
+    public void getPosition(int charNumber, float[] result, int offset) {
+        offset += charNumber * PlayfieldProgram.ATTRIBUTES_PER_CHAR;
+        result[offset++] = attributeData[PlayfieldProgram.ATTRIBUTE_CHARMAP_X_INDEX];
+        result[offset++] = attributeData[PlayfieldProgram.ATTRIBUTE_CHARMAP_Y_INDEX];
     }
 
 }
