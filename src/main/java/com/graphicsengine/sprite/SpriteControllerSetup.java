@@ -1,6 +1,7 @@
 package com.graphicsengine.sprite;
 
 import com.nucleus.io.DataSetup;
+import com.nucleus.types.DataType;
 
 /**
  * The setup for a sprite class, this should hold information for composing the correct Sprite logic.
@@ -17,22 +18,29 @@ public class SpriteControllerSetup extends DataSetup {
      * @author Richard Sahlin
      *
      */
-    public enum ControllerMapping implements Indexer {
-        COUNT(0),
-        ARRAY_SIZE(1),
-        LOGIC_ID(2),
-        LOGIC_OFFSET(3),
-        LOGIC_COUNT(4);
+    public enum ControllerMapping implements DataIndexer {
+        COUNT(0, DataType.INT),
+        ARRAY_SIZE(1, DataType.INT),
+        LOGIC_ID(2, DataType.STRING_ARRAY),
+        LOGIC_OFFSET(3, DataType.INT_ARRAY),
+        LOGIC_COUNT(4, DataType.INT_ARRAY);
 
         private final int index;
+        private final DataType type;
 
-        private ControllerMapping(int index) {
+        private ControllerMapping(int index, DataType type) {
             this.index = index;
+            this.type = type;
         }
 
         @Override
         public int getIndex() {
             return index;
+        }
+
+        @Override
+        public DataType getType() {
+            return type;
         }
     }
 

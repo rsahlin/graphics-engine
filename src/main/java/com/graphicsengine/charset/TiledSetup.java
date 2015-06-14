@@ -5,6 +5,7 @@ import com.nucleus.io.DataSetup;
 import com.nucleus.io.ExternalReference;
 import com.nucleus.texturing.TiledTexture2D;
 import com.nucleus.texturing.TiledTextureSetup;
+import com.nucleus.types.DataType;
 
 /**
  * The data for a tiled sheet, used for sprites or characters
@@ -21,22 +22,30 @@ public class TiledSetup extends DataSetup {
      * @author Richard Sahlin
      *
      */
-    public enum TiledMapping implements Indexer {
+    public enum TiledMapping implements DataIndexer {
 
-        COUNT(0),
-        TILEZPOS(1),
-        TILEWIDTH(2),
-        TILEHEIGHT(3),
-        TEXTURESOURCE(4);
+        COUNT(0, DataType.INT),
+        TILEZPOS(1, DataType.FLOAT),
+        TILEWIDTH(2, DataType.FLOAT),
+        TILEHEIGHT(3, DataType.FLOAT),
+        TEXTURESOURCE(4, DataType.STRING);
+
         private final int index;
+        private final DataType type;
 
-        private TiledMapping(int index) {
+        private TiledMapping(int index, DataType type) {
             this.index = index;
+            this.type = type;
         }
 
         @Override
         public int getIndex() {
             return index;
+        }
+
+        @Override
+        public DataType getType() {
+            return type;
         }
 
     }

@@ -3,6 +3,7 @@ package com.graphicsengine.charset;
 import com.graphicsengine.dataflow.ArrayInput;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TiledTexture2D;
+import com.nucleus.types.DataType;
 
 /**
  * The data needed to create a charmap, use this to make it easier to abstract seralization/creation of maps
@@ -14,23 +15,30 @@ import com.nucleus.texturing.TiledTexture2D;
  */
 public class PlayfieldSetup extends TiledSetup {
 
-    public enum PlayfieldMapping implements Indexer {
-        PLAYFIELDSOURCE(0),
-        WIDTH(1),
-        HEIGHT(2),
-        XPOS(3),
-        YPOS(4),
-        ZPOS(5);
+    public enum PlayfieldMapping implements DataIndexer {
+        PLAYFIELDSOURCE(0, DataType.STRING),
+        WIDTH(1, DataType.INT),
+        HEIGHT(2, DataType.INT),
+        XPOS(3, DataType.FLOAT),
+        YPOS(4, DataType.FLOAT),
+        ZPOS(5, DataType.FLOAT);
 
         private final int index;
+        private final DataType type;
 
-        PlayfieldMapping(int index) {
+        PlayfieldMapping(int index, DataType type) {
             this.index = index;
+            this.type = type;
         }
 
         @Override
         public int getIndex() {
             return index;
+        }
+
+        @Override
+        public DataType getType() {
+            return type;
         }
 
     }

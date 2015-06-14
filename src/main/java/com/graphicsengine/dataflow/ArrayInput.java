@@ -1,6 +1,7 @@
 package com.graphicsengine.dataflow;
 
-import com.graphicsengine.common.StringUtils;
+import com.nucleus.common.StringUtils;
+import com.nucleus.types.DataType;
 
 /**
  * Dataflow for an input array source.
@@ -10,6 +11,8 @@ import com.graphicsengine.common.StringUtils;
  *
  */
 public class ArrayInput {
+
+    private final static String NOT_IMPLEMENTED_ERROR = "Not implemented support for: ";
 
     /**
      * Number of components, 2 for x and y
@@ -27,7 +30,7 @@ public class ArrayInput {
     /**
      * FLOAT, INT or SHORT arrays
      */
-    Datatype type;
+    DataType type;
     /**
      * Array containing the data, possible arrays are float[], int[] and short[]
      */
@@ -42,7 +45,7 @@ public class ArrayInput {
      * @param type
      * @param data
      */
-    public ArrayInput(int components, int lineWidth, int height, Datatype type, Object data) {
+    public ArrayInput(int components, int lineWidth, int height, DataType type, Object data) {
         this.components = components;
         this.lineWidth = lineWidth;
         this.height = height;
@@ -63,7 +66,7 @@ public class ArrayInput {
         this.components = Integer.parseInt(components);
         this.lineWidth = Integer.parseInt(lineWidth);
         this.height = Integer.parseInt(height);
-        this.type = Datatype.valueOf(type);
+        this.type = DataType.valueOf(type);
         switch (this.type) {
         case FLOAT:
             this.data = StringUtils.getFloatArray(data);
@@ -74,6 +77,8 @@ public class ArrayInput {
         case SHORT:
             this.data = StringUtils.getShortArray(data);
             break;
+        default:
+            throw new IllegalArgumentException(NOT_IMPLEMENTED_ERROR + type);
         }
 
     }
