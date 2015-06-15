@@ -2,7 +2,7 @@ package com.graphicsengine.tiledsprite;
 
 import java.io.IOException;
 
-import com.graphicsengine.charset.TiledSetup;
+import com.graphicsengine.charset.TiledSheetSetup;
 import com.graphicsengine.sprite.SpriteController;
 import com.graphicsengine.sprite.SpriteControllerSetup;
 import com.nucleus.geometry.Mesh;
@@ -28,7 +28,7 @@ public class TiledSpriteController extends SpriteController {
      * @param renderer
      * @param constructor
      */
-    public void createMesh(NucleusRenderer renderer, TiledSetup constructor) throws IOException {
+    public void createMesh(NucleusRenderer renderer, TiledSheetSetup constructor) throws IOException {
         spriteSheet = TiledSpriteFactory.create(renderer, constructor);
     }
 

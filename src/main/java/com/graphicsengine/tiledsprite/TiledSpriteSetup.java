@@ -1,6 +1,6 @@
 package com.graphicsengine.tiledsprite;
 
-import com.graphicsengine.charset.TiledSetup;
+import com.graphicsengine.charset.TiledSheetSetup;
 import com.graphicsengine.sprite.SpriteControllerSetup;
 
 /**
@@ -15,7 +15,7 @@ public class TiledSpriteSetup extends SpriteControllerSetup {
     /**
      * Ref to tiled setup, as needed by factory.
      */
-    TiledSetup tiledSetup;
+    TiledSheetSetup tiledSetup;
 
     public TiledSpriteSetup() {
         super();
@@ -30,7 +30,7 @@ public class TiledSpriteSetup extends SpriteControllerSetup {
      * 
      * @param tiledSetup
      */
-    public void setTiledSetup(TiledSetup tiledSetup) {
+    public void setTiledSetup(TiledSheetSetup tiledSetup) {
         this.tiledSetup = tiledSetup;
     }
 
@@ -39,7 +39,7 @@ public class TiledSpriteSetup extends SpriteControllerSetup {
      * 
      * @return
      */
-    public TiledSetup getTiledSetup() {
+    public TiledSheetSetup getTiledSetup() {
         return tiledSetup;
     }
 

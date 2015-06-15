@@ -14,7 +14,7 @@ import com.nucleus.types.DataType;
  * @author Richard Sahlin
  *
  */
-public class TiledSetup extends DataSetup {
+public class TiledSheetSetup extends DataSetup {
 
     /**
      * Provides the mapping between external data and the data for a tiled set.
@@ -22,7 +22,7 @@ public class TiledSetup extends DataSetup {
      * @author Richard Sahlin
      *
      */
-    public enum TiledMapping implements DataIndexer {
+    public enum TiledSheetMapping implements DataIndexer {
 
         COUNT(0, DataType.INT),
         TILEZPOS(1, DataType.FLOAT),
@@ -33,7 +33,7 @@ public class TiledSetup extends DataSetup {
         private final int index;
         private final DataType type;
 
-        private TiledMapping(int index, DataType type) {
+        private TiledSheetMapping(int index, DataType type) {
             this.index = index;
             this.type = type;
         }
@@ -82,7 +82,7 @@ public class TiledSetup extends DataSetup {
     /**
      * Default constructor
      */
-    public TiledSetup() {
+    public TiledSheetSetup() {
         super();
     }
 
@@ -91,7 +91,7 @@ public class TiledSetup extends DataSetup {
      * 
      * @param id
      */
-    public TiledSetup(String id) {
+    public TiledSheetSetup(String id) {
         super(id);
     }
 
@@ -194,12 +194,12 @@ public class TiledSetup extends DataSetup {
     public int importData(String[] data, int offset) {
         // int read = super.importData(data, offset);
         // offset += read;
-        count = getInt(data, offset, TiledMapping.COUNT);
-        tileZPos = getFloat(data, offset, TiledMapping.TILEZPOS);
-        tileWidth = getFloat(data, offset, TiledMapping.TILEWIDTH);
-        tileHeight = getFloat(data, offset, TiledMapping.TILEHEIGHT);
-        textureRef = getString(data, offset, TiledMapping.TEXTURESOURCE);
-        return TiledMapping.values().length;
+        count = getInt(data, offset, TiledSheetMapping.COUNT);
+        tileZPos = getFloat(data, offset, TiledSheetMapping.TILEZPOS);
+        tileWidth = getFloat(data, offset, TiledSheetMapping.TILEWIDTH);
+        tileHeight = getFloat(data, offset, TiledSheetMapping.TILEHEIGHT);
+        textureRef = getString(data, offset, TiledSheetMapping.TEXTURESOURCE);
+        return TiledSheetMapping.values().length;
     }
 
     @Override

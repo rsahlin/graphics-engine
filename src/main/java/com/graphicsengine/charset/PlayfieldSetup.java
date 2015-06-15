@@ -13,7 +13,7 @@ import com.nucleus.types.DataType;
  * @author Richard Sahlin
  *
  */
-public class PlayfieldSetup extends TiledSetup {
+public class PlayfieldSetup extends TiledSheetSetup {
 
     public enum PlayfieldMapping implements DataIndexer {
         PLAYFIELDSOURCE(0, DataType.STRING),

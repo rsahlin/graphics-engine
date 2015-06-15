@@ -3,7 +3,7 @@ package com.graphicsengine.tiledsprite;
 import java.io.IOException;
 
 import com.graphicsengine.assets.AssetManager;
-import com.graphicsengine.charset.TiledSetup;
+import com.graphicsengine.charset.TiledSheetSetup;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.texturing.Texture2D;
 
@@ -23,7 +23,7 @@ public class TiledSpriteFactory {
      * @return
      * @throws IOException If there is an exception loading an asset
      */
-    public static TiledSpriteSheet create(NucleusRenderer renderer, TiledSetup constructor) throws IOException {
+    public static TiledSpriteSheet create(NucleusRenderer renderer, TiledSheetSetup constructor) throws IOException {
         TiledSpriteSheet sprites = new TiledSpriteSheet(constructor);
         TiledSpriteProgram program = new TiledSpriteProgram();
         renderer.createProgram(program);
