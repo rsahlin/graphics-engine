@@ -80,7 +80,14 @@ public class PlayfieldSetup extends TiledSheetSetup {
     String playfieldSource;
 
     /**
-     * Empty constructor, fill with data by calling importData() method.
+     * Empty constructor, fill with data by calling {@link #importData(String[], int)}
+     */
+    public PlayfieldSetup() {
+        super();
+    }
+
+    /**
+     * Constructor with id, fill with data by calling {@link #importData(String[], int)}
      * 
      * @param id The id of this object
      */
@@ -181,6 +188,53 @@ public class PlayfieldSetup extends TiledSheetSetup {
      */
     public String getPlayfieldSource() {
         return playfieldSource;
+    }
+
+    /**
+     * Returns the width of the map, in tiles
+     * 
+     * @return Number of tiles across the map
+     */
+    public int getMapWidth() {
+        return mapWidth;
+    }
+
+    /**
+     * Returns the height of the map, in tiles
+     * 
+     * @return Number of tiles in the map vertically
+     */
+    public int getMapHeight() {
+        return mapHeight;
+    }
+
+    /**
+     * Returns the map origin x pos, ie the centerpoint horizontally for the map.
+     * Can be used to anchor the map.
+     * 
+     * @return
+     */
+    public float getOriginX() {
+        return xpos;
+    }
+
+    /**
+     * Return the origin ypos, ie the centerpoint vertically for the map.
+     * Can be used to anchor the map.
+     * 
+     * @return
+     */
+    public float getOriginY() {
+        return ypos;
+    }
+
+    /**
+     * Returns the origin z pos, ie the z pos for the map.
+     * 
+     * @return
+     */
+    public float getOriginZ() {
+        return zpos;
     }
 
 }
