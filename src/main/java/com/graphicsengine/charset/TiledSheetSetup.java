@@ -192,8 +192,6 @@ public class TiledSheetSetup extends DataSetup {
 
     @Override
     public int importData(String[] data, int offset) {
-        // int read = super.importData(data, offset);
-        // offset += read;
         count = getInt(data, offset, TiledSheetMapping.COUNT);
         tileZPos = getFloat(data, offset, TiledSheetMapping.TILEZPOS);
         tileWidth = getFloat(data, offset, TiledSheetMapping.TILEWIDTH);
