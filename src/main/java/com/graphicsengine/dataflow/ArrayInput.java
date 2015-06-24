@@ -4,7 +4,8 @@ import com.nucleus.common.StringUtils;
 import com.nucleus.types.DataType;
 
 /**
- * Dataflow for an input array source.
+ * Dataflow for an input array source. The input data is aligned into rows, this makes it useful for loading
+ * data into row based data such as a tile/char map.
  * This is used to provide data for scene components
  * 
  * @author Richard Sahlin
@@ -28,13 +29,22 @@ public class ArrayInput {
      */
     int height;
     /**
-     * FLOAT, INT or SHORT arrays
+     * FLOAT, INT, SHORT or STRING arrays
      */
     DataType type;
     /**
-     * Array containing the data, possible arrays are float[], int[] and short[]
+     * Array containing the data, possible arrays are float[], int[], short[] and String
      */
     Object data;
+
+    /**
+     * Y offset into destination
+     */
+    int xOffset = 0;
+    /**
+     * X offset into destination
+     */
+    int yOffset = 0;
 
     /**
      * Creates a new ArrayInput with the specified properties and data.
@@ -51,6 +61,17 @@ public class ArrayInput {
         this.height = height;
         this.type = type;
         this.data = data;
+    }
+
+    /**
+     * Sets the offset where the data is stored in the destination
+     * 
+     * @param x X offset into destination
+     * @param y Y offst into destination
+     */
+    public void setOffset(int x, int y) {
+        this.xOffset = x;
+        this.yOffset = y;
     }
 
     /**
@@ -77,6 +98,9 @@ public class ArrayInput {
         case SHORT:
             this.data = StringUtils.getShortArray(data);
             break;
+        case STRING:
+            this.data = data;
+            break;
         default:
             throw new IllegalArgumentException(NOT_IMPLEMENTED_ERROR + type);
         }
@@ -96,6 +120,9 @@ public class ArrayInput {
         switch (type) {
         case INT:
             copyArray((int[]) data, dest, components, lineWidth, height);
+            break;
+        case STRING:
+            copyArray((String) data, dest, components, lineWidth, height);
             break;
         default:
             throw new IllegalArgumentException("Not implemented support for " + type);
@@ -122,15 +149,10 @@ public class ArrayInput {
     }
 
     protected void copyArray(int[] source, int[] dest, int components, int lineWidth, int height) {
-        if (this.height < height) {
-            height = this.height;
-        }
-        int w = lineWidth;
-        if (this.lineWidth < lineWidth) {
-            w = this.lineWidth;
-        }
+        height = Math.min(height, this.height);
+        int w = Math.min(lineWidth, this.lineWidth);
         int sourceIndex = 0;
-        int destIndex = 0;
+        int destIndex = calcStartIndex();
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < w; x++) {
                 dest[destIndex + x] = source[sourceIndex + x];
@@ -140,16 +162,26 @@ public class ArrayInput {
         }
     }
 
-    protected void copyArray(int[] source, float[] dest, int components, int lineWidth, int height) {
-        if (this.height < height) {
-            height = this.height;
-        }
-        int w = lineWidth;
-        if (this.lineWidth < lineWidth) {
-            w = this.lineWidth;
-        }
+    protected void copyArray(String source, int[] dest, int components, int lineWidth, int height) {
+        height = Math.min(height, this.height);
+        int w = Math.min(lineWidth, this.lineWidth);
         int sourceIndex = 0;
-        int destIndex = 0;
+        int destIndex = calcStartIndex();
+        byte[] byteSource = source.getBytes();
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < w; x++) {
+                dest[destIndex + x] = byteSource[sourceIndex + x];
+            }
+            destIndex += lineWidth;
+            sourceIndex += this.lineWidth;
+        }
+    }
+
+    protected void copyArray(int[] source, float[] dest, int components, int lineWidth, int height) {
+        height = Math.min(height, this.height);
+        int w = Math.min(lineWidth, this.lineWidth);
+        int sourceIndex = 0;
+        int destIndex = calcStartIndex();
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < w; x++) {
                 dest[destIndex + x] = source[sourceIndex + x];
@@ -158,4 +190,14 @@ public class ArrayInput {
             sourceIndex += this.lineWidth;
         }
     }
+
+    /**
+     * Calculate the start index using x and y offset, making sure that the startposition is not outside destination.
+     * 
+     * @return Destination start index
+     */
+    private int calcStartIndex() {
+        return this.lineWidth * Math.min(yOffset, this.height) + Math.min(xOffset, this.lineWidth);
+    }
+
 }
