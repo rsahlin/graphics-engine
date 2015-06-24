@@ -1,5 +1,6 @@
 package com.graphicsengine.sprite;
 
+import com.nucleus.common.StringUtils;
 import com.nucleus.io.DataSetup;
 import com.nucleus.types.DataType;
 
@@ -21,9 +22,9 @@ public class SpriteControllerSetup extends DataSetup {
     public enum ControllerMapping implements DataIndexer {
         COUNT(0, DataType.INT),
         ARRAY_SIZE(1, DataType.INT),
-        LOGIC_ID(2, DataType.STRING_ARRAY),
-        LOGIC_OFFSET(3, DataType.INT_ARRAY),
-        LOGIC_COUNT(4, DataType.INT_ARRAY);
+        LOGIC_ID(2, DataType.STRING),
+        LOGIC_OFFSET(3, DataType.INT),
+        LOGIC_COUNT(4, DataType.INT);
 
         private final int index;
         private final DataType type;
@@ -135,6 +136,12 @@ public class SpriteControllerSetup extends DataSetup {
 
     @Override
     public String exportDataAsString() {
-        return toString(count);
+        String[] strArray = new String[ControllerMapping.values().length];
+        strArray[ControllerMapping.COUNT.getIndex()] = Integer.toString(count);
+        strArray[ControllerMapping.ARRAY_SIZE.getIndex()] = Integer.toString(logicId.length);
+        strArray[ControllerMapping.LOGIC_COUNT.getIndex()] = StringUtils.getString(logicCount);
+        strArray[ControllerMapping.LOGIC_ID.getIndex()] = StringUtils.getString(logicId);
+        strArray[ControllerMapping.LOGIC_OFFSET.getIndex()] = StringUtils.getString(logicOffset);
+        return StringUtils.getString(strArray);
     }
 }
