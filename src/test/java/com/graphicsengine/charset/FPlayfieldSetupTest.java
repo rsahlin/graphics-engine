@@ -1,5 +1,7 @@
 package com.graphicsengine.charset;
 
+import junit.framework.Assert;
+
 import org.junit.Test;
 
 import com.graphicsengine.charset.PlayfieldSetup.PlayfieldMapping;
@@ -38,6 +40,7 @@ public class FPlayfieldSetupTest extends FTestTiledSetupTest {
      * @param actual
      */
     protected int assertExportData(PlayfieldSetup expected, String[] actual) {
+        Assert.assertEquals(TiledSheetMapping.values().length + PlayfieldMapping.values().length, actual.length);
         int offset = super.assertExportData(expected, actual);
         DataSerializeUtils.assertDataAsString(expected.getPlayfieldSource(), actual, PlayfieldMapping.PLAYFIELDSOURCE,
                 offset);
@@ -46,7 +49,7 @@ public class FPlayfieldSetupTest extends FTestTiledSetupTest {
         DataSerializeUtils.assertDataAsString(expected.getOriginX(), actual, PlayfieldMapping.XPOS, offset);
         DataSerializeUtils.assertDataAsString(expected.getOriginY(), actual, PlayfieldMapping.YPOS, offset);
         DataSerializeUtils.assertDataAsString(expected.getOriginZ(), actual, PlayfieldMapping.ZPOS, offset);
-        return offset + TiledSheetMapping.values().length;
+        return offset + PlayfieldMapping.values().length;
     }
 
     /**
@@ -56,10 +59,18 @@ public class FPlayfieldSetupTest extends FTestTiledSetupTest {
      * @param actual
      * @return number of values asserted
      */
-    @Override
-    protected int assertImportData(String[] expected, TiledSheetSetup actual) {
+    protected int assertImportData(String[] expected, PlayfieldSetup actual) {
+        Assert.assertEquals(TiledSheetMapping.values().length + PlayfieldMapping.values().length, expected.length);
         int offset = super.assertImportData(expected, actual);
-        return offset + TiledSheetMapping.values().length;
+        Assert.assertEquals(expected[offset + PlayfieldMapping.PLAYFIELDSOURCE.getIndex()], actual.getPlayfieldSource());
+        Assert.assertEquals(expected[offset + PlayfieldMapping.WIDTH.getIndex()],
+                Integer.toString(actual.getMapWidth()));
+        Assert.assertEquals(expected[offset + PlayfieldMapping.HEIGHT.getIndex()],
+                Integer.toString(actual.getMapHeight()));
+        Assert.assertEquals(expected[offset + PlayfieldMapping.XPOS.getIndex()], Float.toString(actual.getOriginX()));
+        Assert.assertEquals(expected[offset + PlayfieldMapping.YPOS.getIndex()], Float.toString(actual.getOriginY()));
+        Assert.assertEquals(expected[offset + PlayfieldMapping.ZPOS.getIndex()], Float.toString(actual.getOriginZ()));
+        return offset + PlayfieldMapping.values().length;
     }
 
 }
