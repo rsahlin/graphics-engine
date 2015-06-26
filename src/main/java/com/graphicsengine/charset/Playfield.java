@@ -148,22 +148,9 @@ public class Playfield extends Mesh implements AttributeUpdater {
      * @throws ArrayIndexOutOfBoundsException If source or destination does not contain enough data.
      */
     public void setPlayfieldData(int[] charRow, int startOffset, int startChar, int count) {
-
-        int destIndex = startChar * PlayfieldProgram.ATTRIBUTES_PER_CHAR
-                + PlayfieldProgram.ATTRIBUTE_CHARMAP_FRAME_INDEX;
-        float c;
         for (int i = 0; i < count; i++) {
-            c = charRow[startOffset++];
-            attributeData[destIndex] = c;
-            destIndex += PlayfieldProgram.ATTRIBUTES_PER_VERTEX;
-            attributeData[destIndex] = c;
-            destIndex += PlayfieldProgram.ATTRIBUTES_PER_VERTEX;
-            attributeData[destIndex] = c;
-            destIndex += PlayfieldProgram.ATTRIBUTES_PER_VERTEX;
-            attributeData[destIndex] = c;
-            destIndex += PlayfieldProgram.ATTRIBUTES_PER_VERTEX;
+            setChar(startChar++, charRow[startOffset++]);
         }
-
     }
 
     /**
@@ -178,19 +165,8 @@ public class Playfield extends Mesh implements AttributeUpdater {
      * @throws ArrayIndexOutOfBoundsException If source or destination does not contain enough data.
      */
     public void setPlayfieldData(byte[] charRow, int startOffset, int startChar, int count) {
-        int destIndex = startChar * PlayfieldProgram.ATTRIBUTES_PER_CHAR
-                + PlayfieldProgram.ATTRIBUTE_CHARMAP_FRAME_INDEX;
-        float c;
         for (int i = 0; i < count; i++) {
-            c = charRow[startOffset++];
-            attributeData[destIndex] = c;
-            destIndex += PlayfieldProgram.ATTRIBUTES_PER_VERTEX;
-            attributeData[destIndex] = c;
-            destIndex += PlayfieldProgram.ATTRIBUTES_PER_VERTEX;
-            attributeData[destIndex] = c;
-            destIndex += PlayfieldProgram.ATTRIBUTES_PER_VERTEX;
-            attributeData[destIndex] = c;
-            destIndex += PlayfieldProgram.ATTRIBUTES_PER_VERTEX;
+            setChar(startChar++, charRow[startOffset++]);
         }
     }
 
@@ -202,6 +178,57 @@ public class Playfield extends Mesh implements AttributeUpdater {
      */
     public void setPlayfieldData(String row, int startChar) {
         setPlayfieldData(row.getBytes(), 0, startChar, row.length());
+    }
+
+    /**
+     * Fills a rectangular area with a specific character value.
+     * This method is not performance optimized, if a large area shall be filled with high performance then consider
+     * using a custom function that write into {@link #attributeData}
+     * 
+     * @param x Xpos of start position
+     * @param y Ypos of start position
+     * @param width With of area to fill
+     * @param height Height of area to fill
+     * @param fill Fill value
+     */
+    public void fill(int x, int y, int width, int height, int fill) {
+        if (x > this.width || y > this.height) {
+            // Completely outside
+            return;
+        }
+        int startChar = y * width + y;
+        if (x + width > this.width) {
+            width = this.width - x;
+        }
+        if (y + height > this.height) {
+            height = this.height - y;
+        }
+        while (height-- > 0) {
+            for (int i = 0; i < width; i++) {
+                setChar(startChar++, fill);
+            }
+        }
+
+    }
+
+    /**
+     * Internal method to set a char at a playfield (charmap) position.
+     * This method shall not be used for a large number of chars or when performance is important.
+     * 
+     * @param pos The playfield position, from 0 to width * height.
+     * @param value The value to set.
+     */
+    private void setChar(int pos, int value) {
+        int destIndex = pos * PlayfieldProgram.ATTRIBUTES_PER_CHAR
+                + PlayfieldProgram.ATTRIBUTE_CHARMAP_FRAME_INDEX;
+        attributeData[destIndex] = value;
+        destIndex += PlayfieldProgram.ATTRIBUTES_PER_VERTEX;
+        attributeData[destIndex] = value;
+        destIndex += PlayfieldProgram.ATTRIBUTES_PER_VERTEX;
+        attributeData[destIndex] = value;
+        destIndex += PlayfieldProgram.ATTRIBUTES_PER_VERTEX;
+        attributeData[destIndex] = value;
+        destIndex += PlayfieldProgram.ATTRIBUTES_PER_VERTEX;
     }
 
     @Override
