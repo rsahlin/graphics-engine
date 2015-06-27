@@ -22,6 +22,15 @@ public abstract class Sprite {
          * @param deltaTime Time in millis since last call.
          */
         public void process(Sprite sprite, float deltaTime);
+
+        /**
+         * Returns the name of the logic, ie the name of the implementing logic class.
+         * This name is the same for all logic object of the same class, it is not instance name.
+         * This shall be the same name that was used when the sprite logic was resolved.
+         * 
+         * @return The name of the implementing logic class
+         */
+        public String getLogicId();
     }
 
     public final static String INVALID_DATACOUNT_ERROR = "Invalid datacount";

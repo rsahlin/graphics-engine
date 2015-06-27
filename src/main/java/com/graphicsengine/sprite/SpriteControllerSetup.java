@@ -1,5 +1,8 @@
 package com.graphicsengine.sprite;
 
+import java.util.HashMap;
+
+import com.graphicsengine.sprite.Sprite.Logic;
 import com.nucleus.common.StringUtils;
 import com.nucleus.io.DataSetup;
 import com.nucleus.types.DataType;
@@ -57,6 +60,7 @@ public class SpriteControllerSetup extends DataSetup {
      */
     public SpriteControllerSetup(SpriteController spriteController) {
         this.count = spriteController.getCount();
+        setupLogic(spriteController.getSprites());
     }
 
     /**
@@ -76,6 +80,35 @@ public class SpriteControllerSetup extends DataSetup {
      * Number of sprites to create
      */
     int[] logicCount;
+
+    /**
+     * Internal method to setup the logic ids, number of logic ids/counts and the offsets.
+     * This is used when creating a setup class from existing spritecontroller.
+     * 
+     * @param sprites
+     */
+    private void setupLogic(Sprite[] sprites) {
+        // Check how many different logic objects
+        HashMap<Logic, Integer> logics = new HashMap<Sprite.Logic, Integer>();
+        for (Sprite sprite : sprites) {
+            Integer i = logics.get(sprite.logic);
+            if (i == null) {
+                logics.put(sprite.logic, 1);
+            } else {
+                logics.put(sprite.logic, (i + 1));
+            }
+        }
+        int arrayCount = logics.size();
+        createLogicArrays(arrayCount);
+        int index = 0;
+        int offset = 0;
+        for (Logic logic : logics.keySet()) {
+            int itemCount = logics.get(logic);
+            logicOffset[index] = offset;
+            logicCount[index] = itemCount;
+            logicId[index] = logic.getLogicId();
+        }
+    }
 
     /**
      * Returns the logic ids to be used for a sprite, this is an array with String ids for the logic.
@@ -116,13 +149,23 @@ public class SpriteControllerSetup extends DataSetup {
         return count;
     }
 
+    /**
+     * Internal method that creates the logic arrays containing info regarding logic - it does not
+     * add any data. Just creates the arrays.
+     * 
+     * @param count
+     */
+    private void createLogicArrays(int count) {
+        logicId = new String[count];
+        logicOffset = new int[count];
+        logicCount = new int[count];
+    }
+
     @Override
     public int importData(String[] data, int offset) {
         count = getInt(data, offset, ControllerMapping.COUNT);
         int arraySize = getInt(data, offset, ControllerMapping.ARRAY_SIZE);
-        logicId = new String[arraySize];
-        this.logicOffset = new int[arraySize];
-        logicCount = new int[arraySize];
+        createLogicArrays(arraySize);
         int read = 2;
         for (int i = 0; i < arraySize; i++) {
             logicId[i] = getString(data, offset, ControllerMapping.LOGIC_ID);
