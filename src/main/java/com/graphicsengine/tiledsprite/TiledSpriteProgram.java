@@ -153,7 +153,7 @@ public class TiledSpriteProgram extends ShaderProgram {
     @Override
     public void bindUniforms(GLES20Wrapper gles, float[] modelviewMatrix, Mesh mesh) throws GLException {
         ShaderVariable v = getShaderVariable(VARIABLES.uMVPMatrix.index);
-        System.arraycopy(modelviewMatrix, 0, mesh.getUniformMatrices(), 0, v.getSizeInFloats());
+        System.arraycopy(modelviewMatrix, 0, mesh.getUniformMatrices(), 0, modelviewMatrix.length);
         gles.glUniformMatrix4fv(getShaderVariable(VARIABLES.uMVPMatrix.index).getLocation(), v.getSize(), false,
                 mesh.getUniformMatrices(), 0);
         GLUtils.handleError(gles, "glUniformMatrix4fv ");
