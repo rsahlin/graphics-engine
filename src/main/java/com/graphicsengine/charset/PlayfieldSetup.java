@@ -174,7 +174,7 @@ public class PlayfieldSetup extends TiledSheetSetup {
         String str = super.exportDataAsString();
         // If the playfieldSource is null then set a default name.
         if (playfieldSource == null) {
-            playfieldSource = "playfield-data-" + getId();
+            playfieldSource = getId() + "-data";
         }
         String d = DEFAULT_DELIMITER;
         return str + d + playfieldSource + d + toString(mapWidth) + d + toString(mapHeight) + d + toString(xpos) + d
