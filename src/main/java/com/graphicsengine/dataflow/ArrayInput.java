@@ -1,6 +1,9 @@
 package com.graphicsengine.dataflow;
 
 import com.nucleus.common.StringUtils;
+import com.nucleus.io.DataExporter;
+import com.nucleus.io.DataImporter;
+import com.nucleus.io.DataSetup;
 import com.nucleus.types.DataType;
 
 /**
@@ -11,9 +14,37 @@ import com.nucleus.types.DataType;
  * @author Richard Sahlin
  *
  */
-public class ArrayInput {
+public class ArrayInput extends DataSetup implements DataImporter, DataExporter {
 
     private final static String NOT_IMPLEMENTED_ERROR = "Not implemented support for: ";
+
+    public enum ArrayInputMapping implements DataIndexer {
+        COMPONENTS(0, DataType.INT),
+        LINEWIDTH(1, DataType.INT),
+        HEIGHT(2, DataType.INT),
+        TYPE(3, DataType.STRING),
+        XOFFSET(4, DataType.INT),
+        YOFFSET(5, DataType.INT),
+        DATA(6, DataType.INT);
+
+        private final int index;
+        private final DataType type;
+
+        private ArrayInputMapping(int index, DataType type) {
+            this.index = index;
+            this.type = type;
+        }
+
+        @Override
+        public int getIndex() {
+            return index;
+        }
+
+        @Override
+        public DataType getType() {
+            return type;
+        }
+    }
 
     /**
      * Number of components, 2 for x and y
@@ -45,6 +76,13 @@ public class ArrayInput {
      * X offset into destination
      */
     int yOffset = 0;
+
+    /**
+     * Default constructor
+     */
+    public ArrayInput() {
+        super();
+    }
 
     /**
      * Creates a new ArrayInput with the specified properties and data.
@@ -88,6 +126,15 @@ public class ArrayInput {
         this.lineWidth = Integer.parseInt(lineWidth);
         this.height = Integer.parseInt(height);
         this.type = DataType.valueOf(type);
+        setData(data);
+    }
+
+    /**
+     * Sets the data in this object using a String source, the values must be delimited by ','
+     * 
+     * @param data String with values in the format according to the type in this class and delimtered by ','
+     */
+    public void setData(String data) {
         switch (this.type) {
         case FLOAT:
             this.data = StringUtils.getFloatArray(data);
@@ -148,6 +195,16 @@ public class ArrayInput {
         }
     }
 
+    /**
+     * Copy data from source to dest, using lineWidth for destination and this.lineWidth for source, this means
+     * copying data FROM this class TO another.
+     * 
+     * @param source Source array, will be updated with this.lineWidth
+     * @param dest Destination array, will be updated by lineWidth
+     * @param components
+     * @param lineWidth Width of one line in destination
+     * @param height
+     */
     protected void copyArray(int[] source, int[] dest, int components, int lineWidth, int height) {
         height = Math.min(height, this.height);
         int w = Math.min(lineWidth, this.lineWidth);
@@ -162,6 +219,16 @@ public class ArrayInput {
         }
     }
 
+    /**
+     * Copy data from source to dest, using lineWidth for destination and this.lineWidth for source, this means
+     * copying data FROM this class TO another.
+     * 
+     * @param source Source array, will be updated with this.lineWidth
+     * @param dest Destination array, will be updated by lineWidth
+     * @param components
+     * @param lineWidth Width of one line in destination
+     * @param height
+     */
     protected void copyArray(String source, int[] dest, int components, int lineWidth, int height) {
         height = Math.min(height, this.height);
         int w = Math.min(lineWidth, this.lineWidth);
@@ -177,6 +244,16 @@ public class ArrayInput {
         }
     }
 
+    /**
+     * Copy data from source to dest, using lineWidth for destination and this.lineWidth for source, this means
+     * copying data FROM this class TO another.
+     * 
+     * @param source Source array, will be updated with this.lineWidth
+     * @param dest Destination array, will be updated by lineWidth
+     * @param components
+     * @param lineWidth Width of one line in destination
+     * @param height
+     */
     protected void copyArray(int[] source, float[] dest, int components, int lineWidth, int height) {
         height = Math.min(height, this.height);
         int w = Math.min(lineWidth, this.lineWidth);
@@ -200,4 +277,27 @@ public class ArrayInput {
         return this.lineWidth * Math.min(yOffset, this.height) + Math.min(xOffset, this.lineWidth);
     }
 
+    @Override
+    public String exportDataAsString() {
+        String[] strArray = new String[ArrayInputMapping.values().length];
+        setData(strArray, ArrayInputMapping.COMPONENTS, components);
+        setData(strArray, ArrayInputMapping.LINEWIDTH, lineWidth);
+        setData(strArray, ArrayInputMapping.HEIGHT, height);
+        setData(strArray, ArrayInputMapping.TYPE, type.name());
+        setData(strArray, ArrayInputMapping.XOFFSET, xOffset);
+        setData(strArray, ArrayInputMapping.YOFFSET, yOffset);
+        return StringUtils.getString(strArray);
+    }
+
+    @Override
+    public int importData(String[] data, int offset) {
+        components = getInt(data, offset, ArrayInputMapping.COMPONENTS);
+        lineWidth = getInt(data, offset, ArrayInputMapping.LINEWIDTH);
+        height = getInt(data, offset, ArrayInputMapping.HEIGHT);
+        type = DataType.valueOf(getString(data, offset, ArrayInputMapping.TYPE));
+        xOffset = getInt(data, offset, ArrayInputMapping.XOFFSET);
+        yOffset = getInt(data, offset, ArrayInputMapping.YOFFSET);
+        setData(getString(data, offset, ArrayInputMapping.DATA));
+        return ArrayInputMapping.values().length;
+    }
 }
