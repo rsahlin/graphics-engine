@@ -53,7 +53,8 @@ public class Playfield extends Mesh implements AttributeUpdater {
     float[] attributeData;
 
     /**
-     * playfield character data, one value for each char - this is the source map.
+     * playfield character data, one value for each char - this is the source map that can be used for collision etc.
+     * This MUST be in sync with {@link #attributeData}
      */
     int[] playfieldData;
 
@@ -67,6 +68,7 @@ public class Playfield extends Mesh implements AttributeUpdater {
         setId(id);
         this.charCount = charCount;
         attributeData = new float[(charCount * PlayfieldProgram.ATTRIBUTES_PER_CHAR)];
+        playfieldData = new int[charCount];
         int offset = 0;
         for (int i = 0; i < charCount; i++) {
             MeshBuilder.prepareTiledUV(attributeData, offset, PlayfieldProgram.ATTRIBUTE_CHARMAP_U_INDEX,
@@ -208,17 +210,18 @@ public class Playfield extends Mesh implements AttributeUpdater {
                 setChar(startChar++, fill);
             }
         }
-
     }
 
     /**
      * Internal method to set a char at a playfield (charmap) position.
+     * This will set the data in both the attribute array and the playfield data.
      * This method shall not be used for a large number of chars or when performance is important.
      * 
      * @param pos The playfield position, from 0 to width * height.
      * @param value The value to set.
      */
     private void setChar(int pos, int value) {
+        playfieldData[pos] = value;
         int destIndex = pos * PlayfieldProgram.ATTRIBUTES_PER_CHAR
                 + PlayfieldProgram.ATTRIBUTE_CHARMAP_FRAME_INDEX;
         attributeData[destIndex] = value;
@@ -240,6 +243,16 @@ public class Playfield extends Mesh implements AttributeUpdater {
     @Override
     public float[] getAttributeData() {
         return attributeData;
+    }
+
+    /**
+     * Returns the playfield map, this contains one int for each char position.
+     * Can be used for collision
+     * 
+     * @return
+     */
+    public int[] getPlayfield() {
+        return playfieldData;
     }
 
     @Override
