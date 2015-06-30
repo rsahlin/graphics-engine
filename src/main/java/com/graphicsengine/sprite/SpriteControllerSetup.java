@@ -179,12 +179,17 @@ public class SpriteControllerSetup extends DataSetup {
 
     @Override
     public String exportDataAsString() {
+        return StringUtils.getString(exportDataAsStringArray());
+    }
+
+    @Override
+    public String[] exportDataAsStringArray() {
         String[] strArray = new String[ControllerMapping.values().length];
         strArray[ControllerMapping.COUNT.getIndex()] = Integer.toString(count);
         strArray[ControllerMapping.ARRAY_SIZE.getIndex()] = Integer.toString(logicId.length);
         strArray[ControllerMapping.LOGIC_COUNT.getIndex()] = StringUtils.getString(logicCount);
         strArray[ControllerMapping.LOGIC_ID.getIndex()] = StringUtils.getString(logicId);
         strArray[ControllerMapping.LOGIC_OFFSET.getIndex()] = StringUtils.getString(logicOffset);
-        return StringUtils.getString(strArray);
+        return strArray;
     }
 }

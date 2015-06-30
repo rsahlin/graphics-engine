@@ -279,14 +279,7 @@ public class ArrayInput extends DataSetup implements DataImporter, DataExporter 
 
     @Override
     public String exportDataAsString() {
-        String[] strArray = new String[ArrayInputMapping.values().length];
-        setData(strArray, ArrayInputMapping.COMPONENTS, components);
-        setData(strArray, ArrayInputMapping.LINEWIDTH, lineWidth);
-        setData(strArray, ArrayInputMapping.HEIGHT, height);
-        setData(strArray, ArrayInputMapping.TYPE, type.name());
-        setData(strArray, ArrayInputMapping.XOFFSET, xOffset);
-        setData(strArray, ArrayInputMapping.YOFFSET, yOffset);
-        return StringUtils.getString(strArray);
+        return StringUtils.getString(exportDataAsStringArray());
     }
 
     @Override
@@ -299,5 +292,21 @@ public class ArrayInput extends DataSetup implements DataImporter, DataExporter 
         yOffset = getInt(data, offset, ArrayInputMapping.YOFFSET);
         setData(getString(data, offset, ArrayInputMapping.DATA));
         return ArrayInputMapping.values().length;
+    }
+
+    @Override
+    public String[] exportDataAsStringArray() {
+        String[] strArray = new String[ArrayInputMapping.values().length];
+        setData(strArray, ArrayInputMapping.COMPONENTS, components);
+        setData(strArray, ArrayInputMapping.LINEWIDTH, lineWidth);
+        setData(strArray, ArrayInputMapping.HEIGHT, height);
+        setData(strArray, ArrayInputMapping.TYPE, type.name());
+        setData(strArray, ArrayInputMapping.XOFFSET, xOffset);
+        setData(strArray, ArrayInputMapping.YOFFSET, yOffset);
+        switch (type) {
+        case INT:
+            setData(strArray, ArrayInputMapping.DATA, (int[]) data);
+        }
+        return strArray;
     }
 }

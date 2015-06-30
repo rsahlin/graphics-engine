@@ -1,6 +1,7 @@
 package com.graphicsengine.charset;
 
 import com.graphicsengine.assets.AssetManager;
+import com.nucleus.common.StringUtils;
 import com.nucleus.io.DataSetup;
 import com.nucleus.io.ExternalReference;
 import com.nucleus.texturing.TiledTexture2D;
@@ -202,8 +203,17 @@ public class TiledSheetSetup extends DataSetup {
 
     @Override
     public String exportDataAsString() {
-        String d = DEFAULT_DELIMITER;
-        return toString(count) + d + toString(tileZPos) + d + toString(tileWidth) + d + toString(tileHeight) + d
-                + textureRef;
+        return StringUtils.getString(exportDataAsStringArray());
+    }
+
+    @Override
+    public String[] exportDataAsStringArray() {
+        String[] strArray = new String[TiledSheetMapping.values().length];
+        setData(strArray, TiledSheetMapping.COUNT, count);
+        setData(strArray, TiledSheetMapping.TILEZPOS, tileZPos);
+        setData(strArray, TiledSheetMapping.TILEWIDTH, tileWidth);
+        setData(strArray, TiledSheetMapping.TILEHEIGHT, tileHeight);
+        setData(strArray, TiledSheetMapping.TEXTURESOURCE, textureRef);
+        return strArray;
     }
 }
