@@ -1,6 +1,7 @@
 package com.graphicsengine.charset;
 
 import com.graphicsengine.dataflow.ArrayInput;
+import com.nucleus.common.StringUtils;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TiledTexture2D;
 import com.nucleus.types.DataType;
@@ -176,9 +177,14 @@ public class PlayfieldSetup extends TiledSheetSetup {
         if (playfieldSource == null) {
             playfieldSource = getId() + "-data";
         }
-        String d = DEFAULT_DELIMITER;
-        return str + d + playfieldSource + d + toString(mapWidth) + d + toString(mapHeight) + d + toString(xpos) + d
-                + toString(ypos) + d + toString(zpos);
+        String[] strArray = new String[PlayfieldMapping.values().length];
+        setData(strArray, PlayfieldMapping.PLAYFIELDSOURCE, playfieldSource);
+        setData(strArray, PlayfieldMapping.WIDTH, mapWidth);
+        setData(strArray, PlayfieldMapping.HEIGHT, mapHeight);
+        setData(strArray, PlayfieldMapping.XPOS, xpos);
+        setData(strArray, PlayfieldMapping.YPOS, ypos);
+        setData(strArray, PlayfieldMapping.ZPOS, zpos);
+        return str + DEFAULT_DELIMITER + StringUtils.getString(strArray);
     }
 
     /**
