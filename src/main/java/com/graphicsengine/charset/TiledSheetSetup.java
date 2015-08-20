@@ -96,12 +96,23 @@ public class TiledSheetSetup extends DataSetup {
         super(id);
     }
 
-    void setup(String id, int count, float zpos, float width, float height) {
+    /**
+     * Creates the setup data from the specified parameters, this can be used to create a tiled sheet.
+     * 
+     * @param id
+     * @param count
+     * @param zpos
+     * @param width
+     * @param height
+     * @param textureRef
+     */
+    public void setup(String id, int count, float zpos, float width, float height, TiledTexture2D textureRef) {
         this.setId(id);
         this.count = count;
         this.tileZPos = zpos;
         this.tileWidth = width;
         this.tileHeight = height;
+        setTextureRef(textureRef);
     }
 
     /**
