@@ -1,7 +1,6 @@
 package com.graphicsengine.charset;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.graphicsengine.charset.PlayfieldSetup.PlayfieldMapping;
@@ -9,28 +8,24 @@ import com.graphicsengine.charset.TiledSheetSetup.TiledSheetMapping;
 import com.nucleus.common.StringUtils;
 import com.nucleus.utils.DataSerializeUtils;
 
-public class FPlayfieldSetupTest extends FTestTiledSetupTest {
+public class FPlayfieldSetupTest extends FTiledSheetSetupTest {
+
+    private final static String[] data = DataSerializeUtils.createDefaultData(TiledSheetMapping.values(),
+            PlayfieldMapping.values());
+
     @Override
     @Test
     public void testImportData() {
-        String[] data = DataSerializeUtils.createDefaultData(TiledSheetMapping.values(), PlayfieldMapping.values());
-        PlayfieldSetup setup = createSetup(data);
+        PlayfieldSetup setup = (PlayfieldSetup) DataSerializeUtils.createSetup(data, new PlayfieldSetup());
         assertImportData(data, setup);
     }
 
     @Override
     @Test
     public void testExportDataAsString() {
-        String[] data = DataSerializeUtils.createDefaultData(TiledSheetMapping.values(), PlayfieldMapping.values());
-        PlayfieldSetup setup = createSetup(data);
+        PlayfieldSetup setup = (PlayfieldSetup) DataSerializeUtils.createSetup(data, new PlayfieldSetup());
         String[] result = StringUtils.getStringArray(setup.exportDataAsString());
         assertExportData(setup, result);
-    }
-
-    private PlayfieldSetup createSetup(String[] data) {
-        PlayfieldSetup setup = new PlayfieldSetup();
-        setup.importData(data, 0);
-        return setup;
     }
 
     /**
@@ -62,14 +57,13 @@ public class FPlayfieldSetupTest extends FTestTiledSetupTest {
     protected int assertImportData(String[] expected, PlayfieldSetup actual) {
         Assert.assertEquals(TiledSheetMapping.values().length + PlayfieldMapping.values().length, expected.length);
         int offset = super.assertImportData(expected, actual);
-        Assert.assertEquals(expected[offset + PlayfieldMapping.PLAYFIELDSOURCE.getIndex()], actual.getPlayfieldSource());
-        Assert.assertEquals(expected[offset + PlayfieldMapping.WIDTH.getIndex()],
-                Integer.toString(actual.getMapWidth()));
-        Assert.assertEquals(expected[offset + PlayfieldMapping.HEIGHT.getIndex()],
-                Integer.toString(actual.getMapHeight()));
-        Assert.assertEquals(expected[offset + PlayfieldMapping.XPOS.getIndex()], Float.toString(actual.getOriginX()));
-        Assert.assertEquals(expected[offset + PlayfieldMapping.YPOS.getIndex()], Float.toString(actual.getOriginY()));
-        Assert.assertEquals(expected[offset + PlayfieldMapping.ZPOS.getIndex()], Float.toString(actual.getOriginZ()));
+        DataSerializeUtils
+                .assertString(expected, PlayfieldMapping.PLAYFIELDSOURCE, actual.getPlayfieldSource(), offset);
+        DataSerializeUtils.assertString(expected, PlayfieldMapping.WIDTH, actual.getMapWidth(), offset);
+        DataSerializeUtils.assertString(expected, PlayfieldMapping.HEIGHT, actual.getMapHeight(), offset);
+        DataSerializeUtils.assertString(expected, PlayfieldMapping.XPOS, actual.getOriginX(), offset);
+        DataSerializeUtils.assertString(expected, PlayfieldMapping.YPOS, actual.getOriginY(), offset);
+        DataSerializeUtils.assertString(expected, PlayfieldMapping.ZPOS, actual.getOriginZ(), offset);
         return offset + PlayfieldMapping.values().length;
     }
 

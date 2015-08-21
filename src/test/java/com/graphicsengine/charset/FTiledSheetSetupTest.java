@@ -1,33 +1,26 @@
 package com.graphicsengine.charset;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.graphicsengine.charset.TiledSheetSetup.TiledSheetMapping;
 import com.nucleus.common.StringUtils;
 import com.nucleus.utils.DataSerializeUtils;
 
-public class FTestTiledSetupTest {
+public class FTiledSheetSetupTest {
+
+    private final static String[] data = DataSerializeUtils.createDefaultData(TiledSheetMapping.values());
 
     @Test
     public void testImportData() {
-        String[] data = DataSerializeUtils.createDefaultData(TiledSheetMapping.values());
-        TiledSheetSetup setup = createSetup(data);
+        TiledSheetSetup setup = (TiledSheetSetup) DataSerializeUtils.createSetup(data, new TiledSheetSetup());
         assertImportData(data, setup);
     }
 
     @Test
     public void testExportDataAsString() {
-        String[] data = DataSerializeUtils.createDefaultData(TiledSheetMapping.values());
-        TiledSheetSetup setup = createSetup(data);
+        TiledSheetSetup setup = (TiledSheetSetup) DataSerializeUtils.createSetup(data, new TiledSheetSetup());
         String[] result = StringUtils.getStringArray(setup.exportDataAsString());
         assertExportData(setup, result);
-    }
-
-    private TiledSheetSetup createSetup(String[] data) {
-        TiledSheetSetup setup = new TiledSheetSetup();
-        setup.importData(data, 0);
-        return setup;
     }
 
     /**
@@ -54,11 +47,12 @@ public class FTestTiledSetupTest {
      * @return number of values asserted
      */
     protected int assertImportData(String[] expected, TiledSheetSetup actual) {
-        Assert.assertEquals(expected[TiledSheetMapping.COUNT.getIndex()], Integer.toString(actual.getTileCount()));
-        Assert.assertEquals(expected[TiledSheetMapping.TEXTURESOURCE.getIndex()], actual.getTextureRef());
-        Assert.assertEquals(expected[TiledSheetMapping.TILEZPOS.getIndex()], Float.toString(actual.getTileZPos()));
-        Assert.assertEquals(expected[TiledSheetMapping.TILEWIDTH.getIndex()], Float.toString(actual.getTileWidth()));
-        Assert.assertEquals(expected[TiledSheetMapping.TILEHEIGHT.getIndex()], Float.toString(actual.getTileHeight()));
+        DataSerializeUtils.assertString(expected, TiledSheetMapping.COUNT, actual.getTileCount(), 0);
+        DataSerializeUtils.assertString(expected, TiledSheetMapping.TEXTURESOURCE, actual.getTextureRef(), 0);
+        DataSerializeUtils.assertString(expected, TiledSheetMapping.TILEZPOS, actual.getTileZPos(), 0);
+        DataSerializeUtils.assertString(expected, TiledSheetMapping.TILEWIDTH, actual.getTileWidth(), 0);
+        DataSerializeUtils.assertString(expected, TiledSheetMapping.TILEHEIGHT, actual.getTileHeight(), 0);
+
         return TiledSheetMapping.values().length;
     }
 }
