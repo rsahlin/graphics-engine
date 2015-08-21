@@ -2,8 +2,8 @@ package com.graphicsengine.tiledsprite;
 
 import java.io.IOException;
 
-import com.graphicsengine.assets.AssetManager;
 import com.graphicsengine.charset.TiledSheetSetup;
+import com.nucleus.assets.AssetManager;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.texturing.Texture2D;
 

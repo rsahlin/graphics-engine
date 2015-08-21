@@ -1,6 +1,6 @@
 package com.graphicsengine.charset;
 
-import com.graphicsengine.assets.AssetManager;
+import com.nucleus.assets.AssetManager;
 import com.nucleus.common.StringUtils;
 import com.nucleus.io.DataSetup;
 import com.nucleus.io.ExternalReference;
