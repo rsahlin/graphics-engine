@@ -24,6 +24,14 @@ public class TiledSpriteSheet extends Mesh implements AttributeUpdater {
     float[] attributeData;
 
     int count;
+    /**
+     * Width and height of each sprite.
+     */
+    private float[] size = new float[2];
+    /**
+     * Anchor points for each sprite.
+     */
+    private float[] anchor = new float[3];
 
     /**
      * Creates a new sprite sheet using one mesh, the mesh must be created before being used.
@@ -63,13 +71,29 @@ public class TiledSpriteSheet extends Mesh implements AttributeUpdater {
      */
     public void createMesh(TiledSpriteProgram program, Texture2D texture, float width, float height, float z) {
         program.buildTileSpriteMesh(this, texture, count, width, height, z, GLES20.GL_FLOAT);
+        size[0] = width;
+        size[1] = height;
+        anchor[2] = z;
+        anchor[0] = -width / 2;
+        anchor[1] = -height / 2;
         setTexture(texture, Texture2D.TEXTURE_0);
         setAttributeUpdater(this);
     }
 
+    /**
+     * Returns the number of sprites for this tiled spritesheet, this is the max number of sprites (quads) that
+     * can be displayed.
+     * 
+     * @return Number of sprites in the spritesheet.
+     */
+    public int getCount() {
+        return count;
+    }
+
     @Override
     public void setAttributeData() {
-        VertexBuffer positions = getVerticeBuffer(1);
+        // TODO Index the numbers for vertice/attribute data instead of using 0/1
+        VertexBuffer positions = getVerticeBuffer(BufferIndex.ATTRIBUTES);
         positions.setArray(getAttributeData(), 0, 0, count * TiledSpriteProgram.ATTRIBUTES_PER_SPRITE);
     }
 
@@ -81,6 +105,24 @@ public class TiledSpriteSheet extends Mesh implements AttributeUpdater {
     @Override
     public void destroy() {
         attributeData = null;
+    }
+
+    /**
+     * Returns the dimension of the sprites, in x and y
+     * 
+     * @return Width and height of sprite, at index 0 and 1 respectively.
+     */
+    public float[] getSize() {
+        return size;
+    }
+
+    /**
+     * Returns the anchor points for the sprites.
+     * 
+     * @return Anchor points for sprites, in x, y and z
+     */
+    public float[] getAnchor() {
+        return anchor;
     }
 
 }

@@ -1,10 +1,12 @@
 package com.graphicsengine.charset;
 
+import com.graphicsengine.tiledsprite.TiledSpriteController;
+import com.graphicsengine.tiledsprite.TiledSpriteSheet;
 import com.nucleus.assets.AssetManager;
 import com.nucleus.common.StringUtils;
 import com.nucleus.io.DataSetup;
 import com.nucleus.io.ExternalReference;
-import com.nucleus.texturing.TiledTexture2D;
+import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TiledTextureSetup;
 import com.nucleus.types.DataType;
 
@@ -97,6 +99,18 @@ public class TiledSheetSetup extends DataSetup {
     }
 
     /**
+     * Creates the setup from an existing tiled sprite controller.
+     * 
+     * @param sprites
+     */
+    public TiledSheetSetup(TiledSpriteController sprites) {
+        Texture2D texture = sprites.getSpriteSheet().getTexture(Texture2D.TEXTURE_0);
+        TiledSpriteSheet mesh = sprites.getSpriteSheet();
+        setup(sprites.getId(), sprites.getSpriteSheet().getCount(), mesh.getAnchor()[2], mesh.getSize()[0],
+                mesh.getSize()[1], texture);
+    }
+
+    /**
      * Creates the setup data from the specified parameters, this can be used to create a tiled sheet.
      * 
      * @param id
@@ -106,7 +120,7 @@ public class TiledSheetSetup extends DataSetup {
      * @param height
      * @param textureRef
      */
-    public void setup(String id, int count, float zpos, float width, float height, TiledTexture2D textureRef) {
+    public void setup(String id, int count, float zpos, float width, float height, Texture2D textureRef) {
         this.setId(id);
         this.count = count;
         this.tileZPos = zpos;
@@ -121,7 +135,7 @@ public class TiledSheetSetup extends DataSetup {
      * @param texture
      * @throws IllegalArgumentException If texture source could not be found for the id.
      */
-    void setTextureRef(TiledTexture2D texture) {
+    void setTextureRef(Texture2D texture) {
         ExternalReference source = AssetManager.getInstance().getSourceReference(texture.getId());
         textureRef = source.getId();
     }

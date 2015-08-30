@@ -5,7 +5,6 @@ import java.io.IOException;
 import com.graphicsengine.charset.TiledSheetSetup;
 import com.graphicsengine.sprite.SpriteController;
 import com.graphicsengine.sprite.SpriteControllerSetup;
-import com.nucleus.geometry.Mesh;
 import com.nucleus.renderer.NucleusRenderer;
 
 /**
@@ -64,7 +63,7 @@ public class TiledSpriteController extends SpriteController {
      * 
      * @return
      */
-    public Mesh getSpriteSheet() {
+    public TiledSpriteSheet getSpriteSheet() {
         return spriteSheet;
     }
 
