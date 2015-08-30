@@ -1,6 +1,7 @@
 package com.graphicsengine.charset;
 
 import com.nucleus.geometry.Mesh;
+import com.nucleus.geometry.Mesh.BufferIndex;
 import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.VertexBuffer;
 import com.nucleus.opengl.GLES20Wrapper;
@@ -125,7 +126,7 @@ public class PlayfieldProgram extends ShaderProgram {
     @Override
     public void bindAttributes(GLES20Wrapper gles, Mesh mesh) throws GLException {
 
-        VertexBuffer buffer = mesh.getVerticeBuffer(0);
+        VertexBuffer buffer = mesh.getVerticeBuffer(BufferIndex.VERTICES);
         ShaderVariable attrib = getShaderVariable(VARIABLES.aPosition.index);
         gles.glEnableVertexAttribArray(attrib.getLocation());
         GLUtils.handleError(gles, "glEnableVertexAttribArray1 ");
@@ -136,7 +137,7 @@ public class PlayfieldProgram extends ShaderProgram {
         ShaderVariable attrib2 = getShaderVariable(VARIABLES.aCharset.index);
         gles.glEnableVertexAttribArray(attrib2.getLocation());
         GLUtils.handleError(gles, "glEnableVertexAttribArray2 ");
-        VertexBuffer buffer2 = mesh.getVerticeBuffer(1);
+        VertexBuffer buffer2 = mesh.getVerticeBuffer(BufferIndex.ATTRIBUTES);
         gles.glVertexAttribPointer(attrib2.getLocation(), buffer2.getComponentCount(), buffer2.getDataType(), false,
                 buffer2.getByteStride(), buffer2.getBuffer().position(ATTRIBUTE_1_OFFSET));
 
@@ -144,7 +145,7 @@ public class PlayfieldProgram extends ShaderProgram {
         if (attrib3 != null) {
             gles.glEnableVertexAttribArray(attrib3.getLocation());
             GLUtils.handleError(gles, "glEnableVertexAttribArray3 ");
-            VertexBuffer buffer3 = mesh.getVerticeBuffer(1);
+            VertexBuffer buffer3 = mesh.getVerticeBuffer(BufferIndex.ATTRIBUTES);
             gles.glVertexAttribPointer(attrib3.getLocation(), buffer3.getComponentCount(), buffer3.getDataType(),
                     false,
                     buffer3.getByteStride(), buffer3.getBuffer().position(ATTRIBUTE_2_OFFSET));

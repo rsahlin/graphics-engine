@@ -236,7 +236,7 @@ public class Playfield extends Mesh implements AttributeUpdater {
 
     @Override
     public void setAttributeData() {
-        VertexBuffer positions = getVerticeBuffer(1);
+        VertexBuffer positions = getVerticeBuffer(BufferIndex.ATTRIBUTES);
         positions.setArray(getAttributeData(), 0, 0, charCount * PlayfieldProgram.ATTRIBUTES_PER_CHAR);
     }
 
