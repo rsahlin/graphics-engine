@@ -1,5 +1,8 @@
 package com.graphicsengine.sprite;
 
+import java.util.Random;
+
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.graphicsengine.sprite.SpriteControllerSetup.ControllerMapping;
@@ -8,7 +11,25 @@ import com.nucleus.utils.DataSerializeUtils;
 
 public class FSpriteControllerSetupTest {
 
-    private final static String[] data = DataSerializeUtils.createDefaultData(ControllerMapping.values());
+    protected static Random random = new Random(System.currentTimeMillis());
+    private final static String[] data = createDefaultData();
+
+    protected final static String[] createDefaultData() {
+
+        int count = 100 + random.nextInt(10);
+        int arraySize = 1 + random.nextInt(10);
+        String[] data = new String[arraySize * 3 + 2];
+        int index = 0;
+        data[index] = Integer.toString(count);
+        data[index + ControllerMapping.ARRAY_SIZE.getIndex()] = Integer.toString(arraySize);
+        for (int i = 0; i < arraySize; i++) {
+            data[index + ControllerMapping.LOGIC_COUNT.getIndex()] = Integer.toString((count / arraySize));
+            data[index + ControllerMapping.LOGIC_OFFSET.getIndex()] = Integer.toString(index);
+            data[index + ControllerMapping.LOGIC_ID.getIndex()] = "SPRITE";
+            index += 3;
+        }
+        return data;
+    }
 
     @Test
     public void testImportData() {
@@ -22,7 +43,7 @@ public class FSpriteControllerSetupTest {
         SpriteControllerSetup setup = (SpriteControllerSetup) DataSerializeUtils.createSetup(data,
                 new SpriteControllerSetup());
         String[] result = StringUtils.getStringArray(setup.exportDataAsString());
-        assertExportData(setup, result);
+        assertExportData(data, result);
     }
 
     /**
@@ -32,12 +53,9 @@ public class FSpriteControllerSetupTest {
      * @param actual
      * @return number of values asserted
      */
-    protected int assertExportData(SpriteControllerSetup expected, String[] actual) {
-        DataSerializeUtils.assertDataAsString(expected.getCount(), actual, ControllerMapping.COUNT);
-        DataSerializeUtils.assertDataAsString(expected.getLogicCount(), actual, ControllerMapping.LOGIC_COUNT);
-        DataSerializeUtils.assertDataAsString(expected.getLogicOffset(), actual, ControllerMapping.LOGIC_OFFSET);
-        DataSerializeUtils.assertDataAsString(expected.getLogicId(), actual, ControllerMapping.LOGIC_ID);
-        return ControllerMapping.values().length;
+    protected int assertExportData(String[] expected, String[] actual) {
+        Assert.assertArrayEquals(expected, actual);
+        return actual.length;
     }
 
     /**
@@ -49,10 +67,18 @@ public class FSpriteControllerSetupTest {
      */
     protected int assertImportData(String[] expected, SpriteControllerSetup actual) {
         DataSerializeUtils.assertString(expected, ControllerMapping.COUNT, actual.getCount(), 0);
-        DataSerializeUtils.assertString(expected, ControllerMapping.LOGIC_COUNT, actual.getLogicCount(), 0);
-        DataSerializeUtils.assertString(expected, ControllerMapping.LOGIC_OFFSET, actual.getLogicOffset(), 0);
-        DataSerializeUtils.assertString(expected, ControllerMapping.LOGIC_ID, actual.getLogicId(), 0);
-        return ControllerMapping.values().length;
+        int arraySize = actual.getLogicCount().length;
+        DataSerializeUtils.assertString(expected, ControllerMapping.ARRAY_SIZE, arraySize, 0);
+        int offset = 0;
+        for (int i = 0; i < arraySize; i++) {
+            DataSerializeUtils.assertString(expected, ControllerMapping.LOGIC_COUNT, actual.getLogicCount()[i], offset);
+            DataSerializeUtils.assertString(expected, ControllerMapping.LOGIC_ID, actual.getLogicId()[i], offset);
+            DataSerializeUtils.assertString(expected, ControllerMapping.LOGIC_OFFSET, actual.getLogicOffset()[i],
+                    offset);
+            offset += 3;
+        }
+
+        return expected.length;
     }
 
 }
