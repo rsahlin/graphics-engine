@@ -77,7 +77,7 @@ public abstract class Sprite {
     public float[] floatData;
     public int[] intData;
     public final static int MIN_FLOAT_COUNT = 16;
-    public final static int MIN_INT_COUNT = 0;
+    public final static int MIN_INT_COUNT = 8;
 
     /**
      * Creates a new sprite with storage for MIN_FLOAT_COUNT floats and MIN_INT_COUNT ints
@@ -121,7 +121,6 @@ public abstract class Sprite {
                 floatData[MOVE_VECTOR_X] * deltaTime;
         floatData[Y_POS] += deltaTime * moveVector.vector[VecMath.Y] * moveVector.vector[Vector2D.MAGNITUDE] +
                 floatData[MOVE_VECTOR_Y] * deltaTime;
-        prepare();
     }
 
     /**
@@ -133,7 +132,6 @@ public abstract class Sprite {
     public void setPosition(float x, float y) {
         floatData[X_POS] = x;
         floatData[Y_POS] = y;
-        prepare();
     }
 
     public void setFrame(int frame) {
