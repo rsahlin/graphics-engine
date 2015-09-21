@@ -4,7 +4,7 @@ import com.nucleus.geometry.AttributeUpdater;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.VertexBuffer;
-import com.nucleus.opengl.GLES20Wrapper.GLES20;
+import com.nucleus.opengl.GLESWrapper.GLES20;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TiledTexture2D;
 
