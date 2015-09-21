@@ -181,7 +181,7 @@ public class TiledSpriteProgram extends ShaderProgram {
      * @return The mesh that can be rendered.
      * @throws IllegalArgumentException if type is not GLES20.GL_FLOAT
      */
-    public void buildTileSpriteMesh(Mesh mesh, Texture2D texture, int spriteCount, float width, float height, float z,
+    public void buildMesh(Mesh mesh, Texture2D texture, int spriteCount, float width, float height, float z,
             int type) {
 
         int vertexStride = DEFAULT_COMPONENTS;

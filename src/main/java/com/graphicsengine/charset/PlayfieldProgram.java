@@ -185,7 +185,7 @@ public class PlayfieldProgram extends ShaderProgram {
      * 
      * @throws IllegalArgumentException if type is not GLES20.GL_FLOAT
      */
-    public void createMesh(Mesh mesh, Texture2D texture, int charCount, float width, float height, float zPos, int type) {
+    public void buildMesh(Mesh mesh, Texture2D texture, int charCount, float width, float height, float zPos, int type) {
 
         int vertexStride = DEFAULT_COMPONENTS;
         float[] quadPositions = MeshBuilder.buildQuadPositionsIndexed(width, height, zPos, 0, 0, vertexStride);

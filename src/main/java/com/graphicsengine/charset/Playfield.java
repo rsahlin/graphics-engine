@@ -92,7 +92,7 @@ public class Playfield extends Mesh implements AttributeUpdater {
         this.charWidth = setup.tileWidth;
         this.charHeight = setup.tileHeight;
         this.zPos = setup.zpos;
-        program.createMesh(this, texture, charCount, charWidth, charHeight, setup.zpos, GLES20.GL_FLOAT);
+        program.buildMesh(this, texture, charCount, charWidth, charHeight, setup.zpos, GLES20.GL_FLOAT);
         setTexture(texture, Texture2D.TEXTURE_0);
         setAttributeUpdater(this);
     }

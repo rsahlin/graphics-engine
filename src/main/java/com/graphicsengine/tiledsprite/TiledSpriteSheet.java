@@ -70,7 +70,7 @@ public class TiledSpriteSheet extends Mesh implements AttributeUpdater {
      * @return
      */
     public void createMesh(TiledSpriteProgram program, Texture2D texture, float width, float height, float z) {
-        program.buildTileSpriteMesh(this, texture, count, width, height, z, GLES20.GL_FLOAT);
+        program.buildMesh(this, texture, count, width, height, z, GLES20.GL_FLOAT);
         size[0] = width;
         size[1] = height;
         anchor[2] = z;
