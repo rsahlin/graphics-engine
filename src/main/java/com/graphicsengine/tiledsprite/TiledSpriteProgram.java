@@ -5,6 +5,7 @@ import com.nucleus.geometry.Mesh.BufferIndex;
 import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.VertexBuffer;
 import com.nucleus.opengl.GLES20Wrapper;
+import com.nucleus.opengl.GLESWrapper.GLES20;
 import com.nucleus.opengl.GLException;
 import com.nucleus.opengl.GLUtils;
 import com.nucleus.shader.ShaderProgram;
@@ -125,29 +126,18 @@ public class TiledSpriteProgram extends ShaderProgram {
     @Override
     public void bindAttributes(GLES20Wrapper gles, Mesh mesh) throws GLException {
 
+        ShaderVariable[] attribs = new ShaderVariable[] { getShaderVariable(VARIABLES.aPosition.index) };
+        int[] offsets = new int[] { 0 };
         VertexBuffer buffer = mesh.getVerticeBuffer(BufferIndex.VERTICES);
-        ShaderVariable attrib = getShaderVariable(VARIABLES.aPosition.index);
-        gles.glEnableVertexAttribArray(attrib.getLocation());
-        GLUtils.handleError(gles, "glEnableVertexAttribArray1 ");
-        gles.glVertexAttribPointer(attrib.getLocation(), buffer.getComponentCount(), buffer.getDataType(), false,
-                buffer.getByteStride(), buffer.getBuffer().position(0));
-        GLUtils.handleError(gles, "glVertexAttribPointer1 ");
-        ShaderVariable attrib2 = getShaderVariable(VARIABLES.aTileSprite.index);
-        gles.glEnableVertexAttribArray(attrib2.getLocation());
-        GLUtils.handleError(gles, "glEnableVertexAttribArray2 ");
+        gles.glVertexAttribPointer(buffer, GLES20.GL_ARRAY_BUFFER, attribs, offsets);
+
+        ShaderVariable[] attribs2 = new ShaderVariable[] { getShaderVariable(VARIABLES.aTileSprite.index),
+                getShaderVariable(VARIABLES.aTileSprite2.index) };
+        int[] offsets2 = new int[] { ATTRIBUTE_1_OFFSET * 4, ATTRIBUTE_2_OFFSET * 4 };
         VertexBuffer buffer2 = mesh.getVerticeBuffer(BufferIndex.ATTRIBUTES);
-        gles.glVertexAttribPointer(attrib2.getLocation(), buffer2.getComponentCount(), buffer2.getDataType(), false,
-                buffer2.getByteStride(), buffer2.getBuffer().position(ATTRIBUTE_1_OFFSET));
-        ShaderVariable attrib3 = getShaderVariable(VARIABLES.aTileSprite2.index);
-        if (attrib3 != null) {
-            gles.glEnableVertexAttribArray(attrib3.getLocation());
-            GLUtils.handleError(gles, "glEnableVertexAttribArray3 ");
-            VertexBuffer buffer3 = mesh.getVerticeBuffer(BufferIndex.ATTRIBUTES);
-            gles.glVertexAttribPointer(attrib3.getLocation(), buffer3.getComponentCount(), buffer3.getDataType(),
-                    false,
-                    buffer3.getByteStride(), buffer3.getBuffer().position(ATTRIBUTE_2_OFFSET));
-        }
-        GLUtils.handleError(gles, "glVertexAttribPointer3 ");
+        gles.glVertexAttribPointer(buffer2, GLES20.GL_ARRAY_BUFFER, attribs2, offsets2);
+
+        GLUtils.handleError(gles, "glVertexAttribPointers ");
 
     }
 

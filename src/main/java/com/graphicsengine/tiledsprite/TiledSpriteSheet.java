@@ -125,4 +125,16 @@ public class TiledSpriteSheet extends Mesh implements AttributeUpdater {
         return anchor;
     }
 
+    /**
+     * Returns the tiled texture at the specified active texture index, for tiled sheets that only have 1 texture index
+     * will always be 0
+     * 
+     * @param index Index to texture, starts at 0 and increases.
+     * @return The tiled texture
+     * @throws ArrayIndexOutOfBoundsException If index < 0 or > number of textures - 1
+     */
+    public TiledTexture2D getTiledTexture(int index) {
+        return (TiledTexture2D) getTexture(index);
+    }
+
 }
