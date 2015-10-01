@@ -125,7 +125,7 @@ public class TiledSpriteProgram extends ShaderProgram {
 
     @Override
     public void bindAttributes(GLES20Wrapper gles, Mesh mesh) throws GLException {
-
+        // TODO - make into generic method that can be shared with PlayfieldProgram
         ShaderVariable[] attribs = new ShaderVariable[] { getShaderVariable(VARIABLES.aPosition.index) };
         int[] offsets = new int[] { 0 };
         VertexBuffer buffer = mesh.getVerticeBuffer(BufferIndex.VERTICES);
@@ -133,7 +133,8 @@ public class TiledSpriteProgram extends ShaderProgram {
 
         ShaderVariable[] attribs2 = new ShaderVariable[] { getShaderVariable(VARIABLES.aTileSprite.index),
                 getShaderVariable(VARIABLES.aTileSprite2.index) };
-        int[] offsets2 = new int[] { ATTRIBUTE_1_OFFSET * 4, ATTRIBUTE_2_OFFSET * 4 };
+        // Keep offset in number of floats
+        int[] offsets2 = new int[] { ATTRIBUTE_1_OFFSET, ATTRIBUTE_2_OFFSET };
         VertexBuffer buffer2 = mesh.getVerticeBuffer(BufferIndex.ATTRIBUTES);
         gles.glVertexAttribPointer(buffer2, GLES20.GL_ARRAY_BUFFER, attribs2, offsets2);
 
