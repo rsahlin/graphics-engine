@@ -30,6 +30,8 @@ mat4 calculateTransformMatrix();
 void main() {
     gl_Position = uMVPMatrix[0] * aPosition + (uMVPMatrix[0] * vec4(aCharset.x, aCharset.y,0.0, 0.0));
     float y = floor(aCharset2.x / uCharsetData.z);
+    //vec2(u * w + mod(frame, frames/line) * w,
+    //v * h + floor(frame / frames/line) * h
     vTexCoord = vec2(aCharset.z * uCharsetData.x + 
                      mod(aCharset2.x, uCharsetData.z) * uCharsetData.x,
                      aCharset.w * uCharsetData.y + y * uCharsetData.y);
