@@ -131,6 +131,7 @@ public class PlayfieldProgram extends ShaderProgram {
         int[] offsets = new int[] { 0 };
         VertexBuffer buffer = mesh.getVerticeBuffer(BufferIndex.VERTICES);
         gles.glVertexAttribPointer(buffer, GLES20.GL_ARRAY_BUFFER, attribs, offsets);
+        GLUtils.handleError(gles, "glVertexAttribPointers ");
 
         ShaderVariable[] attribs2 = new ShaderVariable[] { getShaderVariable(VARIABLES.aCharset.index),
                 getShaderVariable(VARIABLES.aCharset2.index) };
