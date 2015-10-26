@@ -181,8 +181,7 @@ public class PlayfieldProgram extends ShaderProgram {
         float[] quadPositions = MeshBuilder.buildQuadPositionsIndexed(width, height, zPos, 0, 0, vertexStride);
         MeshBuilder.buildQuadMeshIndexed(mesh, this, charCount, quadPositions, ATTRIBUTES_PER_VERTEX);
 
-        setUniformArrays(mesh, getShaderVariable(VARIABLES.uCharsetData.index),
-                getShaderVariable(VARIABLES.uMVPMatrix.index));
+        createUniformStorage(mesh, shaderVariables);
         float[] uniformVectors = mesh.getUniformVectors();
         if (texture instanceof TiledTexture2D) {
             setTextureUniforms((TiledTexture2D) texture, uniformVectors, UNIFORM_TEX_FRACTION_S_INDEX);

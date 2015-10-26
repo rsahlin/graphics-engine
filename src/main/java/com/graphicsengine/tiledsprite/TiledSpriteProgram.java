@@ -179,8 +179,7 @@ public class TiledSpriteProgram extends ShaderProgram {
                 vertexStride);
         MeshBuilder.buildQuadMeshIndexed(mesh, this, spriteCount, quadPositions, ATTRIBUTES_PER_VERTEX);
 
-        setUniformArrays(mesh, getShaderVariable(VARIABLES.uSpriteData.index),
-                getShaderVariable(VARIABLES.uMVPMatrix.index));
+        createUniformStorage(mesh, shaderVariables);
 
         float[] uniformVectors = mesh.getUniformVectors();
         if (texture instanceof TiledTexture2D) {
