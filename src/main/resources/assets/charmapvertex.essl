@@ -17,6 +17,7 @@
  */
 #version 100
 
+//Put array declaration after name for GLSL compatibility
 uniform mat4 uMVPMatrix[2];
 uniform vec3 uCharsetData; //tex width, tex height, frames per line
 
