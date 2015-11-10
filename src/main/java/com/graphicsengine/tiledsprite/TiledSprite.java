@@ -43,6 +43,7 @@ public class TiledSprite extends Sprite {
     public void prepare() {
         float xpos = floatData[X_POS];
         float ypos = floatData[Y_POS];
+        float zpos = floatData[Z_POS];
         int index = offset;
         int frameIndex = (int) floatData[FRAME];
         float rotation = floatData[ROTATION];
@@ -50,6 +51,7 @@ public class TiledSprite extends Sprite {
         for (int i = 0; i < TiledSpriteProgram.VERTICES_PER_SPRITE; i++) {
             attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_X_INDEX] = xpos;
             attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_Y_INDEX] = ypos;
+            attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_Z_INDEX] = zpos;
             attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_FRAME_INDEX] = frameIndex;
             attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_ROTATION_INDEX] = rotation;
             index += TiledSpriteProgram.ATTRIBUTES_PER_VERTEX;

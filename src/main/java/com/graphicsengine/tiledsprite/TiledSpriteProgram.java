@@ -73,21 +73,25 @@ public class TiledSpriteProgram extends ShaderProgram {
      */
     protected final static int ATTRIBUTE_SPRITE_Y_INDEX = 1;
     /**
-     * Index into aTileSprite texture u coordinate - this is used to calculate texture coordinate with frame.
+     * Index into aTileSprite2 z position
      */
-    protected final static int ATTRIBUTE_SPRITE_U_INDEX = 2;
-    /**
-     * Index into aTileSprite texture v coordinate - this is used to calculate texture coordinate with frame.
-     */
-    protected final static int ATTRIBUTE_SPRITE_V_INDEX = 3;
+    protected final static int ATTRIBUTE_SPRITE_Z_INDEX = 2;
     /**
      * Index into aTileSprite frame number, this is the sprite frame number to use.
      */
-    protected final static int ATTRIBUTE_SPRITE_FRAME_INDEX = 4;
+    protected final static int ATTRIBUTE_SPRITE_FRAME_INDEX = 3;
+    /**
+     * Index into aTileSprite texture u coordinate - this is used to calculate texture coordinate with frame.
+     */
+    protected final static int ATTRIBUTE_SPRITE_U_INDEX = 4;
+    /**
+     * Index into aTileSprite texture v coordinate - this is used to calculate texture coordinate with frame.
+     */
+    protected final static int ATTRIBUTE_SPRITE_V_INDEX = 5;
     /**
      * Index into aTileSprite z axis rotation
      */
-    protected final static int ATTRIBUTE_SPRITE_ROTATION_INDEX = 5;
+    protected final static int ATTRIBUTE_SPRITE_ROTATION_INDEX = 6;
 
     public enum VARIABLES {
         uMVPMatrix(0, ShaderVariable.VariableType.UNIFORM),
