@@ -54,18 +54,6 @@ public abstract class SpriteController extends LogicNode {
         logicResolver = resolver;
     }
 
-    /**
-     * Internal method to create all the sprite instances for the controller.
-     * When this method returns all objects in the array shall be created and ready to be used.
-     * Before calling this method it is necessary to add logic resolvers. Do this separate from loaded leveldata, ie
-     * from code, to prevent referencing classnames in leveldata.
-     * 
-     * @param renderer The renderer to use with this controller
-     * @param setup The logic instance for sprite classes.
-     * @throws IllegalArgumentException If a logic resolver has not been set.
-     */
-    public abstract void createSprites(NucleusRenderer renderer, SpriteControllerSetup setup);
-
     public abstract void createSprites(NucleusRenderer renderer, TiledSpriteControllerData spriteControllerData,
             SceneData scene);
 

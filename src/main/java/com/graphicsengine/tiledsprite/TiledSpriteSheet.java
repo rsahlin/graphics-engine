@@ -1,6 +1,5 @@
 package com.graphicsengine.tiledsprite;
 
-import com.graphicsengine.charset.TiledSheetSetup;
 import com.nucleus.geometry.AttributeUpdater;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.VertexBuffer;
@@ -40,15 +39,6 @@ public class TiledSpriteSheet extends Mesh implements AttributeUpdater {
      */
     public TiledSpriteSheet(int spriteCount) {
         setup(spriteCount);
-    }
-
-    /**
-     * Creates a new tiledspritesheet from data in the setup class.
-     * 
-     * @param setup Config of the tiledspritesheet, number of sprites etc.
-     */
-    public TiledSpriteSheet(TiledSheetSetup setup) {
-        setup(setup.getTileCount());
     }
 
     private void setup(int spriteCount) {

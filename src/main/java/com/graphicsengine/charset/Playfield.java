@@ -84,21 +84,6 @@ public class Playfield extends Mesh implements AttributeUpdater {
      * 
      * @param program
      * @param texture If tiling should be used this must be instance of {@link TiledTexture2D}
-     * @param charWidth Width of one char in world units.
-     * @param charHeight Height of one char in world units.
-     * @param z Z position of chars
-     * @return The mesh ready to be rendered
-     */
-    public void createMesh(PlayfieldProgram program, Texture2D texture, PlayfieldSetup setup) {
-        createMesh(program, texture, new float[] { setup.mapWidth, setup.mapHeight }, new float[] { 0, 0, setup.zpos });
-    }
-
-    /**
-     * Creates the mesh for this charmap, each char has the specified width and height, z position.
-     * Texture UV is set using 1 / framesX and 1/ framesY
-     * 
-     * @param program
-     * @param texture If tiling should be used this must be instance of {@link TiledTexture2D}
      * @param dimension Width and height of one char in world units.
      * @param anchor x,y,z translate for each char, 0 for upper/left (width|height) / 2 for center.
      * @return The mesh ready to be rendered
