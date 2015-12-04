@@ -1,5 +1,7 @@
 package com.graphicsengine.scene;
 
+import com.nucleus.io.SceneSerializer;
+
 /**
  * Creates the sceneserializer implementations
  * 

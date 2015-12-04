@@ -9,6 +9,7 @@ import com.nucleus.io.ExternalReference;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TiledTextureSetup;
 import com.nucleus.types.DataType;
+import com.nucleus.vecmath.Axis;
 
 /**
  * The data for a tiled sheet, used for sprites or characters
@@ -127,6 +128,25 @@ public class TiledSheetSetup extends DataSetup {
         this.tileWidth = width;
         this.tileHeight = height;
         setTextureRef(textureRef);
+    }
+
+    /**
+     * Creates the setup data from the specified parameters, this can be used to create a tiled sheet.
+     * 
+     * @param id
+     * @param count
+     * @param dimension Size of char, width + height
+     * @param translate Char offset
+     * @param textureSetup The tiled texture
+     */
+    public void setup(String id, int count, float[] dimension, float[] translate, TiledTextureSetup textureSetup) {
+        this.setId(id);
+        this.count = count;
+        this.tileZPos = translate[Axis.Z.index];
+        this.tileWidth = dimension[Axis.WIDTH.index];
+        this.tileHeight = dimension[Axis.HEIGHT.index];
+        this.textureSetup = textureSetup;
+
     }
 
     /**

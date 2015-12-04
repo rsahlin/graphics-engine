@@ -13,6 +13,7 @@ import com.nucleus.shader.ShaderVariable;
 import com.nucleus.shader.ShaderVariable.VariableType;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TiledTexture2D;
+import com.nucleus.vecmath.Axis;
 
 /**
  * This class defines the mappings for the tile sprite vertex and fragment shaders.
@@ -167,20 +168,19 @@ public class TiledSpriteProgram extends ShaderProgram {
      * @param mesh The mesh to build buffers for, this mesh can be rendered after this call.
      * @param texture Must be {@link TiledTexture2D} if tiling shall work
      * @param spriteCount Number of sprites to build, this is NOT the vertex count.
-     * @param width The width of a sprite, the sprite will be centered in the middle.
-     * @param height The height of a sprite, the sprite will be centered in the middle.
-     * @param z The z position for each vertice.
+     * @param size Width and height of each sprite
+     * @param translate Offset for each vertex, currently only Z used.
+     * @param anchor Anchor for sprite, X,Y and Z
      * @param type The datatype for attribute data - GLES20.GL_FLOAT
      * 
      * @return The mesh that can be rendered.
      * @throws IllegalArgumentException if type is not GLES20.GL_FLOAT
      */
-    public void buildMesh(Mesh mesh, Texture2D texture, int spriteCount, float width, float height, float z,
-            int type) {
+    public void buildMesh(Mesh mesh, Texture2D texture, int spriteCount, float[] size, float[] anchor) {
 
         int vertexStride = DEFAULT_COMPONENTS;
-        float[] quadPositions = MeshBuilder.buildQuadPositionsIndexed(width, height, z, width / 2, height / 2,
-                vertexStride);
+        float[] quadPositions = MeshBuilder.buildQuadPositionsIndexed(size[Axis.WIDTH.index], size[Axis.HEIGHT.index],
+                anchor, vertexStride);
         MeshBuilder.buildQuadMeshIndexed(mesh, this, spriteCount, quadPositions, ATTRIBUTES_PER_VERTEX);
 
         createUniformStorage(mesh, shaderVariables);

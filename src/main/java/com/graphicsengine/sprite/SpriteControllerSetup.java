@@ -2,9 +2,9 @@ package com.graphicsengine.sprite;
 
 import java.util.HashMap;
 
-import com.graphicsengine.sprite.Sprite.Logic;
 import com.nucleus.common.StringUtils;
 import com.nucleus.io.DataSetup;
+import com.nucleus.logic.LogicItem;
 import com.nucleus.types.DataType;
 
 /**
@@ -89,7 +89,7 @@ public class SpriteControllerSetup extends DataSetup {
      */
     private void setupLogic(Sprite[] sprites) {
         // Check how many different logic objects
-        HashMap<Logic, Integer> logics = new HashMap<Sprite.Logic, Integer>();
+        HashMap<LogicItem, Integer> logics = new HashMap<LogicItem, Integer>();
         for (Sprite sprite : sprites) {
             Integer i = logics.get(sprite.logic);
             if (i == null) {
@@ -102,7 +102,7 @@ public class SpriteControllerSetup extends DataSetup {
         createLogicArrays(arrayCount);
         int index = 0;
         int offset = 0;
-        for (Logic logic : logics.keySet()) {
+        for (LogicItem logic : logics.keySet()) {
             int itemCount = logics.get(logic);
             logicOffset[index] = offset;
             logicCount[index] = itemCount;

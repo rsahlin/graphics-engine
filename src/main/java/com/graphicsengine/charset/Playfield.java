@@ -7,6 +7,7 @@ import com.nucleus.geometry.VertexBuffer;
 import com.nucleus.opengl.GLESWrapper.GLES20;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TiledTexture2D;
+import com.nucleus.vecmath.Axis;
 
 /**
  * Old school charactermap based rendering using a texture and quad mesh, the normal way to use the charmap is to create
@@ -33,7 +34,7 @@ public class Playfield extends Mesh implements AttributeUpdater {
 
     /**
      * Zposition of playfield, by default all chars will have same zpos.
-     * It is possible to go into the mesh and change the vertices z position but this is not adviced.
+     * It is possible to go into the mesh and change the vertices z position but this is not advised.
      */
     private float zPos;
 
@@ -89,12 +90,36 @@ public class Playfield extends Mesh implements AttributeUpdater {
      * @return The mesh ready to be rendered
      */
     public void createMesh(PlayfieldProgram program, Texture2D texture, PlayfieldSetup setup) {
-        this.charWidth = setup.tileWidth;
-        this.charHeight = setup.tileHeight;
-        this.zPos = setup.zpos;
-        program.buildMesh(this, texture, charCount, charWidth, charHeight, setup.zpos, GLES20.GL_FLOAT);
+        createMesh(program, texture, new float[] { setup.mapWidth, setup.mapHeight }, new float[] { 0, 0, setup.zpos });
+    }
+
+    /**
+     * Creates the mesh for this charmap, each char has the specified width and height, z position.
+     * Texture UV is set using 1 / framesX and 1/ framesY
+     * 
+     * @param program
+     * @param texture If tiling should be used this must be instance of {@link TiledTexture2D}
+     * @param dimension Width and height of one char in world units.
+     * @param anchor x,y,z translate for each char, 0 for upper/left (width|height) / 2 for center.
+     * @return The mesh ready to be rendered
+     */
+    public void createMesh(PlayfieldProgram program, Texture2D texture, float[] dimension, float[] anchor) {
+        this.charWidth = dimension[Axis.WIDTH.index];
+        this.charHeight = dimension[Axis.HEIGHT.index];
+        program.buildMesh(this, texture, charCount, charWidth, charHeight, anchor, GLES20.GL_FLOAT);
         setTexture(texture, Texture2D.TEXTURE_0);
         setAttributeUpdater(this);
+    }
+
+    /**
+     * Same as calling {@link #setupPlayfield(int, int, float, float)}
+     * 
+     * @param dimension
+     * @param translate
+     */
+    public void setupPlayfield(int[] dimension, float[] translate) {
+        setupPlayfield(dimension[Axis.WIDTH.index], dimension[Axis.HEIGHT.index], translate[Axis.X.index],
+                translate[Axis.Y.index]);
     }
 
     /**

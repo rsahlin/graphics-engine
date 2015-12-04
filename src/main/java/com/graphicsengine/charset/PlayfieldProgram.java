@@ -170,15 +170,17 @@ public class PlayfieldProgram extends ShaderProgram {
      * @param charCount Number of chars to build, this is NOT the vertex count.
      * @param width The width of a char, the char will be left aligned.
      * @param height The height of a char, the char will be top aligned.
-     * @param zPos The zpos for the mesh, all chars will have this zpos.
+     * @param anchor Anchor points for X,Y and Z. 0 for upper left corner, half width/height for center. Z is set as the
+     * Z position
      * @param type The datatype for attribute data - GLES20.GL_FLOAT
      * 
      * @throws IllegalArgumentException if type is not GLES20.GL_FLOAT
      */
-    public void buildMesh(Mesh mesh, Texture2D texture, int charCount, float width, float height, float zPos, int type) {
+    public void buildMesh(Mesh mesh, Texture2D texture, int charCount, float width, float height, float[] anchor,
+            int type) {
 
         int vertexStride = DEFAULT_COMPONENTS;
-        float[] quadPositions = MeshBuilder.buildQuadPositionsIndexed(width, height, zPos, 0, 0, vertexStride);
+        float[] quadPositions = MeshBuilder.buildQuadPositionsIndexed(width, height, anchor, vertexStride);
         MeshBuilder.buildQuadMeshIndexed(mesh, this, charCount, quadPositions, ATTRIBUTES_PER_VERTEX);
 
         createUniformStorage(mesh, shaderVariables);

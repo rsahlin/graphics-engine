@@ -5,6 +5,7 @@ import com.nucleus.io.DataExporter;
 import com.nucleus.io.DataImporter;
 import com.nucleus.io.DataSetup;
 import com.nucleus.types.DataType;
+import com.nucleus.vecmath.Axis;
 
 /**
  * Dataflow for an input array source. The input data is aligned into rows, this makes it useful for loading
@@ -102,6 +103,18 @@ public class ArrayInput extends DataSetup implements DataImporter, DataExporter 
     }
 
     /**
+     * Creates a new array input from the data source.
+     * 
+     * @param source
+     */
+    public ArrayInput(ArrayInputData source) {
+        components = source.getComponents();
+        lineWidth = source.getDimension().getDimension()[Axis.WIDTH.index];
+        height = source.getDimension().getDimension()[Axis.HEIGHT.index];
+        type = source.getDataType();
+    }
+
+    /**
      * Sets the offset where the data is stored in the destination
      * 
      * @param x X offset into destination
@@ -158,18 +171,17 @@ public class ArrayInput extends DataSetup implements DataImporter, DataExporter 
      * Copies the data in this array to the source int array.
      * 
      * @param dest
-     * @param components
      * @param lineWidth
      * @param height
      */
-    public void copyArray(int[] dest, int components, int lineWidth, int height) {
+    public void copyArray(int[] dest, int lineWidth, int height) {
 
         switch (type) {
         case INT:
-            copyArray((int[]) data, dest, components, lineWidth, height);
+            copyArray((int[]) data, dest, lineWidth, height);
             break;
         case STRING:
-            copyArray((String) data, dest, components, lineWidth, height);
+            copyArray((String) data, dest, lineWidth, height);
             break;
         default:
             throw new IllegalArgumentException("Not implemented support for " + type);
@@ -180,15 +192,14 @@ public class ArrayInput extends DataSetup implements DataImporter, DataExporter 
      * Copies the data in this array to the source float array.
      * 
      * @param dest
-     * @param components
      * @param lineWidth
      * @param height
      */
-    public void copyArray(float[] dest, int components, int lineWidth, int height) {
+    public void copyArray(float[] dest, int lineWidth, int height) {
 
         switch (type) {
         case INT:
-            copyArray((int[]) data, dest, components, lineWidth, height);
+            copyArray((int[]) data, dest, lineWidth, height);
             break;
         default:
             throw new IllegalArgumentException("Not implemented support for " + type);
@@ -201,11 +212,10 @@ public class ArrayInput extends DataSetup implements DataImporter, DataExporter 
      * 
      * @param source Source array, will be updated with this.lineWidth
      * @param dest Destination array, will be updated by lineWidth
-     * @param components
      * @param lineWidth Width of one line in destination
      * @param height
      */
-    protected void copyArray(int[] source, int[] dest, int components, int lineWidth, int height) {
+    protected void copyArray(int[] source, int[] dest, int lineWidth, int height) {
         height = Math.min(height, this.height);
         int w = Math.min(lineWidth, this.lineWidth);
         int sourceIndex = 0;
@@ -225,11 +235,10 @@ public class ArrayInput extends DataSetup implements DataImporter, DataExporter 
      * 
      * @param source Source array, will be updated with this.lineWidth
      * @param dest Destination array, will be updated by lineWidth
-     * @param components
      * @param lineWidth Width of one line in destination
      * @param height
      */
-    protected void copyArray(String source, int[] dest, int components, int lineWidth, int height) {
+    protected void copyArray(String source, int[] dest, int lineWidth, int height) {
         height = Math.min(height, this.height);
         int w = Math.min(lineWidth, this.lineWidth);
         int sourceIndex = 0;
@@ -250,11 +259,10 @@ public class ArrayInput extends DataSetup implements DataImporter, DataExporter 
      * 
      * @param source Source array, will be updated with this.lineWidth
      * @param dest Destination array, will be updated by lineWidth
-     * @param components
      * @param lineWidth Width of one line in destination
      * @param height
      */
-    protected void copyArray(int[] source, float[] dest, int components, int lineWidth, int height) {
+    protected void copyArray(int[] source, float[] dest, int lineWidth, int height) {
         height = Math.min(height, this.height);
         int w = Math.min(lineWidth, this.lineWidth);
         int sourceIndex = 0;

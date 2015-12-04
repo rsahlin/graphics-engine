@@ -3,8 +3,9 @@ package com.graphicsengine.charset;
 import com.graphicsengine.dataflow.ArrayInput;
 import com.nucleus.common.StringUtils;
 import com.nucleus.texturing.Texture2D;
-import com.nucleus.texturing.TiledTexture2D;
+import com.nucleus.texturing.TiledTextureSetup;
 import com.nucleus.types.DataType;
+import com.nucleus.vecmath.Axis;
 
 /**
  * The data needed to create a charmap, use this to make it easier to abstract seralization/creation of maps
@@ -123,7 +124,25 @@ public class PlayfieldSetup extends TiledSheetSetup {
         playfield.getPosition(0, pos, 0);
         setup(playfield.getWidth(), playfield.getHeight(), pos[0], pos[1], playfield.getZPos(),
                 playfield.getTileWidth(), playfield.getTileHeight());
-        setTextureRef((TiledTexture2D) playfield.getTexture(Texture2D.TEXTURE_0));
+        setTextureRef(playfield.getTexture(Texture2D.TEXTURE_0));
+    }
+
+    /**
+     * Playfield setup
+     * 
+     * @param mapDimension The dimension of the map, width + height
+     * @param charDimension The dimension of chars in the map, width + height
+     * @param translate The maps position
+     */
+    public void setup(String id, int[] mapDimension, float[] mapTranslate, float[] charDimension, float[] charTanslate,
+            TiledTextureSetup textureSetup) {
+        super.setup(id, mapDimension[Axis.WIDTH.index] * mapDimension[Axis.HEIGHT.index], charDimension, charTanslate,
+                textureSetup);
+        mapWidth = mapDimension[Axis.WIDTH.index];
+        mapHeight = mapDimension[Axis.HEIGHT.index];
+        xpos = mapTranslate[Axis.X.index];
+        ypos = mapTranslate[Axis.Y.index];
+        zpos = mapTranslate[Axis.Z.index];
     }
 
     /**
@@ -153,7 +172,7 @@ public class PlayfieldSetup extends TiledSheetSetup {
      * @param source
      */
     public void setPlayFieldData(ArrayInput source) {
-        source.copyArray(data, COMPONENTS, mapWidth, mapHeight);
+        source.copyArray(data, mapWidth, mapHeight);
     }
 
     @Override

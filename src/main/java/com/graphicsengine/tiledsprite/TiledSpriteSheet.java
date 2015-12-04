@@ -4,9 +4,9 @@ import com.graphicsengine.charset.TiledSheetSetup;
 import com.nucleus.geometry.AttributeUpdater;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.VertexBuffer;
-import com.nucleus.opengl.GLESWrapper.GLES20;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TiledTexture2D;
+import com.nucleus.vecmath.Axis;
 
 /**
  * A number of sprites that will be rendered using the same Mesh, ie all sprites in this class are rendered using one
@@ -70,14 +70,27 @@ public class TiledSpriteSheet extends Mesh implements AttributeUpdater {
      * @return
      */
     public void createMesh(TiledSpriteProgram program, Texture2D texture, float width, float height, float z) {
-        program.buildMesh(this, texture, count, width, height, z, GLES20.GL_FLOAT);
         size[0] = width;
         size[1] = height;
         anchor[2] = z;
         anchor[0] = -width / 2;
         anchor[1] = -height / 2;
+        program.buildMesh(this, texture, count, size, anchor);
         setTexture(texture, Texture2D.TEXTURE_0);
         setAttributeUpdater(this);
+    }
+
+    public void createMesh(TiledSpriteProgram program, Texture2D texture, float[] dimension, float[] anchor) {
+        program.buildMesh(this, texture, count, dimension, anchor);
+
+        size[0] = dimension[Axis.X.index];
+        size[1] = dimension[Axis.Y.index];
+        anchor[0] = anchor[Axis.X.index];
+        anchor[1] = anchor[Axis.Y.index];
+        anchor[2] = anchor[Axis.Z.index];
+        setTexture(texture, Texture2D.TEXTURE_0);
+        setAttributeUpdater(this);
+
     }
 
     /**
