@@ -1,8 +1,12 @@
 package com.graphicsengine.sprite;
 
-import com.graphicsengine.sprite.Sprite.Logic;
+import com.graphicsengine.tiledsprite.TiledSpriteControllerData;
+import com.nucleus.logic.LogicContainer;
+import com.nucleus.logic.LogicItem;
+import com.nucleus.logic.LogicNode;
+import com.nucleus.logic.LogicResolver;
 import com.nucleus.renderer.NucleusRenderer;
-import com.nucleus.scene.Node;
+import com.nucleus.scene.SceneData;
 
 /**
  * Controller for a set of sprites.
@@ -11,29 +15,10 @@ import com.nucleus.scene.Node;
  * @author Richard Sahlin
  *
  */
-public abstract class SpriteController extends Node {
+public abstract class SpriteController extends LogicNode {
 
     private final static String LOGICRESOLVER_NOT_SET = "LogicResolver not set, must set before calling.";
     private final static String LOGIC_NOT_FOUND_ERROR = "Logic not found for id: ";
-
-    /**
-     * Interface used to find a Sprite logic class from String/Binary id
-     * 
-     * @author Richard Sahlin
-     *
-     */
-    public interface LogicResolver {
-
-        /**
-         * Returns the sprite logic class for the specified id, this is normally done when loading scene or when
-         * creating logic from loaded data.
-         * 
-         * @param id The id of the sprite object
-         * @return The sprite logic object or null if not found
-         */
-        Logic getLogic(String id);
-
-    }
 
     protected Sprite[] sprites;
     protected int count;
@@ -51,6 +36,11 @@ public abstract class SpriteController extends Node {
         setId(id);
         this.count = count;
         sprites = new Sprite[count];
+    }
+
+    @Override
+    public LogicContainer[] getLogicContainer() {
+        return sprites;
     }
 
     /**
@@ -75,6 +65,9 @@ public abstract class SpriteController extends Node {
      * @throws IllegalArgumentException If a logic resolver has not been set.
      */
     public abstract void createSprites(NucleusRenderer renderer, SpriteControllerSetup setup);
+
+    public abstract void createSprites(NucleusRenderer renderer, TiledSpriteControllerData spriteControllerData,
+            SceneData scene);
 
     /**
      * Internal method to check if a logic resolver has been set, call this in implementations of the createSprites()
@@ -106,20 +99,6 @@ public abstract class SpriteController extends Node {
     }
 
     /**
-     * Sets the logic for the sprites as defined in the setup class.
-     * The sprites must be created before calling this method.
-     * 
-     * @param setup Setup containing the logic id, offset and count, for the sprites.
-     */
-    public void setLogic(SpriteControllerSetup setup) {
-        String[] logicId = setup.getLogicId();
-        int[] offsets = setup.getLogicOffset();
-        int[] counts = setup.getLogicCount();
-        setLogic(logicId, offsets, counts);
-
-    }
-
-    /**
      * Sets the logic for sprite objects, the sprites must be created before calling this method.
      * 
      * @param logicIds The logic ids for logic, used together with offsets and counts.
@@ -130,7 +109,7 @@ public abstract class SpriteController extends Node {
         for (int i = 0; i < logicIds.length; i++) {
             int offset = offsets[i];
             int count = counts[i];
-            Logic l = logicResolver.getLogic(logicIds[i]);
+            LogicItem l = logicResolver.getLogic(logicIds[i]);
             if (l == null) {
                 throw new IllegalArgumentException(LOGIC_NOT_FOUND_ERROR + logicIds[i]);
             }
@@ -138,7 +117,54 @@ public abstract class SpriteController extends Node {
                 sprites[offset++].logic = l;
             }
         }
+    }
 
+    /**
+     * Sets the sprite logic data, the logic type will be set at the index and count.
+     * 
+     * @param logic
+     */
+    public void setLogic(LogicArray logic) {
+        LogicItem l = null;
+        String classname = logic.getClassName();
+        if (classname != null) {
+            try {
+                l = (LogicItem) Class.forName(classname).newInstance();
+            } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+                e.printStackTrace();
+                // Cannot recover
+                throw new RuntimeException(e);
+            }
+        } else {
+            if (logicResolver == null) {
+                throw new IllegalArgumentException(LOGICRESOLVER_NOT_SET);
+            }
+            l = logicResolver.getLogic(logic.getInstance());
+            if (l == null) {
+                throw new IllegalArgumentException(LOGIC_NOT_FOUND_ERROR + logic.getInstance());
+            }
+        }
+        int offset = logic.getIndex();
+        int count = logic.getCount();
+        if (count == -1) {
+            count = sprites.length - offset;
+        }
+        for (int loop = 0; loop < count; loop++) {
+            sprites[offset++].logic = l;
+        }
+    }
+
+    /**
+     * Sets the initial logic for the sprites, this will unpack the values in the logic array and set the correct logic
+     * object in the sprites.
+     * The sprites must be created before calling this method.
+     * 
+     * @param logic
+     */
+    public void setLogic(LogicArray[] logic) {
+        for (LogicArray data : logic) {
+            setLogic(data);
+        }
     }
 
 }

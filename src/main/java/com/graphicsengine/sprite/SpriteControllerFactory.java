@@ -1,7 +1,7 @@
 package com.graphicsengine.sprite;
 
-import com.graphicsengine.sprite.SpriteController.LogicResolver;
 import com.graphicsengine.tiledsprite.TiledSpriteController;
+import com.nucleus.logic.LogicResolver;
 
 /**
  * Used to create instances of spritecontrollers, the controllers need to have the logic resolvers setup according
@@ -52,9 +52,6 @@ public class SpriteControllerFactory {
      */
     public static SpriteController create(SpriteControllers controller) throws IllegalAccessException,
             InstantiationException, ClassNotFoundException {
-        if (logicResolver == null) {
-            throw new IllegalArgumentException(LOGICRESOLVER_NOT_SET_ERROR);
-        }
         SpriteController impl = (SpriteController) controller.getControllerClass().newInstance();
         impl.setLogicResolver(logicResolver);
         return impl;

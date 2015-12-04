@@ -1,5 +1,7 @@
 package com.graphicsengine.sprite;
 
+import com.nucleus.logic.LogicContainer;
+import com.nucleus.logic.LogicItem;
 import com.nucleus.vecmath.VecMath;
 import com.nucleus.vecmath.Vector2D;
 
@@ -11,27 +13,7 @@ import com.nucleus.vecmath.Vector2D;
  * @author Richard Sahlin
  *
  */
-public abstract class Sprite {
-
-    public interface Logic {
-        /**
-         * Do the processing of the sprite, this shall be called at intervals to do the logic processing.
-         * The sprite data containing data is decoupled from the behavior
-         * 
-         * @param sprite The sprite to perform behavior for.
-         * @param deltaTime Time in millis since last call.
-         */
-        public void process(Sprite sprite, float deltaTime);
-
-        /**
-         * Returns the name of the logic, ie the name of the implementing logic class.
-         * This name is the same for all logic object of the same class, it is not instance name.
-         * This shall be the same name that was used when the sprite logic was resolved.
-         * 
-         * @return The name of the implementing logic class
-         */
-        public String getLogicId();
-    }
+public abstract class Sprite extends LogicContainer {
 
     public final static String INVALID_DATACOUNT_ERROR = "Invalid datacount";
 
@@ -68,16 +50,7 @@ public abstract class Sprite {
     /**
      * The sprite logic implementation
      */
-    public Logic logic;
-
-    /**
-     * All sprites can move using a vector
-     */
-    public Vector2D moveVector = new Vector2D();
-    public float[] floatData;
-    public int[] intData;
-    public final static int MIN_FLOAT_COUNT = 16;
-    public final static int MIN_INT_COUNT = 8;
+    public LogicItem logic;
 
     /**
      * Creates a new sprite with storage for MIN_FLOAT_COUNT floats and MIN_INT_COUNT ints
@@ -96,6 +69,13 @@ public abstract class Sprite {
         createArrays(floatCount, intCount);
     }
 
+    @Override
+    public void process(float deltaTime) {
+        if (logic != null) {
+            logic.process(this, deltaTime);
+        }
+    }
+
     /**
      * Internal method, creates the data storage.
      * 
@@ -109,18 +89,6 @@ public abstract class Sprite {
         }
         floatData = new float[floatCount];
         intData = new int[intCount];
-    }
-
-    /**
-     * Applies movement and gravity to position, then prepare() is called to let subclasses update
-     * 
-     * @param deltaTime
-     */
-    public void move(float deltaTime) {
-        floatData[X_POS] += deltaTime * moveVector.vector[VecMath.X] * moveVector.vector[Vector2D.MAGNITUDE] +
-                floatData[MOVE_VECTOR_X] * deltaTime;
-        floatData[Y_POS] += deltaTime * moveVector.vector[VecMath.Y] * moveVector.vector[Vector2D.MAGNITUDE] +
-                floatData[MOVE_VECTOR_Y] * deltaTime;
     }
 
     /**
@@ -163,9 +131,24 @@ public abstract class Sprite {
      * @param y Acceleration on y axis
      * @param deltaTime Time since last time movement was updated, ie elapsed time.
      */
-    public void accelerate(float x, float y, float deltaTime) {
+    public static void accelerate(LogicContainer sprite, float x, float y, float deltaTime) {
+        float[] floatData = sprite.floatData;
         floatData[MOVE_VECTOR_X] += x * deltaTime;
         floatData[MOVE_VECTOR_Y] += y * deltaTime;
+    }
+
+    /**
+     * Applies movement and gravity to position
+     * 
+     * @param deltaTime
+     */
+    public static void move(LogicContainer sprite, float deltaTime) {
+        float[] floatData = sprite.floatData;
+        Vector2D moveVector = sprite.moveVector;
+        floatData[X_POS] += deltaTime * moveVector.vector[VecMath.X] * moveVector.vector[Vector2D.MAGNITUDE] +
+                floatData[MOVE_VECTOR_X] * deltaTime;
+        floatData[Y_POS] += deltaTime * moveVector.vector[VecMath.Y] * moveVector.vector[Vector2D.MAGNITUDE] +
+                floatData[MOVE_VECTOR_Y] * deltaTime;
     }
 
 }
