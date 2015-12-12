@@ -2,10 +2,12 @@ package com.graphicsengine.tiledsprite;
 
 import java.io.IOException;
 
+import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.scene.GraphicsEngineSceneData;
 import com.graphicsengine.sprite.Sprite;
 import com.graphicsengine.sprite.SpriteController;
 import com.nucleus.renderer.NucleusRenderer;
+import com.nucleus.scene.NodeData;
 import com.nucleus.scene.SceneData;
 
 /**
@@ -20,24 +22,45 @@ import com.nucleus.scene.SceneData;
  */
 public class TiledSpriteController extends SpriteController {
 
+    /**
+     * The mesh that can be redered
+     * TODO Unify all controllers that renders a Mesh, with methods for creating the mesh
+     */
+    @SerializedName("spriteSheet")
     private TiledSpriteSheet spriteSheet;
 
+    /**
+     * Default constructor
+     */
+    public TiledSpriteController() {
+        super();
+    }
+
+    protected TiledSpriteController(TiledSpriteController source) {
+        super(source);
+    }
+
     @Override
-    public void createSprites(NucleusRenderer renderer, TiledSpriteControllerData spriteControllerData,
-            SceneData scene) {
-        create(spriteControllerData.getId(), spriteControllerData.getLogicdata().getCount());
+    public void createSprites(NucleusRenderer renderer, NodeData controllerData, SceneData scene) {
+        TiledSpriteControllerData spriteControllerData = (TiledSpriteControllerData) controllerData;
+        create(spriteControllerData.getLogicdata().getCount());
+        for (int i = 0; i < count; i++) {
+            sprites[i] = new TiledSprite(spriteSheet.getAttributeData(), i
+                    * TiledSpriteProgram.ATTRIBUTES_PER_SPRITE);
+        }
+        setLogic(spriteControllerData.getLogicdata().getData());
+    }
+
+    @Override
+    public void createMesh(NucleusRenderer renderer, NodeData controllerData, SceneData scene) {
         try {
             GraphicsEngineSceneData gScene = (GraphicsEngineSceneData) scene;
-            spriteSheet = TiledSpriteFactory.create(renderer, spriteControllerData, gScene);
+            spriteSheet = TiledSpriteFactory.create(renderer, (TiledSpriteControllerData) controllerData, gScene);
             addMesh(spriteSheet);
-            for (int i = 0; i < count; i++) {
-                sprites[i] = new TiledSprite(spriteSheet.getAttributeData(), i
-                        * TiledSpriteProgram.ATTRIBUTES_PER_SPRITE);
-            }
-            setLogic(spriteControllerData.getLogicdata().getData());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
     }
 
     /**

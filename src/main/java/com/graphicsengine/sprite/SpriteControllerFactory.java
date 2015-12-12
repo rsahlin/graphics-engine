@@ -2,6 +2,7 @@ package com.graphicsengine.sprite;
 
 import com.graphicsengine.tiledsprite.TiledSpriteController;
 import com.nucleus.logic.LogicResolver;
+import com.nucleus.scene.Node;
 
 /**
  * Used to create instances of spritecontrollers, the controllers need to have the logic resolvers setup according
@@ -48,12 +49,15 @@ public class SpriteControllerFactory {
      * Creates a SpriteController instance.
      * 
      * @param controller SpriteController instance to create
+     * @param source The nodedata source
      * @return
      */
-    public static SpriteController create(SpriteControllers controller) throws IllegalAccessException,
+    public static SpriteController create(SpriteControllers controller, Node source)
+            throws IllegalAccessException,
             InstantiationException, ClassNotFoundException {
         SpriteController impl = (SpriteController) controller.getControllerClass().newInstance();
         impl.setLogicResolver(logicResolver);
+        impl.set(source);
         return impl;
     }
 

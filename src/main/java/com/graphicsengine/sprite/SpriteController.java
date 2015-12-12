@@ -1,11 +1,12 @@
 package com.graphicsengine.sprite;
 
-import com.graphicsengine.tiledsprite.TiledSpriteControllerData;
+import com.google.gson.annotations.SerializedName;
 import com.nucleus.logic.LogicContainer;
 import com.nucleus.logic.LogicItem;
 import com.nucleus.logic.LogicNode;
 import com.nucleus.logic.LogicResolver;
 import com.nucleus.renderer.NucleusRenderer;
+import com.nucleus.scene.NodeData;
 import com.nucleus.scene.SceneData;
 
 /**
@@ -20,20 +21,31 @@ public abstract class SpriteController extends LogicNode {
     private final static String LOGICRESOLVER_NOT_SET = "LogicResolver not set, must set before calling.";
     private final static String LOGIC_NOT_FOUND_ERROR = "Logic not found for id: ";
 
+    @SerializedName("sprites")
     protected Sprite[] sprites;
+    @SerializedName("count")
     protected int count;
-    protected LogicResolver logicResolver;
+    transient protected LogicResolver logicResolver;
+
+    /**
+     * Default constructor
+     */
+    protected SpriteController() {
+        super();
+    }
+
+    protected SpriteController(SpriteController source) {
+        super(source);
+    }
 
     /**
      * Creates a TiledSpriteController with an array of the specified size.
      * Each sprite must be created by calling createSprites()
      * 
-     * @param id Id of the node
      * @param count Number of sprites to create.
      * 
      */
-    protected void create(String id, int count) {
-        setId(id);
+    protected void create(int count) {
         this.count = count;
         sprites = new Sprite[count];
     }
@@ -54,8 +66,28 @@ public abstract class SpriteController extends LogicNode {
         logicResolver = resolver;
     }
 
-    public abstract void createSprites(NucleusRenderer renderer, TiledSpriteControllerData spriteControllerData,
+    /**
+     * Creates the logic sprites, this will only create the logic and data for the logic it will not create the
+     * mesh/textures
+     * 
+     * @see #createMesh(NucleusRenderer, NodeData, SceneData)
+     * 
+     * @param renderer
+     * @param controllerData
+     * @param scene
+     */
+    public abstract void createSprites(NucleusRenderer renderer, NodeData controllerData,
             SceneData scene);
+
+    /**
+     * Creates the renderable sprite (mesh)
+     * After this call this node can be rendered
+     * 
+     * @param renderer
+     * @param controllerData
+     * @param scene
+     */
+    public abstract void createMesh(NucleusRenderer renderer, NodeData controllerData, SceneData scene);
 
     /**
      * Internal method to check if a logic resolver has been set, call this in implementations of the createSprites()

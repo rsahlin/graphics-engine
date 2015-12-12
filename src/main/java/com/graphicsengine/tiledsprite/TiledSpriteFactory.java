@@ -8,7 +8,7 @@ import com.nucleus.renderer.BufferObjectsFactory;
 import com.nucleus.renderer.Configuration;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.texturing.Texture2D;
-import com.nucleus.texturing.TiledTexture2DData;
+import com.nucleus.texturing.TiledTexture2D;
 
 /**
  * Used to create tiled spritesheet.
@@ -21,7 +21,7 @@ public class TiledSpriteFactory {
 
     public static TiledSpriteSheet create(NucleusRenderer renderer, TiledSpriteControllerData tiledSpriteController,
             GraphicsEngineSceneData scene) throws IOException {
-        TiledTexture2DData textureData = (TiledTexture2DData) scene.getResources().getTexture2DData(
+        TiledTexture2D textureData = (TiledTexture2D) scene.getResources().getTexture2DData(
                 tiledSpriteController.getTileData().getTextureref());
 
         TiledSpriteSheet sprites = new TiledSpriteSheet(tiledSpriteController.getLogicdata().getCount());

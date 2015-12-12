@@ -9,7 +9,7 @@ import com.nucleus.renderer.BufferObjectsFactory;
 import com.nucleus.renderer.Configuration;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.texturing.Texture2D;
-import com.nucleus.texturing.TiledTexture2DData;
+import com.nucleus.texturing.TiledTexture2D;
 import com.nucleus.vecmath.Axis;
 
 /**
@@ -31,7 +31,7 @@ public class PlayfieldFactory {
      * @throws IOException
      */
     public static Playfield create(NucleusRenderer renderer, TiledCharsetData tiledCharsetData,
-            PlayfieldData playfieldData, TiledTexture2DData textureData) throws IOException {
+            PlayfieldData playfieldData, TiledTexture2D textureData) throws IOException {
 
         ArrayInputData id = playfieldData.getArrayInput();
 
@@ -57,7 +57,7 @@ public class PlayfieldFactory {
     }
 
     /**
-     * Factory method for creating a playfield
+     * Factory method for creating the playfield mesh, after this call the playfield can be rendered
      * 
      * @param renderer
      * @param constructor
@@ -68,7 +68,7 @@ public class PlayfieldFactory {
             GraphicsEngineSceneData scene)
             throws IOException {
 
-        TiledTexture2DData textureData = (TiledTexture2DData) scene.getResources().getTexture2DData(
+        TiledTexture2D textureData = (TiledTexture2D) scene.getResources().getTexture2DData(
                 tiledCharsetData.getTileData().getTextureref());
         PlayfieldData playfieldData = scene.getResources().getPlayfieldData(tiledCharsetData.getSource());
 

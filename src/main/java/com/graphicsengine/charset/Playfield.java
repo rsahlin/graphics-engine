@@ -100,7 +100,7 @@ public class Playfield extends Mesh implements AttributeUpdater {
      * Same as calling {@link #setupPlayfield(int, int, float, float)}
      * 
      * @param dimension
-     * @param translate
+     * @param translate The static translate for the playfield, if the position where the chars are put
      */
     public void setupPlayfield(int[] dimension, float[] translate) {
         setupPlayfield(dimension[Axis.WIDTH.index], dimension[Axis.HEIGHT.index], translate[Axis.X.index],

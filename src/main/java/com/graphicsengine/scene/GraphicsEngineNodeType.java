@@ -1,8 +1,15 @@
 package com.graphicsengine.scene;
 
-public enum NodeType {
+import com.nucleus.common.Key;
+
+public enum GraphicsEngineNodeType implements Key {
 
     tiledCharset(),
     tiledSpriteController();
+
+    @Override
+    public String getKey() {
+        return name();
+    }
 
 }
