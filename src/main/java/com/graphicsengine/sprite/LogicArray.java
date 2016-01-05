@@ -1,5 +1,12 @@
 package com.graphicsengine.sprite;
 
+/**
+ * An array of logic data, this is used when importing and exporting logic
+ * This class can be serialized using GSON
+ * 
+ * @author Richard Sahlin
+ *
+ */
 public class LogicArray {
 
     /**

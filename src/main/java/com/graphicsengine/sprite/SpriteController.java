@@ -12,6 +12,7 @@ import com.nucleus.scene.SceneData;
 /**
  * Controller for a set of sprites.
  * This can be added as a node to the scenegraph.
+ * This class can be serialized using GSON
  * 
  * @author Richard Sahlin
  *
@@ -21,10 +22,14 @@ public abstract class SpriteController extends LogicNode {
     private final static String LOGICRESOLVER_NOT_SET = "LogicResolver not set, must set before calling.";
     private final static String LOGIC_NOT_FOUND_ERROR = "Logic not found for id: ";
 
-    @SerializedName("sprites")
-    protected Sprite[] sprites;
-    @SerializedName("count")
-    protected int count;
+    /**
+     * The data used to create the logic
+     */
+    @SerializedName("logicdata")
+    LogicData logicdata;
+
+    transient protected Sprite[] sprites;
+    transient protected int count;
     transient protected LogicResolver logicResolver;
 
     /**
@@ -35,7 +40,18 @@ public abstract class SpriteController extends LogicNode {
     }
 
     protected SpriteController(SpriteController source) {
-        super(source);
+        set(source);
+    }
+
+    /**
+     * Sets the data in this class from the source, do not set the transient values
+     * This is used when importing.
+     * 
+     * @param source The source to copy
+     */
+    protected void set(SpriteController source) {
+        super.set(source);
+        logicdata = new LogicData(source.getLogicData());
     }
 
     /**
@@ -48,6 +64,15 @@ public abstract class SpriteController extends LogicNode {
     protected void create(int count) {
         this.count = count;
         sprites = new Sprite[count];
+    }
+
+    /**
+     * Returns the logic data, this is used when importing and exporting
+     * 
+     * @return
+     */
+    public LogicData getLogicData() {
+        return logicdata;
     }
 
     @Override
@@ -73,10 +98,10 @@ public abstract class SpriteController extends LogicNode {
      * @see #createMesh(NucleusRenderer, NodeData, SceneData)
      * 
      * @param renderer
-     * @param controllerData
+     * @param source
      * @param scene
      */
-    public abstract void createSprites(NucleusRenderer renderer, NodeData controllerData,
+    public abstract void createSprites(NucleusRenderer renderer, SpriteController source,
             SceneData scene);
 
     /**
@@ -84,10 +109,10 @@ public abstract class SpriteController extends LogicNode {
      * After this call this node can be rendered
      * 
      * @param renderer
-     * @param controllerData
+     * @param spriteController
      * @param scene
      */
-    public abstract void createMesh(NucleusRenderer renderer, NodeData controllerData, SceneData scene);
+    public abstract void createMesh(NucleusRenderer renderer, SpriteController spriteController, SceneData scene);
 
     /**
      * Internal method to check if a logic resolver has been set, call this in implementations of the createSprites()

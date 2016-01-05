@@ -13,7 +13,6 @@ import com.nucleus.shader.ShaderVariable;
 import com.nucleus.shader.ShaderVariable.VariableType;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TiledTexture2D;
-import com.nucleus.vecmath.Axis;
 
 /**
  * This class defines the mappings for the tile sprite vertex and fragment shaders.
@@ -170,17 +169,16 @@ public class TiledSpriteProgram extends ShaderProgram {
      * @param spriteCount Number of sprites to build, this is NOT the vertex count.
      * @param size Width and height of each sprite
      * @param translate Offset for each vertex, currently only Z used.
-     * @param anchor Anchor for sprite, X,Y and Z
+     * @param translate Translate for sprite, X,Y and Z
      * @param type The datatype for attribute data - GLES20.GL_FLOAT
      * 
      * @return The mesh that can be rendered.
      * @throws IllegalArgumentException if type is not GLES20.GL_FLOAT
      */
-    public void buildMesh(Mesh mesh, Texture2D texture, int spriteCount, float[] size, float[] anchor) {
+    public void buildMesh(Mesh mesh, Texture2D texture, int spriteCount, float[] size, float[] translate) {
 
         int vertexStride = DEFAULT_COMPONENTS;
-        float[] quadPositions = MeshBuilder.buildQuadPositionsIndexed(size[Axis.WIDTH.index], size[Axis.HEIGHT.index],
-                anchor, vertexStride);
+        float[] quadPositions = MeshBuilder.buildQuadPositionsIndexed(size, translate, vertexStride);
         MeshBuilder.buildQuadMeshIndexed(mesh, this, spriteCount, quadPositions, ATTRIBUTES_PER_VERTEX);
 
         createUniformStorage(mesh, shaderVariables);

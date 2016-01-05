@@ -6,7 +6,7 @@ import com.nucleus.types.DataType;
 public class ArrayInputData extends NodeData {
 
     private int components;
-    private IntDimensionData dimension;
+    private IntDimensionData size;
     private int[] data;
     private DataType dataType;
 
@@ -14,8 +14,8 @@ public class ArrayInputData extends NodeData {
         return components;
     }
 
-    public IntDimensionData getDimension() {
-        return dimension;
+    public IntDimensionData getSize() {
+        return size;
     }
 
     public int[] getData() {
@@ -57,8 +57,8 @@ public class ArrayInputData extends NodeData {
      * @param ypos
      */
     protected void copyArray(int[] source, int[] dest, int lineWidth, int height, int xpos, int ypos) {
-        height = Math.min(height, dimension.getHeight());
-        int w = Math.min(lineWidth, dimension.getWidth());
+        height = Math.min(height, size.getHeight());
+        int w = Math.min(lineWidth, size.getWidth());
         int sourceIndex = 0;
         int destIndex = calcStartIndex(xpos, ypos);
         for (int y = 0; y < height; y++) {
@@ -66,7 +66,7 @@ public class ArrayInputData extends NodeData {
                 dest[destIndex + x] = source[sourceIndex + x];
             }
             destIndex += lineWidth;
-            sourceIndex += dimension.getWidth();
+            sourceIndex += size.getWidth();
         }
     }
 
@@ -76,8 +76,8 @@ public class ArrayInputData extends NodeData {
      * @return Destination start index
      */
     private int calcStartIndex(int xoffset, int yoffset) {
-        return dimension.getWidth() * Math.min(yoffset, dimension.getHeight())
-                + Math.min(xoffset, dimension.getWidth());
+        return size.getWidth() * Math.min(yoffset, size.getHeight())
+                + Math.min(xoffset, size.getWidth());
     }
 
 }

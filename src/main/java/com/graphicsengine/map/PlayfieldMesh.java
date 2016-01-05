@@ -1,5 +1,6 @@
-package com.graphicsengine.charset;
+package com.graphicsengine.map;
 
+import com.google.gson.annotations.SerializedName;
 import com.nucleus.geometry.AttributeUpdater;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshBuilder;
@@ -8,56 +9,90 @@ import com.nucleus.opengl.GLESWrapper.GLES20;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TiledTexture2D;
 import com.nucleus.vecmath.Axis;
+import com.nucleus.vecmath.Transform;
 
 /**
  * Old school charactermap based rendering using a texture and quad mesh, the normal way to use the charmap is to create
  * with specified number of chars to cover a certain area.
- * This class has no real functionality to use the charmap, use subclasses to get the desired functionality.
+ * This class has no real functionality besides being able to be rendered - to use the charmap, see
+ * {@link PlayfieldController}
+ * 
+ * TODO: Create a TiledMesh class that is used by both this class and TiledSpriteMesh
  * 
  * @author Richard Sahlin
  *
  */
-public class Playfield extends Mesh implements AttributeUpdater {
+public class PlayfieldMesh extends Mesh implements AttributeUpdater {
 
     /**
      * Number of characters in the charmap, this is the max number of visible characters
      */
+    @SerializedName("count")
     private int charCount;
-    /**
-     * Width of one char, in world units
-     */
-    private float charWidth;
-    /**
-     * Height of one char, in world units
-     */
-    private float charHeight;
 
     /**
-     * Zposition of playfield, by default all chars will have same zpos.
+     * Width and height of each character
+     */
+    @SerializedName("size")
+    private float[] size = new float[2];
+    /**
+     * Position of playfield, by default all chars will have same zpos, all chars will be
      * It is possible to go into the mesh and change the vertices z position but this is not advised.
      */
-    private float zPos;
+    @SerializedName("transform")
+    private Transform transform;
+    /**
+     * Reference to tiled texture
+     */
+    @SerializedName("textureref")
+    private String textureRef;
 
     /**
-     * Width of playfield in chars
+     * Width and height of playfield in chars
      */
-    private int width;
-    /**
-     * Height of playfield in chars
-     */
-    private int height;
+    @SerializedName("mapSize")
+    private int[] mapSize = new int[2];
 
     /**
      * Contains attribute data for all chars.
      * This data must be mapped into the mesh for changes to take place.
      */
-    float[] attributeData;
+    transient float[] attributeData;
 
     /**
      * playfield character data, one value for each char - this is the source map that can be used for collision etc.
      * This MUST be in sync with {@link #attributeData}
      */
-    int[] playfieldData;
+    transient int[] charmap;
+
+    /**
+     * Creates a copy of the playfield - NOTE this will ONLY create the character and attribute storage.
+     * {@link #createMesh(PlayfieldProgram, Texture2D, float[], float[])} and
+     * {@link #setupCharmap(int, int, float, float)} MUST be called in order to setup all values.
+     * 
+     * @param source The source, id, textureRef and character count is taken from here.
+     */
+    public PlayfieldMesh(PlayfieldMesh source) {
+        super();
+        set(source);
+    }
+
+    /**
+     * Sets the values from the source playfield mesh.
+     * Note, this will NOT create the Mesh, it will just set the values so that the mesh can be created.
+     * 
+     * @param source
+     */
+    public void set(PlayfieldMesh source) {
+        setId(source.getId());
+        init(source.charCount);
+        this.textureRef = source.textureRef;
+        if (source.transform != null) {
+            transform = new Transform(source.transform);
+        }
+        setSize(source.size);
+        setMapSize(source.mapSize);
+    }
 
     /**
      * Creates a new charmap with the specified number of characters
@@ -65,17 +100,58 @@ public class Playfield extends Mesh implements AttributeUpdater {
      * 
      * @param charCount Number of chars to create attribute storage for.
      */
-    public Playfield(String id, int charCount) {
-        setId(id);
+    public PlayfieldMesh(String id, int charCount) {
+        super(id);
+        init(charCount);
+    }
+
+    /**
+     * Internal method, sets the size of each char.
+     * This will only set the size parameter - {@link #createMesh(PlayfieldProgram, Texture2D, float[], float[])} must
+     * be called to update the mesh.
+     * 
+     * @param size The size to set, or null to not set any values.
+     */
+    private void setSize(float[] size) {
+        if (size != null) {
+            this.size[Axis.WIDTH.index] = size[Axis.WIDTH.index];
+            this.size[Axis.HEIGHT.index] = size[Axis.HEIGHT.index];
+        }
+    }
+
+    /**
+     * Internal method, sets the size of the map
+     * This will only set the map size parameter, call {@link #setupCharmap(int, int, float, float)} to setup the
+     * charmap.
+     * 
+     * @param size Map size, or null to not set any values.
+     */
+    private void setMapSize(int[] size) {
+        if (size != null) {
+            this.mapSize[Axis.WIDTH.index] = size[Axis.WIDTH.index];
+            this.mapSize[Axis.HEIGHT.index] = size[Axis.HEIGHT.index];
+        }
+
+    }
+
+    /**
+     * Initializes the data in this class for the specified number of chars
+     * This will not create the Mesh
+     * Internal method
+     * 
+     * @param charCount
+     */
+    private void init(int charCount) {
         this.charCount = charCount;
         attributeData = new float[(charCount * PlayfieldProgram.ATTRIBUTES_PER_CHAR)];
-        playfieldData = new int[charCount];
+        charmap = new int[charCount];
         int offset = 0;
         for (int i = 0; i < charCount; i++) {
             MeshBuilder.prepareTiledUV(attributeData, offset, PlayfieldProgram.ATTRIBUTE_CHARMAP_U_INDEX,
                     PlayfieldProgram.ATTRIBUTE_CHARMAP_V_INDEX, PlayfieldProgram.ATTRIBUTES_PER_VERTEX);
             offset += PlayfieldProgram.ATTRIBUTES_PER_CHAR;
         }
+
     }
 
     /**
@@ -84,26 +160,25 @@ public class Playfield extends Mesh implements AttributeUpdater {
      * 
      * @param program
      * @param texture If tiling should be used this must be instance of {@link TiledTexture2D}
-     * @param dimension Width and height of one char in world units.
-     * @param anchor x,y,z translate for each char, 0 for upper/left (width|height) / 2 for center.
+     * @param size Width and height of one char in world units.
+     * @param translate x,y,z translate for each char, 0 for upper/left -(width|height) / 2 for center.
      * @return The mesh ready to be rendered
      */
-    public void createMesh(PlayfieldProgram program, Texture2D texture, float[] dimension, float[] anchor) {
-        this.charWidth = dimension[Axis.WIDTH.index];
-        this.charHeight = dimension[Axis.HEIGHT.index];
-        program.buildMesh(this, texture, charCount, charWidth, charHeight, anchor, GLES20.GL_FLOAT);
+    public void createMesh(PlayfieldProgram program, Texture2D texture, float[] size, float[] translate) {
+        setSize(size);
+        program.buildMesh(this, texture, charCount, size, translate, GLES20.GL_FLOAT);
         setTexture(texture, Texture2D.TEXTURE_0);
         setAttributeUpdater(this);
     }
 
     /**
-     * Same as calling {@link #setupPlayfield(int, int, float, float)}
+     * Same as calling {@link #setupCharmap(int, int, float, float)}
      * 
-     * @param dimension
+     * @param size Width and height, in chars, of playfield
      * @param translate The static translate for the playfield, if the position where the chars are put
      */
-    public void setupPlayfield(int[] dimension, float[] translate) {
-        setupPlayfield(dimension[Axis.WIDTH.index], dimension[Axis.HEIGHT.index], translate[Axis.X.index],
+    public void setupCharmap(int[] size, float[] translate) {
+        setupCharmap(size[Axis.WIDTH.index], size[Axis.HEIGHT.index], translate[Axis.X.index],
                 translate[Axis.Y.index]);
     }
 
@@ -120,9 +195,9 @@ public class Playfield extends Mesh implements AttributeUpdater {
      * @param xpos Starting xpos for the upper left char.
      * @param ypos Starting ypos for the upper left char.
      */
-    public void setupPlayfield(int width, int height, float xpos, float ypos) {
-        this.width = width;
-        this.height = height;
+    public void setupCharmap(int width, int height, float xpos, float ypos) {
+        this.mapSize[Axis.WIDTH.index] = width;
+        this.mapSize[Axis.HEIGHT.index] = height;
         int index = 0;
         float currentX = xpos;
         float currentY = ypos;
@@ -141,28 +216,49 @@ public class Playfield extends Mesh implements AttributeUpdater {
                 attributeData[index + PlayfieldProgram.ATTRIBUTE_CHARMAP_X_INDEX] = currentX;
                 attributeData[index + PlayfieldProgram.ATTRIBUTE_CHARMAP_Y_INDEX] = currentY;
                 index += PlayfieldProgram.ATTRIBUTES_PER_VERTEX;
-                currentX += charWidth;
+                currentX += size[Axis.WIDTH.index];
             }
             currentX = xpos;
-            ypos += charHeight;
+            ypos += size[Axis.HEIGHT.index];
         }
     }
 
     /**
      * Copies char frame index data from the source into this charmap, source data should only include char number.
      * Note that there will be conversion from int[] to float values as the char data is copied.
-     * Do NOT use this method for a large number of data.
+     * Do NOT use this method for a large number of data when performance is critical.
      * 
-     * @param charRow Row based char data, each value is the frame index for a char.
-     * @param startOffset Offset into charRows where data is read.
-     * @param startChar Put data at this char index, 0 for first char, 10 for the thenth etc.
+     * @param source Source map data
+     * @param sourceOffset Offset into source where data is read
+     * @param destOffset Offset where data is written in this class
      * @param count Number of chars to copy
      * @throws ArrayIndexOutOfBoundsException If source or destination does not contain enough data.
      */
-    public void setPlayfieldData(int[] charRow, int startOffset, int startChar, int count) {
+    public void setCharmap(int[] source, int sourceOffset, int destOffset, int count) {
         for (int i = 0; i < count; i++) {
-            setChar(startChar++, charRow[startOffset++]);
+            setChar(destOffset++, source[sourceOffset++]);
         }
+    }
+
+    /**
+     * Copies the data from the source map into this class.
+     * 
+     * @param source Map data will be copied from this
+     */
+    public void setCharmap(Playfield source) {
+        if (source == null || source.getMapSize() == null) {
+            return;
+        }
+        int[] sourceSize = source.getMapSize();
+
+        int width = Math.min(mapSize[Axis.WIDTH.index], sourceSize[Axis.WIDTH.index]);
+        int height = Math.min(mapSize[Axis.HEIGHT.index], sourceSize[Axis.HEIGHT.index]);
+        int sourceOffset = 0;
+        for (int y = 0; y < height; y++) {
+            setCharmap(source.getMap(), sourceOffset, y * mapSize[Axis.WIDTH.index], width);
+            sourceOffset += sourceSize[Axis.WIDTH.index];
+        }
+
     }
 
     /**
@@ -176,20 +272,20 @@ public class Playfield extends Mesh implements AttributeUpdater {
      * @param count Number of chars to copy
      * @throws ArrayIndexOutOfBoundsException If source or destination does not contain enough data.
      */
-    public void setPlayfieldData(byte[] charRow, int startOffset, int startChar, int count) {
+    public void setCharmap(byte[] charRow, int startOffset, int startChar, int count) {
         for (int i = 0; i < count; i++) {
             setChar(startChar++, charRow[startOffset++]);
         }
     }
 
     /**
-     * Copies the string into the charmap, same as calling {@link #setPlayfieldData(byte[], int, int, int)}
+     * Copies the string into the charmap, same as calling {@link #setCharmap(byte[], int, int, int)}
      * 
      * @param row
      * @param startChar
      */
-    public void setPlayfieldData(String row, int startChar) {
-        setPlayfieldData(row.getBytes(), 0, startChar, row.length());
+    public void setCharmap(String row, int startChar) {
+        setCharmap(row.getBytes(), 0, startChar, row.length());
     }
 
     /**
@@ -197,23 +293,23 @@ public class Playfield extends Mesh implements AttributeUpdater {
      * This method is not performance optimized, if a large area shall be filled with high performance then consider
      * using a custom function that write into {@link #attributeData}
      * 
-     * @param x Xpos of start position
-     * @param y Ypos of start position
+     * @param x Map start x of fill
+     * @param y Map start y of fill
      * @param width With of area to fill
      * @param height Height of area to fill
      * @param fill Fill value
      */
     public void fill(int x, int y, int width, int height, int fill) {
-        if (x > this.width || y > this.height) {
+        if (x > this.mapSize[Axis.WIDTH.index] || y > this.mapSize[Axis.HEIGHT.index]) {
             // Completely outside
             return;
         }
         int startChar = y * width + y;
-        if (x + width > this.width) {
-            width = this.width - x;
+        if (x + width > this.mapSize[Axis.WIDTH.index]) {
+            width = this.mapSize[Axis.WIDTH.index] - x;
         }
-        if (y + height > this.height) {
-            height = this.height - y;
+        if (y + height > this.mapSize[Axis.HEIGHT.index]) {
+            height = this.mapSize[Axis.HEIGHT.index] - y;
         }
         while (height-- > 0) {
             for (int i = 0; i < width; i++) {
@@ -231,7 +327,7 @@ public class Playfield extends Mesh implements AttributeUpdater {
      * @param value The value to set.
      */
     private void setChar(int pos, int value) {
-        playfieldData[pos] = value;
+        charmap[pos] = value;
         int destIndex = pos * PlayfieldProgram.ATTRIBUTES_PER_CHAR
                 + PlayfieldProgram.ATTRIBUTE_CHARMAP_FRAME_INDEX;
         attributeData[destIndex] = value;
@@ -262,7 +358,7 @@ public class Playfield extends Mesh implements AttributeUpdater {
      * @return
      */
     public int[] getPlayfield() {
-        return playfieldData;
+        return charmap;
     }
 
     @Override
@@ -276,7 +372,7 @@ public class Playfield extends Mesh implements AttributeUpdater {
      * @return
      */
     public int getWidth() {
-        return width;
+        return mapSize[Axis.WIDTH.index];
     }
 
     /**
@@ -285,7 +381,7 @@ public class Playfield extends Mesh implements AttributeUpdater {
      * @return
      */
     public int getHeight() {
-        return height;
+        return mapSize[Axis.HEIGHT.index];
     }
 
     /**
@@ -294,7 +390,7 @@ public class Playfield extends Mesh implements AttributeUpdater {
      * @return
      */
     public float getTileWidth() {
-        return charWidth;
+        return size[Axis.WIDTH.index];
     }
 
     /**
@@ -303,18 +399,36 @@ public class Playfield extends Mesh implements AttributeUpdater {
      * @return
      */
     public float getTileHeight() {
-        return charHeight;
+        return size[Axis.HEIGHT.index];
     }
 
     /**
-     * Returns the base zpos for the playfield.
-     * This will be the same across all chars unless the z position of vertices has been changed in the mesh.
+     * Returns a ref to the character size values.
+     * Note, this returns a ref to the array - do not modify these values
      * 
-     * @return The base z position of the chars, as specified when calling
-     * {@link #createMesh(PlayfieldProgram, Texture2D, PlayfieldSetup)}
+     * @return Width and height of each character
      */
-    public float getZPos() {
-        return zPos;
+    public float[] getSize() {
+        return size;
+    }
+
+    /**
+     * Returns the transform for the characters, this is the individual offset for each character
+     * Note, this returns a reference to the transform in this class - do not modify these values
+     * 
+     * @return The transform for characters or null if not specified
+     */
+    public Transform getTransform() {
+        return transform;
+    }
+
+    /**
+     * Returns the texture reference, this is used when importing and exporting.
+     * 
+     * @return
+     */
+    public String getTextureRef() {
+        return textureRef;
     }
 
     /**

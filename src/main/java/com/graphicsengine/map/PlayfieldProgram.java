@@ -1,4 +1,4 @@
-package com.graphicsengine.charset;
+package com.graphicsengine.map;
 
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.Mesh.BufferIndex;
@@ -168,19 +168,18 @@ public class PlayfieldProgram extends ShaderProgram {
      * @param mesh The mesh to build buffers for
      * @param texture The texture source, if tiling shall be used it must be {@link TiledTexture2D}
      * @param charCount Number of chars to build, this is NOT the vertex count.
-     * @param width The width of a char, the char will be left aligned.
-     * @param height The height of a char, the char will be top aligned.
-     * @param anchor Anchor points for X,Y and Z. 0 for upper left corner, half width/height for center. Z is set as the
-     * Z position
+     * @param charSizeThe width and height of each char
+     * @param translate Translate in X,Y and Z. 0 for upper left corner, half -(width/height) for center. Z is set as
+     * the Z position
      * @param type The datatype for attribute data - GLES20.GL_FLOAT
      * 
      * @throws IllegalArgumentException if type is not GLES20.GL_FLOAT
      */
-    public void buildMesh(Mesh mesh, Texture2D texture, int charCount, float width, float height, float[] anchor,
+    public void buildMesh(Mesh mesh, Texture2D texture, int charCount, float[] charSize, float[] translate,
             int type) {
 
         int vertexStride = DEFAULT_COMPONENTS;
-        float[] quadPositions = MeshBuilder.buildQuadPositionsIndexed(width, height, anchor, vertexStride);
+        float[] quadPositions = MeshBuilder.buildQuadPositionsIndexed(charSize, translate, vertexStride);
         MeshBuilder.buildQuadMeshIndexed(mesh, this, charCount, quadPositions, ATTRIBUTES_PER_VERTEX);
 
         createUniformStorage(mesh, shaderVariables);
