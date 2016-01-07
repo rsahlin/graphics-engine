@@ -31,9 +31,7 @@ public class TiledSpriteFactory {
         renderer.createProgram(program);
         Texture2D texture = AssetManager.getInstance().getTexture(renderer, textureData);
 
-        float[] dimension = source.getSize();
-        float[] translate = source.getTransform().getTranslate();
-        sprites.createMesh(program, texture, dimension, translate);
+        sprites.createMesh(program, texture);
         if (Configuration.getInstance().isUseVBO()) {
             BufferObjectsFactory.getInstance().createVBOs(renderer, sprites);
         }

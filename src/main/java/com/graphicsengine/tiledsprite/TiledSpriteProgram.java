@@ -1,5 +1,6 @@
 package com.graphicsengine.tiledsprite;
 
+import com.nucleus.data.Anchor;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.Mesh.BufferIndex;
 import com.nucleus.geometry.MeshBuilder;
@@ -169,16 +170,16 @@ public class TiledSpriteProgram extends ShaderProgram {
      * @param spriteCount Number of sprites to build, this is NOT the vertex count.
      * @param size Width and height of each sprite
      * @param translate Offset for each vertex, currently only Z used.
-     * @param translate Translate for sprite, X,Y and Z
+     * @param anchor Anchor values for sprites
      * @param type The datatype for attribute data - GLES20.GL_FLOAT
      * 
      * @return The mesh that can be rendered.
      * @throws IllegalArgumentException if type is not GLES20.GL_FLOAT
      */
-    public void buildMesh(Mesh mesh, Texture2D texture, int spriteCount, float[] size, float[] translate) {
+    public void buildMesh(Mesh mesh, Texture2D texture, int spriteCount, float[] size, Anchor anchor) {
 
         int vertexStride = DEFAULT_COMPONENTS;
-        float[] quadPositions = MeshBuilder.buildQuadPositionsIndexed(size, translate, vertexStride);
+        float[] quadPositions = MeshBuilder.buildQuadPositionsIndexed(size, anchor, vertexStride);
         MeshBuilder.buildQuadMeshIndexed(mesh, this, spriteCount, quadPositions, ATTRIBUTES_PER_VERTEX);
 
         createUniformStorage(mesh, shaderVariables);

@@ -70,14 +70,14 @@ public class PlayfieldController extends Node {
      * After this call this node can be rendered but the mesh must be filled with data.
      * 
      * @param renderer
-     * @param charmap
+     * @param source
      * @param scene
      * @throws IOException
      */
-    public void createMesh(NucleusRenderer renderer, PlayfieldController playfieldController,
+    public void createMesh(NucleusRenderer renderer, PlayfieldController source,
             GraphicsEngineSceneData scene)
             throws IOException {
-        playfield = PlayfieldFactory.create(renderer, playfieldController, scene);
+        playfield = PlayfieldFactory.create(renderer, source, scene);
         addMesh(playfield);
     }
 
@@ -85,18 +85,22 @@ public class PlayfieldController extends Node {
      * Sets the playfield in this controller, creating the map storage if needed, and updates the mesh to contain
      * the charset.
      * 
+     * @param source
      * @param scene
      */
-    public void createPlayfield(GraphicsEngineSceneData scene) {
-        Playfield playfieldData = scene.getResources().getPlayfield(getMapRef());
+    public void createPlayfield(PlayfieldController source, GraphicsEngineSceneData scene) {
+        Playfield playfieldData = scene.getResources().getPlayfield(source.getMapRef());
+        createMap(source.getMapSize());
+        mapRef = source.getMapRef();
+        Playfield p = scene.getResources().getPlayfield(mapRef);
         ArrayInputData id = playfieldData.getArrayInput();
         if (id != null) {
             if (mapData == null) {
                 mapData = new int[mapSize[Axis.WIDTH.index] * mapSize[Axis.HEIGHT.index]];
             }
-            id.copyArray(getMapData(),
-                    getMapSize()[Axis.WIDTH.index],
-                    getMapSize()[Axis.HEIGHT.index], 0, 0);
+            id.copyArray(mapData,
+                    mapSize[Axis.WIDTH.index],
+                    mapSize[Axis.HEIGHT.index], 0, 0);
             playfield.setCharmap(getMapData(), 0, 0, getMapData().length);
         } else {
             if (playfieldData.getMap() != null && playfieldData.getMapSize() != null) {
@@ -143,6 +147,7 @@ public class PlayfieldController extends Node {
 
     /**
      * Sets the mapsize from the source values, internal method.
+     * This will not create storage for map.
      * 
      * @param mapSize
      */
@@ -150,4 +155,13 @@ public class PlayfieldController extends Node {
         System.arraycopy(mapSize, 0, this.mapSize, 0, 2);
     }
 
+    /**
+     * Creates the map storage and sets the mapsize
+     * 
+     * @param mapSize
+     */
+    private void createMap(int[] mapSize) {
+        mapData = new int[mapSize[Axis.WIDTH.index] * mapSize[Axis.HEIGHT.index]];
+        setMapSize(mapSize);
+    }
 }

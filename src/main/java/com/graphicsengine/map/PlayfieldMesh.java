@@ -1,6 +1,7 @@
 package com.graphicsengine.map;
 
 import com.google.gson.annotations.SerializedName;
+import com.nucleus.data.Anchor;
 import com.nucleus.geometry.AttributeUpdater;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshBuilder;
@@ -9,7 +10,6 @@ import com.nucleus.opengl.GLESWrapper.GLES20;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TiledTexture2D;
 import com.nucleus.vecmath.Axis;
-import com.nucleus.vecmath.Transform;
 
 /**
  * Old school charactermap based rendering using a texture and quad mesh, the normal way to use the charmap is to create
@@ -35,12 +35,9 @@ public class PlayfieldMesh extends Mesh implements AttributeUpdater {
      */
     @SerializedName("size")
     private float[] size = new float[2];
-    /**
-     * Position of playfield, by default all chars will have same zpos, all chars will be
-     * It is possible to go into the mesh and change the vertices z position but this is not advised.
-     */
-    @SerializedName("transform")
-    private Transform transform;
+
+    @SerializedName("anchor")
+    private Anchor anchor;
     /**
      * Reference to tiled texture
      */
@@ -87,8 +84,8 @@ public class PlayfieldMesh extends Mesh implements AttributeUpdater {
         setId(source.getId());
         init(source.charCount);
         this.textureRef = source.textureRef;
-        if (source.transform != null) {
-            transform = new Transform(source.transform);
+        if (source.anchor != null) {
+            anchor = new Anchor(source.anchor);
         }
         setSize(source.size);
         setMapSize(source.mapSize);
@@ -160,13 +157,11 @@ public class PlayfieldMesh extends Mesh implements AttributeUpdater {
      * 
      * @param program
      * @param texture If tiling should be used this must be instance of {@link TiledTexture2D}
-     * @param size Width and height of one char in world units.
-     * @param translate x,y,z translate for each char, 0 for upper/left -(width|height) / 2 for center.
      * @return The mesh ready to be rendered
      */
-    public void createMesh(PlayfieldProgram program, Texture2D texture, float[] size, float[] translate) {
+    public void createMesh(PlayfieldProgram program, Texture2D texture) {
         setSize(size);
-        program.buildMesh(this, texture, charCount, size, translate, GLES20.GL_FLOAT);
+        program.buildMesh(this, texture, charCount, size, anchor, GLES20.GL_FLOAT);
         setTexture(texture, Texture2D.TEXTURE_0);
         setAttributeUpdater(this);
     }
@@ -175,11 +170,10 @@ public class PlayfieldMesh extends Mesh implements AttributeUpdater {
      * Same as calling {@link #setupCharmap(int, int, float, float)}
      * 
      * @param size Width and height, in chars, of playfield
-     * @param translate The static translate for the playfield, if the position where the chars are put
      */
-    public void setupCharmap(int[] size, float[] translate) {
-        setupCharmap(size[Axis.WIDTH.index], size[Axis.HEIGHT.index], translate[Axis.X.index],
-                translate[Axis.Y.index]);
+    public void setupCharmap(int[] size) {
+        float[] offset = anchor.calcOffsets(new float[] { mapSize[0] * getTileWidth(), mapSize[1] * getTileHeight() });
+        setupCharmap(size[Axis.WIDTH.index], size[Axis.HEIGHT.index], offset[0], offset[1]);
     }
 
     /**
@@ -410,16 +404,6 @@ public class PlayfieldMesh extends Mesh implements AttributeUpdater {
      */
     public float[] getSize() {
         return size;
-    }
-
-    /**
-     * Returns the transform for the characters, this is the individual offset for each character
-     * Note, this returns a reference to the transform in this class - do not modify these values
-     * 
-     * @return The transform for characters or null if not specified
-     */
-    public Transform getTransform() {
-        return transform;
     }
 
     /**

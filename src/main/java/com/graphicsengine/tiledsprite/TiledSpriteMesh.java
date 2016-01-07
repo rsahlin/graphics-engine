@@ -1,13 +1,13 @@
 package com.graphicsengine.tiledsprite;
 
 import com.google.gson.annotations.SerializedName;
+import com.nucleus.data.Anchor;
 import com.nucleus.geometry.AttributeUpdater;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.VertexBuffer;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TiledTexture2D;
 import com.nucleus.vecmath.Axis;
-import com.nucleus.vecmath.Transform;
 
 /**
  * A number of sprites that will be rendered using the same Mesh, ie all sprites in this class are rendered using one
@@ -28,10 +28,11 @@ public class TiledSpriteMesh extends Mesh implements AttributeUpdater {
     @SerializedName("size")
     private float[] size = new float[2];
     /**
-     * translate for each sprite.
+     * Anchor value for each sprites, 0 to 1 where 0 is upper/left and 1 is lower/right assuming vertices
+     * are
      */
-    @SerializedName("transform")
-    private Transform transform;
+    @SerializedName("anchor")
+    private Anchor anchor;
     /**
      * Reference to tiled texture
      */
@@ -73,8 +74,8 @@ public class TiledSpriteMesh extends Mesh implements AttributeUpdater {
     public void set(TiledSpriteMesh source) {
         setId(source.getId());
         this.textureRef = source.textureRef;
-        if (source.transform != null) {
-            transform = new Transform(source.transform);
+        if (source.anchor != null) {
+            anchor = new Anchor(source.anchor);
         }
         setSize(source.getSize());
         setup(source.getCount());
@@ -107,41 +108,11 @@ public class TiledSpriteMesh extends Mesh implements AttributeUpdater {
      * 
      * @param program
      * @param texture The texture to use for sprites, must be {@link TiledTexture2D} otherwise tiling will not work.
-     * @param width Width for each sprite
-     * @param height Height for each sprite
-     * @param z Zpos
      * @return
      */
-    public void createMesh(TiledSpriteProgram program, Texture2D texture, float width, float height, float z) {
-        size[0] = width;
-        size[1] = height;
-        setTranslate(-width / 2, -height / 2, z);
-        program.buildMesh(this, texture, count, size, transform.getTranslate());
-        setTexture(texture, Texture2D.TEXTURE_0);
-        setAttributeUpdater(this);
-    }
+    public void createMesh(TiledSpriteProgram program, Texture2D texture) {
+        program.buildMesh(this, texture, count, size, anchor);
 
-    public void setTranslate(float[] translate) {
-        if (transform == null) {
-            transform = new Transform();
-        }
-        transform.setTranslate(translate);
-
-    }
-
-    public void setTranslate(float x, float y, float z) {
-        if (transform == null) {
-            transform = new Transform();
-        }
-        transform.setTranslate(new float[] { x, y, z });
-    }
-
-    public void createMesh(TiledSpriteProgram program, Texture2D texture, float[] dimension, float[] translate) {
-        program.buildMesh(this, texture, count, dimension, translate);
-
-        size[0] = dimension[Axis.X.index];
-        size[1] = dimension[Axis.Y.index];
-        setTranslate(translate);
         setTexture(texture, Texture2D.TEXTURE_0);
         setAttributeUpdater(this);
 
@@ -155,15 +126,6 @@ public class TiledSpriteMesh extends Mesh implements AttributeUpdater {
      */
     public int getCount() {
         return count;
-    }
-
-    /**
-     * Returns the transform or null if none has been set
-     * 
-     * @return
-     */
-    public Transform getTransform() {
-        return transform;
     }
 
     @Override
@@ -190,18 +152,6 @@ public class TiledSpriteMesh extends Mesh implements AttributeUpdater {
      */
     public float[] getSize() {
         return size;
-    }
-
-    /**
-     * Returns the translate for the sprites.
-     * 
-     * @return translate for sprites, in x, y and z, or null if mesh is not created
-     */
-    public float[] getTranslate() {
-        if (transform == null) {
-            return null;
-        }
-        return transform.getTranslate();
     }
 
     /**

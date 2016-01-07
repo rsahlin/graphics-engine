@@ -28,11 +28,10 @@ public class PlayfieldControllerFactory {
     public static PlayfieldController create(NucleusRenderer renderer, Node source, String reference,
             GraphicsEngineSceneData scene) throws IOException {
         PlayfieldController refNode = scene.getResources().getPlayfieldController(reference);
-        PlayfieldController playfieldController = new PlayfieldController(refNode);
-        playfieldController.toReference(source, playfieldController);
-        playfieldController.createMesh(renderer, playfieldController, scene);
+        PlayfieldController playfieldController = new PlayfieldController(source);
+        playfieldController.createMesh(renderer, refNode, scene);
         // playfieldController.copyTransform(source);
-        playfieldController.createPlayfield(scene);
+        playfieldController.createPlayfield(refNode, scene);
         return playfieldController;
     }
 }

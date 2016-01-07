@@ -1,5 +1,6 @@
 package com.graphicsengine.map;
 
+import com.nucleus.data.Anchor;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.Mesh.BufferIndex;
 import com.nucleus.geometry.MeshBuilder;
@@ -169,17 +170,16 @@ public class PlayfieldProgram extends ShaderProgram {
      * @param texture The texture source, if tiling shall be used it must be {@link TiledTexture2D}
      * @param charCount Number of chars to build, this is NOT the vertex count.
      * @param charSizeThe width and height of each char
-     * @param translate Translate in X,Y and Z. 0 for upper left corner, half -(width/height) for center. Z is set as
-     * the Z position
+     * @param anchor chars anchor values
      * @param type The datatype for attribute data - GLES20.GL_FLOAT
      * 
      * @throws IllegalArgumentException if type is not GLES20.GL_FLOAT
      */
-    public void buildMesh(Mesh mesh, Texture2D texture, int charCount, float[] charSize, float[] translate,
+    public void buildMesh(Mesh mesh, Texture2D texture, int charCount, float[] charSize, Anchor anchor,
             int type) {
 
         int vertexStride = DEFAULT_COMPONENTS;
-        float[] quadPositions = MeshBuilder.buildQuadPositionsIndexed(charSize, translate, vertexStride);
+        float[] quadPositions = MeshBuilder.buildQuadPositionsIndexed(charSize, anchor, vertexStride);
         MeshBuilder.buildQuadMeshIndexed(mesh, this, charCount, quadPositions, ATTRIBUTES_PER_VERTEX);
 
         createUniformStorage(mesh, shaderVariables);

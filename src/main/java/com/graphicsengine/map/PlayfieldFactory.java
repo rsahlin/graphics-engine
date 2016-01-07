@@ -36,8 +36,12 @@ public class PlayfieldFactory {
         PlayfieldProgram program = new PlayfieldProgram();
         renderer.createProgram(program);
         Texture2D texture = AssetManager.getInstance().getTexture(renderer, textureData);
-        map.createMesh(program, texture, source.getSize(), source.getTransform().getTranslate());
-        map.setupCharmap(parent.getMapSize(), new float[] { 0, 0 });
+        map.createMesh(program, texture);
+        float[] size = new float[2];
+        int[] mapSize = parent.getMapSize();
+        size[0] = mapSize[0] * source.getTileWidth();
+        size[1] = mapSize[1] * source.getTileHeight();
+        map.setupCharmap(parent.getMapSize());
 
         if (Configuration.getInstance().isUseVBO()) {
             BufferObjectsFactory.getInstance().createVBOs(renderer, map);
@@ -51,17 +55,17 @@ public class PlayfieldFactory {
      * be filled with map data.
      * 
      * @param renderer
-     * @param parent The parent playfield controller, the mesh will be created based on the data in this.
+     * @param source The source playfield controller, the mesh will be created based on the data in this.
      * @return The created mesh
      * @throws IOException
      */
-    public static PlayfieldMesh create(NucleusRenderer renderer, PlayfieldController parent,
+    public static PlayfieldMesh create(NucleusRenderer renderer, PlayfieldController source,
             GraphicsEngineSceneData scene)
             throws IOException {
 
         TiledTexture2D textureData = (TiledTexture2D) scene.getResources().getTexture2DData(
-                parent.getPlayfieldMesh().getTextureRef());
+                source.getPlayfieldMesh().getTextureRef());
 
-        return create(renderer, parent, textureData);
+        return create(renderer, source, textureData);
     }
 }
