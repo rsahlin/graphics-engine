@@ -1,13 +1,13 @@
 package com.graphicsengine.sprite;
 
 import com.google.gson.annotations.SerializedName;
-import com.nucleus.logic.LogicContainer;
-import com.nucleus.logic.LogicItem;
-import com.nucleus.logic.LogicNode;
-import com.nucleus.logic.LogicResolver;
+import com.nucleus.logic.ActorContainer;
+import com.nucleus.logic.ActorItem;
+import com.nucleus.logic.ActorNode;
+import com.nucleus.logic.ActorResolver;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.NodeData;
-import com.nucleus.scene.SceneData;
+import com.nucleus.scene.RootNode;
 
 /**
  * Controller for a set of sprites.
@@ -17,7 +17,7 @@ import com.nucleus.scene.SceneData;
  * @author Richard Sahlin
  *
  */
-public abstract class SpriteController extends LogicNode {
+public abstract class SpriteController extends ActorNode {
 
     private final static String LOGICRESOLVER_NOT_SET = "LogicResolver not set, must set before calling.";
     private final static String LOGIC_NOT_FOUND_ERROR = "Logic not found for id: ";
@@ -30,7 +30,7 @@ public abstract class SpriteController extends LogicNode {
 
     transient protected Sprite[] sprites;
     transient protected int count;
-    transient protected LogicResolver logicResolver;
+    transient protected ActorResolver logicResolver;
 
     /**
      * Default constructor
@@ -76,7 +76,7 @@ public abstract class SpriteController extends LogicNode {
     }
 
     @Override
-    public LogicContainer[] getLogicContainer() {
+    public ActorContainer[] getLogicContainer() {
         return sprites;
     }
 
@@ -87,7 +87,7 @@ public abstract class SpriteController extends LogicNode {
      * 
      * @param resolver The resolver to add, used when createSprites() is called.
      */
-    public void setLogicResolver(LogicResolver resolver) {
+    public void setLogicResolver(ActorResolver resolver) {
         logicResolver = resolver;
     }
 
@@ -95,14 +95,14 @@ public abstract class SpriteController extends LogicNode {
      * Creates the logic sprites, this will only create the logic and data for the logic it will not create the
      * mesh/textures
      * 
-     * @see #createMesh(NucleusRenderer, NodeData, SceneData)
+     * @see #createMesh(NucleusRenderer, NodeData, RootNode)
      * 
      * @param renderer
      * @param source
      * @param scene
      */
     public abstract void createSprites(NucleusRenderer renderer, SpriteController source,
-            SceneData scene);
+            RootNode scene);
 
     /**
      * Creates the renderable sprite (mesh)
@@ -112,7 +112,7 @@ public abstract class SpriteController extends LogicNode {
      * @param spriteController
      * @param scene
      */
-    public abstract void createMesh(NucleusRenderer renderer, SpriteController spriteController, SceneData scene);
+    public abstract void createMesh(NucleusRenderer renderer, SpriteController spriteController, RootNode scene);
 
     /**
      * Internal method to check if a logic resolver has been set, call this in implementations of the createSprites()
@@ -154,7 +154,7 @@ public abstract class SpriteController extends LogicNode {
         for (int i = 0; i < logicIds.length; i++) {
             int offset = offsets[i];
             int count = counts[i];
-            LogicItem l = logicResolver.getLogic(logicIds[i]);
+            ActorItem l = logicResolver.getLogic(logicIds[i]);
             if (l == null) {
                 throw new IllegalArgumentException(LOGIC_NOT_FOUND_ERROR + logicIds[i]);
             }
@@ -170,11 +170,11 @@ public abstract class SpriteController extends LogicNode {
      * @param logic
      */
     public void setLogic(LogicArray logic) {
-        LogicItem l = null;
+        ActorItem l = null;
         String classname = logic.getClassName();
         if (classname != null) {
             try {
-                l = (LogicItem) Class.forName(classname).newInstance();
+                l = (ActorItem) Class.forName(classname).newInstance();
             } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
                 e.printStackTrace();
                 // Cannot recover

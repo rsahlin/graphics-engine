@@ -2,7 +2,7 @@ package com.graphicsengine.map;
 
 import java.io.IOException;
 
-import com.graphicsengine.io.GraphicsEngineSceneData;
+import com.graphicsengine.io.GraphicsEngineRootNode;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node;
 
@@ -26,7 +26,7 @@ public class PlayfieldControllerFactory {
      * @return New instance of the referenced playfield controlller
      */
     public static PlayfieldController create(NucleusRenderer renderer, Node source, String reference,
-            GraphicsEngineSceneData scene) throws IOException {
+            GraphicsEngineRootNode scene) throws IOException {
         PlayfieldController refNode = scene.getResources().getPlayfieldController(reference);
         PlayfieldController playfieldController = new PlayfieldController(source);
         playfieldController.createMesh(renderer, refNode, scene);

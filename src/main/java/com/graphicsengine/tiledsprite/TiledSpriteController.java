@@ -3,11 +3,11 @@ package com.graphicsengine.tiledsprite;
 import java.io.IOException;
 
 import com.google.gson.annotations.SerializedName;
-import com.graphicsengine.io.GraphicsEngineSceneData;
+import com.graphicsengine.io.GraphicsEngineRootNode;
 import com.graphicsengine.sprite.Sprite;
 import com.graphicsengine.sprite.SpriteController;
 import com.nucleus.renderer.NucleusRenderer;
-import com.nucleus.scene.SceneData;
+import com.nucleus.scene.RootNode;
 
 /**
  * Controller for tiled sprites, this controller creates the tiled sprite objects.
@@ -51,7 +51,7 @@ public class TiledSpriteController extends SpriteController {
     }
 
     @Override
-    public void createSprites(NucleusRenderer renderer, SpriteController source, SceneData scene) {
+    public void createSprites(NucleusRenderer renderer, SpriteController source, RootNode scene) {
         TiledSpriteController spriteController = (TiledSpriteController) source;
         create(spriteController.getLogicData().getCount());
         for (int i = 0; i < count; i++) {
@@ -62,9 +62,9 @@ public class TiledSpriteController extends SpriteController {
     }
 
     @Override
-    public void createMesh(NucleusRenderer renderer, SpriteController spriteController, SceneData scene) {
+    public void createMesh(NucleusRenderer renderer, SpriteController spriteController, RootNode scene) {
         try {
-            GraphicsEngineSceneData gScene = (GraphicsEngineSceneData) scene;
+            GraphicsEngineRootNode gScene = (GraphicsEngineRootNode) scene;
             spriteSheet = TiledSpriteFactory.create(renderer, (TiledSpriteController) spriteController, gScene);
             addMesh(spriteSheet);
         } catch (IOException e) {
@@ -94,22 +94,22 @@ public class TiledSpriteController extends SpriteController {
 
     @Override
     public void play() {
-        state = State.PLAY;
+        controllerState = State.PLAY;
     }
 
     @Override
     public void pause() {
-        state = State.PAUSE;
+        controllerState = State.PAUSE;
     }
 
     @Override
     public void stop() {
-        state = State.STOPPED;
+        controllerState = State.STOPPED;
     }
 
     @Override
     public void reset() {
-        state = State.STOPPED;
+        controllerState = State.STOPPED;
     }
 
     @Override
@@ -117,7 +117,7 @@ public class TiledSpriteController extends SpriteController {
         for (Sprite sprite : sprites) {
             sprite.logic.init(sprite);
         }
-        state = State.INITIALIZED;
+        controllerState = State.INITIALIZED;
     }
 
 }

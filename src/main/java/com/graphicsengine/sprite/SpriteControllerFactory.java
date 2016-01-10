@@ -1,7 +1,7 @@
 package com.graphicsengine.sprite;
 
 import com.graphicsengine.tiledsprite.TiledSpriteController;
-import com.nucleus.logic.LogicResolver;
+import com.nucleus.logic.ActorResolver;
 import com.nucleus.scene.Node;
 
 /**
@@ -39,7 +39,7 @@ public class SpriteControllerFactory {
 
     }
 
-    static LogicResolver logicResolver;
+    static ActorResolver logicResolver;
     /**
      * Tiled sprite controller instance.
      */
@@ -66,7 +66,7 @@ public class SpriteControllerFactory {
      * 
      * @param logicResolver
      */
-    public static void setLogicResolver(LogicResolver logicResolver) {
+    public static void setLogicResolver(ActorResolver logicResolver) {
         SpriteControllerFactory.logicResolver = logicResolver;
     }
 

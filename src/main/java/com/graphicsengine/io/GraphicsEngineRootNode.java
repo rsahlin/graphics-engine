@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.map.Playfield;
 import com.graphicsengine.map.PlayfieldController;
 import com.graphicsengine.tiledsprite.TiledSpriteController;
-import com.nucleus.scene.SceneData;
+import com.nucleus.scene.RootNode;
 
 /**
  * The graphics engine implementation of SceneData, this holds all the objects that can be serialized in this project
@@ -13,7 +13,7 @@ import com.nucleus.scene.SceneData;
  * @author Richard Sahlin
  *
  */
-public class GraphicsEngineSceneData extends SceneData {
+public class GraphicsEngineRootNode extends RootNode {
 
     @SerializedName("resources")
     private GraphicsEngineResourcesData resources = new GraphicsEngineResourcesData();

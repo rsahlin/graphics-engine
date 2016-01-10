@@ -1,7 +1,7 @@
 package com.graphicsengine.sprite;
 
-import com.nucleus.logic.LogicContainer;
-import com.nucleus.logic.LogicItem;
+import com.nucleus.logic.ActorContainer;
+import com.nucleus.logic.ActorItem;
 import com.nucleus.vecmath.VecMath;
 import com.nucleus.vecmath.Vector2D;
 
@@ -13,7 +13,7 @@ import com.nucleus.vecmath.Vector2D;
  * @author Richard Sahlin
  *
  */
-public abstract class Sprite extends LogicContainer {
+public abstract class Sprite extends ActorContainer {
 
     public final static String INVALID_DATACOUNT_ERROR = "Invalid datacount";
 
@@ -50,7 +50,7 @@ public abstract class Sprite extends LogicContainer {
     /**
      * The sprite logic implementation
      */
-    public LogicItem logic;
+    public ActorItem logic;
 
     /**
      * Creates a new sprite with storage for MIN_FLOAT_COUNT floats and MIN_INT_COUNT ints
@@ -131,7 +131,7 @@ public abstract class Sprite extends LogicContainer {
      * @param y Acceleration on y axis
      * @param deltaTime Time since last time movement was updated, ie elapsed time.
      */
-    public static void accelerate(LogicContainer sprite, float x, float y, float deltaTime) {
+    public static void accelerate(ActorContainer sprite, float x, float y, float deltaTime) {
         float[] floatData = sprite.floatData;
         floatData[MOVE_VECTOR_X] += x * deltaTime;
         floatData[MOVE_VECTOR_Y] += y * deltaTime;
@@ -142,7 +142,7 @@ public abstract class Sprite extends LogicContainer {
      * 
      * @param deltaTime
      */
-    public static void move(LogicContainer sprite, float deltaTime) {
+    public static void move(ActorContainer sprite, float deltaTime) {
         float[] floatData = sprite.floatData;
         Vector2D moveVector = sprite.moveVector;
         floatData[X_POS] += deltaTime * moveVector.vector[VecMath.X] * moveVector.vector[Vector2D.MAGNITUDE] +

@@ -4,10 +4,10 @@ import java.io.IOException;
 
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.dataflow.ArrayInputData;
-import com.graphicsengine.io.GraphicsEngineSceneData;
+import com.graphicsengine.io.GraphicsEngineRootNode;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node;
-import com.nucleus.scene.SceneData;
+import com.nucleus.scene.RootNode;
 import com.nucleus.vecmath.Axis;
 
 /**
@@ -54,7 +54,7 @@ public class PlayfieldController extends Node {
      * Creates a new playfieldcontroller from the specified source node
      * The created node will have the same id and properties but it will not contain the
      * data, ie the mesh and mapdata will not be copied.
-     * Call {@link #createMesh(NucleusRenderer, PlayfieldController, SceneData)} to create the mesh.
+     * Call {@link #createMesh(NucleusRenderer, PlayfieldController, RootNode)} to create the mesh.
      * 
      * @source
      */
@@ -75,7 +75,7 @@ public class PlayfieldController extends Node {
      * @throws IOException
      */
     public void createMesh(NucleusRenderer renderer, PlayfieldController source,
-            GraphicsEngineSceneData scene)
+            GraphicsEngineRootNode scene)
             throws IOException {
         playfield = PlayfieldFactory.create(renderer, source, scene);
         addMesh(playfield);
@@ -88,7 +88,7 @@ public class PlayfieldController extends Node {
      * @param source
      * @param scene
      */
-    public void createPlayfield(PlayfieldController source, GraphicsEngineSceneData scene) {
+    public void createPlayfield(PlayfieldController source, GraphicsEngineRootNode scene) {
         Playfield playfieldData = scene.getResources().getPlayfield(source.getMapRef());
         createMap(source.getMapSize());
         mapRef = source.getMapRef();

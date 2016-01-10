@@ -2,7 +2,7 @@ package com.graphicsengine.tiledsprite;
 
 import java.io.IOException;
 
-import com.graphicsengine.io.GraphicsEngineSceneData;
+import com.graphicsengine.io.GraphicsEngineRootNode;
 import com.graphicsengine.sprite.SpriteControllerFactory;
 import com.graphicsengine.sprite.SpriteControllerFactory.SpriteControllers;
 import com.nucleus.renderer.NucleusRenderer;
@@ -28,7 +28,7 @@ public class TiledSpriteControllerFactory {
      * @throws IOException
      */
     public static TiledSpriteController create(NucleusRenderer renderer, Node source,
-            String reference, GraphicsEngineSceneData scene) throws IOException {
+            String reference, GraphicsEngineRootNode scene) throws IOException {
 
         try {
             TiledSpriteController refNode = scene.getResources().getTiledSpriteController(reference);

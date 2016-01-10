@@ -2,7 +2,7 @@ package com.graphicsengine.tiledsprite;
 
 import java.io.IOException;
 
-import com.graphicsengine.io.GraphicsEngineSceneData;
+import com.graphicsengine.io.GraphicsEngineRootNode;
 import com.nucleus.assets.AssetManager;
 import com.nucleus.renderer.BufferObjectsFactory;
 import com.nucleus.renderer.Configuration;
@@ -20,7 +20,7 @@ import com.nucleus.texturing.TiledTexture2D;
 public class TiledSpriteFactory {
 
     public static TiledSpriteMesh create(NucleusRenderer renderer, TiledSpriteController parent,
-            GraphicsEngineSceneData scene) throws IOException {
+            GraphicsEngineRootNode scene) throws IOException {
 
         TiledTexture2D textureData = (TiledTexture2D) scene.getResources().getTexture2DData(
                 parent.getSpriteSheet().getTextureRef());

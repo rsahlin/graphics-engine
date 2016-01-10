@@ -2,7 +2,7 @@ package com.graphicsengine.map;
 
 import java.io.IOException;
 
-import com.graphicsengine.io.GraphicsEngineSceneData;
+import com.graphicsengine.io.GraphicsEngineRootNode;
 import com.nucleus.assets.AssetManager;
 import com.nucleus.renderer.BufferObjectsFactory;
 import com.nucleus.renderer.Configuration;
@@ -60,7 +60,7 @@ public class PlayfieldFactory {
      * @throws IOException
      */
     public static PlayfieldMesh create(NucleusRenderer renderer, PlayfieldController source,
-            GraphicsEngineSceneData scene)
+            GraphicsEngineRootNode scene)
             throws IOException {
 
         TiledTexture2D textureData = (TiledTexture2D) scene.getResources().getTexture2DData(
