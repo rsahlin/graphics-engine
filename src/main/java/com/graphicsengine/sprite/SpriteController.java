@@ -1,10 +1,10 @@
 package com.graphicsengine.sprite;
 
 import com.google.gson.annotations.SerializedName;
-import com.nucleus.logic.ActorContainer;
-import com.nucleus.logic.ActorItem;
-import com.nucleus.logic.ActorNode;
-import com.nucleus.logic.ActorResolver;
+import com.nucleus.actor.ActorContainer;
+import com.nucleus.actor.ActorItem;
+import com.nucleus.actor.ActorNode;
+import com.nucleus.actor.ActorResolver;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.NodeData;
 import com.nucleus.scene.RootNode;
@@ -26,7 +26,7 @@ public abstract class SpriteController extends ActorNode {
      * The data used to create the logic
      */
     @SerializedName("logicdata")
-    LogicData logicdata;
+    ActorData logicdata;
 
     transient protected Sprite[] sprites;
     transient protected int count;
@@ -51,7 +51,7 @@ public abstract class SpriteController extends ActorNode {
      */
     protected void set(SpriteController source) {
         super.set(source);
-        logicdata = new LogicData(source.getLogicData());
+        logicdata = new ActorData(source.getLogicData());
     }
 
     /**
@@ -71,7 +71,7 @@ public abstract class SpriteController extends ActorNode {
      * 
      * @return
      */
-    public LogicData getLogicData() {
+    public ActorData getLogicData() {
         return logicdata;
     }
 
@@ -169,7 +169,7 @@ public abstract class SpriteController extends ActorNode {
      * 
      * @param logic
      */
-    public void setLogic(LogicArray logic) {
+    public void setLogic(ActorArray logic) {
         ActorItem l = null;
         String classname = logic.getClassName();
         if (classname != null) {
@@ -206,8 +206,8 @@ public abstract class SpriteController extends ActorNode {
      * 
      * @param logic
      */
-    public void setLogic(LogicArray[] logic) {
-        for (LogicArray data : logic) {
+    public void setLogic(ActorArray[] logic) {
+        for (ActorArray data : logic) {
             setLogic(data);
         }
     }

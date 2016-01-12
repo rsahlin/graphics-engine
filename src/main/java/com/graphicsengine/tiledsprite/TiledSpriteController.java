@@ -3,6 +3,7 @@ package com.graphicsengine.tiledsprite;
 import java.io.IOException;
 
 import com.google.gson.annotations.SerializedName;
+import com.graphicsengine.geometry.TiledMesh;
 import com.graphicsengine.io.GraphicsEngineRootNode;
 import com.graphicsengine.sprite.Sprite;
 import com.graphicsengine.sprite.SpriteController;
@@ -14,7 +15,8 @@ import com.nucleus.scene.RootNode;
  * A tiled sprite (quad) can be drawn in one draw call together with a large number of other sprites (they share the
  * same Mesh).
  * This is to allow a very large number of sprites in just 1 draw call to the underlying render API (OpenGLES).
- * Performance is increased, but all sprites must share the same texture atlas.
+ * Depending on what shader program is used with this class the sprites will have different behavior.
+ * {@link TiledSpriteProgram}
  * 
  * @author Richard Sahlin
  *
@@ -26,7 +28,7 @@ public class TiledSpriteController extends SpriteController {
      * TODO Unify all controllers that renders a Mesh, with methods for creating the mesh
      */
     @SerializedName("charset")
-    private TiledSpriteMesh spriteSheet;
+    private TiledMesh spriteSheet;
 
     /**
      * Default constructor
@@ -47,7 +49,7 @@ public class TiledSpriteController extends SpriteController {
      */
     protected void set(TiledSpriteController source) {
         super.set(source);
-        spriteSheet = new TiledSpriteMesh(source.getSpriteSheet());
+        spriteSheet = new TiledMesh(source.getSpriteSheet());
     }
 
     @Override
@@ -62,10 +64,10 @@ public class TiledSpriteController extends SpriteController {
     }
 
     @Override
-    public void createMesh(NucleusRenderer renderer, SpriteController spriteController, RootNode scene) {
+    public void createMesh(NucleusRenderer renderer, SpriteController source, RootNode scene) {
         try {
             GraphicsEngineRootNode gScene = (GraphicsEngineRootNode) scene;
-            spriteSheet = TiledSpriteFactory.create(renderer, (TiledSpriteController) spriteController, gScene);
+            spriteSheet = TiledSpriteFactory.create(renderer, (TiledSpriteController) source, gScene);
             addMesh(spriteSheet);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -88,7 +90,7 @@ public class TiledSpriteController extends SpriteController {
      * 
      * @return
      */
-    public TiledSpriteMesh getSpriteSheet() {
+    public TiledMesh getSpriteSheet() {
         return spriteSheet;
     }
 

@@ -1,12 +1,13 @@
 package com.graphicsengine.map;
 
 import com.google.gson.annotations.SerializedName;
+import com.graphicsengine.geometry.TiledMesh;
 import com.nucleus.data.Anchor;
 import com.nucleus.geometry.AttributeUpdater;
-import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.VertexBuffer;
 import com.nucleus.opengl.GLESWrapper.GLES20;
+import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TiledTexture2D;
 import com.nucleus.vecmath.Axis;
@@ -17,44 +18,16 @@ import com.nucleus.vecmath.Axis;
  * This class has no real functionality besides being able to be rendered - to use the charmap, see
  * {@link PlayfieldController}
  * 
- * TODO: Create a TiledMesh class that is used by both this class and TiledSpriteMesh
- * 
  * @author Richard Sahlin
  *
  */
-public class PlayfieldMesh extends Mesh implements AttributeUpdater {
-
-    /**
-     * Number of characters in the charmap, this is the max number of visible characters
-     */
-    @SerializedName("count")
-    private int charCount;
-
-    /**
-     * Width and height of each character
-     */
-    @SerializedName("size")
-    private float[] size = new float[2];
-
-    @SerializedName("anchor")
-    private Anchor anchor;
-    /**
-     * Reference to tiled texture
-     */
-    @SerializedName("textureref")
-    private String textureRef;
+public class PlayfieldMesh extends TiledMesh implements AttributeUpdater {
 
     /**
      * Width and height of playfield in chars
      */
     @SerializedName("mapSize")
     private int[] mapSize = new int[2];
-
-    /**
-     * Contains attribute data for all chars.
-     * This data must be mapped into the mesh for changes to take place.
-     */
-    transient float[] attributeData;
 
     /**
      * playfield character data, one value for each char - this is the source map that can be used for collision etc.
@@ -70,7 +43,7 @@ public class PlayfieldMesh extends Mesh implements AttributeUpdater {
      * @param source The source, id, textureRef and character count is taken from here.
      */
     public PlayfieldMesh(PlayfieldMesh source) {
-        super();
+        super(source);
         set(source);
     }
 
@@ -82,24 +55,13 @@ public class PlayfieldMesh extends Mesh implements AttributeUpdater {
      */
     public void set(PlayfieldMesh source) {
         setId(source.getId());
-        init(source.charCount);
+        init(source.count);
         this.textureRef = source.textureRef;
         if (source.anchor != null) {
             anchor = new Anchor(source.anchor);
         }
         setSize(source.size);
         setMapSize(source.mapSize);
-    }
-
-    /**
-     * Creates a new charmap with the specified number of characters
-     * The mesh must be created before the charmap is rendered.
-     * 
-     * @param charCount Number of chars to create attribute storage for.
-     */
-    public PlayfieldMesh(String id, int charCount) {
-        super(id);
-        init(charCount);
     }
 
     /**
@@ -139,7 +101,7 @@ public class PlayfieldMesh extends Mesh implements AttributeUpdater {
      * @param charCount
      */
     private void init(int charCount) {
-        this.charCount = charCount;
+        this.count = charCount;
         attributeData = new float[(charCount * PlayfieldProgram.ATTRIBUTES_PER_CHAR)];
         charmap = new int[charCount];
         int offset = 0;
@@ -161,9 +123,33 @@ public class PlayfieldMesh extends Mesh implements AttributeUpdater {
      */
     public void createMesh(PlayfieldProgram program, Texture2D texture) {
         setSize(size);
-        program.buildMesh(this, texture, charCount, size, anchor, GLES20.GL_FLOAT);
         setTexture(texture, Texture2D.TEXTURE_0);
+        buildMesh(program, count, size, anchor, GLES20.GL_FLOAT);
         setAttributeUpdater(this);
+    }
+
+    /**
+     * Builds a mesh with data that can be rendered using a tiled charmap renderer, this will draw a number of
+     * charmaps using one drawcall.
+     * Vertex buffer will have storage for XYZ + UV.
+     * Before using the mesh the chars needs to be positioned, this call just creates the buffers. All chars will
+     * have a position of 0.
+     * 
+     * @param mesh The mesh to build buffers for
+     * @param texture The texture source, if tiling shall be used it must be {@link TiledTexture2D}
+     * @param charCount Number of chars to build, this is NOT the vertex count.
+     * @param charSizeThe width and height of each char
+     * @param anchor chars anchor values
+     * @param type The datatype for attribute data - GLES20.GL_FLOAT
+     * 
+     * @throws IllegalArgumentException if type is not GLES20.GL_FLOAT
+     */
+    public void buildMesh(ShaderProgram program, int charCount, float[] charSize, Anchor anchor, int type) {
+
+        int vertexStride = program.getVertexStride();
+        float[] quadPositions = MeshBuilder.buildQuadPositionsIndexed(charSize, anchor, vertexStride);
+        MeshBuilder.buildQuadMeshIndexed(this, program, charCount, quadPositions);
+        program.setupUniforms(this);
     }
 
     /**
@@ -337,7 +323,7 @@ public class PlayfieldMesh extends Mesh implements AttributeUpdater {
     @Override
     public void setAttributeData() {
         VertexBuffer positions = getVerticeBuffer(BufferIndex.ATTRIBUTES);
-        positions.setArray(getAttributeData(), 0, 0, charCount * PlayfieldProgram.ATTRIBUTES_PER_CHAR);
+        positions.setArray(getAttributeData(), 0, 0, count * PlayfieldProgram.ATTRIBUTES_PER_CHAR);
     }
 
     @Override
@@ -402,6 +388,7 @@ public class PlayfieldMesh extends Mesh implements AttributeUpdater {
      * 
      * @return Width and height of each character
      */
+    @Override
     public float[] getSize() {
         return size;
     }
@@ -411,6 +398,7 @@ public class PlayfieldMesh extends Mesh implements AttributeUpdater {
      * 
      * @return
      */
+    @Override
     public String getTextureRef() {
         return textureRef;
     }

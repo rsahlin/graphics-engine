@@ -1,56 +1,59 @@
-package com.graphicsengine.tiledsprite;
+package com.graphicsengine.geometry;
 
 import com.google.gson.annotations.SerializedName;
+import com.graphicsengine.tiledsprite.TiledSpriteProgram;
 import com.nucleus.data.Anchor;
 import com.nucleus.geometry.AttributeUpdater;
 import com.nucleus.geometry.Mesh;
+import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.VertexBuffer;
+import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TiledTexture2D;
 import com.nucleus.vecmath.Axis;
 
 /**
- * A number of sprites that will be rendered using the same Mesh, ie all sprites in this class are rendered using one
- * draw call.
+ * A number of tiled sprites that will be rendered using the same Mesh, ie all sprites in this class are rendered using
+ * one draw call.
+ * This can also be used to render tiled chars
  * This class only contains the drawable parts of the sprites - no logic is contained in this class.
- * TODO: Create a TiledMesh class that is used by both this class and PlayfieldMesh
  * 
  * @author Richard Sahlin
  *
  */
-public class TiledSpriteMesh extends Mesh implements AttributeUpdater {
+public class TiledMesh extends Mesh implements AttributeUpdater {
 
     @SerializedName("count")
-    int count;
+    protected int count;
     /**
      * Width and height of each sprite.
      */
     @SerializedName("size")
-    private float[] size = new float[2];
+    protected float[] size = new float[2];
     /**
      * Anchor value for each sprites, 0 to 1 where 0 is upper/left and 1 is lower/right assuming vertices
      * are
      */
     @SerializedName("anchor")
-    private Anchor anchor;
+    protected Anchor anchor;
     /**
      * Reference to tiled texture
      */
     @SerializedName("textureref")
-    private String textureRef;
+    protected String textureRef;
 
     /**
      * Contains attribute data for all sprites.
      * This data must be mapped into the mesh for changes to take place.
      */
-    transient float[] attributeData;
+    protected transient float[] attributeData;
 
     /**
      * Creates a new sprite sheet using one mesh, the mesh must be created before being used.
      * 
      * @param spriteCount
      */
-    public TiledSpriteMesh(int spriteCount) {
+    public TiledMesh(int spriteCount) {
         setup(spriteCount);
     }
 
@@ -61,7 +64,7 @@ public class TiledSpriteMesh extends Mesh implements AttributeUpdater {
      * 
      * @param source
      */
-    public TiledSpriteMesh(TiledSpriteMesh source) {
+    public TiledMesh(TiledMesh source) {
         super();
         set(source);
     }
@@ -71,7 +74,7 @@ public class TiledSpriteMesh extends Mesh implements AttributeUpdater {
      * 
      * @param source
      */
-    public void set(TiledSpriteMesh source) {
+    public void set(TiledMesh source) {
         setId(source.getId());
         this.textureRef = source.textureRef;
         if (source.anchor != null) {
@@ -110,12 +113,27 @@ public class TiledSpriteMesh extends Mesh implements AttributeUpdater {
      * @param texture The texture to use for sprites, must be {@link TiledTexture2D} otherwise tiling will not work.
      * @return
      */
-    public void createMesh(TiledSpriteProgram program, Texture2D texture) {
-        program.buildMesh(this, texture, count, size, anchor);
-
+    public void createMesh(ShaderProgram program, Texture2D texture) {
         setTexture(texture, Texture2D.TEXTURE_0);
+        buildMesh(program, count, size, anchor);
         setAttributeUpdater(this);
+    }
 
+    /**
+     * Builds a mesh with data that can be rendered using a tiled sprite renderer, this will draw a number of
+     * sprites using one drawcall.
+     * Vertex buffer will have storage for XYZ + UV.
+     * 
+     * @param program The shader program to use with the mesh
+     * @param spriteCount Number of sprites to build, this is NOT the vertex count.
+     * @param size Width and height of each sprite
+     * @param anchor Anchor values for sprites
+     */
+    public void buildMesh(ShaderProgram program, int spriteCount, float[] size, Anchor anchor) {
+        int vertexStride = program.getVertexStride();
+        float[] quadPositions = MeshBuilder.buildQuadPositionsIndexed(size, anchor, vertexStride);
+        MeshBuilder.buildQuadMeshIndexed(this, program, spriteCount, quadPositions);
+        program.setupUniforms(this);
     }
 
     /**
@@ -130,7 +148,6 @@ public class TiledSpriteMesh extends Mesh implements AttributeUpdater {
 
     @Override
     public void setAttributeData() {
-        // TODO Index the numbers for vertice/attribute data instead of using 0/1
         VertexBuffer positions = getVerticeBuffer(BufferIndex.ATTRIBUTES);
         positions.setArray(getAttributeData(), 0, 0, count * TiledSpriteProgram.ATTRIBUTES_PER_SPRITE);
     }

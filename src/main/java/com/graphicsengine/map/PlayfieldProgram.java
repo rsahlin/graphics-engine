@@ -1,9 +1,6 @@
 package com.graphicsengine.map;
 
-import com.nucleus.data.Anchor;
 import com.nucleus.geometry.Mesh;
-import com.nucleus.geometry.Mesh.BufferIndex;
-import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.VertexBuffer;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.GLESWrapper.GLES20;
@@ -126,26 +123,6 @@ public class PlayfieldProgram extends ShaderProgram {
     }
 
     @Override
-    public void bindAttributes(GLES20Wrapper gles, Mesh mesh) throws GLException {
-        // TODO - make into generic method that can be shared with TiledSpriteProgram
-        ShaderVariable[] attribs = new ShaderVariable[] { getShaderVariable(VARIABLES.aPosition.index) };
-        int[] offsets = new int[] { 0 };
-        VertexBuffer buffer = mesh.getVerticeBuffer(BufferIndex.VERTICES);
-        gles.glVertexAttribPointer(buffer, GLES20.GL_ARRAY_BUFFER, attribs, offsets);
-        GLUtils.handleError(gles, "glVertexAttribPointers ");
-
-        ShaderVariable[] attribs2 = new ShaderVariable[] { getShaderVariable(VARIABLES.aCharset.index),
-                getShaderVariable(VARIABLES.aCharset2.index) };
-        // Keep offset in number of floats
-        int[] offsets2 = new int[] { ATTRIBUTE_1_OFFSET, ATTRIBUTE_2_OFFSET };
-        VertexBuffer buffer2 = mesh.getVerticeBuffer(BufferIndex.ATTRIBUTES);
-        gles.glVertexAttribPointer(buffer2, GLES20.GL_ARRAY_BUFFER, attribs2, offsets2);
-
-        GLUtils.handleError(gles, "glVertexAttribPointers ");
-
-    }
-
-    @Override
     public void bindUniforms(GLES20Wrapper gles, float[] modelviewMatrix, Mesh mesh) throws GLException {
         ShaderVariable v = getShaderVariable(VARIABLES.uMVPMatrix.index);
         System.arraycopy(modelviewMatrix, 0, mesh.getUniformMatrices(), 0, modelviewMatrix.length);
@@ -159,31 +136,26 @@ public class PlayfieldProgram extends ShaderProgram {
         GLUtils.handleError(gles, "glUniform4fv ");
     }
 
-    /**
-     * Builds a mesh with data that can be rendered using a tiled charmap renderer, this will draw a number of
-     * charmaps using one drawcall.
-     * Vertex buffer will have storage for XYZ + UV.
-     * Before using the mesh the chars needs to be positioned, this call just creates the buffers. All chars will
-     * have a position of 0.
-     * 
-     * @param mesh The mesh to build buffers for
-     * @param texture The texture source, if tiling shall be used it must be {@link TiledTexture2D}
-     * @param charCount Number of chars to build, this is NOT the vertex count.
-     * @param charSizeThe width and height of each char
-     * @param anchor chars anchor values
-     * @param type The datatype for attribute data - GLES20.GL_FLOAT
-     * 
-     * @throws IllegalArgumentException if type is not GLES20.GL_FLOAT
-     */
-    public void buildMesh(Mesh mesh, Texture2D texture, int charCount, float[] charSize, Anchor anchor,
-            int type) {
+    @Override
+    public void createProgram(GLES20Wrapper gles) {
+        createProgram(gles, VERTEX_SHADER_NAME, FRAGMENT_SHADER_NAME);
+    }
 
-        int vertexStride = DEFAULT_COMPONENTS;
-        float[] quadPositions = MeshBuilder.buildQuadPositionsIndexed(charSize, anchor, vertexStride);
-        MeshBuilder.buildQuadMeshIndexed(mesh, this, charCount, quadPositions, ATTRIBUTES_PER_VERTEX);
+    @Override
+    public int getVertexStride() {
+        return DEFAULT_COMPONENTS;
+    }
 
+    @Override
+    public VertexBuffer createAttributeBuffer(int verticeCount) {
+        return new VertexBuffer(verticeCount, 4, ATTRIBUTES_PER_VERTEX, GLES20.GL_FLOAT);
+    }
+
+    @Override
+    public void setupUniforms(Mesh mesh) {
         createUniformStorage(mesh, shaderVariables);
         float[] uniformVectors = mesh.getUniformVectors();
+        Texture2D texture = mesh.getTexture(Texture2D.TEXTURE_0);
         if (texture instanceof TiledTexture2D) {
             setTextureUniforms((TiledTexture2D) texture, uniformVectors, UNIFORM_TEX_FRACTION_S_INDEX);
         } else {
@@ -194,8 +166,24 @@ public class PlayfieldProgram extends ShaderProgram {
     }
 
     @Override
-    public void createProgram(GLES20Wrapper gles) {
-        createProgram(gles, VERTEX_SHADER_NAME, FRAGMENT_SHADER_NAME);
+    protected ShaderVariable[] getPositionAttributes() {
+        return new ShaderVariable[] { getShaderVariable(VARIABLES.aPosition.index) };
+    }
+
+    @Override
+    protected int[] getPositionOffsets() {
+        return new int[] { 0 };
+    }
+
+    @Override
+    protected ShaderVariable[] getGenericAttributes() {
+        return new ShaderVariable[] { getShaderVariable(VARIABLES.aCharset.index),
+                getShaderVariable(VARIABLES.aCharset2.index) };
+    }
+
+    @Override
+    protected int[] getGenericOffsets() {
+        return new int[] { ATTRIBUTE_1_OFFSET, ATTRIBUTE_2_OFFSET };
     }
 
 }

@@ -1,9 +1,6 @@
 package com.graphicsengine.tiledsprite;
 
-import com.nucleus.data.Anchor;
 import com.nucleus.geometry.Mesh;
-import com.nucleus.geometry.Mesh.BufferIndex;
-import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.VertexBuffer;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.GLESWrapper.GLES20;
@@ -17,6 +14,9 @@ import com.nucleus.texturing.TiledTexture2D;
 
 /**
  * This class defines the mappings for the tile sprite vertex and fragment shaders.
+ * This program has support for rotated sprites in Z axis, the sprite position and frame index can be set for each
+ * sprite.
+ * It is used by the {@link TiledSpriteController}
  * 
  * @author Richard Sahlin
  *
@@ -129,24 +129,6 @@ public class TiledSpriteProgram extends ShaderProgram {
     }
 
     @Override
-    public void bindAttributes(GLES20Wrapper gles, Mesh mesh) throws GLException {
-        // TODO - make into generic method that can be shared with PlayfieldProgram
-        ShaderVariable[] attribs = new ShaderVariable[] { getShaderVariable(VARIABLES.aPosition.index) };
-        int[] offsets = new int[] { 0 };
-        VertexBuffer buffer = mesh.getVerticeBuffer(BufferIndex.VERTICES);
-        gles.glVertexAttribPointer(buffer, GLES20.GL_ARRAY_BUFFER, attribs, offsets);
-        GLUtils.handleError(gles, "glVertexAttribPointers ");
-
-        ShaderVariable[] attribs2 = new ShaderVariable[] { getShaderVariable(VARIABLES.aTileSprite.index),
-                getShaderVariable(VARIABLES.aTileSprite2.index) };
-        // Keep offset in number of floats
-        int[] offsets2 = new int[] { ATTRIBUTE_1_OFFSET, ATTRIBUTE_2_OFFSET };
-        VertexBuffer buffer2 = mesh.getVerticeBuffer(BufferIndex.ATTRIBUTES);
-        gles.glVertexAttribPointer(buffer2, GLES20.GL_ARRAY_BUFFER, attribs2, offsets2);
-        GLUtils.handleError(gles, "glVertexAttribPointers ");
-    }
-
-    @Override
     public void bindUniforms(GLES20Wrapper gles, float[] modelviewMatrix, Mesh mesh) throws GLException {
         ShaderVariable v = getShaderVariable(VARIABLES.uMVPMatrix.index);
         System.arraycopy(modelviewMatrix, 0, mesh.getUniformMatrices(), 0, modelviewMatrix.length);
@@ -160,31 +142,26 @@ public class TiledSpriteProgram extends ShaderProgram {
         GLUtils.handleError(gles, "glUniform4fv ");
     }
 
-    /**
-     * Builds a mesh with data that can be rendered using a tiled sprite renderer, this will draw a number of
-     * sprites using one drawcall.
-     * Vertex buffer will have storage for XYZ + UV.
-     * 
-     * @param mesh The mesh to build buffers for, this mesh can be rendered after this call.
-     * @param texture Must be {@link TiledTexture2D} if tiling shall work
-     * @param spriteCount Number of sprites to build, this is NOT the vertex count.
-     * @param size Width and height of each sprite
-     * @param translate Offset for each vertex, currently only Z used.
-     * @param anchor Anchor values for sprites
-     * @param type The datatype for attribute data - GLES20.GL_FLOAT
-     * 
-     * @return The mesh that can be rendered.
-     * @throws IllegalArgumentException if type is not GLES20.GL_FLOAT
-     */
-    public void buildMesh(Mesh mesh, Texture2D texture, int spriteCount, float[] size, Anchor anchor) {
+    @Override
+    public void createProgram(GLES20Wrapper gles) {
+        createProgram(gles, VERTEX_SHADER_NAME, FRAGMENT_SHADER_NAME);
+    }
 
-        int vertexStride = DEFAULT_COMPONENTS;
-        float[] quadPositions = MeshBuilder.buildQuadPositionsIndexed(size, anchor, vertexStride);
-        MeshBuilder.buildQuadMeshIndexed(mesh, this, spriteCount, quadPositions, ATTRIBUTES_PER_VERTEX);
+    @Override
+    public int getVertexStride() {
+        return DEFAULT_COMPONENTS;
+    }
 
+    @Override
+    public VertexBuffer createAttributeBuffer(int verticeCount) {
+        return new VertexBuffer(verticeCount, 4, ATTRIBUTES_PER_VERTEX, GLES20.GL_FLOAT);
+    }
+
+    @Override
+    public void setupUniforms(Mesh mesh) {
         createUniformStorage(mesh, shaderVariables);
-
         float[] uniformVectors = mesh.getUniformVectors();
+        Texture2D texture = mesh.getTexture(Texture2D.TEXTURE_0);
         if (texture instanceof TiledTexture2D) {
             setTextureUniforms((TiledTexture2D) texture, uniformVectors, UNIFORM_TEX_FRACTION_S_INDEX);
         } else {
@@ -195,8 +172,24 @@ public class TiledSpriteProgram extends ShaderProgram {
     }
 
     @Override
-    public void createProgram(GLES20Wrapper gles) {
-        createProgram(gles, VERTEX_SHADER_NAME, FRAGMENT_SHADER_NAME);
+    protected ShaderVariable[] getPositionAttributes() {
+        return new ShaderVariable[] { getShaderVariable(VARIABLES.aPosition.index) };
     }
 
+    @Override
+    protected int[] getPositionOffsets() {
+        return new int[] { 0 };
+    }
+
+    @Override
+    protected ShaderVariable[] getGenericAttributes() {
+        return new ShaderVariable[] { getShaderVariable(VARIABLES.aTileSprite.index),
+                getShaderVariable(VARIABLES.aTileSprite2.index) };
+    }
+
+    @Override
+    protected int[] getGenericOffsets() {
+        return new int[] { ATTRIBUTE_1_OFFSET, ATTRIBUTE_2_OFFSET };
+
+    }
 }

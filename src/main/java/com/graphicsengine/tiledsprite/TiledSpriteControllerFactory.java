@@ -21,7 +21,7 @@ public class TiledSpriteControllerFactory {
      * Use this when importing
      * 
      * @param renderer
-     * @param source
+     * @param source The source node to the sprite controller
      * @source reference Reference to the playfield controller that shall be created.
      * @param scene
      * @return

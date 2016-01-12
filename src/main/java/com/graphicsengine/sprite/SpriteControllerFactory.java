@@ -1,7 +1,7 @@
 package com.graphicsengine.sprite;
 
 import com.graphicsengine.tiledsprite.TiledSpriteController;
-import com.nucleus.logic.ActorResolver;
+import com.nucleus.actor.ActorResolver;
 import com.nucleus.scene.Node;
 
 /**
