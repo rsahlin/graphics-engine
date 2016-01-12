@@ -1,20 +1,22 @@
 package com.graphicsengine.sprite;
 
+import com.nucleus.actor.ActorResolver;
+
 /**
- * An array of logic data, this is used when importing and exporting logic
+ * An array of actor data, this is used when importing and exporting logic
  * This class can be serialized using GSON
  * 
  * @author Richard Sahlin
  *
  */
-public class LogicArray {
+public class ActorArray {
 
     /**
-     * Name of logic - this uses the logicresolver to find classname
+     * Name of actor logic - this uses the {@link ActorResolver} to find classname
      */
     private String instance;
     /**
-     * Classname of logic, does not use logicresolver - classname used
+     * Classname of logic, does not use {@link ActorResolver} - classname used
      */
     private String classname;
     /**

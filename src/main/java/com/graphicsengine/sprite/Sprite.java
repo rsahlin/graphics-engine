@@ -1,7 +1,7 @@
 package com.graphicsengine.sprite;
 
-import com.nucleus.logic.ActorContainer;
-import com.nucleus.logic.ActorItem;
+import com.nucleus.actor.ActorContainer;
+import com.nucleus.actor.ActorItem;
 import com.nucleus.vecmath.VecMath;
 import com.nucleus.vecmath.Vector2D;
 
