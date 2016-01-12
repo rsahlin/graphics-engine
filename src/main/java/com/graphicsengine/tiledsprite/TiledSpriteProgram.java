@@ -114,7 +114,7 @@ public class TiledSpriteProgram extends ShaderProgram {
     private final static String VERTEX_SHADER_NAME = "assets/tiledspritevertex.essl";
     private final static String FRAGMENT_SHADER_NAME = "assets/tiledspritefragment.essl";
 
-    public TiledSpriteProgram() {
+    TiledSpriteProgram() {
         super();
     }
 

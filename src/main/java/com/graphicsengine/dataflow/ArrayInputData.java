@@ -1,9 +1,8 @@
 package com.graphicsengine.dataflow;
 
-import com.nucleus.scene.NodeData;
 import com.nucleus.types.DataType;
 
-public class ArrayInputData extends NodeData {
+public class ArrayInputData {
 
     private int components;
     private IntDimensionData size;

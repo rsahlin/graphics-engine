@@ -55,7 +55,7 @@ public abstract class Sprite extends ActorContainer {
     /**
      * Creates a new sprite with storage for MIN_FLOAT_COUNT floats and MIN_INT_COUNT ints
      */
-    public Sprite() {
+    protected Sprite() {
         createArrays(MIN_FLOAT_COUNT, MIN_INT_COUNT);
     }
 
@@ -65,7 +65,7 @@ public abstract class Sprite extends ActorContainer {
      * @param floatCount
      * @param intCount
      */
-    public Sprite(int floatCount, int intCount) {
+    protected Sprite(int floatCount, int intCount) {
         createArrays(floatCount, intCount);
     }
 

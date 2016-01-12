@@ -2,7 +2,6 @@ package com.graphicsengine.tiledsprite;
 
 import java.io.IOException;
 
-import com.graphicsengine.geometry.TiledMesh;
 import com.graphicsengine.io.GraphicsEngineRootNode;
 import com.nucleus.assets.AssetManager;
 import com.nucleus.renderer.BufferObjectsFactory;

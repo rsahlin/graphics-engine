@@ -108,7 +108,7 @@ public class PlayfieldProgram extends ShaderProgram {
     private final static String VERTEX_SHADER_NAME = "assets/charmapvertex.essl";
     private final static String FRAGMENT_SHADER_NAME = "assets/charmapfragment.essl";
 
-    public PlayfieldProgram() {
+    PlayfieldProgram() {
         super();
     }
 

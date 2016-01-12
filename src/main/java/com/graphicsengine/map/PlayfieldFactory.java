@@ -68,4 +68,17 @@ public class PlayfieldFactory {
 
         return create(renderer, source, textureData);
     }
+
+    /**
+     * Creates a new playfield from the controller source
+     * This playfield will contain the mapdata from the source, the id will be the mapReference from the source.
+     * Use this when exporting
+     * 
+     * @param source
+     * @return
+     */
+    public static Playfield createPlayfield(PlayfieldController source) {
+        return new Playfield(source);
+    }
+
 }

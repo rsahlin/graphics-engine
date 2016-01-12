@@ -6,7 +6,6 @@ import com.nucleus.actor.ActorItem;
 import com.nucleus.actor.ActorNode;
 import com.nucleus.actor.ActorResolver;
 import com.nucleus.renderer.NucleusRenderer;
-import com.nucleus.scene.NodeData;
 import com.nucleus.scene.RootNode;
 
 /**
@@ -35,7 +34,7 @@ public abstract class SpriteController extends ActorNode {
     /**
      * Default constructor
      */
-    protected SpriteController() {
+    public SpriteController() {
         super();
     }
 

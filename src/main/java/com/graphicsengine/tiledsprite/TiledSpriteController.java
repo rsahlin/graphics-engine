@@ -3,7 +3,6 @@ package com.graphicsengine.tiledsprite;
 import java.io.IOException;
 
 import com.google.gson.annotations.SerializedName;
-import com.graphicsengine.geometry.TiledMesh;
 import com.graphicsengine.io.GraphicsEngineRootNode;
 import com.graphicsengine.sprite.Sprite;
 import com.graphicsengine.sprite.SpriteController;
@@ -37,7 +36,7 @@ public class TiledSpriteController extends SpriteController {
         super();
     }
 
-    public TiledSpriteController(TiledSpriteController source) {
+    protected TiledSpriteController(TiledSpriteController source) {
         set(source);
     }
 

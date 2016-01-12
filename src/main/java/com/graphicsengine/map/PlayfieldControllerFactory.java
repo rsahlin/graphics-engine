@@ -34,4 +34,16 @@ public class PlayfieldControllerFactory {
         playfieldController.createPlayfield(refNode, scene);
         return playfieldController;
     }
+
+    /**
+     * Returns a copy of the playfield controller, mesh and buffers will not be created.
+     * Use this when exporting/importing
+     * 
+     * @param source
+     * @return
+     */
+    public static PlayfieldController copy(PlayfieldController source) {
+        return new PlayfieldController(source);
+    }
+
 }

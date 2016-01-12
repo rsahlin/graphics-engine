@@ -1,7 +1,6 @@
-package com.graphicsengine.geometry;
+package com.graphicsengine.tiledsprite;
 
 import com.google.gson.annotations.SerializedName;
-import com.graphicsengine.tiledsprite.TiledSpriteProgram;
 import com.nucleus.data.Anchor;
 import com.nucleus.geometry.AttributeUpdater;
 import com.nucleus.geometry.Mesh;
@@ -53,7 +52,7 @@ public class TiledMesh extends Mesh implements AttributeUpdater {
      * 
      * @param spriteCount
      */
-    public TiledMesh(int spriteCount) {
+    protected TiledMesh(int spriteCount) {
         setup(spriteCount);
     }
 
@@ -64,7 +63,7 @@ public class TiledMesh extends Mesh implements AttributeUpdater {
      * 
      * @param source
      */
-    public TiledMesh(TiledMesh source) {
+    protected TiledMesh(TiledMesh source) {
         super();
         set(source);
     }

@@ -46,7 +46,7 @@ public class PlayfieldController extends Node {
      * 
      * @param source
      */
-    public PlayfieldController(Node source) {
+    PlayfieldController(Node source) {
         super(source);
     }
 
@@ -58,7 +58,7 @@ public class PlayfieldController extends Node {
      * 
      * @source
      */
-    public PlayfieldController(PlayfieldController source) {
+    PlayfieldController(PlayfieldController source) {
         super(source);
         mapRef = source.mapRef;
         setMapSize(source.mapSize);

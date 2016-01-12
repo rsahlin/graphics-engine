@@ -35,7 +35,7 @@ public class Playfield extends BaseReference {
      * 
      * @param source
      */
-    public Playfield(PlayfieldController source) {
+    Playfield(PlayfieldController source) {
         mapSize = new int[2];
         setId(source.getMapRef());
         createMap(source);
@@ -46,7 +46,7 @@ public class Playfield extends BaseReference {
      * 
      * @param source
      */
-    public void createMap(PlayfieldController source) {
+    void createMap(PlayfieldController source) {
         setSize(source.getMapSize());
         if (source.getMapData() != null) {
             mapData = new int[mapSize[Axis.WIDTH.index] * mapSize[Axis.HEIGHT.index]];

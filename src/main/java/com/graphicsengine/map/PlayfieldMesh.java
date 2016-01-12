@@ -1,7 +1,7 @@
 package com.graphicsengine.map;
 
 import com.google.gson.annotations.SerializedName;
-import com.graphicsengine.geometry.TiledMesh;
+import com.graphicsengine.tiledsprite.TiledMesh;
 import com.nucleus.data.Anchor;
 import com.nucleus.geometry.AttributeUpdater;
 import com.nucleus.geometry.MeshBuilder;
@@ -42,7 +42,7 @@ public class PlayfieldMesh extends TiledMesh implements AttributeUpdater {
      * 
      * @param source The source, id, textureRef and character count is taken from here.
      */
-    public PlayfieldMesh(PlayfieldMesh source) {
+    protected PlayfieldMesh(PlayfieldMesh source) {
         super(source);
         set(source);
     }

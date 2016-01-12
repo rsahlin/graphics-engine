@@ -17,14 +17,14 @@ import com.nucleus.scene.Node;
 public class TiledSpriteControllerFactory {
 
     /**
-     * Returns a new instance of a tiled sprite controller.
+     * Returns a new instance of a tiled sprite controller, mesh and sprites will be created from the source.
      * Use this when importing
      * 
      * @param renderer
      * @param source The source node to the sprite controller
-     * @source reference Reference to the playfield controller that shall be created.
+     * @source reference Reference to the sprite controller that shall be created.
      * @param scene
-     * @return
+     * @return The created sprite controller that can be used to render sprites.
      * @throws IOException
      */
     public static TiledSpriteController create(NucleusRenderer renderer, Node source,
@@ -43,6 +43,17 @@ public class TiledSpriteControllerFactory {
         } catch (IllegalAccessException | InstantiationException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
-
     }
+
+    /**
+     * Returns an instance copy of the source sprite controller, mesh and sprites will NOT be created.
+     * Use this when exporting/importing
+     * 
+     * @param source
+     * @return
+     */
+    public static TiledSpriteController copy(TiledSpriteController source) {
+        return new TiledSpriteController(source);
+    }
+
 }
