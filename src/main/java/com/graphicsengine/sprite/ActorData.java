@@ -17,7 +17,7 @@ public class ActorData {
     private ActorArray[] data;
 
     /**
-     * Creates a copy of the specified logic data
+     * Creates a copy of the specified actor data
      * 
      * @param source
      */

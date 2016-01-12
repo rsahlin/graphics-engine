@@ -3,7 +3,7 @@ package com.graphicsengine.sprite;
 import com.nucleus.actor.ActorResolver;
 
 /**
- * An array of actor data, this is used when importing and exporting logic
+ * An array of actor data, this is used when importing and exporting actor
  * This class can be serialized using GSON
  * 
  * @author Richard Sahlin
@@ -16,21 +16,21 @@ public class ActorArray {
      */
     private String instance;
     /**
-     * Classname of logic, does not use {@link ActorResolver} - classname used
+     * Classname of actor, does not use {@link ActorResolver} - classname used
      */
     private String classname;
     /**
-     * Index where the logic shall be put
+     * Index where the actor shall be put
      */
     private int index;
     /**
-     * Number of logic items to set
+     * Number of actor items to set
      */
     private int count;
 
     /**
-     * Name of logic instance, uses logicresolver to find classname.
-     * May use classname instead of resolving logic
+     * Name of actor instance, uses {@link ActorResolver} to find classname.
+     * May use classname instead of resolving actor
      * 
      * @return
      */
@@ -47,7 +47,7 @@ public class ActorArray {
     }
 
     /**
-     * Returns the classname, if set. This is the class to instantiate for this logic
+     * Returns the classname, if set. This is the class to instantiate for this actor
      * 
      * @return Classname to instantiate or null
      */

@@ -54,12 +54,12 @@ public class TiledSpriteController extends SpriteController {
     @Override
     public void createSprites(NucleusRenderer renderer, SpriteController source, RootNode scene) {
         TiledSpriteController spriteController = (TiledSpriteController) source;
-        create(spriteController.getLogicData().getCount());
+        create(spriteController.getActorData().getCount());
         for (int i = 0; i < count; i++) {
             sprites[i] = new TiledSprite(spriteSheet.getAttributeData(), i
                     * TiledSpriteProgram.ATTRIBUTES_PER_SPRITE);
         }
-        setLogic(spriteController.getLogicData().getData());
+        setActor(spriteController.getActorData().getData());
     }
 
     @Override
@@ -116,7 +116,7 @@ public class TiledSpriteController extends SpriteController {
     @Override
     public void init() {
         for (Sprite sprite : sprites) {
-            sprite.logic.init(sprite);
+            sprite.actor.init(sprite);
         }
         controllerState = State.INITIALIZED;
     }

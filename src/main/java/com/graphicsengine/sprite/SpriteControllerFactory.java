@@ -13,8 +13,6 @@ import com.nucleus.scene.Node;
  */
 public class SpriteControllerFactory {
 
-    private final static String LOGICRESOLVER_NOT_SET_ERROR = "LogicResolver not set, must call setLogicResolver()";
-
     /**
      * The defined controllers that this factory can create
      * 
@@ -39,7 +37,7 @@ public class SpriteControllerFactory {
 
     }
 
-    static ActorResolver logicResolver;
+    static ActorResolver actorResolver;
     /**
      * Tiled sprite controller instance.
      */
@@ -56,18 +54,18 @@ public class SpriteControllerFactory {
             throws IllegalAccessException,
             InstantiationException, ClassNotFoundException {
         SpriteController impl = (SpriteController) controller.getControllerClass().newInstance();
-        impl.setLogicResolver(logicResolver);
+        impl.setActorResolver(actorResolver);
         impl.set(source);
         return impl;
     }
 
     /**
-     * Sets the logic resolver to use for spritecontrollers, this must be called before a call to create() is made.
+     * Sets the actor resolver to use for spritecontrollers, this must be called before a call to create() is made.
      * 
-     * @param logicResolver
+     * @param actorResolver
      */
-    public static void setLogicResolver(ActorResolver logicResolver) {
-        SpriteControllerFactory.logicResolver = logicResolver;
+    public static void setActorResolver(ActorResolver actorResolver) {
+        SpriteControllerFactory.actorResolver = actorResolver;
     }
 
 }

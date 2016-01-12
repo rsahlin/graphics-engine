@@ -8,7 +8,7 @@ import com.nucleus.vecmath.Vector2D;
 /**
  * Base sprite class, a sprite is a 2D geometry object
  * Has data needed for movement, animation and graphics - increase size of data storage and use together
- * with logic. This is to avoid a very large number of Sprite subclasses for logic.
+ * with actor. This is to avoid a very large number of Sprite subclasses for logic.
  * 
  * @author Richard Sahlin
  *
@@ -48,9 +48,9 @@ public abstract class Sprite extends ActorContainer {
     public final static int SPRITE_FLOAT_COUNT = ROTATION + 1;
 
     /**
-     * The sprite logic implementation
+     * The sprite actor implementation
      */
-    public ActorItem logic;
+    public ActorItem actor;
 
     /**
      * Creates a new sprite with storage for MIN_FLOAT_COUNT floats and MIN_INT_COUNT ints
@@ -71,8 +71,8 @@ public abstract class Sprite extends ActorContainer {
 
     @Override
     public void process(float deltaTime) {
-        if (logic != null) {
-            logic.process(this, deltaTime);
+        if (actor != null) {
+            actor.process(this, deltaTime);
         }
     }
 
