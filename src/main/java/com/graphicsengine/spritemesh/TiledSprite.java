@@ -1,4 +1,4 @@
-package com.graphicsengine.tiledsprite;
+package com.graphicsengine.spritemesh;
 
 import com.graphicsengine.sprite.Sprite;
 import com.nucleus.geometry.MeshBuilder;

@@ -1,4 +1,4 @@
-package com.graphicsengine.tiledsprite;
+package com.graphicsengine.spritemesh;
 
 import java.io.IOException;
 
@@ -27,12 +27,12 @@ public class TiledSpriteControllerFactory {
      * @return The created sprite controller that can be used to render sprites.
      * @throws IOException
      */
-    public static TiledSpriteController create(NucleusRenderer renderer, Node source,
+    public static SpriteMeshController create(NucleusRenderer renderer, Node source,
             String reference, GraphicsEngineRootNode scene) throws IOException {
 
         try {
-            TiledSpriteController refNode = scene.getResources().getTiledSpriteController(reference);
-            TiledSpriteController spriteController = (TiledSpriteController) SpriteControllerFactory.create(
+            SpriteMeshController refNode = scene.getResources().getTiledSpriteController(reference);
+            SpriteMeshController spriteController = (SpriteMeshController) SpriteControllerFactory.create(
                     SpriteControllers.TILED, refNode);
             spriteController.set(refNode);
             spriteController.toReference(source, spriteController);
@@ -52,8 +52,8 @@ public class TiledSpriteControllerFactory {
      * @param source
      * @return
      */
-    public static TiledSpriteController copy(TiledSpriteController source) {
-        return new TiledSpriteController(source);
+    public static SpriteMeshController copy(SpriteMeshController source) {
+        return new SpriteMeshController(source);
     }
 
 }

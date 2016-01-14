@@ -7,7 +7,7 @@ import com.google.gson.Gson;
 import com.graphicsengine.exporter.GraphicsEngineNodeExporter;
 import com.graphicsengine.map.PlayfieldControllerFactory;
 import com.graphicsengine.scene.GraphicsEngineNodeType;
-import com.graphicsengine.tiledsprite.TiledSpriteControllerFactory;
+import com.graphicsengine.spritemesh.TiledSpriteControllerFactory;
 import com.nucleus.io.GSONSceneFactory;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;

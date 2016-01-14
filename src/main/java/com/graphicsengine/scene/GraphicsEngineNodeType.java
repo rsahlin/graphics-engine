@@ -11,7 +11,8 @@ import com.nucleus.common.Key;
 public enum GraphicsEngineNodeType implements Key {
 
     tiledCharset(),
-    tiledSpriteController();
+    tiledSpriteController(),
+    spriteController();
 
     @Override
     public String getKey() {

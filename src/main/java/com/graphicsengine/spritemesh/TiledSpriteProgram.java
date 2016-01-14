@@ -1,9 +1,7 @@
-package com.graphicsengine.tiledsprite;
+package com.graphicsengine.spritemesh;
 
 import com.nucleus.geometry.Mesh;
-import com.nucleus.geometry.VertexBuffer;
 import com.nucleus.opengl.GLES20Wrapper;
-import com.nucleus.opengl.GLESWrapper.GLES20;
 import com.nucleus.opengl.GLException;
 import com.nucleus.opengl.GLUtils;
 import com.nucleus.shader.ShaderProgram;
@@ -16,7 +14,7 @@ import com.nucleus.texturing.TiledTexture2D;
  * This class defines the mappings for the tile sprite vertex and fragment shaders.
  * This program has support for rotated sprites in Z axis, the sprite position and frame index can be set for each
  * sprite.
- * It is used by the {@link TiledSpriteController}
+ * It is used by the {@link SpriteMeshController}
  * 
  * @author Richard Sahlin
  *
@@ -100,6 +98,9 @@ public class TiledSpriteProgram extends ShaderProgram {
 
     TiledSpriteProgram() {
         super();
+        vertexShaderName = VERTEX_SHADER_NAME;
+        fragmentShaderName = FRAGMENT_SHADER_NAME;
+        attributesPerVertex = ATTRIBUTES_PER_VERTEX;
     }
 
     @Override
@@ -127,21 +128,6 @@ public class TiledSpriteProgram extends ShaderProgram {
     }
 
     @Override
-    public void createProgram(GLES20Wrapper gles) {
-        createProgram(gles, VERTEX_SHADER_NAME, FRAGMENT_SHADER_NAME);
-    }
-
-    @Override
-    public int getVertexStride() {
-        return DEFAULT_COMPONENTS;
-    }
-
-    @Override
-    public VertexBuffer createAttributeBuffer(int verticeCount) {
-        return new VertexBuffer(verticeCount, 4, ATTRIBUTES_PER_VERTEX, GLES20.GL_FLOAT);
-    }
-
-    @Override
     public void setupUniforms(Mesh mesh) {
         createUniformStorage(mesh, shaderVariables);
         float[] uniformVectors = mesh.getUniformVectors();
@@ -156,24 +142,13 @@ public class TiledSpriteProgram extends ShaderProgram {
     }
 
     @Override
-    protected ShaderVariable[] getPositionAttributes() {
-        return new ShaderVariable[] { getShaderVariable(VARIABLES.aPosition.index) };
-    }
-
-    @Override
-    protected int[] getPositionOffsets() {
-        return new int[] { 0 };
-    }
-
-    @Override
-    protected ShaderVariable[] getGenericAttributes() {
-        return new ShaderVariable[] { getShaderVariable(VARIABLES.aTileSprite.index),
+    public void createProgram(GLES20Wrapper gles) {
+        super.createProgram(gles);
+        positionAttributes = new ShaderVariable[] { getShaderVariable(VARIABLES.aPosition.index) };
+        positionOffsets = new int[] { 0 };
+        genericAttributes = new ShaderVariable[] { getShaderVariable(VARIABLES.aTileSprite.index),
                 getShaderVariable(VARIABLES.aTileSprite2.index) };
+        genericOffsets = new int[] { ATTRIBUTE_1_OFFSET, ATTRIBUTE_2_OFFSET };
     }
 
-    @Override
-    protected int[] getGenericOffsets() {
-        return new int[] { ATTRIBUTE_1_OFFSET, ATTRIBUTE_2_OFFSET };
-
-    }
 }

@@ -1,13 +1,15 @@
-package com.graphicsengine.tiledsprite;
+package com.graphicsengine.spritemesh;
 
 import java.io.IOException;
 
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.io.GraphicsEngineRootNode;
+import com.graphicsengine.scene.GraphicsEngineNodeType;
 import com.graphicsengine.sprite.Sprite;
 import com.graphicsengine.sprite.SpriteController;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.RootNode;
+import com.nucleus.shader.ShaderProgram;
 
 /**
  * Controller for tiled sprites, this controller creates the tiled sprite objects.
@@ -20,23 +22,25 @@ import com.nucleus.scene.RootNode;
  * @author Richard Sahlin
  *
  */
-public class TiledSpriteController extends SpriteController {
+public class SpriteMeshController extends SpriteController {
+
+    private final static String INVALID_TYPE = "Invalid type: ";
 
     /**
      * The mesh that can be redered
      * TODO Unify all controllers that renders a Mesh, with methods for creating the mesh
      */
     @SerializedName("charset")
-    private TiledMesh spriteSheet;
+    private SpriteMesh spriteSheet;
 
     /**
      * Default constructor
      */
-    public TiledSpriteController() {
+    public SpriteMeshController() {
         super();
     }
 
-    protected TiledSpriteController(TiledSpriteController source) {
+    protected SpriteMeshController(SpriteMeshController source) {
         set(source);
     }
 
@@ -46,14 +50,14 @@ public class TiledSpriteController extends SpriteController {
      * 
      * @param source The source to copy
      */
-    protected void set(TiledSpriteController source) {
+    protected void set(SpriteMeshController source) {
         super.set(source);
-        spriteSheet = new TiledMesh(source.getSpriteSheet());
+        spriteSheet = new SpriteMesh(source.getSpriteSheet());
     }
 
     @Override
     public void createSprites(NucleusRenderer renderer, SpriteController source, RootNode scene) {
-        TiledSpriteController spriteController = (TiledSpriteController) source;
+        SpriteMeshController spriteController = (SpriteMeshController) source;
         create(spriteController.getActorData().getCount());
         for (int i = 0; i < count; i++) {
             sprites[i] = new TiledSprite(spriteSheet.getAttributeData(), i
@@ -65,13 +69,23 @@ public class TiledSpriteController extends SpriteController {
     @Override
     public void createMesh(NucleusRenderer renderer, SpriteController source, RootNode scene) {
         try {
+            ShaderProgram program = null;
+            GraphicsEngineNodeType type = GraphicsEngineNodeType.valueOf(source.getType());
+            switch (type) {
+            case tiledSpriteController:
+                program = new TiledSpriteProgram();
+                break;
+            case spriteController:
+                // program = new SpriteProgram();
+            default:
+                throw new IllegalArgumentException(INVALID_TYPE + type);
+            }
             GraphicsEngineRootNode gScene = (GraphicsEngineRootNode) scene;
-            spriteSheet = TiledSpriteFactory.create(renderer, (TiledSpriteController) source, gScene);
+            spriteSheet = SpriteMeshFactory.create(renderer, (SpriteMeshController) source, program, gScene);
             addMesh(spriteSheet);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     /**
@@ -89,7 +103,7 @@ public class TiledSpriteController extends SpriteController {
      * 
      * @return
      */
-    public TiledMesh getSpriteSheet() {
+    public SpriteMesh getSpriteSheet() {
         return spriteSheet;
     }
 

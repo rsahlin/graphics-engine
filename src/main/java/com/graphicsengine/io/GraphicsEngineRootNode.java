@@ -3,7 +3,7 @@ package com.graphicsengine.io;
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.map.Playfield;
 import com.graphicsengine.map.PlayfieldController;
-import com.graphicsengine.tiledsprite.TiledSpriteController;
+import com.graphicsengine.spritemesh.SpriteMeshController;
 import com.nucleus.scene.RootNode;
 
 /**
@@ -23,7 +23,7 @@ public class GraphicsEngineRootNode extends RootNode {
         return resources;
     }
 
-    public void addResource(TiledSpriteController spriteController) {
+    public void addResource(SpriteMeshController spriteController) {
         getResources().addSpriteController(spriteController);
     }
 

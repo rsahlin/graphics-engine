@@ -1,4 +1,4 @@
-package com.graphicsengine.tiledsprite;
+package com.graphicsengine.spritemesh;
 
 import com.google.gson.annotations.SerializedName;
 import com.nucleus.data.Anchor;
@@ -12,15 +12,15 @@ import com.nucleus.texturing.TiledTexture2D;
 import com.nucleus.vecmath.Axis;
 
 /**
- * A number of tiled sprites that will be rendered using the same Mesh, ie all sprites in this class are rendered using
+ * A number of sprites that will be rendered using the same Mesh, ie all sprites in this class are rendered using
  * one draw call.
- * This can also be used to render tiled chars
+ * This can also be used to render chars in a playfield
  * This class only contains the drawable parts of the sprites - no logic is contained in this class.
  * 
  * @author Richard Sahlin
  *
  */
-public class TiledMesh extends Mesh implements AttributeUpdater {
+public class SpriteMesh extends Mesh implements AttributeUpdater {
 
     @SerializedName("count")
     protected int count;
@@ -52,7 +52,7 @@ public class TiledMesh extends Mesh implements AttributeUpdater {
      * 
      * @param spriteCount
      */
-    protected TiledMesh(int spriteCount) {
+    protected SpriteMesh(int spriteCount) {
         setup(spriteCount);
     }
 
@@ -63,7 +63,7 @@ public class TiledMesh extends Mesh implements AttributeUpdater {
      * 
      * @param source
      */
-    protected TiledMesh(TiledMesh source) {
+    protected SpriteMesh(SpriteMesh source) {
         super();
         set(source);
     }
@@ -73,7 +73,7 @@ public class TiledMesh extends Mesh implements AttributeUpdater {
      * 
      * @param source
      */
-    public void set(TiledMesh source) {
+    public void set(SpriteMesh source) {
         setId(source.getId());
         this.textureRef = source.textureRef;
         if (source.anchor != null) {
@@ -132,7 +132,6 @@ public class TiledMesh extends Mesh implements AttributeUpdater {
         int vertexStride = program.getVertexStride();
         float[] quadPositions = MeshBuilder.buildQuadPositionsIndexed(size, anchor, vertexStride);
         MeshBuilder.buildQuadMeshIndexed(this, program, spriteCount, quadPositions);
-        program.setupUniforms(this);
     }
 
     /**

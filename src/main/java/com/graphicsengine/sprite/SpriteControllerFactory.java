@@ -1,6 +1,6 @@
 package com.graphicsengine.sprite;
 
-import com.graphicsengine.tiledsprite.TiledSpriteController;
+import com.graphicsengine.spritemesh.SpriteMeshController;
 import com.nucleus.actor.ActorResolver;
 import com.nucleus.scene.Node;
 
@@ -20,7 +20,7 @@ public class SpriteControllerFactory {
      *
      */
     public enum SpriteControllers {
-        TILED(TiledSpriteController.class);
+        TILED(SpriteMeshController.class);
 
         @SuppressWarnings("rawtypes")
         private final Class clazz;

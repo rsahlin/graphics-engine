@@ -1,7 +1,7 @@
 package com.graphicsengine.map;
 
 import com.google.gson.annotations.SerializedName;
-import com.graphicsengine.tiledsprite.TiledMesh;
+import com.graphicsengine.spritemesh.SpriteMesh;
 import com.nucleus.data.Anchor;
 import com.nucleus.geometry.AttributeUpdater;
 import com.nucleus.geometry.MeshBuilder;
@@ -21,7 +21,7 @@ import com.nucleus.vecmath.Axis;
  * @author Richard Sahlin
  *
  */
-public class PlayfieldMesh extends TiledMesh implements AttributeUpdater {
+public class PlayfieldMesh extends SpriteMesh implements AttributeUpdater {
 
     /**
      * Width and height of playfield in chars
@@ -149,7 +149,6 @@ public class PlayfieldMesh extends TiledMesh implements AttributeUpdater {
         int vertexStride = program.getVertexStride();
         float[] quadPositions = MeshBuilder.buildQuadPositionsIndexed(charSize, anchor, vertexStride);
         MeshBuilder.buildQuadMeshIndexed(this, program, charCount, quadPositions);
-        program.setupUniforms(this);
     }
 
     /**

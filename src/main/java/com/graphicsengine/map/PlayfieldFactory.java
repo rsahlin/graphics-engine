@@ -7,6 +7,7 @@ import com.nucleus.assets.AssetManager;
 import com.nucleus.renderer.BufferObjectsFactory;
 import com.nucleus.renderer.Configuration;
 import com.nucleus.renderer.NucleusRenderer;
+import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TiledTexture2D;
 
@@ -24,24 +25,24 @@ public class PlayfieldFactory {
      * 
      * @param renderer
      * @param source The charset data
+     * @param program The shader program to use with the Mesh
      * @param textureData The texture data to be used for the charset
      * @return The created playfield
      * @throws IOException
      */
-    public static PlayfieldMesh create(NucleusRenderer renderer, PlayfieldController parent,
+    public static PlayfieldMesh create(NucleusRenderer renderer, PlayfieldController source, ShaderProgram program,
             TiledTexture2D textureData) throws IOException {
 
-        PlayfieldMesh source = parent.getPlayfieldMesh();
-        PlayfieldMesh map = new PlayfieldMesh(source);
-        PlayfieldProgram program = new PlayfieldProgram();
+        PlayfieldMesh sourceMesh = source.getPlayfieldMesh();
+        PlayfieldMesh map = new PlayfieldMesh(sourceMesh);
         renderer.createProgram(program);
         Texture2D texture = AssetManager.getInstance().getTexture(renderer, textureData);
         map.createMesh(program, texture);
         float[] size = new float[2];
-        int[] mapSize = parent.getMapSize();
-        size[0] = mapSize[0] * source.getTileWidth();
-        size[1] = mapSize[1] * source.getTileHeight();
-        map.setupCharmap(parent.getMapSize());
+        int[] mapSize = source.getMapSize();
+        size[0] = mapSize[0] * sourceMesh.getTileWidth();
+        size[1] = mapSize[1] * sourceMesh.getTileHeight();
+        map.setupCharmap(source.getMapSize());
 
         if (Configuration.getInstance().isUseVBO()) {
             BufferObjectsFactory.getInstance().createVBOs(renderer, map);
@@ -66,7 +67,7 @@ public class PlayfieldFactory {
         TiledTexture2D textureData = (TiledTexture2D) scene.getResources().getTexture2DData(
                 source.getPlayfieldMesh().getTextureRef());
 
-        return create(renderer, source, textureData);
+        return create(renderer, source, new PlayfieldProgram(), textureData);
     }
 
     /**

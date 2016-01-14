@@ -6,8 +6,8 @@ import com.graphicsengine.map.PlayfieldController;
 import com.graphicsengine.map.PlayfieldControllerFactory;
 import com.graphicsengine.map.PlayfieldFactory;
 import com.graphicsengine.scene.GraphicsEngineNodeType;
-import com.graphicsengine.tiledsprite.TiledSpriteController;
-import com.graphicsengine.tiledsprite.TiledSpriteControllerFactory;
+import com.graphicsengine.spritemesh.SpriteMeshController;
+import com.graphicsengine.spritemesh.TiledSpriteControllerFactory;
 import com.nucleus.exporter.NucleusNodeExporter;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
@@ -28,7 +28,7 @@ public class GraphicsEngineNodeExporter extends NucleusNodeExporter {
             exportDataReferences((PlayfieldController) source, (GraphicsEngineRootNode) rootNode);
             return new Node(source);
         case tiledSpriteController:
-            exportDataReferences((TiledSpriteController) source, (GraphicsEngineRootNode) rootNode);
+            exportDataReferences((SpriteMeshController) source, (GraphicsEngineRootNode) rootNode);
             return new Node(source);
         default:
             throw new IllegalArgumentException(NOT_IMPLEMENTED + type);
@@ -59,10 +59,10 @@ public class GraphicsEngineNodeExporter extends NucleusNodeExporter {
      * @param tiledSpriteController
      * @param sceneData
      */
-    private void exportDataReferences(TiledSpriteController tiledSpriteController,
+    private void exportDataReferences(SpriteMeshController tiledSpriteController,
             GraphicsEngineRootNode sceneData) {
         exportMeshes(tiledSpriteController.getMeshes(), sceneData);
-        TiledSpriteController resource = TiledSpriteControllerFactory.copy(tiledSpriteController);
+        SpriteMeshController resource = TiledSpriteControllerFactory.copy(tiledSpriteController);
         resource.setId(tiledSpriteController.getReference());
         resource.setReference(null);
         sceneData.addResource(resource);

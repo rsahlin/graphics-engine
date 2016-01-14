@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.map.Playfield;
 import com.graphicsengine.map.PlayfieldController;
-import com.graphicsengine.tiledsprite.TiledSpriteController;
+import com.graphicsengine.spritemesh.SpriteMeshController;
 import com.nucleus.io.ResourcesData;
 
 /**
@@ -17,7 +17,7 @@ import com.nucleus.io.ResourcesData;
 public class GraphicsEngineResourcesData extends ResourcesData {
 
     @SerializedName("tiledSpriteController")
-    private ArrayList<TiledSpriteController> tiledSpriteControllers = new ArrayList<TiledSpriteController>();
+    private ArrayList<SpriteMeshController> tiledSpriteControllers = new ArrayList<SpriteMeshController>();
     @SerializedName("playfieldController")
     private ArrayList<PlayfieldController> playfieldControllers = new ArrayList<PlayfieldController>();
     @SerializedName("playfield")
@@ -77,8 +77,8 @@ public class GraphicsEngineResourcesData extends ResourcesData {
      * @param id
      * @return
      */
-    public TiledSpriteController getTiledSpriteController(String id) {
-        for (TiledSpriteController t : tiledSpriteControllers) {
+    public SpriteMeshController getTiledSpriteController(String id) {
+        for (SpriteMeshController t : tiledSpriteControllers) {
             if (id.equals(t.getId())) {
                 return t;
             }
@@ -91,7 +91,7 @@ public class GraphicsEngineResourcesData extends ResourcesData {
      * 
      * @param spriteControllerData
      */
-    public void addSpriteController(TiledSpriteController spriteController) {
+    public void addSpriteController(SpriteMeshController spriteController) {
         if (getTiledSpriteController(spriteController.getId()) == null) {
             tiledSpriteControllers.add(spriteController);
         } else {
