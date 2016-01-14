@@ -24,22 +24,6 @@ import com.nucleus.texturing.TiledTexture2D;
 public class TiledSpriteProgram extends ShaderProgram {
 
     /**
-     * Number of vertices per sprite - this is for a quad that is created using element buffer.
-     */
-    protected final static int VERTICES_PER_SPRITE = 4;
-    /**
-     * Draw using an index list each quad is made up of 6 indices (2 triangles)
-     */
-    protected final static int INDICES_PER_SPRITE = 6;
-
-    /**
-     * Default number of components (x,y,z)
-     */
-    protected final static int DEFAULT_COMPONENTS = 3;
-
-    private final static String ILLEGAL_DATATYPE_STR = "Illegal datatype: ";
-
-    /**
      * Index into uniform sprite data data where the texture fraction s (width) is
      */
     private final static int UNIFORM_TEX_FRACTION_S_INDEX = 0;

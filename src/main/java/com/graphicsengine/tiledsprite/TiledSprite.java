@@ -2,6 +2,7 @@ package com.graphicsengine.tiledsprite;
 
 import com.graphicsengine.sprite.Sprite;
 import com.nucleus.geometry.MeshBuilder;
+import com.nucleus.shader.ShaderProgram;
 
 /**
  * A tiled sprite object, this is a type of sprite that uses one Mesh (drawcall) to draw all sprites.
@@ -48,7 +49,7 @@ public class TiledSprite extends Sprite {
         int frameIndex = (int) floatData[FRAME];
         float rotation = floatData[ROTATION];
 
-        for (int i = 0; i < TiledSpriteProgram.VERTICES_PER_SPRITE; i++) {
+        for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
             attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_X_INDEX] = xpos;
             attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_Y_INDEX] = ypos;
             attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_Z_INDEX] = zpos;

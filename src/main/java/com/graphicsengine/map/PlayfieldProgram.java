@@ -20,20 +20,6 @@ import com.nucleus.texturing.TiledTexture2D;
  */
 public class PlayfieldProgram extends ShaderProgram {
 
-    /**
-     * Number of vertices per char - this is for a quad that is created using element buffer.
-     */
-    protected final static int VERTICES_PER_CHAR = 4;
-    /**
-     * Draw using an index list each quad is made up of 6 indices (2 triangles)
-     */
-    protected final static int INDICES_PER_CHAR = 6;
-
-    /**
-     * Default number of components (x,y,z)
-     */
-    protected final static int DEFAULT_COMPONENTS = 3;
-
     private final static String ILLEGAL_DATATYPE_STR = "Illegal datatype: ";
 
     /**
@@ -58,7 +44,7 @@ public class PlayfieldProgram extends ShaderProgram {
      * Number of floats for each char in the attribute data.
      */
     protected final static int ATTRIBUTES_PER_CHAR = PlayfieldProgram.ATTRIBUTES_PER_VERTEX
-            * PlayfieldProgram.VERTICES_PER_CHAR;
+            * VERTICES_PER_SPRITE;
 
     protected final static int ATTRIBUTE_1_OFFSET = 0;
     protected final static int ATTRIBUTE_2_OFFSET = 4;
