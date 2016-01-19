@@ -18,7 +18,7 @@
 #version 100
 
 //Put array declaration after name for GLSL compatibility
-uniform mat4 uMVPMatrix[2];
+uniform mat4 uMVPMatrix;
 uniform vec3 uSpriteData; //tex width, tex height, frames per line
 
 attribute vec4 aPosition;
@@ -29,7 +29,7 @@ varying vec2 vTexCoord;
 mat4 calculateTransformMatrix();
 
 void main() {
-    gl_Position = calculateTransformMatrix() * aPosition + (uMVPMatrix[0] * vec4(aTileSprite.x, aTileSprite.y, aTileSprite.z, 0.0));
+    gl_Position = calculateTransformMatrix() * aPosition + (uMVPMatrix * vec4(aTileSprite.x, aTileSprite.y, aTileSprite.z, 0.0));
     float y = floor(aTileSprite.w / uSpriteData.z);
     vTexCoord = vec2(aTileSprite2.x * uSpriteData.x + 
                      mod(aTileSprite.w, uSpriteData.z) * uSpriteData.x,
@@ -53,5 +53,5 @@ mat4 calculateTransformMatrix(){
     modelview[1][0]  =  -sz;
     modelview[1][1]  = cz;
         
-    return uMVPMatrix[0] * modelview;
+    return uMVPMatrix * modelview;
 }

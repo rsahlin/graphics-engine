@@ -18,7 +18,7 @@
 #version 100
 
 //Put array declaration after name for GLSL compatibility
-uniform mat4 uMVPMatrix[2];
+uniform mat4 uMVPMatrix;
 uniform vec3 uCharsetData; //tex width, tex height, frames per line
 
 attribute vec4 aPosition;
@@ -29,7 +29,7 @@ varying vec2 vTexCoord;
 mat4 calculateTransformMatrix();
 
 void main() {
-    gl_Position = uMVPMatrix[0] * aPosition + (uMVPMatrix[0] * vec4(aCharset.x, aCharset.y,0.0, 0.0));
+    gl_Position = uMVPMatrix * aPosition + (uMVPMatrix * vec4(aCharset.x, aCharset.y,0.0, 0.0));
     float y = floor(aCharset2.x / uCharsetData.z);
     //vec2(u * w + mod(frame, frames/line) * w,
     //v * h + floor(frame / frames/line) * h

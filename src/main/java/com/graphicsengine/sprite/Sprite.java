@@ -41,7 +41,7 @@ public abstract class Sprite extends ActorContainer {
     public final static int MOVE_VECTOR_Z = 5;
     public final static int FRAME = 6;
     public final static int ROTATION = 7; // z axis rotation angle
-
+    public final static int SCALE = 8; // Uniform scale
     /**
      * Number of float data values reserved for sprite, first free index is SPRITE_FLOAT_COUNT
      */
