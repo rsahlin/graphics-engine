@@ -1,12 +1,13 @@
 package com.graphicsengine.spritemesh;
 
 import com.nucleus.geometry.Mesh;
+import com.nucleus.geometry.Mesh.BufferIndex;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.GLException;
-import com.nucleus.shader.VariableMapping;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.shader.ShaderVariable;
 import com.nucleus.shader.ShaderVariable.VariableType;
+import com.nucleus.shader.VariableMapping;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TiledTexture2D;
 
@@ -39,9 +40,6 @@ public class TiledSpriteProgram extends ShaderProgram {
      * Number of floats for each tiled sprite in the attribute data.
      */
     public final static int ATTRIBUTES_PER_SPRITE = ATTRIBUTES_PER_VERTEX * VERTICES_PER_SPRITE;
-
-    protected final static int ATTRIBUTE_1_OFFSET = 0;
-    protected final static int ATTRIBUTE_2_OFFSET = 4;
 
     /**
      * Index into aTileSprite for x position
@@ -77,20 +75,28 @@ public class TiledSpriteProgram extends ShaderProgram {
     protected final static int ATTRIBUTE_SPRITE_SCALE_INDEX = 7;
 
     public enum VARIABLES implements VariableMapping {
-        uMVPMatrix(0, 0, ShaderVariable.VariableType.UNIFORM),
-        uSpriteData(1, 16, ShaderVariable.VariableType.UNIFORM),
-        aPosition(2, 0, ShaderVariable.VariableType.ATTRIBUTE),
-        aTileSprite(3, 0, ShaderVariable.VariableType.ATTRIBUTE),
-        aTileSprite2(4, 4, ShaderVariable.VariableType.ATTRIBUTE);
+        uMVPMatrix(0, 0, ShaderVariable.VariableType.UNIFORM, null),
+        uSpriteData(1, 16, ShaderVariable.VariableType.UNIFORM, null),
+        aPosition(2, 0, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.VERTICES),
+        aTileSprite(3, 0, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
+        aTileSprite2(4, 4, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES);
 
-        public final int index;
-        public final int offset;
+        private final int index;
         private final VariableType type;
+        private final int offset;
+        private final BufferIndex bufferIndex;
 
-        private VARIABLES(int index, int offset, VariableType type) {
+        /**
+         * @param index Index of the shader variable
+         * @param offset Offset into data array where the variable data source is
+         * @param type Type of variable
+         * @param bufferIndex Index of buffer in mesh that holds the variable data
+         */
+        private VARIABLES(int index, int offset, VariableType type, BufferIndex bufferIndex) {
             this.index = index;
-            this.offset = offset;
             this.type = type;
+            this.offset = offset;
+            this.bufferIndex = bufferIndex;
         }
 
         @Override
@@ -103,22 +109,30 @@ public class TiledSpriteProgram extends ShaderProgram {
             return offset;
         }
 
+        @Override
+        public VariableType getType() {
+            return type;
+        }
+
+        @Override
+        public BufferIndex getBufferIndex() {
+            return bufferIndex;
+        }
     }
 
     private final static String VERTEX_SHADER_NAME = "assets/tiledspritevertex.essl";
     private final static String FRAGMENT_SHADER_NAME = "assets/tiledspritefragment.essl";
 
     TiledSpriteProgram() {
-        super();
+        super(VARIABLES.values());
         vertexShaderName = VERTEX_SHADER_NAME;
         fragmentShaderName = FRAGMENT_SHADER_NAME;
         attributesPerVertex = ATTRIBUTES_PER_VERTEX;
-        uniforms = new VariableMapping[] { VARIABLES.uMVPMatrix, VARIABLES.uSpriteData };
     }
 
     @Override
-    public int getVariableIndex(ShaderVariable variable) {
-        return VARIABLES.valueOf(getVariableName(variable)).index;
+    public VariableMapping getVariableMapping(ShaderVariable variable) {
+        return VARIABLES.valueOf(getVariableName(variable));
     }
 
     @Override
@@ -148,11 +162,6 @@ public class TiledSpriteProgram extends ShaderProgram {
     @Override
     public void createProgram(GLES20Wrapper gles) {
         super.createProgram(gles);
-        positionAttributes = new ShaderVariable[] { getShaderVariable(VARIABLES.aPosition) };
-        positionOffsets = new int[] { 0 };
-        genericAttributes = new ShaderVariable[] { getShaderVariable(VARIABLES.aTileSprite),
-                getShaderVariable(VARIABLES.aTileSprite2) };
-        genericOffsets = new int[] { ATTRIBUTE_1_OFFSET, ATTRIBUTE_2_OFFSET };
     }
 
 }
