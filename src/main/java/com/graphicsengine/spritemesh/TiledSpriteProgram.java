@@ -24,13 +24,9 @@ public class TiledSpriteProgram extends ShaderProgram {
 
     private final static String INVALID_TEXTURE_TYPE = "Invalid texture type: ";
     /**
-     * Index into uniform sprite data data where the texture fraction s (width) is
+     * Offset into uniform variable data where texture UV are.
      */
-    private final static int UNIFORM_TEX_FRACTION_S_INDEX = 0;
-    /**
-     * Index into uniform sprite data data where the texture fraction t (height) is
-     */
-    protected final static int UNIFORM_TEX_FRACTION_T_INDEX = 1;
+    private final static int UNIFORM_TEX_OFFSET = 0;
 
     /**
      * Number of float data per vertex
@@ -153,7 +149,7 @@ public class TiledSpriteProgram extends ShaderProgram {
         float[] uniforms = mesh.getUniforms();
         Texture2D texture = mesh.getTexture(Texture2D.TEXTURE_0);
         if (texture instanceof TiledTexture2D) {
-            setTextureUniforms((TiledTexture2D) texture, uniforms, VARIABLES.uSpriteData, UNIFORM_TEX_FRACTION_S_INDEX);
+            setTextureUniforms((TiledTexture2D) texture, uniforms, VARIABLES.uSpriteData, UNIFORM_TEX_OFFSET);
         } else {
             System.err.println(INVALID_TEXTURE_TYPE + texture);
         }
