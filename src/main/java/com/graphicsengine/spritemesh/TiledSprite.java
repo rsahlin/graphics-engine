@@ -48,6 +48,7 @@ public class TiledSprite extends Sprite {
         int index = offset;
         int frameIndex = (int) floatData[FRAME];
         float rotation = floatData[ROTATION];
+        float scale = floatData[SCALE];
 
         for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
             attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_X_INDEX] = xpos;
@@ -55,6 +56,7 @@ public class TiledSprite extends Sprite {
             attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_Z_INDEX] = zpos;
             attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_FRAME_INDEX] = frameIndex;
             attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_ROTATION_INDEX] = rotation;
+            attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_SCALE_INDEX] = scale;
             index += TiledSpriteProgram.ATTRIBUTES_PER_VERTEX;
         }
 

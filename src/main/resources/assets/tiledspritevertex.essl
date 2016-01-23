@@ -23,13 +23,13 @@ uniform vec3 uSpriteData; //tex width, tex height, frames per line
 
 attribute vec4 aPosition;
 attribute vec4 aTileSprite; //sprite x, sprite y, sprite, z, frame 
-attribute vec4 aTileSprite2;//texture u, texture v,  rotation z, unused
+attribute vec4 aTileSprite2;//texture u, texture v,  rotation z, scale
 
 varying vec2 vTexCoord;
 mat4 calculateTransformMatrix();
 
 void main() {
-    gl_Position = calculateTransformMatrix() * aPosition + (uMVPMatrix * vec4(aTileSprite.x, aTileSprite.y, aTileSprite.z, 0.0));
+    gl_Position = calculateTransformMatrix() * (vec4(aTileSprite2.w,aTileSprite2.w,1,1) * aPosition) + (uMVPMatrix * vec4(aTileSprite.x, aTileSprite.y, aTileSprite.z, 0.0));
     float y = floor(aTileSprite.w / uSpriteData.z);
     vTexCoord = vec2(aTileSprite2.x * uSpriteData.x + 
                      mod(aTileSprite.w, uSpriteData.z) * uSpriteData.x,
