@@ -15,7 +15,7 @@ import com.nucleus.texturing.TiledTexture2D;
  * This class defines the mappings for the tile sprite vertex and fragment shaders.
  * This program has support for rotated sprites in Z axis, the sprite position and frame index can be set for each
  * sprite.
- * It is used by the {@link SpriteMeshController}
+ * It is used by the {@link SpriteMeshNode}
  * 
  * @author Richard Sahlin
  *
@@ -31,51 +31,37 @@ public class TiledSpriteProgram extends ShaderProgram {
     /**
      * Number of float data per vertex
      */
-    protected final static int ATTRIBUTES_PER_VERTEX = 8;
+    protected final static int ATTRIBUTES_PER_VERTEX = 16;
     /**
      * Number of floats for each tiled sprite in the attribute data.
      */
     public final static int ATTRIBUTES_PER_SPRITE = ATTRIBUTES_PER_VERTEX * VERTICES_PER_SPRITE;
 
     /**
-     * Index into aTileSprite for x position
+     * Index into aTranslate for x position
      */
-    protected final static int ATTRIBUTE_SPRITE_X_INDEX = 0;
+    protected final static int ATTRIBUTE_SPRITE_TRANSLATE_INDEX = 0;
     /**
-     * Index into aTileSprite for y position
+     * Index into aRotate for rotation
      */
-    protected final static int ATTRIBUTE_SPRITE_Y_INDEX = 1;
+    protected final static int ATTRIBUTE_SPRITE_ROTATION_INDEX = 4;
     /**
-     * Index into aTileSprite2 z position
+     * Index into aScale for scale
      */
-    protected final static int ATTRIBUTE_SPRITE_Z_INDEX = 2;
+    protected final static int ATTRIBUTE_SPRITE_SCALE_INDEX = 8;
     /**
-     * Index into aTileSprite frame number, this is the sprite frame number to use.
+     * Index into aFrameData texture coordinates and frame - this is used to calculate texture coordinate with frame.
      */
-    protected final static int ATTRIBUTE_SPRITE_FRAME_INDEX = 3;
-    /**
-     * Index into aTileSprite texture u coordinate - this is used to calculate texture coordinate with frame.
-     */
-    protected final static int ATTRIBUTE_SPRITE_U_INDEX = 4;
-    /**
-     * Index into aTileSprite texture v coordinate - this is used to calculate texture coordinate with frame.
-     */
-    protected final static int ATTRIBUTE_SPRITE_V_INDEX = 5;
-    /**
-     * Index into aTileSprite z axis rotation
-     */
-    protected final static int ATTRIBUTE_SPRITE_ROTATION_INDEX = 6;
-    /**
-     * Index into aTileSprite for scale
-     */
-    protected final static int ATTRIBUTE_SPRITE_SCALE_INDEX = 7;
+    protected final static int ATTRIBUTE_SPRITE_FRAMEDATA = 12;
 
     public enum VARIABLES implements VariableMapping {
         uMVPMatrix(0, 0, ShaderVariable.VariableType.UNIFORM, null),
         uSpriteData(1, 16, ShaderVariable.VariableType.UNIFORM, null),
         aPosition(2, 0, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.VERTICES),
-        aTileSprite(3, 0, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
-        aTileSprite2(4, 4, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES);
+        aTranslate(3, 0, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
+        aRotate(4, 4, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
+        aScale(5, 8, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
+        aFrameData(6, 12, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES);
 
         private final int index;
         private final VariableType type;
@@ -116,8 +102,8 @@ public class TiledSpriteProgram extends ShaderProgram {
         }
     }
 
-    private final static String VERTEX_SHADER_NAME = "assets/tiledspritevertex.essl";
-    private final static String FRAGMENT_SHADER_NAME = "assets/tiledspritefragment.essl";
+    protected final static String VERTEX_SHADER_NAME = "assets/tiledspritevertex.essl";
+    protected final static String FRAGMENT_SHADER_NAME = "assets/tiledspritefragment.essl";
 
     TiledSpriteProgram() {
         super(VARIABLES.values());

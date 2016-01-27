@@ -1,12 +1,16 @@
 package com.graphicsengine.spritemesh;
 
 import com.graphicsengine.sprite.Sprite;
-import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.shader.ShaderProgram;
+import com.nucleus.texturing.TiledTexture2D;
+import com.nucleus.texturing.UVTexture2D;
 
 /**
  * A tiled sprite object, this is a type of sprite that uses one Mesh (drawcall) to draw all sprites.
- * It is created by the TiledSpriteController.
+ * The sprite frame is chosen depending on the texture type:
+ * For {@link TiledTexture2D} the frame is calculated by the shader.
+ * For {@link UVTexture2D} the UV data must be set.
+ * It is created by the {@link SpriteMeshNode}.
  * 
  * @author Richard Sahlin
  *
@@ -30,8 +34,6 @@ public class TiledSprite extends Sprite {
     TiledSprite(float[] data, int offset) {
         this.attributeData = data;
         this.offset = offset;
-        MeshBuilder.prepareTiledUV(attributeData, offset, TiledSpriteProgram.ATTRIBUTE_SPRITE_U_INDEX,
-                TiledSpriteProgram.ATTRIBUTE_SPRITE_V_INDEX, TiledSpriteProgram.ATTRIBUTES_PER_VERTEX);
     }
 
     /**
@@ -48,15 +50,17 @@ public class TiledSprite extends Sprite {
         int index = offset;
         int frameIndex = (int) floatData[FRAME];
         float rotation = floatData[ROTATION];
-        float scale = floatData[SCALE];
+        float scale = floatData[SCALE]; // Uniform scale
 
+        // TODO Check if using UVsprite, if so set the UV data.
         for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
-            attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_X_INDEX] = xpos;
-            attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_Y_INDEX] = ypos;
-            attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_Z_INDEX] = zpos;
-            attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_FRAME_INDEX] = frameIndex;
-            attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_ROTATION_INDEX] = rotation;
+            attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_TRANSLATE_INDEX] = xpos;
+            attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_TRANSLATE_INDEX + 1] = ypos;
+            attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_TRANSLATE_INDEX + 2] = zpos;
+            attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_FRAMEDATA + 2] = frameIndex;
+            attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_ROTATION_INDEX + 2] = rotation;
             attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_SCALE_INDEX] = scale;
+            attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_SCALE_INDEX + 1] = scale;
             index += TiledSpriteProgram.ATTRIBUTES_PER_VERTEX;
         }
 

@@ -22,30 +22,32 @@ uniform mat4 uMVPMatrix;
 uniform vec3 uSpriteData; //tex width, tex height, frames per line
 
 attribute vec4 aPosition;
-attribute vec4 aTileSprite; //sprite x, sprite y, sprite, z, frame 
-attribute vec4 aTileSprite2;//texture u, texture v,  rotation z, scale
+attribute vec4 aTranslate; //sprite x, sprite y, sprite z 
+attribute vec4 aRotate;  
+attribute vec4 aScale;  
+attribute vec4 aFrameData;//texture u, texture v,  frame
 
 varying vec2 vTexCoord;
 mat4 calculateTransformMatrix();
 
 void main() {
-    gl_Position = calculateTransformMatrix() * (vec4(aTileSprite2.w,aTileSprite2.w,1,1) * aPosition) + (uMVPMatrix * vec4(aTileSprite.x, aTileSprite.y, aTileSprite.z, 0.0));
-    float y = floor(aTileSprite.w / uSpriteData.z);
-    vTexCoord = vec2(aTileSprite2.x * uSpriteData.x + 
-                     mod(aTileSprite.w, uSpriteData.z) * uSpriteData.x,
-                     aTileSprite2.y * uSpriteData.y + y * uSpriteData.y);
+    gl_Position = calculateTransformMatrix() * (vec4(aScale.x,aScale.y,1,1) * aPosition) + (uMVPMatrix * vec4(aTranslate.x, aTranslate.y, aTranslate.z, 0.0));
+    float y = floor(aFrameData.z / uSpriteData.z);
+    vTexCoord = vec2(aFrameData.x * uSpriteData.x + 
+                     mod(aFrameData.z, uSpriteData.z) * uSpriteData.x,
+                     aFrameData.y * uSpriteData.y + y * uSpriteData.y);
 }
 /**
- * Returns a matrix with z axis rotation set from attribute aTileSprite2.z.
- * @return Matrix with z axis rotation set from aTileSprite2.z
+ * Returns a matrix with z axis rotation set from attribute aRotate.z.
+ * @return Matrix with z axis rotation set from aRotate.z
  */
 mat4 calculateTransformMatrix(){
 
     mat4 modelview = mat4(1);
 
     //Rotate
-    float cz = cos(aTileSprite2.z);
-    float sz = sin(aTileSprite2.z);
+    float cz = cos(aRotate.z);
+    float sz = sin(aRotate.z);
 
     modelview[0][0]  =  cz;
     modelview[0][1]  =  sz;
