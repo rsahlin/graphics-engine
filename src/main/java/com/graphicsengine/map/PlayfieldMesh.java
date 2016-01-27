@@ -16,7 +16,7 @@ import com.nucleus.vecmath.Axis;
  * Old school charactermap based rendering using a texture and quad mesh, the normal way to use the charmap is to create
  * with specified number of chars to cover a certain area.
  * This class has no real functionality besides being able to be rendered - to use the charmap, see
- * {@link PlayfieldController}
+ * {@link PlayfieldNode}
  * 
  * @author Richard Sahlin
  *
@@ -107,7 +107,7 @@ public class PlayfieldMesh extends SpriteMesh implements AttributeUpdater {
         int offset = 0;
         for (int i = 0; i < charCount; i++) {
             MeshBuilder.prepareTiledUV(attributeData, offset, PlayfieldProgram.ATTRIBUTE_CHARMAP_U_INDEX,
-                    PlayfieldProgram.ATTRIBUTE_CHARMAP_V_INDEX, PlayfieldProgram.ATTRIBUTES_PER_VERTEX);
+                    PlayfieldProgram.ATTRIBUTES_PER_VERTEX);
             offset += PlayfieldProgram.ATTRIBUTES_PER_CHAR;
         }
 
