@@ -1,6 +1,6 @@
 package com.graphicsengine.sprite;
 
-import com.graphicsengine.spritemesh.SpriteMeshController;
+import com.graphicsengine.spritemesh.SpriteMeshNode;
 import com.nucleus.actor.ActorResolver;
 import com.nucleus.scene.Node;
 
@@ -20,7 +20,7 @@ public class SpriteControllerFactory {
      *
      */
     public enum SpriteControllers {
-        TILED(SpriteMeshController.class);
+        TILED(SpriteMeshNode.class);
 
         @SuppressWarnings("rawtypes")
         private final Class clazz;
@@ -50,10 +50,10 @@ public class SpriteControllerFactory {
      * @param source The nodedata source
      * @return
      */
-    public static SpriteController create(SpriteControllers controller, Node source)
+    public static SpriteNode create(SpriteControllers controller, Node source)
             throws IllegalAccessException,
             InstantiationException, ClassNotFoundException {
-        SpriteController impl = (SpriteController) controller.getControllerClass().newInstance();
+        SpriteNode impl = (SpriteNode) controller.getControllerClass().newInstance();
         impl.setActorResolver(actorResolver);
         impl.set(source);
         return impl;

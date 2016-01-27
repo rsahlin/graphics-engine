@@ -10,9 +10,10 @@ import com.nucleus.common.Key;
  */
 public enum GraphicsEngineNodeType implements Key {
 
-    tiledCharset(),
-    tiledSpriteController(),
-    spriteController();
+    playfieldNode(),
+    spriteMeshNode(),
+    spriteNode(),
+    uinode();
 
     @Override
     public String getKey() {

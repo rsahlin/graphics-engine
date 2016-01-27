@@ -18,7 +18,7 @@ import com.nucleus.vecmath.Axis;
  * @author Richard Sahlin
  *
  */
-public class PlayfieldController extends Node {
+public class PlayfieldNode extends Node {
 
     @SerializedName("mapRef")
     /**
@@ -46,7 +46,7 @@ public class PlayfieldController extends Node {
      * 
      * @param source
      */
-    PlayfieldController(Node source) {
+    PlayfieldNode(Node source) {
         super(source);
     }
 
@@ -54,11 +54,11 @@ public class PlayfieldController extends Node {
      * Creates a new playfieldcontroller from the specified source node
      * The created node will have the same id and properties but it will not contain the
      * data, ie the mesh and mapdata will not be copied.
-     * Call {@link #createMesh(NucleusRenderer, PlayfieldController, RootNode)} to create the mesh.
+     * Call {@link #createMesh(NucleusRenderer, PlayfieldNode, RootNode)} to create the mesh.
      * 
      * @source
      */
-    PlayfieldController(PlayfieldController source) {
+    PlayfieldNode(PlayfieldNode source) {
         super(source);
         mapRef = source.mapRef;
         setMapSize(source.mapSize);
@@ -74,7 +74,7 @@ public class PlayfieldController extends Node {
      * @param scene
      * @throws IOException
      */
-    public void createMesh(NucleusRenderer renderer, PlayfieldController source,
+    public void createMesh(NucleusRenderer renderer, PlayfieldNode source,
             GraphicsEngineRootNode scene)
             throws IOException {
         playfield = PlayfieldFactory.create(renderer, source, scene);
@@ -88,7 +88,7 @@ public class PlayfieldController extends Node {
      * @param source
      * @param scene
      */
-    public void createPlayfield(PlayfieldController source, GraphicsEngineRootNode scene) {
+    public void createPlayfield(PlayfieldNode source, GraphicsEngineRootNode scene) {
         Playfield playfieldData = scene.getResources().getPlayfield(source.getMapRef());
         createMap(source.getMapSize());
         mapRef = source.getMapRef();

@@ -2,12 +2,12 @@ package com.graphicsengine.exporter;
 
 import com.graphicsengine.io.GraphicsEngineRootNode;
 import com.graphicsengine.map.Playfield;
-import com.graphicsengine.map.PlayfieldController;
 import com.graphicsengine.map.PlayfieldControllerFactory;
 import com.graphicsengine.map.PlayfieldFactory;
+import com.graphicsengine.map.PlayfieldNode;
 import com.graphicsengine.scene.GraphicsEngineNodeType;
-import com.graphicsengine.spritemesh.SpriteMeshController;
-import com.graphicsengine.spritemesh.TiledSpriteControllerFactory;
+import com.graphicsengine.spritemesh.SpriteMeshNode;
+import com.graphicsengine.spritemesh.SpriteMeshNodeFactory;
 import com.nucleus.exporter.NucleusNodeExporter;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
@@ -24,11 +24,11 @@ public class GraphicsEngineNodeExporter extends NucleusNodeExporter {
     public Node exportNode(Node source, RootNode rootNode) {
         GraphicsEngineNodeType type = GraphicsEngineNodeType.valueOf(source.getType());
         switch (type) {
-        case tiledCharset:
-            exportDataReferences((PlayfieldController) source, (GraphicsEngineRootNode) rootNode);
+        case playfieldNode:
+            exportDataReferences((PlayfieldNode) source, (GraphicsEngineRootNode) rootNode);
             return new Node(source);
-        case tiledSpriteController:
-            exportDataReferences((SpriteMeshController) source, (GraphicsEngineRootNode) rootNode);
+        case spriteMeshNode:
+            exportDataReferences((SpriteMeshNode) source, (GraphicsEngineRootNode) rootNode);
             return new Node(source);
         default:
             throw new IllegalArgumentException(NOT_IMPLEMENTED + type);
@@ -42,9 +42,9 @@ public class GraphicsEngineNodeExporter extends NucleusNodeExporter {
      * @param playfield
      * @param sceneData
      */
-    private void exportDataReferences(PlayfieldController playfieldController, GraphicsEngineRootNode sceneData) {
+    private void exportDataReferences(PlayfieldNode playfieldController, GraphicsEngineRootNode sceneData) {
         exportMeshes(playfieldController.getMeshes(), sceneData);
-        PlayfieldController resource = PlayfieldControllerFactory.copy(playfieldController);
+        PlayfieldNode resource = PlayfieldControllerFactory.copy(playfieldController);
         resource.setId(playfieldController.getReference());
         resource.setReference(null);
         sceneData.addResource(resource);
@@ -59,10 +59,10 @@ public class GraphicsEngineNodeExporter extends NucleusNodeExporter {
      * @param tiledSpriteController
      * @param sceneData
      */
-    private void exportDataReferences(SpriteMeshController tiledSpriteController,
+    private void exportDataReferences(SpriteMeshNode tiledSpriteController,
             GraphicsEngineRootNode sceneData) {
         exportMeshes(tiledSpriteController.getMeshes(), sceneData);
-        SpriteMeshController resource = TiledSpriteControllerFactory.copy(tiledSpriteController);
+        SpriteMeshNode resource = SpriteMeshNodeFactory.copy(tiledSpriteController);
         resource.setId(tiledSpriteController.getReference());
         resource.setReference(null);
         sceneData.addResource(resource);

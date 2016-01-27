@@ -7,6 +7,8 @@ import com.graphicsengine.sprite.SpriteControllerFactory;
 import com.graphicsengine.sprite.SpriteControllerFactory.SpriteControllers;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node;
+import com.nucleus.shader.ShaderProgram;
+import com.nucleus.texturing.Texture2D;
 
 /**
  * Creates new instances of tiled spritecontroller, use this when importing data
@@ -14,7 +16,9 @@ import com.nucleus.scene.Node;
  * @author Richard Sahlin
  *
  */
-public class TiledSpriteControllerFactory {
+public class SpriteMeshNodeFactory {
+
+    private final static String INVALID_TYPE = "Invalid type: ";
 
     /**
      * Returns a new instance of a tiled sprite controller, mesh and sprites will be created from the source.
@@ -27,16 +31,28 @@ public class TiledSpriteControllerFactory {
      * @return The created sprite controller that can be used to render sprites.
      * @throws IOException
      */
-    public static SpriteMeshController create(NucleusRenderer renderer, Node source,
+    public static SpriteMeshNode create(NucleusRenderer renderer, Node source,
             String reference, GraphicsEngineRootNode scene) throws IOException {
 
         try {
-            SpriteMeshController refNode = scene.getResources().getTiledSpriteController(reference);
-            SpriteMeshController spriteController = (SpriteMeshController) SpriteControllerFactory.create(
+            SpriteMeshNode refNode = scene.getResources().getSpriteMeshNode(reference);
+            SpriteMeshNode spriteController = (SpriteMeshNode) SpriteControllerFactory.create(
                     SpriteControllers.TILED, refNode);
             spriteController.set(refNode);
             spriteController.toReference(source, spriteController);
-            spriteController.createMesh(renderer, spriteController, scene);
+            ShaderProgram program = null;
+            Texture2D tex = scene.getResources().getTexture2D(spriteController.getSpriteSheet().getTextureRef());
+            switch (tex.type) {
+            case TiledTexture2D:
+                program = new TiledSpriteProgram();
+                break;
+            case UVTexture2D:
+                program = new UVSpriteProgram();
+                break;
+            default:
+                throw new IllegalArgumentException(INVALID_TYPE + tex.type);
+            }
+            spriteController.createMesh(renderer, spriteController, program, scene);
             spriteController.copyTransform(source);
             spriteController.createSprites(renderer, spriteController, scene);
             return spriteController;
@@ -52,8 +68,8 @@ public class TiledSpriteControllerFactory {
      * @param source
      * @return
      */
-    public static SpriteMeshController copy(SpriteMeshController source) {
-        return new SpriteMeshController(source);
+    public static SpriteMeshNode copy(SpriteMeshNode source) {
+        return new SpriteMeshNode(source);
     }
 
 }

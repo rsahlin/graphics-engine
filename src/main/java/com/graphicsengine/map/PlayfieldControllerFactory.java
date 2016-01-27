@@ -25,12 +25,11 @@ public class PlayfieldControllerFactory {
      * @param scene The scene holding the resources
      * @return New instance of the referenced playfield controlller
      */
-    public static PlayfieldController create(NucleusRenderer renderer, Node source, String reference,
+    public static PlayfieldNode create(NucleusRenderer renderer, Node source, String reference,
             GraphicsEngineRootNode scene) throws IOException {
-        PlayfieldController refNode = scene.getResources().getPlayfieldController(reference);
-        PlayfieldController playfieldController = new PlayfieldController(source);
+        PlayfieldNode refNode = scene.getResources().getPlayfieldNode(reference);
+        PlayfieldNode playfieldController = new PlayfieldNode(source);
         playfieldController.createMesh(renderer, refNode, scene);
-        // playfieldController.copyTransform(source);
         playfieldController.createPlayfield(refNode, scene);
         return playfieldController;
     }
@@ -42,8 +41,8 @@ public class PlayfieldControllerFactory {
      * @param source
      * @return
      */
-    public static PlayfieldController copy(PlayfieldController source) {
-        return new PlayfieldController(source);
+    public static PlayfieldNode copy(PlayfieldNode source) {
+        return new PlayfieldNode(source);
     }
 
 }

@@ -30,7 +30,7 @@ public class PlayfieldFactory {
      * @return The created playfield
      * @throws IOException
      */
-    public static PlayfieldMesh create(NucleusRenderer renderer, PlayfieldController source, ShaderProgram program,
+    public static PlayfieldMesh create(NucleusRenderer renderer, PlayfieldNode source, ShaderProgram program,
             TiledTexture2D textureData) throws IOException {
 
         PlayfieldMesh sourceMesh = source.getPlayfieldMesh();
@@ -60,11 +60,11 @@ public class PlayfieldFactory {
      * @return The created mesh
      * @throws IOException
      */
-    public static PlayfieldMesh create(NucleusRenderer renderer, PlayfieldController source,
+    public static PlayfieldMesh create(NucleusRenderer renderer, PlayfieldNode source,
             GraphicsEngineRootNode scene)
             throws IOException {
 
-        TiledTexture2D textureData = (TiledTexture2D) scene.getResources().getTexture2DData(
+        TiledTexture2D textureData = (TiledTexture2D) scene.getResources().getTexture2D(
                 source.getPlayfieldMesh().getTextureRef());
 
         return create(renderer, source, new PlayfieldProgram(), textureData);
@@ -78,7 +78,7 @@ public class PlayfieldFactory {
      * @param source
      * @return
      */
-    public static Playfield createPlayfield(PlayfieldController source) {
+    public static Playfield createPlayfield(PlayfieldNode source) {
         return new Playfield(source);
     }
 

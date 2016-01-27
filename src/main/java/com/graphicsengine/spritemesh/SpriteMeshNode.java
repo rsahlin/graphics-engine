@@ -4,12 +4,13 @@ import java.io.IOException;
 
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.io.GraphicsEngineRootNode;
-import com.graphicsengine.scene.GraphicsEngineNodeType;
 import com.graphicsengine.sprite.Sprite;
-import com.graphicsengine.sprite.SpriteController;
+import com.graphicsengine.sprite.SpriteNode;
+import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.RootNode;
 import com.nucleus.shader.ShaderProgram;
+import com.nucleus.texturing.Texture2D;
 
 /**
  * Controller for tiled sprites, this controller creates the tiled sprite objects.
@@ -22,9 +23,7 @@ import com.nucleus.shader.ShaderProgram;
  * @author Richard Sahlin
  *
  */
-public class SpriteMeshController extends SpriteController {
-
-    private final static String INVALID_TYPE = "Invalid type: ";
+public class SpriteMeshNode extends SpriteNode {
 
     /**
      * The mesh that can be redered
@@ -36,11 +35,11 @@ public class SpriteMeshController extends SpriteController {
     /**
      * Default constructor
      */
-    public SpriteMeshController() {
+    public SpriteMeshNode() {
         super();
     }
 
-    protected SpriteMeshController(SpriteMeshController source) {
+    protected SpriteMeshNode(SpriteMeshNode source) {
         set(source);
     }
 
@@ -50,38 +49,43 @@ public class SpriteMeshController extends SpriteController {
      * 
      * @param source The source to copy
      */
-    protected void set(SpriteMeshController source) {
+    protected void set(SpriteMeshNode source) {
         super.set(source);
         spriteSheet = new SpriteMesh(source.getSpriteSheet());
     }
 
     @Override
-    public void createSprites(NucleusRenderer renderer, SpriteController source, RootNode scene) {
-        SpriteMeshController spriteController = (SpriteMeshController) source;
+    protected void createSprites(NucleusRenderer renderer, SpriteNode source, RootNode scene) {
+        SpriteMeshNode spriteController = (SpriteMeshNode) source;
         create(spriteController.getActorData().getCount());
+        int offset;
+        float[] attributeData = spriteSheet.getAttributeData();
+        Texture2D tex = spriteController.getSpriteSheet().getTexture(Texture2D.TEXTURE_0);
         for (int i = 0; i < count; i++) {
-            sprites[i] = new TiledSprite(spriteSheet.getAttributeData(), i
-                    * TiledSpriteProgram.ATTRIBUTES_PER_SPRITE);
+            offset = i * TiledSpriteProgram.ATTRIBUTES_PER_SPRITE;
+            switch (tex.type) {
+            case TiledTexture2D:
+                sprites[i] = new TiledSprite(attributeData, offset);
+                MeshBuilder.prepareTiledUV(attributeData, offset,
+                        TiledSpriteProgram.ATTRIBUTE_SPRITE_FRAMEDATA, TiledSpriteProgram.ATTRIBUTES_PER_VERTEX);
+                break;
+            case UVTexture2D:
+                sprites[i] = new UVSprite(attributeData, offset);
+                break;
+            default:
+                throw new IllegalArgumentException();
+            }
+            sprites[i].setPosition(0, 0);
+            sprites[i].floatData[TiledSprite.SCALE] = 1;
         }
         setActor(spriteController.getActorData().getData());
     }
 
     @Override
-    public void createMesh(NucleusRenderer renderer, SpriteController source, RootNode scene) {
+    protected void createMesh(NucleusRenderer renderer, SpriteNode source, ShaderProgram program, RootNode scene) {
         try {
-            ShaderProgram program = null;
-            GraphicsEngineNodeType type = GraphicsEngineNodeType.valueOf(source.getType());
-            switch (type) {
-            case tiledSpriteController:
-                program = new TiledSpriteProgram();
-                break;
-            case spriteController:
-                // program = new SpriteProgram();
-            default:
-                throw new IllegalArgumentException(INVALID_TYPE + type);
-            }
             GraphicsEngineRootNode gScene = (GraphicsEngineRootNode) scene;
-            spriteSheet = SpriteMeshFactory.create(renderer, (SpriteMeshController) source, program, gScene);
+            spriteSheet = SpriteMeshFactory.create(renderer, (SpriteMeshNode) source, program, gScene);
             addMesh(spriteSheet);
         } catch (IOException e) {
             throw new RuntimeException(e);

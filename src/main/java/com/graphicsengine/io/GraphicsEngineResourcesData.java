@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.map.Playfield;
-import com.graphicsengine.map.PlayfieldController;
-import com.graphicsengine.spritemesh.SpriteMeshController;
+import com.graphicsengine.map.PlayfieldNode;
+import com.graphicsengine.spritemesh.SpriteMeshNode;
 import com.nucleus.io.ResourcesData;
 
 /**
@@ -16,10 +16,10 @@ import com.nucleus.io.ResourcesData;
  */
 public class GraphicsEngineResourcesData extends ResourcesData {
 
-    @SerializedName("tiledSpriteController")
-    private ArrayList<SpriteMeshController> tiledSpriteControllers = new ArrayList<SpriteMeshController>();
-    @SerializedName("playfieldController")
-    private ArrayList<PlayfieldController> playfieldControllers = new ArrayList<PlayfieldController>();
+    @SerializedName("spriteMeshNode")
+    private ArrayList<SpriteMeshNode> spriteMeshNodes = new ArrayList<SpriteMeshNode>();
+    @SerializedName("playfieldNode")
+    private ArrayList<PlayfieldNode> playfieldNodes = new ArrayList<PlayfieldNode>();
     @SerializedName("playfield")
     private ArrayList<Playfield> playfields = new ArrayList<Playfield>();
 
@@ -37,18 +37,18 @@ public class GraphicsEngineResourcesData extends ResourcesData {
      * 
      * @return
      */
-    public PlayfieldController[] getPlayfieldController() {
-        return (PlayfieldController[]) playfieldControllers.toArray();
+    public PlayfieldNode[] getPlayfieldNode() {
+        return (PlayfieldNode[]) playfieldNodes.toArray();
     }
 
     /**
-     * Returns the (first) tiledcharset with matching id, or null if not found.
+     * Returns the (first) playfield node with matching id, or null if not found.
      * 
      * @param id
      * @return
      */
-    public PlayfieldController getPlayfieldController(String id) {
-        for (PlayfieldController p : playfieldControllers) {
+    public PlayfieldNode getPlayfieldNode(String id) {
+        for (PlayfieldNode p : playfieldNodes) {
             if (id.equals(p.getId())) {
                 return p;
             }
@@ -77,8 +77,8 @@ public class GraphicsEngineResourcesData extends ResourcesData {
      * @param id
      * @return
      */
-    public SpriteMeshController getTiledSpriteController(String id) {
-        for (SpriteMeshController t : tiledSpriteControllers) {
+    public SpriteMeshNode getSpriteMeshNode(String id) {
+        for (SpriteMeshNode t : spriteMeshNodes) {
             if (id.equals(t.getId())) {
                 return t;
             }
@@ -87,13 +87,13 @@ public class GraphicsEngineResourcesData extends ResourcesData {
     }
 
     /**
-     * Adds the sprite controller data if one does not already exist with the same id.
+     * Adds the sprite mesh node if one does not already exist with the same id.
      * 
      * @param spriteControllerData
      */
-    public void addSpriteController(SpriteMeshController spriteController) {
-        if (getTiledSpriteController(spriteController.getId()) == null) {
-            tiledSpriteControllers.add(spriteController);
+    public void addSpriteMeshNode(SpriteMeshNode spriteController) {
+        if (getSpriteMeshNode(spriteController.getId()) == null) {
+            spriteMeshNodes.add(spriteController);
         } else {
             System.out.println(RESOURCE_ALREADY_EXIST + spriteController.getId());
         }
@@ -113,15 +113,15 @@ public class GraphicsEngineResourcesData extends ResourcesData {
     }
 
     /**
-     * Adds the playfield controller data if one does not already exist with the same id.
+     * Adds the playfield node if one does not already exist with the same id.
      * 
-     * @param playfieldControllerData
+     * @param playfieldNode
      */
-    public void addPlayfieldController(PlayfieldController playfieldController) {
-        if (getTiledSpriteController(playfieldController.getId()) == null) {
-            playfieldControllers.add(playfieldController);
+    public void addPlayfieldNode(PlayfieldNode playfieldNode) {
+        if (getSpriteMeshNode(playfieldNode.getId()) == null) {
+            playfieldNodes.add(playfieldNode);
         } else {
-            System.out.println(RESOURCE_ALREADY_EXIST + playfieldController.getId());
+            System.out.println(RESOURCE_ALREADY_EXIST + playfieldNode.getId());
         }
     }
 

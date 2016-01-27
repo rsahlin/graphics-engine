@@ -2,8 +2,8 @@ package com.graphicsengine.io;
 
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.map.Playfield;
-import com.graphicsengine.map.PlayfieldController;
-import com.graphicsengine.spritemesh.SpriteMeshController;
+import com.graphicsengine.map.PlayfieldNode;
+import com.graphicsengine.spritemesh.SpriteMeshNode;
 import com.nucleus.scene.RootNode;
 
 /**
@@ -23,12 +23,12 @@ public class GraphicsEngineRootNode extends RootNode {
         return resources;
     }
 
-    public void addResource(SpriteMeshController spriteController) {
-        getResources().addSpriteController(spriteController);
+    public void addResource(SpriteMeshNode spriteController) {
+        getResources().addSpriteMeshNode(spriteController);
     }
 
-    public void addResource(PlayfieldController playfieldController) {
-        getResources().addPlayfieldController(playfieldController);
+    public void addResource(PlayfieldNode playfieldController) {
+        getResources().addPlayfieldNode(playfieldController);
     }
 
     public void addResource(Playfield playfield) {

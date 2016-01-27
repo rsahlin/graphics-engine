@@ -7,6 +7,7 @@ import com.nucleus.actor.ActorNode;
 import com.nucleus.actor.ActorResolver;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.RootNode;
+import com.nucleus.shader.ShaderProgram;
 
 /**
  * Controller for a set of sprites.
@@ -16,7 +17,7 @@ import com.nucleus.scene.RootNode;
  * @author Richard Sahlin
  *
  */
-public abstract class SpriteController extends ActorNode {
+public abstract class SpriteNode extends ActorNode {
 
     private final static String ACTORRESOLVER_NOT_SET = "ActorResolver not set, must set before calling.";
     private final static String ACTOR_NOT_FOUND_ERROR = "Actor not found for id: ";
@@ -34,11 +35,11 @@ public abstract class SpriteController extends ActorNode {
     /**
      * Default constructor
      */
-    public SpriteController() {
+    public SpriteNode() {
         super();
     }
 
-    protected SpriteController(SpriteController source) {
+    protected SpriteNode(SpriteNode source) {
         set(source);
     }
 
@@ -48,7 +49,7 @@ public abstract class SpriteController extends ActorNode {
      * 
      * @param source The source to copy
      */
-    protected void set(SpriteController source) {
+    protected void set(SpriteNode source) {
         super.set(source);
         actorData = new ActorData(source.getActorData());
     }
@@ -100,7 +101,7 @@ public abstract class SpriteController extends ActorNode {
      * @param source
      * @param scene
      */
-    public abstract void createSprites(NucleusRenderer renderer, SpriteController source,
+    protected abstract void createSprites(NucleusRenderer renderer, SpriteNode source,
             RootNode scene);
 
     /**
@@ -109,9 +110,11 @@ public abstract class SpriteController extends ActorNode {
      * 
      * @param renderer
      * @param spriteController
+     * @param program The shader program to use when rendering the mesh.
      * @param scene
      */
-    public abstract void createMesh(NucleusRenderer renderer, SpriteController spriteController, RootNode scene);
+    protected abstract void createMesh(NucleusRenderer renderer, SpriteNode spriteController, ShaderProgram program,
+            RootNode scene);
 
     /**
      * Internal method to check if a actor resolver has been set, call this in implementations of the createSprites()
