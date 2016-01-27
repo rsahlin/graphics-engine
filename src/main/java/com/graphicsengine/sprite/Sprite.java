@@ -102,6 +102,12 @@ public abstract class Sprite extends ActorContainer {
         floatData[Y_POS] = y;
     }
 
+    /**
+     * Sets the frame number, must be used for instance by sprites using the UVTexture otherwise
+     * UV coordinates are not updated.
+     * 
+     * @param frame
+     */
     public void setFrame(int frame) {
         floatData[FRAME] = frame;
     }
