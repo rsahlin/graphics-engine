@@ -9,7 +9,6 @@ import com.nucleus.renderer.Configuration;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.Texture2D;
-import com.nucleus.texturing.TiledTexture2D;
 
 /**
  * Used to create tiled spritesheet.
@@ -31,15 +30,14 @@ public class SpriteMeshFactory {
      * @return
      * @throws IOException
      */
-    public static SpriteMesh create(NucleusRenderer renderer, SpriteMeshController source, ShaderProgram program,
+    public static SpriteMesh create(NucleusRenderer renderer, SpriteMeshNode source, ShaderProgram program,
             GraphicsEngineRootNode scene) throws IOException {
 
-        TiledTexture2D textureData = (TiledTexture2D) scene.getResources().getTexture2DData(
-                source.getSpriteSheet().getTextureRef());
         SpriteMesh sourceMesh = source.getSpriteSheet();
         SpriteMesh sprites = new SpriteMesh(sourceMesh);
         renderer.createProgram(program);
-        Texture2D texture = AssetManager.getInstance().getTexture(renderer, textureData);
+        Texture2D texture = AssetManager.getInstance().getTexture(renderer,
+                scene.getResources().getTexture2D(source.getSpriteSheet().getTextureRef()));
 
         sprites.createMesh(program, texture);
         if (Configuration.getInstance().isUseVBO()) {
