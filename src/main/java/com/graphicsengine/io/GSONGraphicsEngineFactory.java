@@ -5,11 +5,11 @@ import java.io.Reader;
 
 import com.google.gson.Gson;
 import com.graphicsengine.exporter.GraphicsEngineNodeExporter;
-import com.graphicsengine.map.PlayfieldControllerFactory;
+import com.graphicsengine.scene.GraphicsEngineNodeFactory;
 import com.graphicsengine.scene.GraphicsEngineNodeType;
-import com.graphicsengine.spritemesh.TiledSpriteControllerFactory;
 import com.nucleus.io.GSONSceneFactory;
 import com.nucleus.scene.Node;
+import com.nucleus.scene.NodeFactory;
 import com.nucleus.scene.RootNode;
 
 public class GSONGraphicsEngineFactory extends GSONSceneFactory {
@@ -27,36 +27,25 @@ public class GSONGraphicsEngineFactory extends GSONSceneFactory {
     @Override
     protected void createNodeExporter() {
         nodeExporter = new GraphicsEngineNodeExporter();
-        nodeExporter.registerNodeExporter(GraphicsEngineNodeType.tiledCharset, nodeExporter);
-        nodeExporter.registerNodeExporter(GraphicsEngineNodeType.tiledSpriteController, nodeExporter);
+        nodeExporter.registerNodeExporter(GraphicsEngineNodeType.values(), nodeExporter);
     }
 
     @Override
     protected Node createNode(RootNode scene, Node source, Node parent) throws IOException {
-        try {
-            GraphicsEngineNodeType type = GraphicsEngineNodeType.valueOf(source.getType());
+        String reference = source.getReference();
+        Node created = nodeFactory.create(renderer, source, reference, scene);
+        setViewFrustum(source, created);
+        createChildNodes(scene, source, created);
+        return created;
+    }
 
-            GraphicsEngineRootNode gScene = (GraphicsEngineRootNode) scene;
-            String reference = source.getReference();
-            Node created = null;
-
-            switch (type) {
-            case tiledCharset:
-                created = PlayfieldControllerFactory.create(renderer, source, reference, gScene);
-                break;
-            case tiledSpriteController:
-                created = TiledSpriteControllerFactory.create(renderer, source, reference, gScene);
-                break;
-            default:
-                throw new IllegalArgumentException(NOT_IMPLEMENTED + type);
-            }
-            setViewFrustum(source, created);
-            createChildNodes(scene, source, created);
-            return created;
-
-        } catch (IllegalArgumentException e) {
-            return super.createNode(scene, source, parent);
-        }
+    /**
+     * Utility method to get the default nodefactory
+     * 
+     * @return
+     */
+    public static NodeFactory getNodeFactory() {
+        return new GraphicsEngineNodeFactory();
     }
 
 }
