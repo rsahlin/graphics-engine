@@ -1,6 +1,7 @@
 package com.graphicsengine.spritemesh;
 
 import com.graphicsengine.sprite.Sprite;
+import com.nucleus.scene.Node;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.TiledTexture2D;
 import com.nucleus.texturing.UVTexture2D;
@@ -28,20 +29,16 @@ public class TiledSprite extends Sprite {
      * Creates a new TiledSprite, using attribute data at the specified offset.
      * This constructor shall not be called directly, use TiledSpriteController to create sprites.
      * 
+     * @param parent The node containing the sprites
      * @param data Shared attribute data for positions
      * @param offset Offset into array where data for this sprite is.
      */
-    TiledSprite(float[] data, int offset) {
+    TiledSprite(Node parent, float[] data, int offset) {
+        super(parent);
         this.attributeData = data;
         this.offset = offset;
     }
 
-    /**
-     * Internal method.
-     * Stores the position and data of this sprite into the attribute array (in the Mesh) used when rendering this
-     * sprite. This must be called before this sprite is updated on screen.
-     * 
-     */
     @Override
     public void prepare() {
         float xpos = floatData[X_POS];
@@ -52,7 +49,6 @@ public class TiledSprite extends Sprite {
         float rotation = floatData[ROTATION];
         float scale = floatData[SCALE]; // Uniform scale
 
-        // TODO Check if using UVsprite, if so set the UV data.
         for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
             attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_TRANSLATE_INDEX] = xpos;
             attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_TRANSLATE_INDEX + 1] = ypos;
@@ -63,7 +59,6 @@ public class TiledSprite extends Sprite {
             attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_SCALE_INDEX + 1] = scale;
             index += TiledSpriteProgram.ATTRIBUTES_PER_VERTEX;
         }
-
     }
 
 }

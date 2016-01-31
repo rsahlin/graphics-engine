@@ -6,6 +6,7 @@ import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.io.GraphicsEngineRootNode;
 import com.graphicsengine.sprite.Sprite;
 import com.graphicsengine.sprite.SpriteNode;
+import com.nucleus.geometry.AttributeUpdater.Producer;
 import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.RootNode;
@@ -13,21 +14,20 @@ import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.Texture2D;
 
 /**
- * Controller for tiled sprites, this controller creates the tiled sprite objects.
- * A tiled sprite (quad) can be drawn in one draw call together with a large number of other sprites (they share the
+ * Controller for mesh sprites, this node creates the mesh sprite objects.
+ * A mesh sprite (quad) can be drawn in one draw call together with a large number of other sprites (they share the
  * same Mesh).
  * This is to allow a very large number of sprites in just 1 draw call to the underlying render API (OpenGLES).
- * Depending on what shader program is used with this class the sprites will have different behavior.
+ * Depending on what shader program is used with this class the render properties will be different.
  * {@link TiledSpriteProgram}
  * 
  * @author Richard Sahlin
  *
  */
-public class SpriteMeshNode extends SpriteNode {
+public class SpriteMeshNode extends SpriteNode implements Producer {
 
     /**
      * The mesh that can be redered
-     * TODO Unify all controllers that renders a Mesh, with methods for creating the mesh
      */
     @SerializedName("charset")
     private SpriteMesh spriteSheet;
@@ -36,11 +36,13 @@ public class SpriteMeshNode extends SpriteNode {
      * Default constructor
      */
     public SpriteMeshNode() {
-        super();
+        setAttributeProducer(this);
     }
 
     protected SpriteMeshNode(SpriteMeshNode source) {
+        super(source);
         set(source);
+        setAttributeProducer(this);
     }
 
     /**
@@ -65,18 +67,19 @@ public class SpriteMeshNode extends SpriteNode {
             offset = i * TiledSpriteProgram.ATTRIBUTES_PER_SPRITE;
             switch (tex.type) {
             case TiledTexture2D:
-                sprites[i] = new TiledSprite(attributeData, offset);
+                sprites[i] = new TiledSprite(this, attributeData, offset);
                 MeshBuilder.prepareTiledUV(attributeData, offset,
                         TiledSpriteProgram.ATTRIBUTE_SPRITE_FRAMEDATA, TiledSpriteProgram.ATTRIBUTES_PER_VERTEX);
                 break;
             case UVTexture2D:
-                sprites[i] = new UVSprite(attributeData, offset);
+                sprites[i] = new UVSprite(this, attributeData, offset);
                 break;
             default:
                 throw new IllegalArgumentException();
             }
             sprites[i].setPosition(0, 0);
             sprites[i].floatData[TiledSprite.SCALE] = 1;
+            sprites[i].setFrame(0);
         }
         setActor(spriteController.getActorData().getData());
     }
@@ -137,6 +140,14 @@ public class SpriteMeshNode extends SpriteNode {
             sprite.actor.init(sprite);
         }
         controllerState = State.INITIALIZED;
+    }
+
+    @Override
+    public void updateAttributeData() {
+        for (Sprite sprite : sprites) {
+            sprite.prepare();
+        }
+
     }
 
 }

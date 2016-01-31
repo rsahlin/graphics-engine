@@ -3,7 +3,7 @@ package com.graphicsengine.map;
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.spritemesh.SpriteMesh;
 import com.nucleus.data.Anchor;
-import com.nucleus.geometry.AttributeUpdater;
+import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.VertexBuffer;
 import com.nucleus.opengl.GLESWrapper.GLES20;
@@ -21,7 +21,7 @@ import com.nucleus.vecmath.Axis;
  * @author Richard Sahlin
  *
  */
-public class PlayfieldMesh extends SpriteMesh implements AttributeUpdater {
+public class PlayfieldMesh extends SpriteMesh implements Consumer {
 
     /**
      * Width and height of playfield in chars

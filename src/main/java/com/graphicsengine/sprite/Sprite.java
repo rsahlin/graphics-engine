@@ -2,6 +2,7 @@ package com.graphicsengine.sprite;
 
 import com.nucleus.actor.ActorContainer;
 import com.nucleus.actor.ActorItem;
+import com.nucleus.scene.Node;
 import com.nucleus.vecmath.VecMath;
 import com.nucleus.vecmath.Vector2D;
 
@@ -19,7 +20,10 @@ public abstract class Sprite extends ActorContainer {
 
     /**
      * Store the data used by subclasses into this class to prepare for rendering.
-     * For some implementations this may do nothing, others may need to copy data from this class.
+     * For some implementations this may do nothing, others may need to copy data from this class for instance
+     * into attribute storage.
+     * This method must be called just before rendering, at the beginning of the frame - not at the end of the previous
+     * frame.
      */
     public abstract void prepare();
 
@@ -53,9 +57,17 @@ public abstract class Sprite extends ActorContainer {
     public ActorItem actor;
 
     /**
-     * Creates a new sprite with storage for MIN_FLOAT_COUNT floats and MIN_INT_COUNT ints
+     * The parent node, ie the node containing the sprite.
      */
-    protected Sprite() {
+    public Node parent;
+
+    /**
+     * Creates a new sprite with storage for MIN_FLOAT_COUNT floats and MIN_INT_COUNT ints
+     * 
+     * @param parent The node containing the sprite
+     */
+    protected Sprite(Node parent) {
+        this.parent = parent;
         createArrays(MIN_FLOAT_COUNT, MIN_INT_COUNT);
     }
 

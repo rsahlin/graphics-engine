@@ -2,6 +2,7 @@ package com.graphicsengine.spritemesh;
 
 import com.google.gson.annotations.SerializedName;
 import com.nucleus.data.Anchor;
+import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.AttributeUpdater;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshBuilder;
@@ -20,7 +21,7 @@ import com.nucleus.vecmath.Axis;
  * @author Richard Sahlin
  *
  */
-public class SpriteMesh extends Mesh implements AttributeUpdater {
+public class SpriteMesh extends Mesh implements Consumer, AttributeUpdater {
 
     @SerializedName("count")
     protected int count;
