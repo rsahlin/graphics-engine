@@ -12,6 +12,13 @@ import com.nucleus.scene.Node;
 import com.nucleus.scene.NodeFactory;
 import com.nucleus.scene.RootNode;
 
+/**
+ * Implementation of the scenefactory for the graphics engine, this shall take care of all nodes/datatypes that
+ * are specific for the graphics engine.
+ * 
+ * @author Richard Sahlin
+ *
+ */
 public class GSONGraphicsEngineFactory extends GSONSceneFactory {
 
     @Override
@@ -27,13 +34,17 @@ public class GSONGraphicsEngineFactory extends GSONSceneFactory {
     @Override
     protected void createNodeExporter() {
         nodeExporter = new GraphicsEngineNodeExporter();
-        nodeExporter.registerNodeExporter(GraphicsEngineNodeType.values(), nodeExporter);
+    }
+
+    @Override
+    protected void registerNodeExporters() {
+        super.registerNodeExporters();
+        nodeExporter.registerNodeExporter(GraphicsEngineNodeType.values(), new GraphicsEngineNodeExporter());
     }
 
     @Override
     protected Node createNode(RootNode scene, Node source, Node parent) throws IOException {
-        String reference = source.getReference();
-        Node created = nodeFactory.create(renderer, source, reference, scene);
+        Node created = nodeFactory.create(renderer, source, scene);
         setViewFrustum(source, created);
         createChildNodes(scene, source, created);
         return created;

@@ -24,7 +24,7 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
     private static final String NOT_IMPLEMENTED = "Not implemented";
 
     @Override
-    public Node create(NucleusRenderer renderer, Node source, String reference, RootNode scene) throws IOException {
+    public Node create(NucleusRenderer renderer, Node source, RootNode scene) throws IOException {
         try {
             GraphicsEngineNodeType type = GraphicsEngineNodeType.valueOf(source.getType());
             GraphicsEngineRootNode gScene = (GraphicsEngineRootNode) scene;
@@ -32,10 +32,10 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
 
             switch (type) {
             case playfieldNode:
-                created = PlayfieldControllerFactory.create(renderer, source, reference, gScene);
+                created = PlayfieldControllerFactory.create(renderer, source, source.getReference(), gScene);
                 break;
             case spriteMeshNode:
-                created = SpriteMeshNodeFactory.create(renderer, source, reference, gScene);
+                created = SpriteMeshNodeFactory.create(renderer, source, source.getReference(), gScene);
                 break;
             case uinode:
 
@@ -45,7 +45,7 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
             }
             return created;
         } catch (IllegalArgumentException e) {
-            return super.create(renderer, source, reference, scene);
+            return super.create(renderer, source, scene);
         }
     }
 
