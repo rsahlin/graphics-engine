@@ -3,6 +3,7 @@ package com.graphicsengine.spritemesh;
 import java.io.IOException;
 
 import com.graphicsengine.io.GraphicsEngineRootNode;
+import com.graphicsengine.scene.GraphicsEngineNodeType;
 import com.graphicsengine.sprite.SpriteControllerFactory;
 import com.graphicsengine.sprite.SpriteControllerFactory.SpriteControllers;
 import com.nucleus.renderer.NucleusRenderer;
@@ -26,16 +27,16 @@ public class SpriteMeshNodeFactory {
      * 
      * @param renderer
      * @param source The source node to the sprite controller
-     * @source reference Reference to the sprite controller that shall be created.
-     * @param scene
+     * @param scene The graphics engine root node
      * @return The created sprite controller that can be used to render sprites.
      * @throws IOException
      */
-    public static SpriteMeshNode create(NucleusRenderer renderer, Node source,
-            String reference, GraphicsEngineRootNode scene) throws IOException {
-
+    public static SpriteMeshNode create(NucleusRenderer renderer, Node source, GraphicsEngineRootNode scene)
+            throws IOException {
+        String reference = source.getReference();
         try {
-            SpriteMeshNode refNode = scene.getResources().getSpriteMeshNode(reference);
+            SpriteMeshNode refNode = (SpriteMeshNode) scene.getResources().getNode(
+                    GraphicsEngineNodeType.spriteMeshNode, reference);
             SpriteMeshNode spriteController = (SpriteMeshNode) SpriteControllerFactory.create(
                     SpriteControllers.TILED, refNode);
             spriteController.set(refNode);

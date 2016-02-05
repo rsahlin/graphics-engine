@@ -2,8 +2,9 @@ package com.graphicsengine.io;
 
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.map.Playfield;
-import com.graphicsengine.map.PlayfieldNode;
-import com.graphicsengine.spritemesh.SpriteMeshNode;
+import com.graphicsengine.scene.GraphicsEngineNodeType;
+import com.nucleus.Error;
+import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
 
 /**
@@ -23,14 +24,27 @@ public class GraphicsEngineRootNode extends RootNode {
         return resources;
     }
 
-    public void addResource(SpriteMeshNode spriteController) {
-        getResources().addSpriteMeshNode(spriteController);
+    /**
+     * Adds the node the the resources in this class - the node must be a type that is known by the graphics engine.
+     * 
+     * @param node
+     * @throws IllegalArgumentException If the node type is not one of {@link GraphicsEngineNodeType}
+     */
+    public void addResource(Node node) {
+        try {
+            GraphicsEngineNodeType type = GraphicsEngineNodeType.valueOf(node.getType());
+            getResources().addNode(type, node);
+        } catch (IllegalArgumentException e) {
+            // This means the node is not a type that is known by the graphics engine
+            throw new IllegalArgumentException(Error.INVALID_TYPE.message + node.getType());
+        }
     }
 
-    public void addResource(PlayfieldNode playfieldController) {
-        getResources().addPlayfieldNode(playfieldController);
-    }
-
+    /**
+     * Adds playfield to the resources.
+     * 
+     * @param playfield
+     */
     public void addResource(Playfield playfield) {
         getResources().addPlayfield(playfield);
     }

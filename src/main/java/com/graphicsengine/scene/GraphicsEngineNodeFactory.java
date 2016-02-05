@@ -5,12 +5,12 @@ import java.io.IOException;
 import com.graphicsengine.io.GraphicsEngineRootNode;
 import com.graphicsengine.map.PlayfieldControllerFactory;
 import com.graphicsengine.spritemesh.SpriteMeshNodeFactory;
+import com.graphicsengine.ui.UINodeFactory;
 import com.nucleus.camera.ViewFrustum;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.DefaultNodeFactory;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.NodeFactory;
-import com.nucleus.scene.NodeType;
 import com.nucleus.scene.RootNode;
 
 /**
@@ -21,73 +21,35 @@ import com.nucleus.scene.RootNode;
  */
 public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements NodeFactory {
 
-    private static final String NOT_IMPLEMENTED = "Not implemented";
+    private static final String NOT_IMPLEMENTED = "Not implemented: ";
 
     @Override
     public Node create(NucleusRenderer renderer, Node source, RootNode scene) throws IOException {
+        GraphicsEngineNodeType type = null;
         try {
-            GraphicsEngineNodeType type = GraphicsEngineNodeType.valueOf(source.getType());
-            GraphicsEngineRootNode gScene = (GraphicsEngineRootNode) scene;
-            Node created = null;
-
-            switch (type) {
-            case playfieldNode:
-                created = PlayfieldControllerFactory.create(renderer, source, source.getReference(), gScene);
-                break;
-            case spriteMeshNode:
-                created = SpriteMeshNodeFactory.create(renderer, source, source.getReference(), gScene);
-                break;
-            case uinode:
-
-                break;
-            default:
-                throw new IllegalArgumentException(NOT_IMPLEMENTED + type);
-            }
-            return created;
+            type = GraphicsEngineNodeType.valueOf(source.getType());
         } catch (IllegalArgumentException e) {
             return super.create(renderer, source, scene);
         }
-    }
+        GraphicsEngineRootNode gScene = (GraphicsEngineRootNode) scene;
+        Node created = null;
 
-    /**
-     * Creates a new node from the source node, looking up resources as needed.
-     * The new node will be returned, it is not added to the parent node - this shall be done by the caller.
-     * The new node will have parent as its parent node
-     * 
-     * @param scene
-     * @param source
-     * @param node
-     * @return The created node
-     */
-    protected Node createNode(RootNode scene, Node source, Node parent) throws IOException {
-        try {
-            NodeType type = NodeType.valueOf(source.getType());
-            Node created = null;
-            switch (type) {
-            case node:
-                created = new Node(source);
-                break;
-            default:
-                throw new IllegalArgumentException(NOT_IMPLEMENTED + type);
-            }
-            setViewFrustum(source, created);
-            createChildNodes(scene, source, created);
-            return created;
-
-        } catch (IllegalArgumentException e) {
-            return null;
+        switch (type) {
+        case playfieldNode:
+            created = PlayfieldControllerFactory.create(renderer, source, gScene);
+            break;
+        case spriteMeshNode:
+            created = SpriteMeshNodeFactory.create(renderer, source, gScene);
+            break;
+        case button:
+            created = UINodeFactory.createButton(renderer, source, gScene);
+            break;
+        case uinode:
+            throw new IllegalArgumentException(NOT_IMPLEMENTED + type);
+        default:
+            throw new IllegalArgumentException(NOT_IMPLEMENTED + type);
         }
-    }
-
-    protected void createChildNodes(RootNode scene, Node source, Node parent) throws IOException {
-        // Recursively create children
-        for (Node nd : source.getChildren()) {
-            Node child = createNode(scene, nd, parent);
-            if (child != null) {
-                parent.addChild(child);
-            }
-        }
-
+        return created;
     }
 
     /**

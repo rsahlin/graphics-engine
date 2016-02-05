@@ -3,6 +3,7 @@ package com.graphicsengine.map;
 import java.io.IOException;
 
 import com.graphicsengine.io.GraphicsEngineRootNode;
+import com.graphicsengine.scene.GraphicsEngineNodeType;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node;
 
@@ -21,13 +22,14 @@ public class PlayfieldControllerFactory {
      * 
      * @param renderer
      * @param source The source node for the returned instance.
-     * @source reference Reference to the playfield controller that shall be created.
      * @param scene The scene holding the resources
      * @return New instance of the referenced playfield controlller
      */
-    public static PlayfieldNode create(NucleusRenderer renderer, Node source, String reference,
-            GraphicsEngineRootNode scene) throws IOException {
-        PlayfieldNode refNode = scene.getResources().getPlayfieldNode(reference);
+    public static PlayfieldNode create(NucleusRenderer renderer, Node source, GraphicsEngineRootNode scene)
+            throws IOException {
+        String reference = source.getReference();
+        PlayfieldNode refNode = (PlayfieldNode) scene.getResources().getNode(GraphicsEngineNodeType.playfieldNode,
+                reference);
         PlayfieldNode playfieldController = new PlayfieldNode(source);
         playfieldController.createMesh(renderer, refNode, scene);
         playfieldController.createPlayfield(refNode, scene);

@@ -12,7 +12,7 @@ public enum GraphicsEngineNodeType implements Key {
 
     playfieldNode(),
     spriteMeshNode(),
-    spriteNode(),
+    button(),
     uinode();
 
     @Override

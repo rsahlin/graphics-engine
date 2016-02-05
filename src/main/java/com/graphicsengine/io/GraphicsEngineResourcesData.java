@@ -5,8 +5,12 @@ import java.util.ArrayList;
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.map.Playfield;
 import com.graphicsengine.map.PlayfieldNode;
+import com.graphicsengine.scene.GraphicsEngineNodeType;
 import com.graphicsengine.spritemesh.SpriteMeshNode;
+import com.graphicsengine.ui.Button;
+import com.nucleus.Error;
 import com.nucleus.io.ResourcesData;
+import com.nucleus.scene.Node;
 
 /**
  * Definition of all resources (for a scene)
@@ -16,10 +20,19 @@ import com.nucleus.io.ResourcesData;
  */
 public class GraphicsEngineResourcesData extends ResourcesData {
 
+    /**
+     * Container for all nodes
+     */
     @SerializedName("spriteMeshNode")
     private ArrayList<SpriteMeshNode> spriteMeshNodes = new ArrayList<SpriteMeshNode>();
     @SerializedName("playfieldNode")
     private ArrayList<PlayfieldNode> playfieldNodes = new ArrayList<PlayfieldNode>();
+    @SerializedName("button")
+    private ArrayList<Button> buttons = new ArrayList<Button>();
+
+    /**
+     * Other data
+     */
     @SerializedName("playfield")
     private ArrayList<Playfield> playfields = new ArrayList<Playfield>();
 
@@ -33,27 +46,16 @@ public class GraphicsEngineResourcesData extends ResourcesData {
     }
 
     /**
-     * Returns the defined tiled charset objects as an array
+     * Adds the playfield if one does not already exist with the same id.
      * 
-     * @return
+     * @param playfield
      */
-    public PlayfieldNode[] getPlayfieldNode() {
-        return (PlayfieldNode[]) playfieldNodes.toArray();
-    }
-
-    /**
-     * Returns the (first) playfield node with matching id, or null if not found.
-     * 
-     * @param id
-     * @return
-     */
-    public PlayfieldNode getPlayfieldNode(String id) {
-        for (PlayfieldNode p : playfieldNodes) {
-            if (id.equals(p.getId())) {
-                return p;
-            }
+    public void addPlayfield(Playfield playfield) {
+        if (getPlayfield(playfield.getId()) == null) {
+            playfields.add(playfield);
+        } else {
+            System.out.println(RESOURCE_ALREADY_EXIST + playfield.getId());
         }
-        return null;
     }
 
     /**
@@ -72,57 +74,70 @@ public class GraphicsEngineResourcesData extends ResourcesData {
     }
 
     /**
-     * Returns the (first) tiledspritecontroller with matching id, or null if not found.
-     * 
-     * @param id
-     * @return
-     */
-    public SpriteMeshNode getSpriteMeshNode(String id) {
-        for (SpriteMeshNode t : spriteMeshNodes) {
-            if (id.equals(t.getId())) {
-                return t;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Adds the sprite mesh node if one does not already exist with the same id.
+     * Adds the node if one does not already exist with the same id.
+     * TODO: Should an exception be thrown if a mesh with same id alredy exists? probably....
      * 
      * @param spriteControllerData
      */
-    public void addSpriteMeshNode(SpriteMeshNode spriteController) {
-        if (getSpriteMeshNode(spriteController.getId()) == null) {
-            spriteMeshNodes.add(spriteController);
+    public void addNode(GraphicsEngineNodeType type, Node node) {
+        switch (type) {
+        case playfieldNode:
+            addNode((ArrayList) playfieldNodes, node);
+            break;
+        case spriteMeshNode:
+            addNode((ArrayList) spriteMeshNodes, node);
+            break;
+        case button:
+            addNode((ArrayList) buttons, node);
+            break;
+        default:
+            throw new IllegalArgumentException(Error.NOT_IMPLEMENTED.message);
+        }
+    }
+
+    private void addNode(ArrayList<Node> nodes, Node node) {
+        if (getNode(GraphicsEngineNodeType.valueOf(node.getType()), node.getId()) == null) {
+            nodes.add(node);
         } else {
-            System.out.println(RESOURCE_ALREADY_EXIST + spriteController.getId());
+            System.out.println(RESOURCE_ALREADY_EXIST + node.getId() + ", type: " + node.getType());
+        }
+
+    }
+
+    /**
+     * Returns the (first) Node of the matching type and id, or null if not found.
+     * 
+     * @param type The type of node to return
+     * @param id The id of the node to return
+     * @return The first node with matching id and type.
+     */
+    public Node getNode(GraphicsEngineNodeType type, String id) {
+        switch (type) {
+        case spriteMeshNode:
+            return getNode((ArrayList) spriteMeshNodes, id);
+        case playfieldNode:
+            return getNode((ArrayList) playfieldNodes, id);
+        case button:
+            return getNode((ArrayList) buttons, id);
+        default:
+            throw new IllegalArgumentException(Error.NOT_IMPLEMENTED.message);
         }
     }
 
     /**
-     * Adds the playfield if one does not already exist with the same id.
+     * Internal method - returns the first node with matching id from the list.
      * 
-     * @param playfield
+     * @param nodes
+     * @param id
+     * @return First node with matching id, or null if not found.
      */
-    public void addPlayfield(Playfield playfield) {
-        if (getPlayfield(playfield.getId()) == null) {
-            playfields.add(playfield);
-        } else {
-            System.out.println(RESOURCE_ALREADY_EXIST + playfield.getId());
+    private Node getNode(ArrayList<Node> nodes, String id) {
+        for (Node n : nodes) {
+            if (id.equals(n.getId())) {
+                return n;
+            }
         }
-    }
-
-    /**
-     * Adds the playfield node if one does not already exist with the same id.
-     * 
-     * @param playfieldNode
-     */
-    public void addPlayfieldNode(PlayfieldNode playfieldNode) {
-        if (getSpriteMeshNode(playfieldNode.getId()) == null) {
-            playfieldNodes.add(playfieldNode);
-        } else {
-            System.out.println(RESOURCE_ALREADY_EXIST + playfieldNode.getId());
-        }
+        return null;
     }
 
 }
