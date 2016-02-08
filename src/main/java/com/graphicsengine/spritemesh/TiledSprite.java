@@ -1,6 +1,7 @@
 package com.graphicsengine.spritemesh;
 
 import com.graphicsengine.sprite.Sprite;
+import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.scene.Node;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.TiledTexture2D;
@@ -24,6 +25,13 @@ public class TiledSprite extends Sprite {
      */
     float[] attributeData;
     int offset;
+    Consumer consumer;
+
+    TiledSprite(Node parent, Consumer consumer) {
+        super(parent);
+        this.consumer = consumer;
+        attributeData = consumer.getAttributeData();
+    }
 
     /**
      * Creates a new TiledSprite, using attribute data at the specified offset.
@@ -40,7 +48,9 @@ public class TiledSprite extends Sprite {
     }
 
     @Override
-    public void prepare() {
+    public void updateAttributeData() {
+        // TODO This the attributeData mapping should match the mapping in the sprite object so that only
+        // one copy is needed.
         float xpos = floatData[X_POS];
         float ypos = floatData[Y_POS];
         float zpos = floatData[Z_POS];
@@ -48,7 +58,6 @@ public class TiledSprite extends Sprite {
         int frameIndex = (int) floatData[FRAME];
         float rotation = floatData[ROTATION];
         float scale = floatData[SCALE]; // Uniform scale
-
         for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
             attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_TRANSLATE_INDEX] = xpos;
             attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_TRANSLATE_INDEX + 1] = ypos;

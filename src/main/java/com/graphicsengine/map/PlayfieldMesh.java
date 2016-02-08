@@ -101,7 +101,6 @@ public class PlayfieldMesh extends SpriteMesh implements Consumer {
      * @param charCount
      */
     private void init(int charCount) {
-        this.count = charCount;
         attributeData = new float[(charCount * PlayfieldProgram.ATTRIBUTES_PER_CHAR)];
         charmap = new int[charCount];
         int offset = 0;

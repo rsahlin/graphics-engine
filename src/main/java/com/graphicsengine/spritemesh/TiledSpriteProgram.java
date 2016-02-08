@@ -1,7 +1,10 @@
 package com.graphicsengine.spritemesh;
 
+import com.nucleus.geometry.AttributeUpdater.Consumer;
+import com.nucleus.geometry.AttributeUpdater.Property;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.Mesh.BufferIndex;
+import com.nucleus.geometry.VertexBuffer;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.GLException;
 import com.nucleus.shader.ShaderProgram;
@@ -31,28 +34,28 @@ public class TiledSpriteProgram extends ShaderProgram {
     /**
      * Number of float data per vertex
      */
-    protected final static int ATTRIBUTES_PER_VERTEX = 16;
+    final static int ATTRIBUTES_PER_VERTEX = 16;
     /**
      * Number of floats for each tiled sprite in the attribute data.
      */
-    public final static int ATTRIBUTES_PER_SPRITE = ATTRIBUTES_PER_VERTEX * VERTICES_PER_SPRITE;
+    private final static int ATTRIBUTES_PER_SPRITE = ATTRIBUTES_PER_VERTEX * VERTICES_PER_SPRITE;
 
     /**
      * Index into aTranslate for x position
      */
-    protected final static int ATTRIBUTE_SPRITE_TRANSLATE_INDEX = 0;
+    final static int ATTRIBUTE_SPRITE_TRANSLATE_INDEX = 0;
     /**
      * Index into aRotate for rotation
      */
-    protected final static int ATTRIBUTE_SPRITE_ROTATION_INDEX = 4;
+    final static int ATTRIBUTE_SPRITE_ROTATION_INDEX = 4;
     /**
      * Index into aScale for scale
      */
-    protected final static int ATTRIBUTE_SPRITE_SCALE_INDEX = 8;
+    final static int ATTRIBUTE_SPRITE_SCALE_INDEX = 8;
     /**
      * Index into aFrameData texture coordinates and frame - this is used to calculate texture coordinate with frame.
      */
-    protected final static int ATTRIBUTE_SPRITE_FRAMEDATA = 12;
+    final static int ATTRIBUTE_SPRITE_FRAMEDATA = 12;
 
     public enum VARIABLES implements VariableMapping {
         uMVPMatrix(0, 0, ShaderVariable.VariableType.UNIFORM, null),
@@ -130,6 +133,15 @@ public class TiledSpriteProgram extends ShaderProgram {
     }
 
     @Override
+    public VertexBuffer createAttributeBuffer(int verticeCount, Mesh mesh) {
+        VertexBuffer buffer = super.createAttributeBuffer(verticeCount, mesh);
+        if (mesh instanceof Consumer) {
+            ((Consumer) mesh).bindAttributeBuffer(buffer);
+        }
+        return buffer;
+    }
+
+    @Override
     public void setupUniforms(Mesh mesh) {
         createUniformStorage(mesh, shaderVariables);
         float[] uniforms = mesh.getUniforms();
@@ -139,6 +151,17 @@ public class TiledSpriteProgram extends ShaderProgram {
         } else {
             System.err.println(INVALID_TEXTURE_TYPE + texture);
         }
+    }
+
+    @Override
+    public int getAttributeOffset(int vertex) {
+        return vertex * ATTRIBUTES_PER_VERTEX;
+    }
+
+    @Override
+    public int getPropertyOffset(Property property) {
+        // TODO Auto-generated method stub
+        return 0;
     }
 
 }

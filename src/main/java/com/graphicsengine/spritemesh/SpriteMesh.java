@@ -2,8 +2,8 @@ package com.graphicsengine.spritemesh;
 
 import com.google.gson.annotations.SerializedName;
 import com.nucleus.data.Anchor;
-import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.AttributeUpdater;
+import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.VertexBuffer;
@@ -13,9 +13,10 @@ import com.nucleus.texturing.TiledTexture2D;
 import com.nucleus.vecmath.Axis;
 
 /**
- * A number of sprites that will be rendered using the same Mesh, ie all sprites in this class are rendered using
+ * A number of quds that will be rendered using the same Mesh, ie all quads in this class are rendered using
  * one draw call.
- * This can also be used to render chars in a playfield
+ * Use the @link {@link TiledSpriteProgram} to render the mesh.
+ * This can also be used to render chars in a playfield.
  * This class only contains the drawable parts of the sprites - no logic is contained in this class.
  * 
  * @author Richard Sahlin
@@ -24,7 +25,7 @@ import com.nucleus.vecmath.Axis;
 public class SpriteMesh extends Mesh implements Consumer, AttributeUpdater {
 
     @SerializedName("count")
-    protected int count;
+    protected final int count;
     /**
      * Width and height of each sprite.
      */
@@ -43,19 +44,10 @@ public class SpriteMesh extends Mesh implements Consumer, AttributeUpdater {
     protected String textureRef;
 
     /**
-     * Contains attribute data for all sprites.
+     * Contains attribute data for all sprites - this is the array that sprites will write into.
      * This data must be mapped into the mesh for changes to take place.
      */
     protected transient float[] attributeData;
-
-    /**
-     * Creates a new sprite sheet using one mesh, the mesh must be created before being used.
-     * 
-     * @param spriteCount
-     */
-    protected SpriteMesh(int spriteCount) {
-        setup(spriteCount);
-    }
 
     /**
      * Creates a new instance of the tiled sprite mesh based on the source.
@@ -66,6 +58,7 @@ public class SpriteMesh extends Mesh implements Consumer, AttributeUpdater {
      */
     protected SpriteMesh(SpriteMesh source) {
         super();
+        count = source.count;
         set(source);
     }
 
@@ -81,13 +74,7 @@ public class SpriteMesh extends Mesh implements Consumer, AttributeUpdater {
             anchor = new Anchor(source.anchor);
         }
         setSize(source.getSize());
-        setup(source.getCount());
 
-    }
-
-    private void setup(int spriteCount) {
-        count = spriteCount;
-        attributeData = new float[count * TiledSpriteProgram.ATTRIBUTES_PER_SPRITE];
     }
 
     /**
@@ -147,12 +134,18 @@ public class SpriteMesh extends Mesh implements Consumer, AttributeUpdater {
 
     @Override
     public void setAttributeData() {
+        if (attributeData == null) {
+            throw new IllegalArgumentException(Consumer.BUFFER_NOT_BOUND);
+        }
         VertexBuffer positions = getVerticeBuffer(BufferIndex.ATTRIBUTES);
-        positions.setArray(getAttributeData(), 0, 0, count * TiledSpriteProgram.ATTRIBUTES_PER_SPRITE);
+        positions.setArray(attributeData, 0, 0, attributeData.length);
     }
 
     @Override
     public float[] getAttributeData() {
+        if (attributeData == null) {
+            throw new IllegalArgumentException(Consumer.BUFFER_NOT_BOUND);
+        }
         return attributeData;
     }
 
@@ -189,6 +182,11 @@ public class SpriteMesh extends Mesh implements Consumer, AttributeUpdater {
      */
     public String getTextureRef() {
         return textureRef;
+    }
+
+    @Override
+    public void bindAttributeBuffer(VertexBuffer buffer) {
+        attributeData = new float[buffer.getBuffer().capacity()];
     }
 
 }

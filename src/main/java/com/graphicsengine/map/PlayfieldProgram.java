@@ -1,5 +1,6 @@
 package com.graphicsengine.map;
 
+import com.nucleus.geometry.AttributeUpdater.Property;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.Mesh.BufferIndex;
 import com.nucleus.opengl.GLES20Wrapper;
@@ -150,6 +151,17 @@ public class PlayfieldProgram extends ShaderProgram {
     @Override
     public void createProgram(GLES20Wrapper gles) {
         super.createProgram(gles);
+    }
+
+    @Override
+    public int getAttributeOffset(int vertex) {
+        return vertex * ATTRIBUTES_PER_VERTEX;
+    }
+
+    @Override
+    public int getPropertyOffset(Property property) {
+        // TODO Auto-generated method stub
+        return 0;
     }
 
 }

@@ -63,16 +63,17 @@ public class SpriteMeshNode extends SpriteNode implements Producer {
         int offset;
         float[] attributeData = spriteSheet.getAttributeData();
         Texture2D tex = spriteController.getSpriteSheet().getTexture(Texture2D.TEXTURE_0);
+        ShaderProgram program = spriteController.getSpriteSheet().getMaterial().getProgram();
         for (int i = 0; i < count; i++) {
-            offset = i * TiledSpriteProgram.ATTRIBUTES_PER_SPRITE;
+            offset = program.getAttributeOffset(i) * ShaderProgram.VERTICES_PER_SPRITE;
             switch (tex.type) {
             case TiledTexture2D:
                 sprites[i] = new TiledSprite(this, attributeData, offset);
-                MeshBuilder.prepareTiledUV(attributeData, offset,
+                MeshBuilder.prepareTiledUV(spriteController.spriteSheet.getAttributeData(), offset,
                         TiledSpriteProgram.ATTRIBUTE_SPRITE_FRAMEDATA, TiledSpriteProgram.ATTRIBUTES_PER_VERTEX);
                 break;
             case UVTexture2D:
-                sprites[i] = new UVSprite(this, attributeData, offset);
+                sprites[i] = new UVSprite(this, attributeData, i);
                 break;
             default:
                 throw new IllegalArgumentException();
@@ -145,7 +146,7 @@ public class SpriteMeshNode extends SpriteNode implements Producer {
     @Override
     public void updateAttributeData() {
         for (Sprite sprite : sprites) {
-            sprite.prepare();
+            sprite.updateAttributeData();
         }
 
     }

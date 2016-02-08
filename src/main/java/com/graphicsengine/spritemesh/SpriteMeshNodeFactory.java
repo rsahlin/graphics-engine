@@ -56,6 +56,7 @@ public class SpriteMeshNodeFactory {
             spriteController.createMesh(renderer, spriteController, program, scene);
             spriteController.copyTransform(source);
             spriteController.createSprites(renderer, spriteController, scene);
+
             return spriteController;
         } catch (IllegalAccessException | InstantiationException | ClassNotFoundException e) {
             throw new RuntimeException(e);

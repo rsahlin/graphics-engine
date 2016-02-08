@@ -44,8 +44,8 @@ public class UVSprite extends TiledSprite {
     }
 
     @Override
-    public void prepare() {
-        super.prepare();
+    public void updateAttributeData() {
+        super.updateAttributeData();
         int index = offset;
         int frameIndex = (int) floatData[FRAME];
         int readIndex = 0;

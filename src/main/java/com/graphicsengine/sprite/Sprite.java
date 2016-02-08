@@ -2,6 +2,7 @@ package com.graphicsengine.sprite;
 
 import com.nucleus.actor.ActorContainer;
 import com.nucleus.actor.ActorItem;
+import com.nucleus.geometry.AttributeUpdater.Producer;
 import com.nucleus.scene.Node;
 import com.nucleus.vecmath.VecMath;
 import com.nucleus.vecmath.Vector2D;
@@ -14,18 +15,9 @@ import com.nucleus.vecmath.Vector2D;
  * @author Richard Sahlin
  *
  */
-public abstract class Sprite extends ActorContainer {
+public abstract class Sprite extends ActorContainer implements Producer {
 
     public final static String INVALID_DATACOUNT_ERROR = "Invalid datacount";
-
-    /**
-     * Store the data used by subclasses into this class to prepare for rendering.
-     * For some implementations this may do nothing, others may need to copy data from this class for instance
-     * into attribute storage.
-     * This method must be called just before rendering, at the beginning of the frame - not at the end of the previous
-     * frame.
-     */
-    public abstract void prepare();
 
     /**
      * Index to x position.
