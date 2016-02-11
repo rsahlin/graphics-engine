@@ -1,7 +1,7 @@
 package com.graphicsengine.spritemesh;
 
 import com.graphicsengine.sprite.Sprite;
-import com.nucleus.geometry.AttributeUpdater.Consumer;
+import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.scene.Node;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.TiledTexture2D;
@@ -20,31 +20,16 @@ import com.nucleus.texturing.UVTexture2D;
 public class TiledSprite extends Sprite {
 
     /**
-     * Ref to sprite data, use with offset.
-     * This sprites data is only one part of the whole array.
-     */
-    float[] attributeData;
-    int offset;
-    Consumer consumer;
-
-    TiledSprite(Node parent, Consumer consumer) {
-        super(parent);
-        this.consumer = consumer;
-        attributeData = consumer.getAttributeData();
-    }
-
-    /**
      * Creates a new TiledSprite, using attribute data at the specified offset.
      * This constructor shall not be called directly, use TiledSpriteController to create sprites.
      * 
      * @param parent The node containing the sprites
+     * @param mapper The attribute property mappings
      * @param data Shared attribute data for positions
      * @param offset Offset into array where data for this sprite is.
      */
-    TiledSprite(Node parent, float[] data, int offset) {
-        super(parent);
-        this.attributeData = data;
-        this.offset = offset;
+    TiledSprite(Node parent, PropertyMapper mapper, float[] data, int offset) {
+        super(parent, mapper, data, offset);
     }
 
     @Override
@@ -54,19 +39,14 @@ public class TiledSprite extends Sprite {
         float xpos = floatData[X_POS];
         float ypos = floatData[Y_POS];
         float zpos = floatData[Z_POS];
+        float rotate = floatData[ROTATION];
         int index = offset;
-        int frameIndex = (int) floatData[FRAME];
-        float rotation = floatData[ROTATION];
-        float scale = floatData[SCALE]; // Uniform scale
         for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
-            attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_TRANSLATE_INDEX] = xpos;
-            attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_TRANSLATE_INDEX + 1] = ypos;
-            attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_TRANSLATE_INDEX + 2] = zpos;
-            attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_FRAMEDATA + 2] = frameIndex;
-            attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_ROTATION_INDEX + 2] = rotation;
-            attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_SCALE_INDEX] = scale;
-            attributeData[index + TiledSpriteProgram.ATTRIBUTE_SPRITE_SCALE_INDEX + 1] = scale;
-            index += TiledSpriteProgram.ATTRIBUTES_PER_VERTEX;
+            attributeData[index + mapper.TRANSLATE_INDEX] = xpos;
+            attributeData[index + mapper.TRANSLATE_INDEX + 1] = ypos;
+            attributeData[index + mapper.TRANSLATE_INDEX + 2] = zpos;
+            attributeData[index + mapper.ROTATE_INDEX + 2] = rotate;
+            index += mapper.ATTRIBUTES_PER_VERTEX;
         }
     }
 

@@ -3,9 +3,9 @@ package com.graphicsengine.sprite;
 import com.nucleus.actor.ActorContainer;
 import com.nucleus.actor.ActorItem;
 import com.nucleus.geometry.AttributeUpdater.Producer;
+import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.scene.Node;
-import com.nucleus.vecmath.VecMath;
-import com.nucleus.vecmath.Vector2D;
+import com.nucleus.shader.ShaderProgram;
 
 /**
  * Base sprite class, a sprite is a 2D geometry object
@@ -20,25 +20,6 @@ public abstract class Sprite extends ActorContainer implements Producer {
     public final static String INVALID_DATACOUNT_ERROR = "Invalid datacount";
 
     /**
-     * Index to x position.
-     */
-    public final static int X_POS = 0;
-    /**
-     * Index to y position.
-     */
-    public final static int Y_POS = 1;
-    /**
-     * Index to z position.
-     */
-    public final static int Z_POS = 2;
-
-    public final static int MOVE_VECTOR_X = 3;
-    public final static int MOVE_VECTOR_Y = 4;
-    public final static int MOVE_VECTOR_Z = 5;
-    public final static int FRAME = 6;
-    public final static int ROTATION = 7; // z axis rotation angle
-    public final static int SCALE = 8; // Uniform scale
-    /**
      * Number of float data values reserved for sprite, first free index is SPRITE_FLOAT_COUNT
      */
     public final static int SPRITE_FLOAT_COUNT = SCALE + 1;
@@ -48,6 +29,14 @@ public abstract class Sprite extends ActorContainer implements Producer {
      */
     public ActorItem actor;
 
+    protected final PropertyMapper mapper;
+    /**
+     * Ref to sprite data, use with offset.
+     * This sprites data is only one part of the whole array.
+     */
+    protected final float[] attributeData;
+    protected final int offset;
+
     /**
      * The parent node, ie the node containing the sprite.
      */
@@ -56,21 +45,17 @@ public abstract class Sprite extends ActorContainer implements Producer {
     /**
      * Creates a new sprite with storage for MIN_FLOAT_COUNT floats and MIN_INT_COUNT ints
      * 
-     * @param parent The node containing the sprite
+     * @param parent The node containing the sprites
+     * @param mapper The attribute property mappings
+     * @param data Shared attribute data for positions
+     * @param offset Offset into array where data for this sprite is.
      */
-    protected Sprite(Node parent) {
+    protected Sprite(Node parent, PropertyMapper mapper, float[] attributeData, int offset) {
         this.parent = parent;
-        createArrays(MIN_FLOAT_COUNT, MIN_INT_COUNT);
-    }
-
-    /**
-     * Creates a new sprite with storage for the specified number of float and ints.
-     * 
-     * @param floatCount
-     * @param intCount
-     */
-    protected Sprite(int floatCount, int intCount) {
-        createArrays(floatCount, intCount);
+        this.attributeData = attributeData;
+        this.offset = offset;
+        this.mapper = mapper;
+        createArrays(MIN_FLOAT_COUNT);
     }
 
     @Override
@@ -84,15 +69,13 @@ public abstract class Sprite extends ActorContainer implements Producer {
      * Internal method, creates the data storage.
      * 
      * @param floatCount
-     * @param intCount
-     * @throws IllegalArgumentException if floatCount < MIN_FLOAT_COUNT or intCount < MIN_INT_COUNT
+     * @throws IllegalArgumentException if floatCount < MIN_FLOAT_COUNT
      */
-    private void createArrays(int floatCount, int intCount) {
-        if (floatCount < MIN_FLOAT_COUNT || intCount < MIN_INT_COUNT) {
+    private void createArrays(int floatCount) {
+        if (floatCount < MIN_FLOAT_COUNT) {
             throw new IllegalArgumentException(INVALID_DATACOUNT_ERROR);
         }
         floatData = new float[floatCount];
-        intData = new int[intCount];
     }
 
     /**
@@ -100,10 +83,17 @@ public abstract class Sprite extends ActorContainer implements Producer {
      * 
      * @param x
      * @param y
+     * @param z
      */
-    public void setPosition(float x, float y) {
-        floatData[X_POS] = x;
-        floatData[Y_POS] = y;
+    public void setPosition(float x, float y, float z) {
+        int index = offset;
+        for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
+            attributeData[index + mapper.TRANSLATE_INDEX] = x;
+            attributeData[index + mapper.TRANSLATE_INDEX + 1] = y;
+            attributeData[index + mapper.TRANSLATE_INDEX + 2] = z;
+            index += mapper.ATTRIBUTES_PER_VERTEX;
+        }
+
     }
 
     /**
@@ -113,11 +103,34 @@ public abstract class Sprite extends ActorContainer implements Producer {
      * @param frame
      */
     public void setFrame(int frame) {
-        floatData[FRAME] = frame;
+        int index = offset;
+        for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
+            attributeData[index + mapper.FRAME_INDEX + 2] = frame;
+            index += mapper.ATTRIBUTES_PER_VERTEX;
+        }
+    }
+
+    /**
+     * Sets the scale in x and y axis
+     * 
+     * @param x
+     * @param y
+     */
+    public void setScale(float x, float y) {
+        int index = offset;
+        for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
+            attributeData[index + mapper.SCALE_INDEX] = x;
+            attributeData[index + mapper.SCALE_INDEX + 1] = y;
+            index += mapper.ATTRIBUTES_PER_VERTEX;
+        }
     }
 
     public void setRotation(float rotation) {
-        floatData[ROTATION] = rotation;
+        int index = offset;
+        for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
+            attributeData[index + mapper.ROTATE_INDEX] = rotation;
+            index += mapper.ATTRIBUTES_PER_VERTEX;
+        }
     }
 
     /**
@@ -132,33 +145,6 @@ public abstract class Sprite extends ActorContainer implements Producer {
         floatData[MOVE_VECTOR_X] = x;
         floatData[MOVE_VECTOR_Y] = y;
         floatData[MOVE_VECTOR_Z] = z;
-    }
-
-    /**
-     * Updates the movement according to the specified acceleration (x and y axis) and time
-     * 
-     * @param x Acceleration on x axis
-     * @param y Acceleration on y axis
-     * @param deltaTime Time since last time movement was updated, ie elapsed time.
-     */
-    public static void accelerate(ActorContainer sprite, float x, float y, float deltaTime) {
-        float[] floatData = sprite.floatData;
-        floatData[MOVE_VECTOR_X] += x * deltaTime;
-        floatData[MOVE_VECTOR_Y] += y * deltaTime;
-    }
-
-    /**
-     * Applies movement and gravity to position
-     * 
-     * @param deltaTime
-     */
-    public static void move(ActorContainer sprite, float deltaTime) {
-        float[] floatData = sprite.floatData;
-        Vector2D moveVector = sprite.moveVector;
-        floatData[X_POS] += deltaTime * moveVector.vector[VecMath.X] * moveVector.vector[Vector2D.MAGNITUDE] +
-                floatData[MOVE_VECTOR_X] * deltaTime;
-        floatData[Y_POS] += deltaTime * moveVector.vector[VecMath.Y] * moveVector.vector[Vector2D.MAGNITUDE] +
-                floatData[MOVE_VECTOR_Y] * deltaTime;
     }
 
 }

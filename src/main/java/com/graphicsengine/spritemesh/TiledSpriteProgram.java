@@ -160,8 +160,18 @@ public class TiledSpriteProgram extends ShaderProgram {
 
     @Override
     public int getPropertyOffset(Property property) {
-        // TODO Auto-generated method stub
-        return 0;
+        switch (property) {
+        case TRANSLATE:
+            return ATTRIBUTE_SPRITE_TRANSLATE_INDEX;
+        case ROTATE:
+            return ATTRIBUTE_SPRITE_ROTATION_INDEX;
+        case SCALE:
+            return ATTRIBUTE_SPRITE_SCALE_INDEX;
+        case FRAME:
+            return ATTRIBUTE_SPRITE_FRAMEDATA;
+        default:
+            return -1;
+        }
     }
 
 }

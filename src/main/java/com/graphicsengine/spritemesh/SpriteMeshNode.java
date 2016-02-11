@@ -7,6 +7,7 @@ import com.graphicsengine.io.GraphicsEngineRootNode;
 import com.graphicsengine.sprite.Sprite;
 import com.graphicsengine.sprite.SpriteNode;
 import com.nucleus.geometry.AttributeUpdater.Producer;
+import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.RootNode;
@@ -64,22 +65,23 @@ public class SpriteMeshNode extends SpriteNode implements Producer {
         float[] attributeData = spriteSheet.getAttributeData();
         Texture2D tex = spriteController.getSpriteSheet().getTexture(Texture2D.TEXTURE_0);
         ShaderProgram program = spriteController.getSpriteSheet().getMaterial().getProgram();
+        PropertyMapper mapper = new PropertyMapper(program);
         for (int i = 0; i < count; i++) {
             offset = program.getAttributeOffset(i) * ShaderProgram.VERTICES_PER_SPRITE;
             switch (tex.type) {
             case TiledTexture2D:
-                sprites[i] = new TiledSprite(this, attributeData, offset);
+                sprites[i] = new TiledSprite(this, mapper, attributeData, offset);
                 MeshBuilder.prepareTiledUV(spriteController.spriteSheet.getAttributeData(), offset,
                         TiledSpriteProgram.ATTRIBUTE_SPRITE_FRAMEDATA, TiledSpriteProgram.ATTRIBUTES_PER_VERTEX);
                 break;
             case UVTexture2D:
-                sprites[i] = new UVSprite(this, attributeData, i);
+                sprites[i] = new UVSprite(this, mapper, attributeData, i);
                 break;
             default:
                 throw new IllegalArgumentException();
             }
-            sprites[i].setPosition(0, 0);
-            sprites[i].floatData[TiledSprite.SCALE] = 1;
+            sprites[i].setPosition(0, 0, 0);
+            sprites[i].setScale(1, 1);
             sprites[i].setFrame(0);
         }
         setActor(spriteController.getActorData().getData());
