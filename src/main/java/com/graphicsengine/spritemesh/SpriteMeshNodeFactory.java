@@ -4,15 +4,15 @@ import java.io.IOException;
 
 import com.graphicsengine.io.GraphicsEngineRootNode;
 import com.graphicsengine.scene.GraphicsEngineNodeType;
-import com.graphicsengine.sprite.SpriteControllerFactory;
-import com.graphicsengine.sprite.SpriteControllerFactory.SpriteControllers;
+import com.graphicsengine.sprite.SpriteNodeFactory;
+import com.graphicsengine.sprite.SpriteNodeFactory.SpriteControllers;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.Texture2D;
 
 /**
- * Creates new instances of tiled spritecontroller, use this when importing data
+ * Creates new instances of tiled sprite nodes, use this when importing data
  * 
  * @author Richard Sahlin
  *
@@ -37,12 +37,13 @@ public class SpriteMeshNodeFactory {
         try {
             SpriteMeshNode refNode = (SpriteMeshNode) scene.getResources().getNode(
                     GraphicsEngineNodeType.spriteMeshNode, reference);
-            SpriteMeshNode spriteController = (SpriteMeshNode) SpriteControllerFactory.create(
-                    SpriteControllers.TILED, refNode);
-            spriteController.set(refNode);
-            spriteController.toReference(source, spriteController);
+            SpriteMeshNode spriteNode = (SpriteMeshNode) SpriteNodeFactory.create(
+                    SpriteControllers.TILED);
+            spriteNode.set(refNode);
+            spriteNode.create();
+            spriteNode.toReference(source, spriteNode);
             ShaderProgram program = null;
-            Texture2D tex = scene.getResources().getTexture2D(spriteController.getSpriteSheet().getTextureRef());
+            Texture2D tex = scene.getResources().getTexture2D(spriteNode.getSpriteSheet().getTextureRef());
             switch (tex.type) {
             case TiledTexture2D:
                 program = new TiledSpriteProgram();
@@ -53,11 +54,11 @@ public class SpriteMeshNodeFactory {
             default:
                 throw new IllegalArgumentException(INVALID_TYPE + tex.type);
             }
-            spriteController.createMesh(renderer, spriteController, program, scene);
-            spriteController.copyTransform(source);
-            spriteController.createSprites(renderer, spriteController, scene);
+            spriteNode.createMesh(renderer, spriteNode, program, scene);
+            spriteNode.copyTransform(source);
+            spriteNode.createSprites(renderer, spriteNode, program, scene);
 
-            return spriteController;
+            return spriteNode;
         } catch (IllegalAccessException | InstantiationException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }

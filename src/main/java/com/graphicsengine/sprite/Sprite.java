@@ -29,31 +29,36 @@ public abstract class Sprite extends ActorContainer implements Producer {
      */
     public ActorItem actor;
 
-    protected final PropertyMapper mapper;
+    protected PropertyMapper mapper;
     /**
      * Ref to sprite data, use with offset.
      * This sprites data is only one part of the whole array.
      */
-    protected final float[] attributeData;
-    protected final int offset;
+    protected float[] attributeData;
+    protected int offset;
 
     /**
      * The parent node, ie the node containing the sprite.
      */
     public Node parent;
 
+    protected Sprite() {
+
+    }
+
     /**
-     * Creates a new sprite with storage for MIN_FLOAT_COUNT floats and MIN_INT_COUNT ints
+     * Sets the parent, mapper, attribute data and creates data arrays. After this call the sprite is ready
+     * to be used.
      * 
-     * @param parent The node containing the sprites
-     * @param mapper The attribute property mappings
-     * @param data Shared attribute data for positions
-     * @param offset Offset into array where data for this sprite is.
+     * @param parent
+     * @param mapper
+     * @param attributeData
+     * @param index
      */
-    protected Sprite(Node parent, PropertyMapper mapper, float[] attributeData, int offset) {
+    protected void setup(Node parent, PropertyMapper mapper, float[] attributeData, int index) {
         this.parent = parent;
         this.attributeData = attributeData;
-        this.offset = offset;
+        offset = index * mapper.ATTRIBUTES_PER_VERTEX * ShaderProgram.VERTICES_PER_SPRITE;
         this.mapper = mapper;
         createArrays(MIN_FLOAT_COUNT);
     }

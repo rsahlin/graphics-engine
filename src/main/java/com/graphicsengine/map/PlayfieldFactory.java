@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import com.graphicsengine.io.GraphicsEngineRootNode;
 import com.nucleus.assets.AssetManager;
+import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.renderer.BufferObjectsFactory;
 import com.nucleus.renderer.Configuration;
 import com.nucleus.renderer.NucleusRenderer;
@@ -42,7 +43,8 @@ public class PlayfieldFactory {
         int[] mapSize = source.getMapSize();
         size[0] = mapSize[0] * sourceMesh.getTileWidth();
         size[1] = mapSize[1] * sourceMesh.getTileHeight();
-        map.setupCharmap(source.getMapSize());
+        PropertyMapper mapper = new PropertyMapper(program);
+        map.setupCharmap(mapper, source.getMapSize());
 
         if (Configuration.getInstance().isUseVBO()) {
             BufferObjectsFactory.getInstance().createVBOs(renderer, map);

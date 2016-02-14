@@ -13,7 +13,7 @@ import com.nucleus.texturing.TiledTexture2D;
 import com.nucleus.vecmath.Axis;
 
 /**
- * A number of quds that will be rendered using the same Mesh, ie all quads in this class are rendered using
+ * A number of quads that will be rendered using the same Mesh, ie all quads in this class are rendered using
  * one draw call.
  * Use the @link {@link TiledSpriteProgram} to render the mesh.
  * This can also be used to render chars in a playfield.

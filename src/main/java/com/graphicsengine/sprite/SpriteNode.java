@@ -55,14 +55,12 @@ public abstract class SpriteNode extends ActorNode {
     }
 
     /**
-     * Creates a TiledSpriteController with an array of the specified size.
-     * Each sprite must be created by calling createSprites()
-     * 
-     * @param count Number of sprites to create.
+     * Creates the transient values needed in runtime, based on the actor data.
+     * Each sprite must be created by calling {@link #createSprites(NucleusRenderer, SpriteNode, RootNode)}
      * 
      */
-    protected void create(int count) {
-        this.count = count;
+    public void create() {
+        this.count = actorData.getCount();
         sprites = new Sprite[count];
     }
 
@@ -93,7 +91,8 @@ public abstract class SpriteNode extends ActorNode {
 
     /**
      * Creates the actor sprites, this will only create the actor logic and data for the actor it will not create the
-     * mesh/textures
+     * mesh/textures.
+     * 
      * 
      * @see #createMesh(NucleusRenderer, NodeData, RootNode)
      * 
@@ -101,12 +100,12 @@ public abstract class SpriteNode extends ActorNode {
      * @param source
      * @param scene
      */
-    protected abstract void createSprites(NucleusRenderer renderer, SpriteNode source,
+    protected abstract void createSprites(NucleusRenderer renderer, SpriteNode source, ShaderProgram program,
             RootNode scene);
 
     /**
      * Creates the renderable sprite (mesh)
-     * After this call this node can be rendered
+     * After this call this node can be rendered.
      * 
      * @param renderer
      * @param spriteController

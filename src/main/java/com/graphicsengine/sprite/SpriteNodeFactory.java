@@ -2,16 +2,15 @@ package com.graphicsengine.sprite;
 
 import com.graphicsengine.spritemesh.SpriteMeshNode;
 import com.nucleus.actor.ActorResolver;
-import com.nucleus.scene.Node;
 
 /**
- * Used to create instances of spritecontrollers, the controllers need to have the logic resolvers setup according
- * to implementation needs.
+ * Used to create instances of spritecontrollers (nodes), the controllers need to have the actor resolvers setup
+ * according to implementation needs, do this by calling {@link #setActorResolver(ActorResolver)}
  * 
  * @author Richard Sahlin
  *
  */
-public class SpriteControllerFactory {
+public class SpriteNodeFactory {
 
     /**
      * The defined controllers that this factory can create
@@ -44,18 +43,16 @@ public class SpriteControllerFactory {
     public final static String TILED = "tiled";
 
     /**
-     * Creates a SpriteController instance.
+     * Creates a SpriteController instance and setting the current actor resolver.
      * 
      * @param controller SpriteController instance to create
-     * @param source The nodedata source
-     * @return
+     * @return New instance of the specified controller
      */
-    public static SpriteNode create(SpriteControllers controller, Node source)
+    public static SpriteNode create(SpriteControllers controller)
             throws IllegalAccessException,
             InstantiationException, ClassNotFoundException {
         SpriteNode impl = (SpriteNode) controller.getControllerClass().newInstance();
         impl.setActorResolver(actorResolver);
-        impl.set(source);
         return impl;
     }
 
@@ -65,7 +62,7 @@ public class SpriteControllerFactory {
      * @param actorResolver
      */
     public static void setActorResolver(ActorResolver actorResolver) {
-        SpriteControllerFactory.actorResolver = actorResolver;
+        SpriteNodeFactory.actorResolver = actorResolver;
     }
 
 }

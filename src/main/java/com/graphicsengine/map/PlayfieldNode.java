@@ -5,9 +5,12 @@ import java.io.IOException;
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.dataflow.ArrayInputData;
 import com.graphicsengine.io.GraphicsEngineRootNode;
+import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
+import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
+import com.nucleus.shader.ShaderProgram;
 import com.nucleus.vecmath.Axis;
 
 /**
@@ -74,10 +77,16 @@ public class PlayfieldNode extends Node {
      * @param scene
      * @throws IOException
      */
-    public void createMesh(NucleusRenderer renderer, PlayfieldNode source,
+    public void createMesh(NucleusRenderer renderer, PlayfieldNode source, ShaderProgram program,
             GraphicsEngineRootNode scene)
             throws IOException {
+        int charCount = source.getPlayfieldMesh().getCount();
         playfield = PlayfieldFactory.create(renderer, source, scene);
+        PropertyMapper mapper = new PropertyMapper(program);
+        float[] attributeData = playfield.getAttributeData();
+        for (int i = 0; i < charCount; i++) {
+            MeshBuilder.prepareTiledUV(mapper, attributeData, i);
+        }
         addMesh(playfield);
     }
 
@@ -88,12 +97,13 @@ public class PlayfieldNode extends Node {
      * @param source
      * @param scene
      */
-    public void createPlayfield(PlayfieldNode source, GraphicsEngineRootNode scene) {
+    public void createPlayfield(PlayfieldNode source, ShaderProgram program, GraphicsEngineRootNode scene) {
         Playfield playfieldData = scene.getResources().getPlayfield(source.getMapRef());
         createMap(source.getMapSize());
         mapRef = source.getMapRef();
         Playfield p = scene.getResources().getPlayfield(mapRef);
         ArrayInputData id = playfieldData.getArrayInput();
+        PropertyMapper mapper = new PropertyMapper(program);
         if (id != null) {
             if (mapData == null) {
                 mapData = new int[mapSize[Axis.WIDTH.index] * mapSize[Axis.HEIGHT.index]];
@@ -101,10 +111,10 @@ public class PlayfieldNode extends Node {
             id.copyArray(mapData,
                     mapSize[Axis.WIDTH.index],
                     mapSize[Axis.HEIGHT.index], 0, 0);
-            playfield.setCharmap(getMapData(), 0, 0, getMapData().length);
+            playfield.setCharmap(mapper, getMapData(), 0, 0, getMapData().length);
         } else {
             if (playfieldData.getMap() != null && playfieldData.getMapSize() != null) {
-                playfield.setCharmap(playfieldData);
+                playfield.setCharmap(mapper, playfieldData);
             }
         }
     }

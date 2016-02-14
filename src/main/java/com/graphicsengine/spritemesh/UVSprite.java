@@ -1,5 +1,6 @@
 package com.graphicsengine.spritemesh;
 
+import com.graphicsengine.sprite.SpriteFactory;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.scene.Node;
 import com.nucleus.shader.ShaderProgram;
@@ -23,21 +24,18 @@ public class UVSprite extends TiledSprite {
     float[] frames = new float[2 * 4];
 
     /**
-     * Creates a new sprite, using attribute data at the specified offset.
-     * This constructor shall not be called directly, use TiledSpriteController to create sprites.
-     * 
-     * @param parrent The node containing the sprites
-     * @param mapper Attribute property mapper for the property indexes
-     * @param data Shared attribute data for positions
-     * @param offset Offset into array where data for this sprite is.
+     * Do not create sprites directly, use {@link SpriteFactory}
      */
-    UVSprite(Node parent, PropertyMapper mapper, float[] data, int offset) {
-        super(parent, mapper, data, offset);
+    public UVSprite() {
+    }
+
+    @Override
+    protected void setup(Node parent, PropertyMapper mapper, float[] data, int index) {
+        super.setup(parent, mapper, data, index);
         Texture2D tex = ((SpriteMeshNode) parent).getSpriteSheet().getTexture(Texture2D.TEXTURE_0);
         if (tex.type == TextureType.UVTexture2D) {
             uvAtlas = ((UVTexture2D) tex).getUVAtlas();
         }
-
     }
 
     @Override

@@ -6,6 +6,7 @@ import com.graphicsengine.io.GraphicsEngineRootNode;
 import com.graphicsengine.scene.GraphicsEngineNodeType;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node;
+import com.nucleus.shader.ShaderProgram;
 
 /**
  * Creates playfield controllers that can be put in a scene as nodes and rendered.
@@ -27,12 +28,13 @@ public class PlayfieldControllerFactory {
      */
     public static PlayfieldNode create(NucleusRenderer renderer, Node source, GraphicsEngineRootNode scene)
             throws IOException {
+        ShaderProgram program = new PlayfieldProgram();
         String reference = source.getReference();
         PlayfieldNode refNode = (PlayfieldNode) scene.getResources().getNode(GraphicsEngineNodeType.playfieldNode,
                 reference);
         PlayfieldNode playfieldController = new PlayfieldNode(source);
-        playfieldController.createMesh(renderer, refNode, scene);
-        playfieldController.createPlayfield(refNode, scene);
+        playfieldController.createMesh(renderer, refNode, program, scene);
+        playfieldController.createPlayfield(refNode, program, scene);
         return playfieldController;
     }
 

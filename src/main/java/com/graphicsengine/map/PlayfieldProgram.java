@@ -1,8 +1,10 @@
 package com.graphicsengine.map;
 
+import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.AttributeUpdater.Property;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.Mesh.BufferIndex;
+import com.nucleus.geometry.VertexBuffer;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.GLException;
 import com.nucleus.shader.ShaderProgram;
@@ -30,37 +32,21 @@ public class PlayfieldProgram extends ShaderProgram {
     /**
      * Number of float data per vertex
      */
-    protected final static int ATTRIBUTES_PER_VERTEX = 8;
+    private final static int ATTRIBUTES_PER_VERTEX = 8;
     /**
      * Number of floats for each char in the attribute data.
      */
-    protected final static int ATTRIBUTES_PER_CHAR = PlayfieldProgram.ATTRIBUTES_PER_VERTEX
+    private final static int ATTRIBUTES_PER_CHAR = PlayfieldProgram.ATTRIBUTES_PER_VERTEX
             * VERTICES_PER_SPRITE;
 
     /**
-     * Index into aCharset for x position
+     * Index into aCharset for translate position
      */
-    protected final static int ATTRIBUTE_CHARMAP_X_INDEX = 0;
+    private final static int ATTRIBUTE_CHARMAP_TRANSLATE_INDEX = 0;
     /**
-     * Index into aCharset for y position
+     * Index into aCharset texture uv coordinate - this is used to calculate texture coordinate with frame.
      */
-    protected final static int ATTRIBUTE_CHARMAP_Y_INDEX = 1;
-    /**
-     * Index into aCharset texture u coordinate - this is used to calculate texture coordinate with frame.
-     */
-    protected final static int ATTRIBUTE_CHARMAP_U_INDEX = 2;
-    /**
-     * Index into aCharset texture v coordinate - this is used to calculate texture coordinate with frame.
-     */
-    protected final static int ATTRIBUTE_CHARMAP_V_INDEX = 3;
-    /**
-     * Index into aCharset frame number, this is the charmap frame number to use.
-     */
-    protected final static int ATTRIBUTE_CHARMAP_FRAME_INDEX = 4;
-    /**
-     * Index into aCharset flags, controls x and y axis flip.
-     */
-    protected final static int ATTRIBUTE_CHARMAP_FLAGS_INDEX = 5;
+    private final static int ATTRIBUTE_CHARMAP_FRAME_INDEX = 2;
 
     public enum VARIABLES implements VariableMapping {
         uMVPMatrix(0, 0, ShaderVariable.VariableType.UNIFORM, null),
@@ -159,9 +145,23 @@ public class PlayfieldProgram extends ShaderProgram {
     }
 
     @Override
-    public int getPropertyOffset(Property property) {
-        // TODO Auto-generated method stub
-        return 0;
+    public VertexBuffer createAttributeBuffer(int verticeCount, Mesh mesh) {
+        VertexBuffer buffer = super.createAttributeBuffer(verticeCount, mesh);
+        if (mesh instanceof Consumer) {
+            ((Consumer) mesh).bindAttributeBuffer(buffer);
+        }
+        return buffer;
     }
 
+    @Override
+    public int getPropertyOffset(Property property) {
+        switch (property) {
+        case TRANSLATE:
+            return ATTRIBUTE_CHARMAP_TRANSLATE_INDEX;
+        case FRAME:
+            return ATTRIBUTE_CHARMAP_FRAME_INDEX;
+        default:
+            return -1;
+        }
+    }
 }

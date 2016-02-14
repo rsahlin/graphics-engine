@@ -1,6 +1,7 @@
 package com.graphicsengine.spritemesh;
 
 import com.graphicsengine.sprite.Sprite;
+import com.graphicsengine.sprite.SpriteFactory;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.scene.Node;
 import com.nucleus.shader.ShaderProgram;
@@ -20,22 +21,28 @@ import com.nucleus.texturing.UVTexture2D;
 public class TiledSprite extends Sprite {
 
     /**
+     * Do not create sprites directly, use {@link SpriteFactory}
+     */
+    public TiledSprite() {
+
+    }
+
+    /**
      * Creates a new TiledSprite, using attribute data at the specified offset.
-     * This constructor shall not be called directly, use TiledSpriteController to create sprites.
      * 
      * @param parent The node containing the sprites
      * @param mapper The attribute property mappings
      * @param data Shared attribute data for positions
-     * @param offset Offset into array where data for this sprite is.
+     * @param index of this sprite, used to find offset into attributes.
      */
-    TiledSprite(Node parent, PropertyMapper mapper, float[] data, int offset) {
-        super(parent, mapper, data, offset);
+    @Override
+    protected void setup(Node parent, PropertyMapper mapper, float[] data, int index) {
+        super.setup(parent, mapper, data, index);
+
     }
 
     @Override
     public void updateAttributeData() {
-        // TODO This the attributeData mapping should match the mapping in the sprite object so that only
-        // one copy is needed.
         float xpos = floatData[X_POS];
         float ypos = floatData[Y_POS];
         float zpos = floatData[Z_POS];

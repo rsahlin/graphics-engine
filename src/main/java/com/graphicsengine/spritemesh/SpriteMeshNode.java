@@ -5,6 +5,7 @@ import java.io.IOException;
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.io.GraphicsEngineRootNode;
 import com.graphicsengine.sprite.Sprite;
+import com.graphicsengine.sprite.SpriteFactory;
 import com.graphicsengine.sprite.SpriteNode;
 import com.nucleus.geometry.AttributeUpdater.Producer;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
@@ -26,6 +27,17 @@ import com.nucleus.texturing.Texture2D;
  *
  */
 public class SpriteMeshNode extends SpriteNode implements Producer {
+
+    public enum ProgramType {
+        /**
+         * Using tiled texture and program
+         */
+        TILED(),
+        /**
+         * Using UV texture and program
+         */
+        UV();
+    }
 
     /**
      * The mesh that can be redered
@@ -58,24 +70,18 @@ public class SpriteMeshNode extends SpriteNode implements Producer {
     }
 
     @Override
-    protected void createSprites(NucleusRenderer renderer, SpriteNode source, RootNode scene) {
+    protected void createSprites(NucleusRenderer renderer, SpriteNode source, ShaderProgram program, RootNode scene) {
         SpriteMeshNode spriteController = (SpriteMeshNode) source;
-        create(spriteController.getActorData().getCount());
-        int offset;
         float[] attributeData = spriteSheet.getAttributeData();
         Texture2D tex = spriteController.getSpriteSheet().getTexture(Texture2D.TEXTURE_0);
-        ShaderProgram program = spriteController.getSpriteSheet().getMaterial().getProgram();
         PropertyMapper mapper = new PropertyMapper(program);
         for (int i = 0; i < count; i++) {
-            offset = program.getAttributeOffset(i) * ShaderProgram.VERTICES_PER_SPRITE;
             switch (tex.type) {
             case TiledTexture2D:
-                sprites[i] = new TiledSprite(this, mapper, attributeData, offset);
-                MeshBuilder.prepareTiledUV(spriteController.spriteSheet.getAttributeData(), offset,
-                        TiledSpriteProgram.ATTRIBUTE_SPRITE_FRAMEDATA, TiledSpriteProgram.ATTRIBUTES_PER_VERTEX);
+                sprites[i] = SpriteFactory.create(TiledSprite.class, this, mapper, attributeData, i);
                 break;
             case UVTexture2D:
-                sprites[i] = new UVSprite(this, mapper, attributeData, i);
+                sprites[i] = SpriteFactory.create(UVSprite.class, this, mapper, attributeData, i);
                 break;
             default:
                 throw new IllegalArgumentException();
@@ -88,10 +94,22 @@ public class SpriteMeshNode extends SpriteNode implements Producer {
     }
 
     @Override
-    protected void createMesh(NucleusRenderer renderer, SpriteNode source, ShaderProgram program, RootNode scene) {
+    protected void createMesh(NucleusRenderer renderer, SpriteNode source, ShaderProgram program,
+            RootNode scene) {
         try {
             GraphicsEngineRootNode gScene = (GraphicsEngineRootNode) scene;
             spriteSheet = SpriteMeshFactory.create(renderer, (SpriteMeshNode) source, program, gScene);
+            float[] attributeData = spriteSheet.getAttributeData();
+            PropertyMapper mapper = new PropertyMapper(program);
+            int offset;
+            for (int i = 0; i < count; i++) {
+                if (program instanceof TiledSpriteProgram) {
+                    MeshBuilder.prepareTiledUV(mapper, attributeData, i);
+                } else if (program instanceof UVSpriteProgram) {
+                } else {
+                    throw new IllegalArgumentException();
+                }
+            }
             addMesh(spriteSheet);
         } catch (IOException e) {
             throw new RuntimeException(e);

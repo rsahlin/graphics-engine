@@ -5,7 +5,6 @@ import com.graphicsengine.spritemesh.SpriteMesh;
 import com.nucleus.data.Anchor;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.MeshBuilder;
-import com.nucleus.geometry.VertexBuffer;
 import com.nucleus.opengl.GLESWrapper.GLES20;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.Texture2D;
@@ -101,15 +100,7 @@ public class PlayfieldMesh extends SpriteMesh implements Consumer {
      * @param charCount
      */
     private void init(int charCount) {
-        attributeData = new float[(charCount * PlayfieldProgram.ATTRIBUTES_PER_CHAR)];
         charmap = new int[charCount];
-        int offset = 0;
-        for (int i = 0; i < charCount; i++) {
-            MeshBuilder.prepareTiledUV(attributeData, offset, PlayfieldProgram.ATTRIBUTE_CHARMAP_U_INDEX,
-                    PlayfieldProgram.ATTRIBUTES_PER_VERTEX);
-            offset += PlayfieldProgram.ATTRIBUTES_PER_CHAR;
-        }
-
     }
 
     /**
@@ -151,13 +142,14 @@ public class PlayfieldMesh extends SpriteMesh implements Consumer {
     }
 
     /**
-     * Same as calling {@link #setupCharmap(int, int, float, float)}
+     * Same as calling {@link #setupCharmap(PropertyMapper, int, int, float, float)}
      * 
+     * @param mapper Property mapper for attribute indexes
      * @param size Width and height, in chars, of playfield
      */
-    public void setupCharmap(int[] size) {
+    public void setupCharmap(PropertyMapper mapper, int[] size) {
         float[] offset = anchor.calcOffsets(new float[] { mapSize[0] * getTileWidth(), mapSize[1] * getTileHeight() });
-        setupCharmap(size[Axis.WIDTH.index], size[Axis.HEIGHT.index], offset[0], offset[1]);
+        setupCharmap(mapper, size[Axis.WIDTH.index], size[Axis.HEIGHT.index], offset[0], offset[1]);
     }
 
     /**
@@ -173,7 +165,7 @@ public class PlayfieldMesh extends SpriteMesh implements Consumer {
      * @param xpos Starting xpos for the upper left char.
      * @param ypos Starting ypos for the upper left char.
      */
-    public void setupCharmap(int width, int height, float xpos, float ypos) {
+    public void setupCharmap(PropertyMapper mapper, int width, int height, float xpos, float ypos) {
         this.mapSize[Axis.WIDTH.index] = width;
         this.mapSize[Axis.HEIGHT.index] = height;
         int index = 0;
@@ -182,18 +174,18 @@ public class PlayfieldMesh extends SpriteMesh implements Consumer {
         for (int y = 0; y < height; y++) {
             currentY = ypos;
             for (int x = 0; x < width; x++) {
-                attributeData[index + PlayfieldProgram.ATTRIBUTE_CHARMAP_X_INDEX] = currentX;
-                attributeData[index + PlayfieldProgram.ATTRIBUTE_CHARMAP_Y_INDEX] = currentY;
-                index += PlayfieldProgram.ATTRIBUTES_PER_VERTEX;
-                attributeData[index + PlayfieldProgram.ATTRIBUTE_CHARMAP_X_INDEX] = currentX;
-                attributeData[index + PlayfieldProgram.ATTRIBUTE_CHARMAP_Y_INDEX] = currentY;
-                index += PlayfieldProgram.ATTRIBUTES_PER_VERTEX;
-                attributeData[index + PlayfieldProgram.ATTRIBUTE_CHARMAP_X_INDEX] = currentX;
-                attributeData[index + PlayfieldProgram.ATTRIBUTE_CHARMAP_Y_INDEX] = currentY;
-                index += PlayfieldProgram.ATTRIBUTES_PER_VERTEX;
-                attributeData[index + PlayfieldProgram.ATTRIBUTE_CHARMAP_X_INDEX] = currentX;
-                attributeData[index + PlayfieldProgram.ATTRIBUTE_CHARMAP_Y_INDEX] = currentY;
-                index += PlayfieldProgram.ATTRIBUTES_PER_VERTEX;
+                attributeData[index + mapper.TRANSLATE_INDEX] = currentX;
+                attributeData[index + mapper.TRANSLATE_INDEX + 1] = currentY;
+                index += mapper.ATTRIBUTES_PER_VERTEX;
+                attributeData[index + mapper.TRANSLATE_INDEX] = currentX;
+                attributeData[index + mapper.TRANSLATE_INDEX + 1] = currentY;
+                index += mapper.ATTRIBUTES_PER_VERTEX;
+                attributeData[index + mapper.TRANSLATE_INDEX] = currentX;
+                attributeData[index + mapper.TRANSLATE_INDEX + 1] = currentY;
+                index += mapper.ATTRIBUTES_PER_VERTEX;
+                attributeData[index + mapper.TRANSLATE_INDEX] = currentX;
+                attributeData[index + mapper.TRANSLATE_INDEX + 1] = currentY;
+                index += mapper.ATTRIBUTES_PER_VERTEX;
                 currentX += size[Axis.WIDTH.index];
             }
             currentX = xpos;
@@ -206,24 +198,26 @@ public class PlayfieldMesh extends SpriteMesh implements Consumer {
      * Note that there will be conversion from int[] to float values as the char data is copied.
      * Do NOT use this method for a large number of data when performance is critical.
      * 
+     * @param mapper The attribute property mapper
      * @param source Source map data
      * @param sourceOffset Offset into source where data is read
      * @param destOffset Offset where data is written in this class
      * @param count Number of chars to copy
      * @throws ArrayIndexOutOfBoundsException If source or destination does not contain enough data.
      */
-    public void setCharmap(int[] source, int sourceOffset, int destOffset, int count) {
+    public void setCharmap(PropertyMapper mapper, int[] source, int sourceOffset, int destOffset, int count) {
         for (int i = 0; i < count; i++) {
-            setChar(destOffset++, source[sourceOffset++]);
+            setChar(mapper, destOffset++, source[sourceOffset++]);
         }
     }
 
     /**
      * Copies the data from the source map into this class.
      * 
+     * @param mapper The attribute property mapper
      * @param source Map data will be copied from this
      */
-    public void setCharmap(Playfield source) {
+    public void setCharmap(PropertyMapper mapper, Playfield source) {
         if (source == null || source.getMapSize() == null) {
             return;
         }
@@ -233,37 +227,10 @@ public class PlayfieldMesh extends SpriteMesh implements Consumer {
         int height = Math.min(mapSize[Axis.HEIGHT.index], sourceSize[Axis.HEIGHT.index]);
         int sourceOffset = 0;
         for (int y = 0; y < height; y++) {
-            setCharmap(source.getMap(), sourceOffset, y * mapSize[Axis.WIDTH.index], width);
+            setCharmap(mapper, source.getMap(), sourceOffset, y * mapSize[Axis.WIDTH.index], width);
             sourceOffset += sourceSize[Axis.WIDTH.index];
         }
 
-    }
-
-    /**
-     * Copies char frame index data from the source into this charmap, source data should only include char number.
-     * Note that there will be conversion from byte[] to float values as the char data is copied.
-     * Do NOT use this method for a large number of data.
-     * 
-     * @param charRow Row based char data, each value is the frame index for a char.
-     * @param startOffset Offset into charRows where data is read.
-     * @param startChar Put data at this char index, 0 for first char, 10 for the thenth etc.
-     * @param count Number of chars to copy
-     * @throws ArrayIndexOutOfBoundsException If source or destination does not contain enough data.
-     */
-    public void setCharmap(byte[] charRow, int startOffset, int startChar, int count) {
-        for (int i = 0; i < count; i++) {
-            setChar(startChar++, charRow[startOffset++]);
-        }
-    }
-
-    /**
-     * Copies the string into the charmap, same as calling {@link #setCharmap(byte[], int, int, int)}
-     * 
-     * @param row
-     * @param startChar
-     */
-    public void setCharmap(String row, int startChar) {
-        setCharmap(row.getBytes(), 0, startChar, row.length());
     }
 
     /**
@@ -271,13 +238,14 @@ public class PlayfieldMesh extends SpriteMesh implements Consumer {
      * This method is not performance optimized, if a large area shall be filled with high performance then consider
      * using a custom function that write into {@link #attributeData}
      * 
+     * @param mapper The attribute property mapper
      * @param x Map start x of fill
      * @param y Map start y of fill
      * @param width With of area to fill
      * @param height Height of area to fill
      * @param fill Fill value
      */
-    public void fill(int x, int y, int width, int height, int fill) {
+    public void fill(PropertyMapper mapper, int x, int y, int width, int height, int fill) {
         if (x > this.mapSize[Axis.WIDTH.index] || y > this.mapSize[Axis.HEIGHT.index]) {
             // Completely outside
             return;
@@ -291,7 +259,7 @@ public class PlayfieldMesh extends SpriteMesh implements Consumer {
         }
         while (height-- > 0) {
             for (int i = 0; i < width; i++) {
-                setChar(startChar++, fill);
+                setChar(mapper, startChar++, fill);
             }
         }
     }
@@ -301,32 +269,22 @@ public class PlayfieldMesh extends SpriteMesh implements Consumer {
      * This will set the data in both the attribute array and the playfield data.
      * This method shall not be used for a large number of chars or when performance is important.
      * 
+     * @param mapper Property mapper for attribute indexes
      * @param pos The playfield position, from 0 to width * height.
      * @param value The value to set.
      */
-    private void setChar(int pos, int value) {
+    private void setChar(PropertyMapper mapper, int pos, int value) {
         charmap[pos] = value;
-        int destIndex = pos * PlayfieldProgram.ATTRIBUTES_PER_CHAR
-                + PlayfieldProgram.ATTRIBUTE_CHARMAP_FRAME_INDEX;
+        int destIndex = pos * mapper.ATTRIBUTES_PER_VERTEX
+                + mapper.FRAME_INDEX;
         attributeData[destIndex] = value;
-        destIndex += PlayfieldProgram.ATTRIBUTES_PER_VERTEX;
+        destIndex += mapper.ATTRIBUTES_PER_VERTEX;
         attributeData[destIndex] = value;
-        destIndex += PlayfieldProgram.ATTRIBUTES_PER_VERTEX;
+        destIndex += mapper.ATTRIBUTES_PER_VERTEX;
         attributeData[destIndex] = value;
-        destIndex += PlayfieldProgram.ATTRIBUTES_PER_VERTEX;
+        destIndex += mapper.ATTRIBUTES_PER_VERTEX;
         attributeData[destIndex] = value;
-        destIndex += PlayfieldProgram.ATTRIBUTES_PER_VERTEX;
-    }
-
-    @Override
-    public void setAttributeData() {
-        VertexBuffer positions = getVerticeBuffer(BufferIndex.ATTRIBUTES);
-        positions.setArray(getAttributeData(), 0, 0, count * PlayfieldProgram.ATTRIBUTES_PER_CHAR);
-    }
-
-    @Override
-    public float[] getAttributeData() {
-        return attributeData;
+        destIndex += mapper.ATTRIBUTES_PER_VERTEX;
     }
 
     /**
@@ -399,20 +357,6 @@ public class PlayfieldMesh extends SpriteMesh implements Consumer {
     @Override
     public String getTextureRef() {
         return textureRef;
-    }
-
-    /**
-     * Returns the character x and y position as set in this playfield. This does not take any node transform into
-     * account.
-     * 
-     * @param charNumber charNumber to get position for, must be > 0 < charCount
-     * @param result x and y position of char stored here, note this does not include node transforms.
-     * @param offset Offset into result where values are stored.
-     */
-    public void getPosition(int charNumber, float[] result, int offset) {
-        offset += charNumber * PlayfieldProgram.ATTRIBUTES_PER_CHAR;
-        result[offset++] = attributeData[PlayfieldProgram.ATTRIBUTE_CHARMAP_X_INDEX];
-        result[offset++] = attributeData[PlayfieldProgram.ATTRIBUTE_CHARMAP_Y_INDEX];
     }
 
 }
