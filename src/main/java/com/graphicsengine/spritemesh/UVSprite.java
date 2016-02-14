@@ -45,8 +45,8 @@ public class UVSprite extends TiledSprite {
         int readIndex = 0;
         uvAtlas.getUVFrame(frame, frames, 0);
         for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
-            attributeData[index + mapper.FRAME_INDEX] = frames[readIndex++];
-            attributeData[index + mapper.FRAME_INDEX + 1] = frames[readIndex++];
+            attributeData[index + mapper.UV_INDEX] = frames[readIndex++];
+            attributeData[index + mapper.UV_INDEX + 1] = frames[readIndex++];
             index += mapper.ATTRIBUTES_PER_VERTEX;
         }
     }

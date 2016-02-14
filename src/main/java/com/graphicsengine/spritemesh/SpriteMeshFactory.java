@@ -4,9 +4,11 @@ import java.io.IOException;
 
 import com.graphicsengine.io.GraphicsEngineRootNode;
 import com.nucleus.assets.AssetManager;
+import com.nucleus.geometry.Mesh;
 import com.nucleus.renderer.BufferObjectsFactory;
 import com.nucleus.renderer.Configuration;
 import com.nucleus.renderer.NucleusRenderer;
+import com.nucleus.scene.Node;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.Texture2D;
 
@@ -44,5 +46,18 @@ public class SpriteMeshFactory {
             BufferObjectsFactory.getInstance().createVBOs(renderer, sprites);
         }
         return sprites;
+    }
+
+    public static void create(NucleusRenderer renderer, Node source, Mesh mesh, ShaderProgram program,
+            GraphicsEngineRootNode scene) throws IOException {
+
+        renderer.createProgram(program);
+        Texture2D texture = AssetManager.getInstance().getTexture(renderer,
+                scene.getResources().getTexture2D(mesh.getTextureRef()));
+
+        mesh.createMesh(program, texture);
+        if (Configuration.getInstance().isUseVBO()) {
+            BufferObjectsFactory.getInstance().createVBOs(renderer, mesh);
+        }
     }
 }

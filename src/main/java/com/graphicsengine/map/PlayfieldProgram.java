@@ -46,7 +46,11 @@ public class PlayfieldProgram extends ShaderProgram {
     /**
      * Index into aCharset texture uv coordinate - this is used to calculate texture coordinate with frame.
      */
-    private final static int ATTRIBUTE_CHARMAP_FRAME_INDEX = 2;
+    private final static int ATTRIBUTE_CHARMAP_UV_INDEX = 2;
+    /**
+     * The char frame number
+     */
+    private final static int ATTRIBUTE_CHARMAP_FRAME_INDEX = 4;
 
     public enum VARIABLES implements VariableMapping {
         uMVPMatrix(0, 0, ShaderVariable.VariableType.UNIFORM, null),
@@ -160,6 +164,8 @@ public class PlayfieldProgram extends ShaderProgram {
             return ATTRIBUTE_CHARMAP_TRANSLATE_INDEX;
         case FRAME:
             return ATTRIBUTE_CHARMAP_FRAME_INDEX;
+        case UV:
+            return ATTRIBUTE_CHARMAP_UV_INDEX;
         default:
             return -1;
         }

@@ -2,8 +2,8 @@ package com.graphicsengine.exporter;
 
 import com.graphicsengine.io.GraphicsEngineRootNode;
 import com.graphicsengine.map.Playfield;
-import com.graphicsengine.map.PlayfieldControllerFactory;
-import com.graphicsengine.map.PlayfieldFactory;
+import com.graphicsengine.map.PlayfieldNodeFactory;
+import com.graphicsengine.map.PlayfieldMeshFactory;
 import com.graphicsengine.map.PlayfieldNode;
 import com.graphicsengine.scene.GraphicsEngineNodeType;
 import com.graphicsengine.spritemesh.SpriteMeshNode;
@@ -44,11 +44,11 @@ public class GraphicsEngineNodeExporter extends NucleusNodeExporter {
      */
     private void exportDataReferences(PlayfieldNode playfieldController, GraphicsEngineRootNode sceneData) {
         exportMeshes(playfieldController.getMeshes(), sceneData);
-        PlayfieldNode resource = PlayfieldControllerFactory.copy(playfieldController);
+        PlayfieldNode resource = PlayfieldNodeFactory.copy(playfieldController);
         resource.setId(playfieldController.getReference());
         resource.setReference(null);
         sceneData.addResource(resource);
-        Playfield playfield = PlayfieldFactory.createPlayfield(playfieldController);
+        Playfield playfield = PlayfieldMeshFactory.createPlayfield(playfieldController);
         sceneData.addResource(playfield);
     }
 

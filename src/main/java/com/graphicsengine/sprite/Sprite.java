@@ -110,7 +110,7 @@ public abstract class Sprite extends ActorContainer implements Producer {
     public void setFrame(int frame) {
         int index = offset;
         for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
-            attributeData[index + mapper.FRAME_INDEX + 2] = frame;
+            attributeData[index + mapper.FRAME_INDEX] = frame;
             index += mapper.ATTRIBUTES_PER_VERTEX;
         }
     }

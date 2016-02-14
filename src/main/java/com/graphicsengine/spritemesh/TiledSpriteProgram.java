@@ -55,7 +55,11 @@ public class TiledSpriteProgram extends ShaderProgram {
     /**
      * Index into aFrameData texture coordinates and frame - this is used to calculate texture coordinate with frame.
      */
-    final static int ATTRIBUTE_SPRITE_FRAMEDATA = 12;
+    final static int ATTRIBUTE_SPRITE_FRAMEDATA = 14;
+    /**
+     * Index into attribute to get direct acces to uv coordinates
+     */
+    final static int ATTRIBUTE_SPRITE_UV = 12;
 
     public enum VARIABLES implements VariableMapping {
         uMVPMatrix(0, 0, ShaderVariable.VariableType.UNIFORM, null),
@@ -169,6 +173,8 @@ public class TiledSpriteProgram extends ShaderProgram {
             return ATTRIBUTE_SPRITE_SCALE_INDEX;
         case FRAME:
             return ATTRIBUTE_SPRITE_FRAMEDATA;
+        case UV:
+            return ATTRIBUTE_SPRITE_UV;
         default:
             return -1;
         }

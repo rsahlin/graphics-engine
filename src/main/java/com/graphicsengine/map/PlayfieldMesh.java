@@ -112,8 +112,8 @@ public class PlayfieldMesh extends SpriteMesh implements Consumer {
      * @return The mesh ready to be rendered
      */
     public void createMesh(PlayfieldProgram program, Texture2D texture) {
+        super.createMesh(program, texture);
         setSize(size);
-        setTexture(texture, Texture2D.TEXTURE_0);
         buildMesh(program, count, size, anchor, GLES20.GL_FLOAT);
         setAttributeUpdater(this);
     }
@@ -135,7 +135,6 @@ public class PlayfieldMesh extends SpriteMesh implements Consumer {
      * @throws IllegalArgumentException if type is not GLES20.GL_FLOAT
      */
     public void buildMesh(ShaderProgram program, int charCount, float[] charSize, Anchor anchor, int type) {
-
         int vertexStride = program.getVertexStride();
         float[] quadPositions = MeshBuilder.buildQuadPositionsIndexed(charSize, anchor, vertexStride);
         MeshBuilder.buildQuadMeshIndexed(this, program, charCount, quadPositions);
@@ -275,7 +274,7 @@ public class PlayfieldMesh extends SpriteMesh implements Consumer {
      */
     private void setChar(PropertyMapper mapper, int pos, int value) {
         charmap[pos] = value;
-        int destIndex = pos * mapper.ATTRIBUTES_PER_VERTEX
+        int destIndex = pos * mapper.ATTRIBUTES_PER_VERTEX * ShaderProgram.VERTICES_PER_SPRITE
                 + mapper.FRAME_INDEX;
         attributeData[destIndex] = value;
         destIndex += mapper.ATTRIBUTES_PER_VERTEX;
@@ -347,16 +346,6 @@ public class PlayfieldMesh extends SpriteMesh implements Consumer {
     @Override
     public float[] getSize() {
         return size;
-    }
-
-    /**
-     * Returns the texture reference, this is used when importing and exporting.
-     * 
-     * @return
-     */
-    @Override
-    public String getTextureRef() {
-        return textureRef;
     }
 
 }

@@ -18,7 +18,7 @@ import com.nucleus.texturing.TiledTexture2D;
  * @author Richard Sahlin
  *
  */
-public class PlayfieldFactory {
+public class PlayfieldMeshFactory {
 
     /**
      * Factory method for creating the playfield mesh.

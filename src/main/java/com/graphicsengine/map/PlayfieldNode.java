@@ -81,7 +81,7 @@ public class PlayfieldNode extends Node {
             GraphicsEngineRootNode scene)
             throws IOException {
         int charCount = source.getPlayfieldMesh().getCount();
-        playfield = PlayfieldFactory.create(renderer, source, scene);
+        playfield = PlayfieldMeshFactory.create(renderer, source, scene);
         PropertyMapper mapper = new PropertyMapper(program);
         float[] attributeData = playfield.getAttributeData();
         for (int i = 0; i < charCount; i++) {

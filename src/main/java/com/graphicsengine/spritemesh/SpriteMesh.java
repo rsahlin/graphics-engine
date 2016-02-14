@@ -37,11 +37,6 @@ public class SpriteMesh extends Mesh implements Consumer, AttributeUpdater {
      */
     @SerializedName("anchor")
     protected Anchor anchor;
-    /**
-     * Reference to tiled texture
-     */
-    @SerializedName("textureref")
-    protected String textureRef;
 
     /**
      * Contains attribute data for all sprites - this is the array that sprites will write into.
@@ -100,8 +95,9 @@ public class SpriteMesh extends Mesh implements Consumer, AttributeUpdater {
      * @param texture The texture to use for sprites, must be {@link TiledTexture2D} otherwise tiling will not work.
      * @return
      */
+    @Override
     public void createMesh(ShaderProgram program, Texture2D texture) {
-        setTexture(texture, Texture2D.TEXTURE_0);
+        super.createMesh(program, texture);
         buildMesh(program, count, size, anchor);
         setAttributeUpdater(this);
     }
@@ -173,15 +169,6 @@ public class SpriteMesh extends Mesh implements Consumer, AttributeUpdater {
      */
     public TiledTexture2D getTiledTexture(int index) {
         return (TiledTexture2D) getTexture(index);
-    }
-
-    /**
-     * Returns the texture reference or null if not set
-     * 
-     * @return
-     */
-    public String getTextureRef() {
-        return textureRef;
     }
 
     @Override

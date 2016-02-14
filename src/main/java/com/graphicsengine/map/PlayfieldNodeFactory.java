@@ -14,7 +14,7 @@ import com.nucleus.shader.ShaderProgram;
  * @author Richard Sahlin
  *
  */
-public class PlayfieldControllerFactory {
+public class PlayfieldNodeFactory {
 
     /**
      * Returns a new instance of the playfield controller, the returned playfieldcontroller will be a new instance

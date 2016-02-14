@@ -3,7 +3,7 @@ package com.graphicsengine.scene;
 import java.io.IOException;
 
 import com.graphicsengine.io.GraphicsEngineRootNode;
-import com.graphicsengine.map.PlayfieldControllerFactory;
+import com.graphicsengine.map.PlayfieldNodeFactory;
 import com.graphicsengine.spritemesh.SpriteMeshNodeFactory;
 import com.graphicsengine.ui.UINodeFactory;
 import com.nucleus.camera.ViewFrustum;
@@ -36,7 +36,7 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
 
         switch (type) {
         case playfieldNode:
-            created = PlayfieldControllerFactory.create(renderer, source, gScene);
+            created = PlayfieldNodeFactory.create(renderer, source, gScene);
             break;
         case spriteMeshNode:
             created = SpriteMeshNodeFactory.create(renderer, source, gScene);
