@@ -18,4 +18,9 @@ public class Button extends Node {
     @SerializedName("mesh")
     private SpriteMesh mesh;
 
+    public Button(Button source) {
+        super(source);
+
+    }
+
 }

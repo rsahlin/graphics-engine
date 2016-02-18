@@ -120,7 +120,7 @@ public class GraphicsEngineResourcesData extends ResourcesData {
         case button:
             return getNode((ArrayList) buttons, id);
         default:
-            throw new IllegalArgumentException(Error.NOT_IMPLEMENTED.message);
+            throw new IllegalArgumentException(Error.NOT_IMPLEMENTED.message + " : " + type);
         }
     }
 

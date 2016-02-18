@@ -1,6 +1,7 @@
 package com.graphicsengine.ui;
 
 import com.graphicsengine.io.GraphicsEngineRootNode;
+import com.graphicsengine.scene.GraphicsEngineNodeType;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node;
 
@@ -12,10 +13,22 @@ import com.nucleus.scene.Node;
  */
 public class UINodeFactory {
 
-    public static Node createButton(NucleusRenderer renderer, Node source, GraphicsEngineRootNode gScene) {
+    public static Node createButton(NucleusRenderer renderer, Node source, GraphicsEngineRootNode scene) {
+        String reference = source.getReference();
+        // try {
+        Button refNode = (Button) scene.getResources().getNode(
+                GraphicsEngineNodeType.button, reference);
+        Button button = new Button(refNode);
 
-        Button button = new Button();
-
+        // SpriteMeshNode spriteNode = (SpriteMeshNode) SpriteNodeFactory.create(
+        // SpriteControllers.TILED);
+        // spriteNode.set(refNode);
+        // spriteNode.create();
+        // spriteNode.toReference(source, spriteNode);
         return button;
+        // } catch (IllegalAccessException | InstantiationException | ClassNotFoundException e) {
+        // throw new RuntimeException(e);
+        // }
+
     }
 }

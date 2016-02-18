@@ -7,7 +7,6 @@ import com.nucleus.actor.ActorNode;
 import com.nucleus.actor.ActorResolver;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.RootNode;
-import com.nucleus.shader.ShaderProgram;
 
 /**
  * Controller for a set of sprites.
@@ -97,11 +96,9 @@ public abstract class SpriteNode extends ActorNode {
      * @see #createMesh(NucleusRenderer, NodeData, RootNode)
      * 
      * @param renderer
-     * @param source
      * @param scene
      */
-    protected abstract void createSprites(NucleusRenderer renderer, SpriteNode source, ShaderProgram program,
-            RootNode scene);
+    protected abstract void createSprites(NucleusRenderer renderer, RootNode scene);
 
     /**
      * Creates the renderable sprite (mesh)
@@ -109,11 +106,9 @@ public abstract class SpriteNode extends ActorNode {
      * 
      * @param renderer
      * @param spriteController
-     * @param program The shader program to use when rendering the mesh.
      * @param scene
      */
-    protected abstract void createMesh(NucleusRenderer renderer, SpriteNode spriteController, ShaderProgram program,
-            RootNode scene);
+    protected abstract void createMesh(NucleusRenderer renderer, SpriteNode spriteController, RootNode scene);
 
     /**
      * Internal method to check if a actor resolver has been set, call this in implementations of the createSprites()

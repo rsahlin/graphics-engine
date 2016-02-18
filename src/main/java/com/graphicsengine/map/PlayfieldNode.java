@@ -6,11 +6,9 @@ import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.dataflow.ArrayInputData;
 import com.graphicsengine.io.GraphicsEngineRootNode;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
-import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
-import com.nucleus.shader.ShaderProgram;
 import com.nucleus.vecmath.Axis;
 
 /**
@@ -77,16 +75,9 @@ public class PlayfieldNode extends Node {
      * @param scene
      * @throws IOException
      */
-    public void createMesh(NucleusRenderer renderer, PlayfieldNode source, ShaderProgram program,
-            GraphicsEngineRootNode scene)
+    public void createMesh(NucleusRenderer renderer, PlayfieldNode source, GraphicsEngineRootNode scene)
             throws IOException {
-        int charCount = source.getPlayfieldMesh().getCount();
         playfield = PlayfieldMeshFactory.create(renderer, source, scene);
-        PropertyMapper mapper = new PropertyMapper(program);
-        float[] attributeData = playfield.getAttributeData();
-        for (int i = 0; i < charCount; i++) {
-            MeshBuilder.prepareTiledUV(mapper, attributeData, i);
-        }
         addMesh(playfield);
     }
 
@@ -94,16 +85,15 @@ public class PlayfieldNode extends Node {
      * Sets the playfield in this controller, creating the map storage if needed, and updates the mesh to contain
      * the charset.
      * 
-     * @param source
+     * @param source The source playfield
      * @param scene
      */
-    public void createPlayfield(PlayfieldNode source, ShaderProgram program, GraphicsEngineRootNode scene) {
+    public void createPlayfield(PlayfieldNode source, GraphicsEngineRootNode scene) {
+        PropertyMapper mapper = new PropertyMapper(getPlayfieldMesh().getMaterial().getProgram());
         Playfield playfieldData = scene.getResources().getPlayfield(source.getMapRef());
         createMap(source.getMapSize());
         mapRef = source.getMapRef();
-        Playfield p = scene.getResources().getPlayfield(mapRef);
         ArrayInputData id = playfieldData.getArrayInput();
-        PropertyMapper mapper = new PropertyMapper(program);
         if (id != null) {
             if (mapData == null) {
                 mapData = new int[mapSize[Axis.WIDTH.index] * mapSize[Axis.HEIGHT.index]];

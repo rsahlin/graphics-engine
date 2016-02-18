@@ -8,8 +8,6 @@ import com.graphicsengine.sprite.SpriteNodeFactory;
 import com.graphicsengine.sprite.SpriteNodeFactory.SpriteControllers;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node;
-import com.nucleus.shader.ShaderProgram;
-import com.nucleus.texturing.Texture2D;
 
 /**
  * Creates new instances of tiled sprite nodes, use this when importing data
@@ -37,26 +35,13 @@ public class SpriteMeshNodeFactory {
         try {
             SpriteMeshNode refNode = (SpriteMeshNode) scene.getResources().getNode(
                     GraphicsEngineNodeType.spriteMeshNode, reference);
-            SpriteMeshNode spriteNode = (SpriteMeshNode) SpriteNodeFactory.create(
-                    SpriteControllers.TILED);
+            SpriteMeshNode spriteNode = (SpriteMeshNode) SpriteNodeFactory.create(SpriteControllers.TILED);
             spriteNode.set(refNode);
             spriteNode.create();
             spriteNode.toReference(source, spriteNode);
-            ShaderProgram program = null;
-            Texture2D tex = scene.getResources().getTexture2D(spriteNode.getSpriteSheet().getTextureRef());
-            switch (tex.type) {
-            case TiledTexture2D:
-                program = new TiledSpriteProgram();
-                break;
-            case UVTexture2D:
-                program = new UVSpriteProgram();
-                break;
-            default:
-                throw new IllegalArgumentException(INVALID_TYPE + tex.type);
-            }
-            spriteNode.createMesh(renderer, spriteNode, program, scene);
+            spriteNode.createMesh(renderer, spriteNode, scene);
             spriteNode.copyTransform(source);
-            spriteNode.createSprites(renderer, spriteNode, program, scene);
+            spriteNode.createSprites(renderer, scene);
 
             return spriteNode;
         } catch (IllegalAccessException | InstantiationException | ClassNotFoundException e) {

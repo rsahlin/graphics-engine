@@ -4,11 +4,11 @@ import java.io.IOException;
 
 import com.graphicsengine.io.GraphicsEngineRootNode;
 import com.nucleus.assets.AssetManager;
-import com.nucleus.geometry.Mesh;
+import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
+import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.renderer.BufferObjectsFactory;
 import com.nucleus.renderer.Configuration;
 import com.nucleus.renderer.NucleusRenderer;
-import com.nucleus.scene.Node;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.Texture2D;
 
@@ -21,9 +21,12 @@ import com.nucleus.texturing.Texture2D;
  */
 public class SpriteMeshFactory {
 
+    private final static String INVALID_TYPE = "Invalid type: ";
+
     /**
      * This will create an old school sprite mesh, where each sprite has a frame, the sprite can be rotated in x axis
      * and positioned in x and y.
+     * The attribute data will be prepared, ie when this call returns the mesh is ready to be rendered.
      * 
      * @param renderer
      * @param source The sprite controller source, an instance of this will be created.
@@ -32,32 +35,42 @@ public class SpriteMeshFactory {
      * @return
      * @throws IOException
      */
-    public static SpriteMesh create(NucleusRenderer renderer, SpriteMeshNode source, ShaderProgram program,
-            GraphicsEngineRootNode scene) throws IOException {
+    public static SpriteMesh create(NucleusRenderer renderer, SpriteMeshNode source, GraphicsEngineRootNode scene)
+            throws IOException {
 
         SpriteMesh sourceMesh = source.getSpriteSheet();
         SpriteMesh sprites = new SpriteMesh(sourceMesh);
-        renderer.createProgram(program);
         Texture2D texture = AssetManager.getInstance().getTexture(renderer,
                 scene.getResources().getTexture2D(source.getSpriteSheet().getTextureRef()));
-
+        ShaderProgram program = null;
+        switch (texture.type) {
+        case TiledTexture2D:
+            program = new TiledSpriteProgram();
+            break;
+        case UVTexture2D:
+            program = new UVSpriteProgram();
+            break;
+        default:
+            throw new IllegalArgumentException(INVALID_TYPE + texture.type);
+        }
+        renderer.createProgram(program);
         sprites.createMesh(program, texture);
         if (Configuration.getInstance().isUseVBO()) {
             BufferObjectsFactory.getInstance().createVBOs(renderer, sprites);
         }
+
+        float[] attributeData = sprites.getAttributeData();
+        PropertyMapper mapper = new PropertyMapper(program);
+        for (int i = 0; i < sprites.getCount(); i++) {
+            if (program instanceof TiledSpriteProgram) {
+                MeshBuilder.prepareTiledUV(mapper, attributeData, i);
+            } else if (program instanceof UVSpriteProgram) {
+            } else {
+                throw new IllegalArgumentException();
+            }
+        }
+
         return sprites;
     }
 
-    public static void create(NucleusRenderer renderer, Node source, Mesh mesh, ShaderProgram program,
-            GraphicsEngineRootNode scene) throws IOException {
-
-        renderer.createProgram(program);
-        Texture2D texture = AssetManager.getInstance().getTexture(renderer,
-                scene.getResources().getTexture2D(mesh.getTextureRef()));
-
-        mesh.createMesh(program, texture);
-        if (Configuration.getInstance().isUseVBO()) {
-            BufferObjectsFactory.getInstance().createVBOs(renderer, mesh);
-        }
-    }
 }

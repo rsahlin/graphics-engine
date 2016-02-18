@@ -9,10 +9,8 @@ import com.graphicsengine.sprite.SpriteFactory;
 import com.graphicsengine.sprite.SpriteNode;
 import com.nucleus.geometry.AttributeUpdater.Producer;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
-import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.RootNode;
-import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.Texture2D;
 
 /**
@@ -40,7 +38,7 @@ public class SpriteMeshNode extends SpriteNode implements Producer {
     }
 
     /**
-     * The mesh that can be redered
+     * The mesh that can be rendered
      */
     @SerializedName("charset")
     private SpriteMesh spriteSheet;
@@ -70,11 +68,10 @@ public class SpriteMeshNode extends SpriteNode implements Producer {
     }
 
     @Override
-    protected void createSprites(NucleusRenderer renderer, SpriteNode source, ShaderProgram program, RootNode scene) {
-        SpriteMeshNode spriteController = (SpriteMeshNode) source;
+    protected void createSprites(NucleusRenderer renderer, RootNode scene) {
+        PropertyMapper mapper = new PropertyMapper(getSpriteSheet().getMaterial().getProgram());
         float[] attributeData = spriteSheet.getAttributeData();
-        Texture2D tex = spriteController.getSpriteSheet().getTexture(Texture2D.TEXTURE_0);
-        PropertyMapper mapper = new PropertyMapper(program);
+        Texture2D tex = getSpriteSheet().getTexture(Texture2D.TEXTURE_0);
         for (int i = 0; i < count; i++) {
             switch (tex.type) {
             case TiledTexture2D:
@@ -90,26 +87,14 @@ public class SpriteMeshNode extends SpriteNode implements Producer {
             sprites[i].setScale(1, 1);
             sprites[i].setFrame(0);
         }
-        setActor(spriteController.getActorData().getData());
+        setActor(getActorData().getData());
     }
 
     @Override
-    protected void createMesh(NucleusRenderer renderer, SpriteNode source, ShaderProgram program,
-            RootNode scene) {
+    protected void createMesh(NucleusRenderer renderer, SpriteNode source, RootNode scene) {
         try {
             GraphicsEngineRootNode gScene = (GraphicsEngineRootNode) scene;
-            spriteSheet = SpriteMeshFactory.create(renderer, (SpriteMeshNode) source, program, gScene);
-            float[] attributeData = spriteSheet.getAttributeData();
-            PropertyMapper mapper = new PropertyMapper(program);
-            int offset;
-            for (int i = 0; i < count; i++) {
-                if (program instanceof TiledSpriteProgram) {
-                    MeshBuilder.prepareTiledUV(mapper, attributeData, i);
-                } else if (program instanceof UVSpriteProgram) {
-                } else {
-                    throw new IllegalArgumentException();
-                }
-            }
+            spriteSheet = SpriteMeshFactory.create(renderer, (SpriteMeshNode) source, gScene);
             addMesh(spriteSheet);
         } catch (IOException e) {
             throw new RuntimeException(e);
