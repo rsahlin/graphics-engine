@@ -1,6 +1,7 @@
 package com.graphicsengine.sprite;
 
 import com.google.gson.annotations.SerializedName;
+import com.graphicsengine.spritemesh.SpriteMesh;
 import com.nucleus.actor.ActorContainer;
 import com.nucleus.actor.ActorItem;
 import com.nucleus.actor.ActorNode;
@@ -53,12 +54,11 @@ public abstract class SpriteNode extends ActorNode {
         actorData = new ActorData(source.getActorData());
     }
 
-    /**
-     * Creates the transient values needed in runtime, based on the actor data.
-     * Each sprite must be created by calling {@link #createSprites(NucleusRenderer, SpriteNode, RootNode)}
-     * 
-     */
+    @Override
     public void create() {
+        /*
+         * Each sprite must be created by calling {@link #createSprites(NucleusRenderer, SpriteNode, RootNode)}
+         */
         this.count = actorData.getCount();
         sprites = new Sprite[count];
     }
@@ -96,9 +96,10 @@ public abstract class SpriteNode extends ActorNode {
      * @see #createMesh(NucleusRenderer, NodeData, RootNode)
      * 
      * @param renderer
+     * @param mesh
      * @param scene
      */
-    protected abstract void createSprites(NucleusRenderer renderer, RootNode scene);
+    protected abstract void createSprites(NucleusRenderer renderer, SpriteMesh mesh, RootNode scene);
 
     /**
      * Creates the renderable sprite (mesh)

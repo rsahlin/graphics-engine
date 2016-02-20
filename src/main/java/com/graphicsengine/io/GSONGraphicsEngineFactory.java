@@ -5,8 +5,10 @@ import java.io.Reader;
 
 import com.google.gson.Gson;
 import com.graphicsengine.exporter.GraphicsEngineNodeExporter;
+import com.graphicsengine.geometry.GraphicsEngineMeshFactory;
 import com.graphicsengine.scene.GraphicsEngineNodeFactory;
 import com.graphicsengine.scene.GraphicsEngineNodeType;
+import com.nucleus.geometry.MeshFactory;
 import com.nucleus.io.GSONSceneFactory;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.NodeFactory;
@@ -44,7 +46,7 @@ public class GSONGraphicsEngineFactory extends GSONSceneFactory {
 
     @Override
     protected Node createNode(RootNode scene, Node source, Node parent) throws IOException {
-        Node created = nodeFactory.create(renderer, source, scene);
+        Node created = nodeFactory.create(renderer, source, meshFactory, scene);
         setViewFrustum(source, created);
         createChildNodes(scene, source, created);
         return created;
@@ -57,6 +59,10 @@ public class GSONGraphicsEngineFactory extends GSONSceneFactory {
      */
     public static NodeFactory getNodeFactory() {
         return new GraphicsEngineNodeFactory();
+    }
+
+    public static MeshFactory getMeshFactory() {
+        return new GraphicsEngineMeshFactory();
     }
 
 }

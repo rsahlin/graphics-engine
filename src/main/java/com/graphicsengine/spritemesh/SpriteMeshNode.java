@@ -1,15 +1,13 @@
 package com.graphicsengine.spritemesh;
 
-import java.io.IOException;
-
 import com.google.gson.annotations.SerializedName;
-import com.graphicsengine.io.GraphicsEngineRootNode;
 import com.graphicsengine.sprite.Sprite;
 import com.graphicsengine.sprite.SpriteFactory;
 import com.graphicsengine.sprite.SpriteNode;
 import com.nucleus.geometry.AttributeUpdater.Producer;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.renderer.NucleusRenderer;
+import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
 import com.nucleus.texturing.Texture2D;
 
@@ -68,10 +66,15 @@ public class SpriteMeshNode extends SpriteNode implements Producer {
     }
 
     @Override
-    protected void createSprites(NucleusRenderer renderer, RootNode scene) {
-        PropertyMapper mapper = new PropertyMapper(getSpriteSheet().getMaterial().getProgram());
-        float[] attributeData = spriteSheet.getAttributeData();
-        Texture2D tex = getSpriteSheet().getTexture(Texture2D.TEXTURE_0);
+    public void copyTo(Node target) {
+        ((SpriteMeshNode) target).set(this);
+    }
+
+    @Override
+    public void createSprites(NucleusRenderer renderer, SpriteMesh consumer, RootNode scene) {
+        PropertyMapper mapper = consumer.getMapper();
+        float[] attributeData = consumer.getAttributeData();
+        Texture2D tex = consumer.getTexture(Texture2D.TEXTURE_0);
         for (int i = 0; i < count; i++) {
             switch (tex.type) {
             case TiledTexture2D:
@@ -92,13 +95,6 @@ public class SpriteMeshNode extends SpriteNode implements Producer {
 
     @Override
     protected void createMesh(NucleusRenderer renderer, SpriteNode source, RootNode scene) {
-        try {
-            GraphicsEngineRootNode gScene = (GraphicsEngineRootNode) scene;
-            spriteSheet = SpriteMeshFactory.create(renderer, (SpriteMeshNode) source, gScene);
-            addMesh(spriteSheet);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     /**

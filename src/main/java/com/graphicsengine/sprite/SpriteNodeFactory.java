@@ -46,14 +46,19 @@ public class SpriteNodeFactory {
      * Creates a SpriteController instance and setting the current actor resolver.
      * 
      * @param controller SpriteController instance to create
-     * @return New instance of the specified controller
+     * @return New instance of the specified controller or null if instantiation fails
      */
-    public static SpriteNode create(SpriteControllers controller)
-            throws IllegalAccessException,
-            InstantiationException, ClassNotFoundException {
-        SpriteNode impl = (SpriteNode) controller.getControllerClass().newInstance();
-        impl.setActorResolver(actorResolver);
-        return impl;
+    public static SpriteNode create(SpriteControllers controller) {
+        SpriteNode impl;
+        try {
+            impl = (SpriteNode) controller.getControllerClass().newInstance();
+            impl.setActorResolver(actorResolver);
+            return impl;
+        } catch (InstantiationException | IllegalAccessException e) {
+            // Print error and return null.
+            System.err.println("Could not create SpriteNode");
+            return null;
+        }
     }
 
     /**

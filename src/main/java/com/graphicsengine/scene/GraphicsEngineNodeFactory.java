@@ -4,9 +4,13 @@ import java.io.IOException;
 
 import com.graphicsengine.io.GraphicsEngineRootNode;
 import com.graphicsengine.map.PlayfieldNodeFactory;
+import com.graphicsengine.sprite.SpriteNodeFactory;
+import com.graphicsengine.sprite.SpriteNodeFactory.SpriteControllers;
+import com.graphicsengine.spritemesh.SpriteMeshNode;
 import com.graphicsengine.spritemesh.SpriteMeshNodeFactory;
 import com.graphicsengine.ui.UINodeFactory;
 import com.nucleus.camera.ViewFrustum;
+import com.nucleus.geometry.MeshFactory;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.DefaultNodeFactory;
 import com.nucleus.scene.Node;
@@ -14,7 +18,8 @@ import com.nucleus.scene.NodeFactory;
 import com.nucleus.scene.RootNode;
 
 /**
- * Implementation of {@link NodeFactory}
+ * Implementation of {@link NodeFactory}.
+ * This factory shall handle all graphics-engine specific nodes.
  * 
  * @author Richard Sahlin
  *
@@ -24,12 +29,13 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
     private static final String NOT_IMPLEMENTED = "Not implemented: ";
 
     @Override
-    public Node create(NucleusRenderer renderer, Node source, RootNode scene) throws IOException {
+    public Node create(NucleusRenderer renderer, Node source, MeshFactory meshFactory, RootNode scene)
+            throws IOException {
         GraphicsEngineNodeType type = null;
         try {
             type = GraphicsEngineNodeType.valueOf(source.getType());
         } catch (IllegalArgumentException e) {
-            return super.create(renderer, source, scene);
+            return super.create(renderer, source, meshFactory, scene);
         }
         GraphicsEngineRootNode gScene = (GraphicsEngineRootNode) scene;
         Node created = null;
@@ -50,6 +56,23 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
             throw new IllegalArgumentException(NOT_IMPLEMENTED + type);
         }
         return created;
+    }
+
+    protected Node internalCreateNode(NucleusRenderer renderer, Node source, GraphicsEngineRootNode scene) {
+        Node refNode = scene.getResources().getNode(GraphicsEngineNodeType.spriteMeshNode, source.getReference());
+        SpriteMeshNode node = (SpriteMeshNode) SpriteNodeFactory.create(SpriteControllers.TILED);
+        refNode.copyTo(node);
+        node.create();
+        node.toReference(source, node);
+        /*
+         * SpriteMesh spriteSheet = SpriteMeshFactory.create(renderer, node, scene);
+         * // Check if the mesh has an id, if not set to reference
+         * if (spriteSheet.getId() == null) {
+         * spriteSheet.setId(source.getReference());
+         * }
+         * node.addMesh(spriteSheet);
+         */
+        return node;
     }
 
     /**

@@ -44,6 +44,8 @@ public class SpriteMesh extends Mesh implements Consumer, AttributeUpdater {
      */
     protected transient float[] attributeData;
 
+    protected transient PropertyMapper mapper;
+
     /**
      * Creates a new instance of the tiled sprite mesh based on the source.
      * This will NOT create the mesh and sprites it will only set the values from the source.
@@ -69,7 +71,6 @@ public class SpriteMesh extends Mesh implements Consumer, AttributeUpdater {
             anchor = new Anchor(source.anchor);
         }
         setSize(source.getSize());
-
     }
 
     /**
@@ -98,6 +99,7 @@ public class SpriteMesh extends Mesh implements Consumer, AttributeUpdater {
     @Override
     public void createMesh(ShaderProgram program, Texture2D texture) {
         super.createMesh(program, texture);
+        mapper = new PropertyMapper(program);
         buildMesh(program, count, size, anchor);
         setAttributeUpdater(this);
     }
@@ -143,6 +145,11 @@ public class SpriteMesh extends Mesh implements Consumer, AttributeUpdater {
             throw new IllegalArgumentException(Consumer.BUFFER_NOT_BOUND);
         }
         return attributeData;
+    }
+
+    @Override
+    public PropertyMapper getMapper() {
+        return mapper;
     }
 
     @Override

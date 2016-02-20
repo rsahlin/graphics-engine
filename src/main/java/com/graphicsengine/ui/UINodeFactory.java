@@ -19,6 +19,7 @@ public class UINodeFactory {
         Button refNode = (Button) scene.getResources().getNode(
                 GraphicsEngineNodeType.button, reference);
         Button button = new Button(refNode);
+        button.copyTransform(source);
 
         // SpriteMeshNode spriteNode = (SpriteMeshNode) SpriteNodeFactory.create(
         // SpriteControllers.TILED);

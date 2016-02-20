@@ -26,38 +26,37 @@ public class PlayfieldMeshFactory {
      * After this call the playfield can be rendered but it will not contain any specific charmap data.
      * 
      * @param renderer
-     * @param source The charset data
+     * @param node The node that the mesh shall be in
      * @param program The shader program to use with the Mesh
      * @param textureData The texture data to be used for the charset
      * @return The created playfield
      * @throws IOException
      */
-    public static PlayfieldMesh create(NucleusRenderer renderer, PlayfieldNode source, ShaderProgram program,
+    public static PlayfieldMesh create(NucleusRenderer renderer, PlayfieldNode node, ShaderProgram program,
             TiledTexture2D textureData) throws IOException {
 
-        PlayfieldMesh sourceMesh = source.getPlayfieldMesh();
-        PlayfieldMesh map = new PlayfieldMesh(sourceMesh);
+        PlayfieldMesh mesh = node.getPlayfieldMesh();
         renderer.createProgram(program);
         Texture2D texture = AssetManager.getInstance().getTexture(renderer, textureData);
-        map.createMesh(program, texture);
+        mesh.createMesh(program, texture);
         float[] size = new float[2];
-        int[] mapSize = source.getMapSize();
-        size[0] = mapSize[0] * sourceMesh.getTileWidth();
-        size[1] = mapSize[1] * sourceMesh.getTileHeight();
+        int[] mapSize = node.getMapSize();
+        size[0] = mapSize[0] * mesh.getTileWidth();
+        size[1] = mapSize[1] * mesh.getTileHeight();
         PropertyMapper mapper = new PropertyMapper(program);
-        map.setupCharmap(mapper, source.getMapSize());
+        mesh.setupCharmap(mapper, node.getMapSize());
 
         if (Configuration.getInstance().isUseVBO()) {
-            BufferObjectsFactory.getInstance().createVBOs(renderer, map);
+            BufferObjectsFactory.getInstance().createVBOs(renderer, mesh);
         }
 
-        int charCount = map.getCount();
-        float[] attributeData = map.getAttributeData();
+        int charCount = mesh.getCount();
+        float[] attributeData = mesh.getAttributeData();
         for (int i = 0; i < charCount; i++) {
             MeshBuilder.prepareTiledUV(mapper, attributeData, i);
         }
 
-        return map;
+        return mesh;
     }
 
     /**
@@ -65,18 +64,18 @@ public class PlayfieldMeshFactory {
      * be filled with map data.
      * 
      * @param renderer
-     * @param source The source playfield controller, the mesh will be created based on the data in this.
+     * @param node The source playfield, the mesh will be created in this node.
      * @return The created mesh
      * @throws IOException
      */
-    public static PlayfieldMesh create(NucleusRenderer renderer, PlayfieldNode source,
+    public static PlayfieldMesh create(NucleusRenderer renderer, PlayfieldNode node,
             GraphicsEngineRootNode scene)
             throws IOException {
 
         TiledTexture2D textureData = (TiledTexture2D) scene.getResources().getTexture2D(
-                source.getPlayfieldMesh().getTextureRef());
+                node.getPlayfieldMesh().getTextureRef());
 
-        return create(renderer, source, new PlayfieldProgram(), textureData);
+        return create(renderer, node, new PlayfieldProgram(), textureData);
     }
 
     /**

@@ -29,19 +29,18 @@ public class SpriteMeshFactory {
      * The attribute data will be prepared, ie when this call returns the mesh is ready to be rendered.
      * 
      * @param renderer
-     * @param source The sprite controller source, an instance of this will be created.
+     * @param node The node that the mesh shall be created for
      * @param program The shader program to use with the mesh
      * @param scene
      * @return
      * @throws IOException
      */
-    public static SpriteMesh create(NucleusRenderer renderer, SpriteMeshNode source, GraphicsEngineRootNode scene)
+    public static SpriteMesh create(NucleusRenderer renderer, SpriteMeshNode node, GraphicsEngineRootNode scene)
             throws IOException {
 
-        SpriteMesh sourceMesh = source.getSpriteSheet();
-        SpriteMesh sprites = new SpriteMesh(sourceMesh);
+        SpriteMesh mesh = node.getSpriteSheet();
         Texture2D texture = AssetManager.getInstance().getTexture(renderer,
-                scene.getResources().getTexture2D(source.getSpriteSheet().getTextureRef()));
+                scene.getResources().getTexture2D(mesh.getTextureRef()));
         ShaderProgram program = null;
         switch (texture.type) {
         case TiledTexture2D:
@@ -54,14 +53,14 @@ public class SpriteMeshFactory {
             throw new IllegalArgumentException(INVALID_TYPE + texture.type);
         }
         renderer.createProgram(program);
-        sprites.createMesh(program, texture);
+        mesh.createMesh(program, texture);
         if (Configuration.getInstance().isUseVBO()) {
-            BufferObjectsFactory.getInstance().createVBOs(renderer, sprites);
+            BufferObjectsFactory.getInstance().createVBOs(renderer, mesh);
         }
 
-        float[] attributeData = sprites.getAttributeData();
+        float[] attributeData = mesh.getAttributeData();
         PropertyMapper mapper = new PropertyMapper(program);
-        for (int i = 0; i < sprites.getCount(); i++) {
+        for (int i = 0; i < mesh.getCount(); i++) {
             if (program instanceof TiledSpriteProgram) {
                 MeshBuilder.prepareTiledUV(mapper, attributeData, i);
             } else if (program instanceof UVSpriteProgram) {
@@ -70,7 +69,7 @@ public class SpriteMeshFactory {
             }
         }
 
-        return sprites;
+        return mesh;
     }
 
 }

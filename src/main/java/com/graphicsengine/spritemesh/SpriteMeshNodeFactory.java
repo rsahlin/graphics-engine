@@ -20,33 +20,35 @@ public class SpriteMeshNodeFactory {
     private final static String INVALID_TYPE = "Invalid type: ";
 
     /**
-     * Returns a new instance of a tiled sprite controller, mesh and sprites will be created from the source.
-     * Use this when importing
+     * Creates a {@link SpriteMeshNode} from the specified Node source. The source reference will be fetched and
+     * used to create the {@link SpriteMesh} The created node will have the mesh added so the Node can be rendered after
+     * this call.
+     * If the Id of the mesh is not set, the reference will be used. This makes it possible to find the Mesh
+     * by the reference.
      * 
      * @param renderer
-     * @param source The source node to the sprite controller
-     * @param scene The graphics engine root node
-     * @return The created sprite controller that can be used to render sprites.
+     * @param source
+     * @param scene
+     * @return
      * @throws IOException
      */
     public static SpriteMeshNode create(NucleusRenderer renderer, Node source, GraphicsEngineRootNode scene)
             throws IOException {
-        String reference = source.getReference();
-        try {
-            SpriteMeshNode refNode = (SpriteMeshNode) scene.getResources().getNode(
-                    GraphicsEngineNodeType.spriteMeshNode, reference);
-            SpriteMeshNode spriteNode = (SpriteMeshNode) SpriteNodeFactory.create(SpriteControllers.TILED);
-            spriteNode.set(refNode);
-            spriteNode.create();
-            spriteNode.toReference(source, spriteNode);
-            spriteNode.createMesh(renderer, spriteNode, scene);
-            spriteNode.copyTransform(source);
-            spriteNode.createSprites(renderer, scene);
-
-            return spriteNode;
-        } catch (IllegalAccessException | InstantiationException | ClassNotFoundException e) {
-            throw new RuntimeException(e);
+        Node refNode = scene.getResources().getNode(GraphicsEngineNodeType.spriteMeshNode, source.getReference());
+        SpriteMeshNode node = (SpriteMeshNode) SpriteNodeFactory.create(SpriteControllers.TILED);
+        refNode.copyTo(node);
+        node.create();
+        node.toReference(source, node);
+        SpriteMesh spriteSheet = SpriteMeshFactory.create(renderer, node, scene);
+        // Check if the mesh has an id, if not set to reference
+        if (spriteSheet.getId() == null) {
+            spriteSheet.setId(source.getReference());
         }
+        node.addMesh(spriteSheet);
+
+        node.copyTransform(source);
+        node.createSprites(renderer, spriteSheet, scene);
+        return node;
     }
 
     /**

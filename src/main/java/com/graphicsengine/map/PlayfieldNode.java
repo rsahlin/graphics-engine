@@ -1,7 +1,5 @@
 package com.graphicsengine.map;
 
-import java.io.IOException;
-
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.dataflow.ArrayInputData;
 import com.graphicsengine.io.GraphicsEngineRootNode;
@@ -64,21 +62,6 @@ public class PlayfieldNode extends Node {
         mapRef = source.mapRef;
         setMapSize(source.mapSize);
         playfield = new PlayfieldMesh(source.getPlayfieldMesh());
-    }
-
-    /**
-     * Creates the renderable playfield (mesh)
-     * After this call this node can be rendered but the mesh must be filled with data.
-     * 
-     * @param renderer
-     * @param source
-     * @param scene
-     * @throws IOException
-     */
-    public void createMesh(NucleusRenderer renderer, PlayfieldNode source, GraphicsEngineRootNode scene)
-            throws IOException {
-        playfield = PlayfieldMeshFactory.create(renderer, source, scene);
-        addMesh(playfield);
     }
 
     /**

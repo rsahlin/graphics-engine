@@ -1,5 +1,6 @@
 package com.graphicsengine.scene;
 
+import com.nucleus.geometry.MeshFactory;
 import com.nucleus.io.SceneSerializer;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.NodeFactory;
@@ -19,16 +20,18 @@ public class SceneSerializerFactory {
      * @param className Implementing classname or null for default.
      * @param renderer The renderer to be used with the serializer
      * @param nodeFactory The nodefactory to be used with the serializer
+     * @param meshFactory The meshFactory to be used when creating meshes in the nodeFactory
      * @return The scene serializer implementation
      * @throws ClassNotFoundException If the specified class cannot be found
      * @throws InstantiationException If the specified class cannot be created
      * @throws IllegalAccessException If the specified class cannot be created
      */
-    public static SceneSerializer getSerializer(String className, NucleusRenderer renderer, NodeFactory nodeFactory)
+    public static SceneSerializer getSerializer(String className, NucleusRenderer renderer, NodeFactory nodeFactory,
+            MeshFactory meshFactory)
             throws ClassNotFoundException,
             InstantiationException, IllegalAccessException {
         SceneSerializer serializer = (SceneSerializer) Class.forName(className).newInstance();
-        serializer.init(renderer, nodeFactory);
+        serializer.init(renderer, nodeFactory, meshFactory);
         return serializer;
     }
 

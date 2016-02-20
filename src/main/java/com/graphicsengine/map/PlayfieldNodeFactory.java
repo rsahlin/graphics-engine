@@ -27,13 +27,14 @@ public class PlayfieldNodeFactory {
      */
     public static PlayfieldNode create(NucleusRenderer renderer, Node source, GraphicsEngineRootNode scene)
             throws IOException {
-        String reference = source.getReference();
         PlayfieldNode refNode = (PlayfieldNode) scene.getResources().getNode(GraphicsEngineNodeType.playfieldNode,
-                reference);
-        PlayfieldNode playfieldController = new PlayfieldNode(source);
-        playfieldController.createMesh(renderer, refNode, scene);
-        playfieldController.createPlayfield(refNode, scene);
-        return playfieldController;
+                source.getReference());
+        PlayfieldNode node = new PlayfieldNode(refNode);
+        node.toReference(source, node);
+        PlayfieldMesh mesh = PlayfieldMeshFactory.create(renderer, node, scene);
+        node.addMesh(mesh);
+        node.createPlayfield(refNode, scene);
+        return node;
     }
 
     /**
