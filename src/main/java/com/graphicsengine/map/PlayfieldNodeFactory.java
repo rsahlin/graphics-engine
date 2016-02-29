@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import com.graphicsengine.io.GraphicsEngineRootNode;
 import com.graphicsengine.scene.GraphicsEngineNodeType;
+import com.nucleus.geometry.MeshFactory;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node;
 
@@ -25,15 +26,12 @@ public class PlayfieldNodeFactory {
      * @param scene The scene holding the resources
      * @return New instance of the referenced playfield controlller
      */
-    public static PlayfieldNode create(NucleusRenderer renderer, Node source, GraphicsEngineRootNode scene)
+    public static PlayfieldNode create(NucleusRenderer renderer, Node source, MeshFactory meshFactory,
+            GraphicsEngineRootNode scene)
             throws IOException {
         PlayfieldNode refNode = (PlayfieldNode) scene.getResources().getNode(GraphicsEngineNodeType.playfieldNode,
                 source.getReference());
         PlayfieldNode node = new PlayfieldNode(refNode);
-        node.toReference(source, node);
-        PlayfieldMesh mesh = PlayfieldMeshFactory.create(renderer, node, scene);
-        node.addMesh(mesh);
-        node.createPlayfield(refNode, scene);
         return node;
     }
 

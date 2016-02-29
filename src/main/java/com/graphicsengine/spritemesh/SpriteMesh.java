@@ -2,7 +2,6 @@ package com.graphicsengine.spritemesh;
 
 import com.google.gson.annotations.SerializedName;
 import com.nucleus.data.Anchor;
-import com.nucleus.geometry.AttributeUpdater;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshBuilder;
@@ -22,7 +21,7 @@ import com.nucleus.vecmath.Axis;
  * @author Richard Sahlin
  *
  */
-public class SpriteMesh extends Mesh implements Consumer, AttributeUpdater {
+public class SpriteMesh extends Mesh implements Consumer {
 
     @SerializedName("count")
     protected final int count;
@@ -43,8 +42,6 @@ public class SpriteMesh extends Mesh implements Consumer, AttributeUpdater {
      * This data must be mapped into the mesh for changes to take place.
      */
     protected transient float[] attributeData;
-
-    protected transient PropertyMapper mapper;
 
     /**
      * Creates a new instance of the tiled sprite mesh based on the source.
@@ -99,7 +96,6 @@ public class SpriteMesh extends Mesh implements Consumer, AttributeUpdater {
     @Override
     public void createMesh(ShaderProgram program, Texture2D texture) {
         super.createMesh(program, texture);
-        mapper = new PropertyMapper(program);
         buildMesh(program, count, size, anchor);
         setAttributeUpdater(this);
     }
@@ -114,7 +110,7 @@ public class SpriteMesh extends Mesh implements Consumer, AttributeUpdater {
      * @param size Width and height of each sprite
      * @param anchor Anchor values for sprites
      */
-    public void buildMesh(ShaderProgram program, int spriteCount, float[] size, Anchor anchor) {
+    private void buildMesh(ShaderProgram program, int spriteCount, float[] size, Anchor anchor) {
         int vertexStride = program.getVertexStride();
         float[] quadPositions = MeshBuilder.buildQuadPositionsIndexed(size, anchor, vertexStride);
         MeshBuilder.buildQuadMeshIndexed(this, program, spriteCount, quadPositions);
@@ -148,12 +144,8 @@ public class SpriteMesh extends Mesh implements Consumer, AttributeUpdater {
     }
 
     @Override
-    public PropertyMapper getMapper() {
-        return mapper;
-    }
-
-    @Override
     public void destroy() {
+        super.destroy();
         attributeData = null;
     }
 

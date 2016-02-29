@@ -2,6 +2,7 @@ package com.graphicsengine.ui;
 
 import com.graphicsengine.io.GraphicsEngineRootNode;
 import com.graphicsengine.scene.GraphicsEngineNodeType;
+import com.nucleus.geometry.MeshFactory;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node;
 
@@ -13,7 +14,8 @@ import com.nucleus.scene.Node;
  */
 public class UINodeFactory {
 
-    public static Node createButton(NucleusRenderer renderer, Node source, GraphicsEngineRootNode scene) {
+    public static Node createButton(NucleusRenderer renderer, Node source, MeshFactory meshFactory,
+            GraphicsEngineRootNode scene) {
         String reference = source.getReference();
         // try {
         Button refNode = (Button) scene.getResources().getNode(

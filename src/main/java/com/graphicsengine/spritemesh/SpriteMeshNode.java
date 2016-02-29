@@ -93,10 +93,6 @@ public class SpriteMeshNode extends SpriteNode implements Producer {
         setActor(getActorData().getData());
     }
 
-    @Override
-    protected void createMesh(NucleusRenderer renderer, SpriteNode source, RootNode scene) {
-    }
-
     /**
      * Returns the number of sprites in this controller
      * 

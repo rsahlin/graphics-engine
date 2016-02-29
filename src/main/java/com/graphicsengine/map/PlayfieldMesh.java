@@ -141,14 +141,13 @@ public class PlayfieldMesh extends SpriteMesh implements Consumer {
     }
 
     /**
-     * Same as calling {@link #setupCharmap(PropertyMapper, int, int, float, float)}
+     * Same as calling {@link #setupCharmap(int, int, float, float)}
      * 
-     * @param mapper Property mapper for attribute indexes
      * @param size Width and height, in chars, of playfield
      */
-    public void setupCharmap(PropertyMapper mapper, int[] size) {
+    public void setupCharmap(int[] size) {
         float[] offset = anchor.calcOffsets(new float[] { mapSize[0] * getTileWidth(), mapSize[1] * getTileHeight() });
-        setupCharmap(mapper, size[Axis.WIDTH.index], size[Axis.HEIGHT.index], offset[0], offset[1]);
+        setupCharmap(size[Axis.WIDTH.index], size[Axis.HEIGHT.index], offset[0], offset[1]);
     }
 
     /**
@@ -164,7 +163,7 @@ public class PlayfieldMesh extends SpriteMesh implements Consumer {
      * @param xpos Starting xpos for the upper left char.
      * @param ypos Starting ypos for the upper left char.
      */
-    public void setupCharmap(PropertyMapper mapper, int width, int height, float xpos, float ypos) {
+    public void setupCharmap(int width, int height, float xpos, float ypos) {
         this.mapSize[Axis.WIDTH.index] = width;
         this.mapSize[Axis.HEIGHT.index] = height;
         int index = 0;

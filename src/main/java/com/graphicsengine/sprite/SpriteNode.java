@@ -93,23 +93,11 @@ public abstract class SpriteNode extends ActorNode {
      * mesh/textures.
      * 
      * 
-     * @see #createMesh(NucleusRenderer, NodeData, RootNode)
-     * 
      * @param renderer
      * @param mesh
      * @param scene
      */
     protected abstract void createSprites(NucleusRenderer renderer, SpriteMesh mesh, RootNode scene);
-
-    /**
-     * Creates the renderable sprite (mesh)
-     * After this call this node can be rendered.
-     * 
-     * @param renderer
-     * @param spriteController
-     * @param scene
-     */
-    protected abstract void createMesh(NucleusRenderer renderer, SpriteNode spriteController, RootNode scene);
 
     /**
      * Internal method to check if a actor resolver has been set, call this in implementations of the createSprites()

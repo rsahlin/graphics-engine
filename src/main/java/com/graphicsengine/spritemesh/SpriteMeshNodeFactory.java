@@ -6,6 +6,7 @@ import com.graphicsengine.io.GraphicsEngineRootNode;
 import com.graphicsengine.scene.GraphicsEngineNodeType;
 import com.graphicsengine.sprite.SpriteNodeFactory;
 import com.graphicsengine.sprite.SpriteNodeFactory.SpriteControllers;
+import com.nucleus.geometry.MeshFactory;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node;
 
@@ -28,26 +29,17 @@ public class SpriteMeshNodeFactory {
      * 
      * @param renderer
      * @param source
+     * @param meshFactory
      * @param scene
      * @return
      * @throws IOException
      */
-    public static SpriteMeshNode create(NucleusRenderer renderer, Node source, GraphicsEngineRootNode scene)
+    public static SpriteMeshNode create(NucleusRenderer renderer, Node source, MeshFactory meshFactory,
+            GraphicsEngineRootNode scene)
             throws IOException {
         Node refNode = scene.getResources().getNode(GraphicsEngineNodeType.spriteMeshNode, source.getReference());
         SpriteMeshNode node = (SpriteMeshNode) SpriteNodeFactory.create(SpriteControllers.TILED);
         refNode.copyTo(node);
-        node.create();
-        node.toReference(source, node);
-        SpriteMesh spriteSheet = SpriteMeshFactory.create(renderer, node, scene);
-        // Check if the mesh has an id, if not set to reference
-        if (spriteSheet.getId() == null) {
-            spriteSheet.setId(source.getReference());
-        }
-        node.addMesh(spriteSheet);
-
-        node.copyTransform(source);
-        node.createSprites(renderer, spriteSheet, scene);
         return node;
     }
 

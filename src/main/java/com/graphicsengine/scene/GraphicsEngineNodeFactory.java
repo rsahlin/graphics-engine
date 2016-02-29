@@ -3,13 +3,14 @@ package com.graphicsengine.scene;
 import java.io.IOException;
 
 import com.graphicsengine.io.GraphicsEngineRootNode;
+import com.graphicsengine.map.PlayfieldNode;
 import com.graphicsengine.map.PlayfieldNodeFactory;
-import com.graphicsengine.sprite.SpriteNodeFactory;
-import com.graphicsengine.sprite.SpriteNodeFactory.SpriteControllers;
+import com.graphicsengine.spritemesh.SpriteMesh;
 import com.graphicsengine.spritemesh.SpriteMeshNode;
 import com.graphicsengine.spritemesh.SpriteMeshNodeFactory;
 import com.graphicsengine.ui.UINodeFactory;
 import com.nucleus.camera.ViewFrustum;
+import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshFactory;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.DefaultNodeFactory;
@@ -42,13 +43,19 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
 
         switch (type) {
         case playfieldNode:
-            created = PlayfieldNodeFactory.create(renderer, source, gScene);
+            created = PlayfieldNodeFactory.create(renderer, source, meshFactory, gScene);
+            internalCreateNode(renderer, source, created, meshFactory, gScene);
+            ((PlayfieldNode) created).createPlayfield(gScene);
             break;
         case spriteMeshNode:
-            created = SpriteMeshNodeFactory.create(renderer, source, gScene);
+            created = SpriteMeshNodeFactory.create(renderer, source, meshFactory, gScene);
+            internalCreateNode(renderer, source, created, meshFactory, gScene);
+            // Instead of casting - should the Mesh be attribute consumer?
+            ((SpriteMeshNode) created).createSprites(renderer, (SpriteMesh) created.getMeshById(source.getReference()),
+                    gScene);
             break;
         case button:
-            created = UINodeFactory.createButton(renderer, source, gScene);
+            created = UINodeFactory.createButton(renderer, source, meshFactory, gScene);
             break;
         case uinode:
             throw new IllegalArgumentException(NOT_IMPLEMENTED + type);
@@ -58,21 +65,17 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
         return created;
     }
 
-    protected Node internalCreateNode(NucleusRenderer renderer, Node source, GraphicsEngineRootNode scene) {
-        Node refNode = scene.getResources().getNode(GraphicsEngineNodeType.spriteMeshNode, source.getReference());
-        SpriteMeshNode node = (SpriteMeshNode) SpriteNodeFactory.create(SpriteControllers.TILED);
-        refNode.copyTo(node);
+    protected void internalCreateNode(NucleusRenderer renderer, Node source, Node node, MeshFactory meshFactory,
+            GraphicsEngineRootNode scene) throws IOException {
         node.create();
         node.toReference(source, node);
-        /*
-         * SpriteMesh spriteSheet = SpriteMeshFactory.create(renderer, node, scene);
-         * // Check if the mesh has an id, if not set to reference
-         * if (spriteSheet.getId() == null) {
-         * spriteSheet.setId(source.getReference());
-         * }
-         * node.addMesh(spriteSheet);
-         */
-        return node;
+        Mesh mesh = meshFactory.createMesh(renderer, node, scene);
+        // Check if the mesh has an id, if not set to reference
+        if (mesh.getId() == null) {
+            mesh.setId(source.getReference());
+        }
+        node.addMesh(mesh);
+        node.copyTransform(source);
     }
 
     /**

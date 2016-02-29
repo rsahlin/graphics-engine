@@ -68,14 +68,12 @@ public class PlayfieldNode extends Node {
      * Sets the playfield in this controller, creating the map storage if needed, and updates the mesh to contain
      * the charset.
      * 
-     * @param source The source playfield
      * @param scene
      */
-    public void createPlayfield(PlayfieldNode source, GraphicsEngineRootNode scene) {
+    public void createPlayfield(GraphicsEngineRootNode scene) {
         PropertyMapper mapper = new PropertyMapper(getPlayfieldMesh().getMaterial().getProgram());
-        Playfield playfieldData = scene.getResources().getPlayfield(source.getMapRef());
-        createMap(source.getMapSize());
-        mapRef = source.getMapRef();
+        Playfield playfieldData = scene.getResources().getPlayfield(getMapRef());
+        createMap(getMapSize());
         ArrayInputData id = playfieldData.getArrayInput();
         if (id != null) {
             if (mapData == null) {
