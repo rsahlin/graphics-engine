@@ -4,11 +4,11 @@ import java.io.IOException;
 
 import com.graphicsengine.io.GraphicsEngineRootNode;
 import com.nucleus.assets.AssetManager;
+import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.renderer.BufferObjectsFactory;
 import com.nucleus.renderer.Configuration;
 import com.nucleus.renderer.NucleusRenderer;
-import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TiledTexture2D;
 
@@ -19,43 +19,6 @@ import com.nucleus.texturing.TiledTexture2D;
  *
  */
 public class PlayfieldMeshFactory {
-
-    /**
-     * Factory method for creating the playfield mesh.
-     * After this call the playfield can be rendered but it will not contain any specific charmap data.
-     * 
-     * @param renderer
-     * @param node The node that the mesh shall be in
-     * @param program The shader program to use with the Mesh
-     * @param textureData The texture data to be used for the charset
-     * @return The created playfield
-     * @throws IOException
-     */
-    public static PlayfieldMesh create(NucleusRenderer renderer, PlayfieldNode node, ShaderProgram program,
-            TiledTexture2D textureData) throws IOException {
-
-        PlayfieldMesh mesh = node.getPlayfieldMesh();
-        renderer.createProgram(program);
-        Texture2D texture = AssetManager.getInstance().getTexture(renderer, textureData);
-        mesh.createMesh(program, texture);
-        float[] size = new float[2];
-        int[] mapSize = node.getMapSize();
-        size[0] = mapSize[0] * mesh.getTileWidth();
-        size[1] = mapSize[1] * mesh.getTileHeight();
-        mesh.setupCharmap(node.getMapSize());
-
-        if (Configuration.getInstance().isUseVBO()) {
-            BufferObjectsFactory.getInstance().createVBOs(renderer, mesh);
-        }
-
-        int charCount = mesh.getCount();
-        float[] attributeData = mesh.getAttributeData();
-        for (int i = 0; i < charCount; i++) {
-            MeshBuilder.prepareTiledUV(mesh.getMapper(), attributeData, i);
-        }
-
-        return mesh;
-    }
 
     /**
      * Factory method for creating the playfield mesh, after this call the playfield can be rendered, it must
@@ -70,10 +33,28 @@ public class PlayfieldMeshFactory {
             GraphicsEngineRootNode scene)
             throws IOException {
 
+        Mesh refMesh = scene.getResources().getMesh(node.getMeshRef());
         TiledTexture2D textureData = (TiledTexture2D) scene.getResources().getTexture2D(
-                node.getPlayfieldMesh().getTextureRef());
+                refMesh.getTextureRef());
 
-        return create(renderer, node, new PlayfieldProgram(), textureData);
+        PlayfieldProgram program = new PlayfieldProgram();
+        renderer.createProgram(program);
+        Texture2D texture = AssetManager.getInstance().getTexture(renderer, textureData);
+        PlayfieldMesh playfieldMesh = new PlayfieldMesh(refMesh);
+        playfieldMesh.createMesh(program, texture, node.getMapSize(), node.getCharSize(), node.getAnchor());
+        playfieldMesh.setupCharmap(node.getMapSize(), node.getCharSize(), node.getAnchor());
+
+        if (Configuration.getInstance().isUseVBO()) {
+            BufferObjectsFactory.getInstance().createVBOs(renderer, playfieldMesh);
+        }
+
+        int charCount = node.getMapSize()[0] * node.getMapSize()[1];
+        float[] attributeData = playfieldMesh.getAttributeData();
+        for (int i = 0; i < charCount; i++) {
+            MeshBuilder.prepareTiledUV(playfieldMesh.getMapper(), attributeData, i);
+        }
+
+        return playfieldMesh;
     }
 
     /**

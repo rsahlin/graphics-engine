@@ -8,7 +8,6 @@ import com.graphicsengine.map.PlayfieldNodeFactory;
 import com.graphicsengine.spritemesh.SpriteMesh;
 import com.graphicsengine.spritemesh.SpriteMeshNode;
 import com.graphicsengine.spritemesh.SpriteMeshNodeFactory;
-import com.graphicsengine.ui.UINodeFactory;
 import com.nucleus.camera.ViewFrustum;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshFactory;
@@ -43,19 +42,20 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
 
         switch (type) {
         case playfieldNode:
-            created = PlayfieldNodeFactory.create(renderer, source, meshFactory, gScene);
+            created = PlayfieldNodeFactory.create(renderer, source, gScene);
             internalCreateNode(renderer, source, created, meshFactory, gScene);
             ((PlayfieldNode) created).createPlayfield(gScene);
             break;
         case spriteMeshNode:
-            created = SpriteMeshNodeFactory.create(renderer, source, meshFactory, gScene);
+            created = SpriteMeshNodeFactory.create(renderer, source, gScene);
             internalCreateNode(renderer, source, created, meshFactory, gScene);
             // Instead of casting - should the Mesh be attribute consumer?
             ((SpriteMeshNode) created).createSprites(renderer, (SpriteMesh) created.getMeshById(source.getReference()),
                     gScene);
             break;
         case button:
-            created = UINodeFactory.createButton(renderer, source, meshFactory, gScene);
+            // created = UINodeFactory.create(renderer, source, gScene);
+            // internalCreateNode(renderer, source, created, meshFactory, gScene);
             break;
         case uinode:
             throw new IllegalArgumentException(NOT_IMPLEMENTED + type);
@@ -65,6 +65,16 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
         return created;
     }
 
+    /**
+     * Internal method to create node
+     * 
+     * @param renderer
+     * @param source
+     * @param node
+     * @param meshFactory
+     * @param scene
+     * @throws IOException
+     */
     protected void internalCreateNode(NucleusRenderer renderer, Node source, Node node, MeshFactory meshFactory,
             GraphicsEngineRootNode scene) throws IOException {
         node.create();

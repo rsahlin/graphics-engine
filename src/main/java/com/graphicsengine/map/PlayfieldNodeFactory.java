@@ -1,10 +1,7 @@
 package com.graphicsengine.map;
 
-import java.io.IOException;
-
 import com.graphicsengine.io.GraphicsEngineRootNode;
 import com.graphicsengine.scene.GraphicsEngineNodeType;
-import com.nucleus.geometry.MeshFactory;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node;
 
@@ -17,18 +14,16 @@ import com.nucleus.scene.Node;
 public class PlayfieldNodeFactory {
 
     /**
-     * Returns a new instance of the playfield controller, the returned playfieldcontroller will be a new instance
-     * with data collected from the source references.
-     * Use this method when importing.
+     * Returns a new instance of the playfield node, the returned {@link PlayfieldNode} will be a new instance
+     * copy of the referenced node.
+     * Mesh and buffers will not be created.
      * 
      * @param renderer
-     * @param source The source node for the returned instance.
+     * @param source The source node, the returned playfield will be a copy of the reference node.
      * @param scene The scene holding the resources
-     * @return New instance of the referenced playfield controlller
+     * @return New instance of the playfield node.
      */
-    public static PlayfieldNode create(NucleusRenderer renderer, Node source, MeshFactory meshFactory,
-            GraphicsEngineRootNode scene)
-            throws IOException {
+    public static Node create(NucleusRenderer renderer, Node source, GraphicsEngineRootNode scene) {
         PlayfieldNode refNode = (PlayfieldNode) scene.getResources().getNode(GraphicsEngineNodeType.playfieldNode,
                 source.getReference());
         PlayfieldNode node = new PlayfieldNode(refNode);

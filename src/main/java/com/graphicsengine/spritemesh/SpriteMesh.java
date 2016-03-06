@@ -1,6 +1,5 @@
 package com.graphicsengine.spritemesh;
 
-import com.google.gson.annotations.SerializedName;
 import com.nucleus.data.Anchor;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.Mesh;
@@ -9,7 +8,6 @@ import com.nucleus.geometry.VertexBuffer;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TiledTexture2D;
-import com.nucleus.vecmath.Axis;
 
 /**
  * A number of quads that will be rendered using the same Mesh, ie all quads in this class are rendered using
@@ -22,20 +20,6 @@ import com.nucleus.vecmath.Axis;
  *
  */
 public class SpriteMesh extends Mesh implements Consumer {
-
-    @SerializedName("count")
-    protected final int count;
-    /**
-     * Width and height of each sprite.
-     */
-    @SerializedName("size")
-    protected float[] size = new float[2];
-    /**
-     * Anchor value for each sprites, 0 to 1 where 0 is upper/left and 1 is lower/right assuming vertices
-     * are
-     */
-    @SerializedName("anchor")
-    protected Anchor anchor;
 
     /**
      * Contains attribute data for all sprites - this is the array that sprites will write into.
@@ -50,37 +34,8 @@ public class SpriteMesh extends Mesh implements Consumer {
      * 
      * @param source
      */
-    protected SpriteMesh(SpriteMesh source) {
-        super();
-        count = source.count;
-        set(source);
-    }
-
-    /**
-     * Sets the values from the source mesh, this will only set copy values it will not create the mesh.
-     * 
-     * @param source
-     */
-    public void set(SpriteMesh source) {
-        setId(source.getId());
-        this.textureRef = source.textureRef;
-        if (source.anchor != null) {
-            anchor = new Anchor(source.anchor);
-        }
-        setSize(source.getSize());
-    }
-
-    /**
-     * Internal method, sets the size of each char.
-     * This will only set the size parameter, createMesh must be called to actually create the mesh
-     * 
-     * @param size The size to set, or null to not set any values.
-     */
-    private void setSize(float[] size) {
-        if (size != null) {
-            this.size[Axis.WIDTH.index] = size[Axis.WIDTH.index];
-            this.size[Axis.HEIGHT.index] = size[Axis.HEIGHT.index];
-        }
+    protected SpriteMesh(Mesh source) {
+        super(source);
     }
 
     /**
@@ -91,10 +46,11 @@ public class SpriteMesh extends Mesh implements Consumer {
      * 
      * @param program
      * @param texture The texture to use for sprites, must be {@link TiledTexture2D} otherwise tiling will not work.
-     * @return
+     * @param count Number of sprites to support
+     * @param size Width and height of quads, all quads will have same size.
+     * @param anchor Anchor for quads.
      */
-    @Override
-    public void createMesh(ShaderProgram program, Texture2D texture) {
+    public void createMesh(ShaderProgram program, Texture2D texture, int count, float[] size, Anchor anchor) {
         super.createMesh(program, texture);
         buildMesh(program, count, size, anchor);
         setAttributeUpdater(this);
@@ -114,16 +70,6 @@ public class SpriteMesh extends Mesh implements Consumer {
         int vertexStride = program.getVertexStride();
         float[] quadPositions = MeshBuilder.buildQuadPositionsIndexed(size, anchor, vertexStride);
         MeshBuilder.buildQuadMeshIndexed(this, program, spriteCount, quadPositions);
-    }
-
-    /**
-     * Returns the number of sprites for this tiled spritesheet, this is the max number of sprites (quads) that
-     * can be displayed.
-     * 
-     * @return Number of sprites in the spritesheet.
-     */
-    public int getCount() {
-        return count;
     }
 
     @Override
@@ -147,15 +93,6 @@ public class SpriteMesh extends Mesh implements Consumer {
     public void destroy() {
         super.destroy();
         attributeData = null;
-    }
-
-    /**
-     * Returns the dimension of the sprites, in x and y
-     * 
-     * @return Width and height of sprite, at index 0 and 1 respectively.
-     */
-    public float[] getSize() {
-        return size;
     }
 
     /**

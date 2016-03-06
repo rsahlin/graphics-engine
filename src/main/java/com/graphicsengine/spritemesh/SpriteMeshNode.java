@@ -4,12 +4,14 @@ import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.sprite.Sprite;
 import com.graphicsengine.sprite.SpriteFactory;
 import com.graphicsengine.sprite.SpriteNode;
+import com.nucleus.data.Anchor;
 import com.nucleus.geometry.AttributeUpdater.Producer;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
 import com.nucleus.texturing.Texture2D;
+import com.nucleus.vecmath.Axis;
 
 /**
  * Controller for mesh sprites, this node creates the mesh sprite objects.
@@ -24,6 +26,7 @@ import com.nucleus.texturing.Texture2D;
  */
 public class SpriteMeshNode extends SpriteNode implements Producer {
 
+
     public enum ProgramType {
         /**
          * Using tiled texture and program
@@ -37,9 +40,24 @@ public class SpriteMeshNode extends SpriteNode implements Producer {
 
     /**
      * The mesh that can be rendered
+     * TODO This should be referenced and not serialized from the node. The node shall have the actor properties, count
+     * etc.
+     * 
+     * 
      */
     @SerializedName("charset")
     private SpriteMesh spriteSheet;
+
+    /**
+     * Width and height of a sprite.
+     */
+    @SerializedName("size")
+    protected float[] size = new float[2];
+    /**
+     * Anchor value for all sprites, 0 to 1 where 0 is upper/left and 1 is lower/right assuming quad is built normally.
+     */
+    @SerializedName("anchor")
+    protected Anchor anchor;
 
     /**
      * Default constructor
@@ -63,6 +81,8 @@ public class SpriteMeshNode extends SpriteNode implements Producer {
     protected void set(SpriteMeshNode source) {
         super.set(source);
         spriteSheet = new SpriteMesh(source.getSpriteSheet());
+        setSize(source.getSize());
+        anchor = new Anchor(source.anchor);
     }
 
     @Override
@@ -94,13 +114,34 @@ public class SpriteMeshNode extends SpriteNode implements Producer {
     }
 
     /**
-     * Returns the number of sprites in this controller
+     * Returns the dimension of the sprites, in x and y
+     * 
+     * @return Width and height of sprite, at index 0 and 1 respectively.
+     */
+    public float[] getSize() {
+        return size;
+    }
+
+    /**
+     * Returns the anchor value
      * 
      * @return
      */
-    @Override
-    public int getCount() {
-        return count;
+    public Anchor getAnchor() {
+        return anchor;
+    }
+
+    /**
+     * Internal method, sets the size of each char.
+     * This will only set the size parameter, createMesh must be called to actually create the mesh
+     * 
+     * @param size The size to set, or null to not set any values.
+     */
+    private void setSize(float[] size) {
+        if (size != null) {
+            this.size[Axis.WIDTH.index] = size[Axis.WIDTH.index];
+            this.size[Axis.HEIGHT.index] = size[Axis.HEIGHT.index];
+        }
     }
 
     /**

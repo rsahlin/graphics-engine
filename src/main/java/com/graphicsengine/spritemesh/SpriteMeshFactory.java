@@ -53,14 +53,14 @@ public class SpriteMeshFactory {
             throw new IllegalArgumentException(INVALID_TYPE + texture.type);
         }
         renderer.createProgram(program);
-        mesh.createMesh(program, texture);
+        mesh.createMesh(program, texture, node.getCount(), node.getSize(), node.getAnchor());
         if (Configuration.getInstance().isUseVBO()) {
             BufferObjectsFactory.getInstance().createVBOs(renderer, mesh);
         }
 
         float[] attributeData = mesh.getAttributeData();
         PropertyMapper mapper = new PropertyMapper(program);
-        for (int i = 0; i < mesh.getCount(); i++) {
+        for (int i = 0; i < node.getCount(); i++) {
             if (program instanceof TiledSpriteProgram) {
                 MeshBuilder.prepareTiledUV(mapper, attributeData, i);
             } else if (program instanceof UVSpriteProgram) {

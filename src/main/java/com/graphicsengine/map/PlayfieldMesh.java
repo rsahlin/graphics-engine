@@ -1,9 +1,9 @@
 package com.graphicsengine.map;
 
-import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.spritemesh.SpriteMesh;
 import com.nucleus.data.Anchor;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
+import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.opengl.GLESWrapper.GLES20;
 import com.nucleus.shader.ShaderProgram;
@@ -23,12 +23,6 @@ import com.nucleus.vecmath.Axis;
 public class PlayfieldMesh extends SpriteMesh implements Consumer {
 
     /**
-     * Width and height of playfield in chars
-     */
-    @SerializedName("mapSize")
-    private int[] mapSize = new int[2];
-
-    /**
      * playfield character data, one value for each char - this is the source map that can be used for collision etc.
      * This MUST be in sync with {@link #attributeData}
      */
@@ -41,7 +35,7 @@ public class PlayfieldMesh extends SpriteMesh implements Consumer {
      * 
      * @param source The source, id, textureRef and character count is taken from here.
      */
-    protected PlayfieldMesh(PlayfieldMesh source) {
+    protected PlayfieldMesh(Mesh source) {
         super(source);
         set(source);
     }
@@ -54,42 +48,7 @@ public class PlayfieldMesh extends SpriteMesh implements Consumer {
      */
     public void set(PlayfieldMesh source) {
         setId(source.getId());
-        init(source.count);
         this.textureRef = source.textureRef;
-        if (source.anchor != null) {
-            anchor = new Anchor(source.anchor);
-        }
-        setSize(source.size);
-        setMapSize(source.mapSize);
-    }
-
-    /**
-     * Internal method, sets the size of each char.
-     * This will only set the size parameter - {@link #createMesh(PlayfieldProgram, Texture2D, float[], float[])} must
-     * be called to update the mesh.
-     * 
-     * @param size The size to set, or null to not set any values.
-     */
-    private void setSize(float[] size) {
-        if (size != null) {
-            this.size[Axis.WIDTH.index] = size[Axis.WIDTH.index];
-            this.size[Axis.HEIGHT.index] = size[Axis.HEIGHT.index];
-        }
-    }
-
-    /**
-     * Internal method, sets the size of the map
-     * This will only set the map size parameter, call {@link #setupCharmap(int, int, float, float)} to setup the
-     * charmap.
-     * 
-     * @param size Map size, or null to not set any values.
-     */
-    private void setMapSize(int[] size) {
-        if (size != null) {
-            this.mapSize[Axis.WIDTH.index] = size[Axis.WIDTH.index];
-            this.mapSize[Axis.HEIGHT.index] = size[Axis.HEIGHT.index];
-        }
-
     }
 
     /**
@@ -109,11 +68,14 @@ public class PlayfieldMesh extends SpriteMesh implements Consumer {
      * 
      * @param program
      * @param texture If tiling should be used this must be instance of {@link TiledTexture2D}
-     * @return The mesh ready to be rendered
+     * @param mapSize Number of chars to support in the mesh
+     * @param size Width and height of quads, all quads will have same size.
+     * @param anchor Anchor for quads.
      */
-    public void createMesh(PlayfieldProgram program, Texture2D texture) {
+    public void createMesh(PlayfieldProgram program, Texture2D texture, int[] mapSize, float[] size, Anchor anchor) {
         super.createMesh(program, texture);
-        setSize(size);
+        int count = mapSize[0] * mapSize[1];
+        init(count);
         buildMesh(program, count, size, anchor, GLES20.GL_FLOAT);
         setAttributeUpdater(this);
     }
@@ -141,16 +103,6 @@ public class PlayfieldMesh extends SpriteMesh implements Consumer {
     }
 
     /**
-     * Same as calling {@link #setupCharmap(int, int, float, float)}
-     * 
-     * @param size Width and height, in chars, of playfield
-     */
-    public void setupCharmap(int[] size) {
-        float[] offset = anchor.calcOffsets(new float[] { mapSize[0] * getTileWidth(), mapSize[1] * getTileHeight() });
-        setupCharmap(size[Axis.WIDTH.index], size[Axis.HEIGHT.index], offset[0], offset[1]);
-    }
-
-    /**
      * Positions the characters using width and height number of chars, starting at xpos, ypos
      * This will set the position for each character, the map can be moved by translating
      * the node it is attached to.
@@ -162,16 +114,18 @@ public class PlayfieldMesh extends SpriteMesh implements Consumer {
      * @param height Height in characters, eg 10 will position 10 chars vertically beginning at ypos.
      * @param xpos Starting xpos for the upper left char.
      * @param ypos Starting ypos for the upper left char.
+     * @param size Width and height of chars, all chars will have same size.
      */
-    public void setupCharmap(int width, int height, float xpos, float ypos) {
-        this.mapSize[Axis.WIDTH.index] = width;
-        this.mapSize[Axis.HEIGHT.index] = height;
+    public void setupCharmap(int[] mapSize, float[] charSize, Anchor anchor) {
+
+        float[] offset = anchor.calcOffsets(new float[] { mapSize[0] * charSize[0], mapSize[1] * charSize[1] });
+
         int index = 0;
-        float currentX = xpos;
-        float currentY = ypos;
-        for (int y = 0; y < height; y++) {
-            currentY = ypos;
-            for (int x = 0; x < width; x++) {
+        float currentX = offset[0];
+        float currentY = offset[1];
+        for (int y = 0; y < mapSize[1]; y++) {
+            currentY = offset[1];
+            for (int x = 0; x < mapSize[0]; x++) {
                 attributeData[index + mapper.TRANSLATE_INDEX] = currentX;
                 attributeData[index + mapper.TRANSLATE_INDEX + 1] = currentY;
                 index += mapper.ATTRIBUTES_PER_VERTEX;
@@ -184,10 +138,10 @@ public class PlayfieldMesh extends SpriteMesh implements Consumer {
                 attributeData[index + mapper.TRANSLATE_INDEX] = currentX;
                 attributeData[index + mapper.TRANSLATE_INDEX + 1] = currentY;
                 index += mapper.ATTRIBUTES_PER_VERTEX;
-                currentX += size[Axis.WIDTH.index];
+                currentX += charSize[Axis.WIDTH.index];
             }
-            currentX = xpos;
-            ypos += size[Axis.HEIGHT.index];
+            currentX = offset[0];
+            offset[1] += charSize[Axis.HEIGHT.index];
         }
     }
 
@@ -215,7 +169,7 @@ public class PlayfieldMesh extends SpriteMesh implements Consumer {
      * @param mapper The attribute property mapper
      * @param source Map data will be copied from this
      */
-    public void setCharmap(PropertyMapper mapper, Playfield source) {
+    public void setCharmap(PropertyMapper mapper, Playfield source, int[] mapSize) {
         if (source == null || source.getMapSize() == null) {
             return;
         }
@@ -243,17 +197,17 @@ public class PlayfieldMesh extends SpriteMesh implements Consumer {
      * @param height Height of area to fill
      * @param fill Fill value
      */
-    public void fill(PropertyMapper mapper, int x, int y, int width, int height, int fill) {
-        if (x > this.mapSize[Axis.WIDTH.index] || y > this.mapSize[Axis.HEIGHT.index]) {
+    public void fill(PropertyMapper mapper, int x, int y, int width, int height, int fill, int[] mapSize) {
+        if (x > mapSize[Axis.WIDTH.index] || y > mapSize[Axis.HEIGHT.index]) {
             // Completely outside
             return;
         }
         int startChar = y * width + y;
-        if (x + width > this.mapSize[Axis.WIDTH.index]) {
-            width = this.mapSize[Axis.WIDTH.index] - x;
+        if (x + width > mapSize[Axis.WIDTH.index]) {
+            width = mapSize[Axis.WIDTH.index] - x;
         }
-        if (y + height > this.mapSize[Axis.HEIGHT.index]) {
-            height = this.mapSize[Axis.HEIGHT.index] - y;
+        if (y + height > mapSize[Axis.HEIGHT.index]) {
+            height = mapSize[Axis.HEIGHT.index] - y;
         }
         while (height-- > 0) {
             for (int i = 0; i < width; i++) {
@@ -298,53 +252,6 @@ public class PlayfieldMesh extends SpriteMesh implements Consumer {
     @Override
     public void destroy() {
         attributeData = null;
-    }
-
-    /**
-     * Return the width, in chars, of the playfield.
-     * 
-     * @return
-     */
-    public int getWidth() {
-        return mapSize[Axis.WIDTH.index];
-    }
-
-    /**
-     * Returs the height, in chars, of the playfield.
-     * 
-     * @return
-     */
-    public int getHeight() {
-        return mapSize[Axis.HEIGHT.index];
-    }
-
-    /**
-     * Returns the width of each character in the playfield.
-     * 
-     * @return
-     */
-    public float getTileWidth() {
-        return size[Axis.WIDTH.index];
-    }
-
-    /**
-     * Returns the height of one character in the playfield.
-     * 
-     * @return
-     */
-    public float getTileHeight() {
-        return size[Axis.HEIGHT.index];
-    }
-
-    /**
-     * Returns a ref to the character size values.
-     * Note, this returns a ref to the array - do not modify these values
-     * 
-     * @return Width and height of each character
-     */
-    @Override
-    public float[] getSize() {
-        return size;
     }
 
 }

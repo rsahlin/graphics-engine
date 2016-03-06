@@ -28,8 +28,13 @@ public abstract class SpriteNode extends ActorNode {
     @SerializedName("actordata")
     ActorData actorData;
 
+    /**
+     * Number of actors/sprites
+     */
+    @SerializedName("count")
+    protected int count;
+
     transient protected Sprite[] sprites;
-    transient protected int count;
     transient protected ActorResolver actorResolver;
 
     /**
@@ -52,6 +57,7 @@ public abstract class SpriteNode extends ActorNode {
     protected void set(SpriteNode source) {
         super.set(source);
         actorData = new ActorData(source.getActorData());
+        count = source.count;
     }
 
     @Override
@@ -59,7 +65,6 @@ public abstract class SpriteNode extends ActorNode {
         /*
          * Each sprite must be created by calling {@link #createSprites(NucleusRenderer, SpriteNode, RootNode)}
          */
-        this.count = actorData.getCount();
         sprites = new Sprite[count];
     }
 

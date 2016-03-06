@@ -3,6 +3,7 @@ package com.graphicsengine.map;
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.dataflow.ArrayInputData;
 import com.graphicsengine.io.GraphicsEngineRootNode;
+import com.nucleus.data.Anchor;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node;
@@ -24,21 +25,32 @@ public class PlayfieldNode extends Node {
      * Reference to map data
      */
     private String mapRef;
+    /**
+     * Reference to mesh
+     */
+    @SerializedName("meshRef")
+    private String meshRef;
     @SerializedName("mapSize")
     /**
      * The size of the map in this controller
      */
     private int[] mapSize = new int[2];
+
+    /**
+     * Width and height of each char.
+     */
+    @SerializedName("charSize")
+    protected float[] charSize = new float[2];
+    /**
+     * Anchor value for all chars, 0 to 1 where 0 is upper/left and 1 is lower/right assuming quad is built normally.
+     */
+    @SerializedName("anchor")
+    protected Anchor anchor;
+
     /**
      * The map data used by this controller.
      */
     transient private int[] mapData;
-    /**
-     * The mesh that can be rendered
-     * TODO Unify controllers that renders a Mesh, with methods for creating the mesh
-     */
-    @SerializedName("playfield")
-    private PlayfieldMesh playfield;
 
     /**
      * Creates a new empty playfield controller.
@@ -50,7 +62,7 @@ public class PlayfieldNode extends Node {
     }
 
     /**
-     * Creates a new playfieldcontroller from the specified source node
+     * Creates a new playfieldnode from the specified source node
      * The created node will have the same id and properties but it will not contain the
      * data, ie the mesh and mapdata will not be copied.
      * Call {@link #createMesh(NucleusRenderer, PlayfieldNode, RootNode)} to create the mesh.
@@ -60,8 +72,12 @@ public class PlayfieldNode extends Node {
     PlayfieldNode(PlayfieldNode source) {
         super(source);
         mapRef = source.mapRef;
+        meshRef = source.meshRef;
         setMapSize(source.mapSize);
-        playfield = new PlayfieldMesh(source.getPlayfieldMesh());
+        setCharSize(source.charSize);
+        if (source.anchor != null) {
+            anchor = new Anchor(source.anchor);
+        }
     }
 
     /**
@@ -71,10 +87,11 @@ public class PlayfieldNode extends Node {
      * @param scene
      */
     public void createPlayfield(GraphicsEngineRootNode scene) {
-        PropertyMapper mapper = new PropertyMapper(getPlayfieldMesh().getMaterial().getProgram());
+        PropertyMapper mapper = new PropertyMapper(getMeshById(meshRef).getMaterial().getProgram());
         Playfield playfieldData = scene.getResources().getPlayfield(getMapRef());
         createMap(getMapSize());
         ArrayInputData id = playfieldData.getArrayInput();
+        PlayfieldMesh playfield = (PlayfieldMesh) getMeshById(meshRef);
         if (id != null) {
             if (mapData == null) {
                 mapData = new int[mapSize[Axis.WIDTH.index] * mapSize[Axis.HEIGHT.index]];
@@ -85,18 +102,9 @@ public class PlayfieldNode extends Node {
             playfield.setCharmap(mapper, getMapData(), 0, 0, getMapData().length);
         } else {
             if (playfieldData.getMap() != null && playfieldData.getMapSize() != null) {
-                playfield.setCharmap(mapper, playfieldData);
+                playfield.setCharmap(mapper, playfieldData, mapSize);
             }
         }
-    }
-
-    /**
-     * Returns the playfield mesh
-     * 
-     * @return
-     */
-    public PlayfieldMesh getPlayfieldMesh() {
-        return playfield;
     }
 
     /**
@@ -109,6 +117,24 @@ public class PlayfieldNode extends Node {
     }
 
     /**
+     * Returns a reference to the Anchor values, do NOT modify these values.
+     * 
+     * @return
+     */
+    public Anchor getAnchor() {
+        return anchor;
+    }
+
+    /**
+     * Returns a reference to the char size, do NOT modify these values
+     * 
+     * @return
+     */
+    public float[] getCharSize() {
+        return charSize;
+    }
+
+    /**
      * Returns a reference to the map data, do NOT modify these values
      * 
      * @return
@@ -118,12 +144,21 @@ public class PlayfieldNode extends Node {
     }
 
     /**
-     * Returns the name of the map for this playfieldcontroller.
+     * Returns the name of the map for this playfieldnode, this is used when importing
      * 
      * @return
      */
     public String getMapRef() {
         return mapRef;
+    }
+
+    /**
+     * Returns the name of the mesh for this playfieldnode, this is used when importing
+     * 
+     * @return
+     */
+    public String getMeshRef() {
+        return meshRef;
     }
 
     /**
@@ -137,12 +172,21 @@ public class PlayfieldNode extends Node {
     }
 
     /**
-     * Creates the map storage and sets the mapsize
+     * Sets the charsize from the source values, internal method.
+     * 
+     * @param charSize Width and height of chars
+     */
+    private void setCharSize(float[] charSize) {
+        System.arraycopy(charSize, 0, this.charSize, 0, 2);
+
+    }
+
+    /**
+     * Creates the map storage
      * 
      * @param mapSize
      */
     private void createMap(int[] mapSize) {
         mapData = new int[mapSize[Axis.WIDTH.index] * mapSize[Axis.HEIGHT.index]];
-        setMapSize(mapSize);
     }
 }
