@@ -50,7 +50,7 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
             created = SpriteMeshNodeFactory.create(renderer, source, gScene);
             internalCreateNode(renderer, source, created, meshFactory, gScene);
             // Instead of casting - should the Mesh be attribute consumer?
-            ((SpriteMeshNode) created).createSprites(renderer, (SpriteMesh) created.getMeshById(source.getReference()),
+            ((SpriteMeshNode) created).createSprites(renderer, (SpriteMesh) created.getMeshById(created.getMeshRef()),
                     gScene);
             break;
         case button:

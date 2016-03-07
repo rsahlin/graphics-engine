@@ -25,11 +25,6 @@ public class PlayfieldNode extends Node {
      * Reference to map data
      */
     private String mapRef;
-    /**
-     * Reference to mesh
-     */
-    @SerializedName("meshRef")
-    private String meshRef;
     @SerializedName("mapSize")
     /**
      * The size of the map in this controller
@@ -72,7 +67,6 @@ public class PlayfieldNode extends Node {
     PlayfieldNode(PlayfieldNode source) {
         super(source);
         mapRef = source.mapRef;
-        meshRef = source.meshRef;
         setMapSize(source.mapSize);
         setCharSize(source.charSize);
         if (source.anchor != null) {
@@ -87,11 +81,11 @@ public class PlayfieldNode extends Node {
      * @param scene
      */
     public void createPlayfield(GraphicsEngineRootNode scene) {
-        PropertyMapper mapper = new PropertyMapper(getMeshById(meshRef).getMaterial().getProgram());
+        PropertyMapper mapper = new PropertyMapper(getMeshById(getMeshRef()).getMaterial().getProgram());
         Playfield playfieldData = scene.getResources().getPlayfield(getMapRef());
         createMap(getMapSize());
         ArrayInputData id = playfieldData.getArrayInput();
-        PlayfieldMesh playfield = (PlayfieldMesh) getMeshById(meshRef);
+        PlayfieldMesh playfield = (PlayfieldMesh) getMeshById(getMeshRef());
         if (id != null) {
             if (mapData == null) {
                 mapData = new int[mapSize[Axis.WIDTH.index] * mapSize[Axis.HEIGHT.index]];
@@ -150,15 +144,6 @@ public class PlayfieldNode extends Node {
      */
     public String getMapRef() {
         return mapRef;
-    }
-
-    /**
-     * Returns the name of the mesh for this playfieldnode, this is used when importing
-     * 
-     * @return
-     */
-    public String getMeshRef() {
-        return meshRef;
     }
 
     /**

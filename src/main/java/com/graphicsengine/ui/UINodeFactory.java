@@ -1,8 +1,10 @@
 package com.graphicsengine.ui;
 
+import java.io.IOException;
+
 import com.graphicsengine.io.GraphicsEngineRootNode;
+import com.graphicsengine.map.PlayfieldNode;
 import com.graphicsengine.scene.GraphicsEngineNodeType;
-import com.nucleus.geometry.MeshFactory;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node;
 
@@ -14,24 +16,20 @@ import com.nucleus.scene.Node;
  */
 public class UINodeFactory {
 
-    public static Node createButton(NucleusRenderer renderer, Node source, MeshFactory meshFactory,
-            GraphicsEngineRootNode scene) {
-        String reference = source.getReference();
-        // try {
-        Button refNode = (Button) scene.getResources().getNode(
-                GraphicsEngineNodeType.button, reference);
-        Button button = new Button(refNode);
-        button.copyTransform(source);
-
-        // SpriteMeshNode spriteNode = (SpriteMeshNode) SpriteNodeFactory.create(
-        // SpriteControllers.TILED);
-        // spriteNode.set(refNode);
-        // spriteNode.create();
-        // spriteNode.toReference(source, spriteNode);
-        return button;
-        // } catch (IllegalAccessException | InstantiationException | ClassNotFoundException e) {
-        // throw new RuntimeException(e);
-        // }
-
+    /**
+     * Returns a new instance of the playfield controller, the returned {@link PlayfieldNode} will be a new instance
+     * copy of the referenced node. Mesh and buffers will not be created.
+     * 
+     * @param renderer
+     * @param source The source node, the returned playfield will be a copy of the reference node.
+     * @param scene The scene holding the resources
+     * @return New instance of the playfield node.
+     */
+    public static Node create(NucleusRenderer renderer, Node source, GraphicsEngineRootNode scene)
+            throws IOException {
+        Button refNode = (Button) scene.getResources().getNode(GraphicsEngineNodeType.button, source.getReference());
+        Button node = new Button(refNode);
+        return node;
     }
+
 }

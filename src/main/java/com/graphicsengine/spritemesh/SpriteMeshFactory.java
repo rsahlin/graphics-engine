@@ -5,6 +5,7 @@ import java.io.IOException;
 import com.graphicsengine.io.GraphicsEngineRootNode;
 import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
+import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.renderer.BufferObjectsFactory;
 import com.nucleus.renderer.Configuration;
@@ -38,9 +39,9 @@ public class SpriteMeshFactory {
     public static SpriteMesh create(NucleusRenderer renderer, SpriteMeshNode node, GraphicsEngineRootNode scene)
             throws IOException {
 
-        SpriteMesh mesh = node.getSpriteSheet();
+        Mesh refMesh = scene.getResources().getMesh(node.getMeshRef());
         Texture2D texture = AssetManager.getInstance().getTexture(renderer,
-                scene.getResources().getTexture2D(mesh.getTextureRef()));
+                scene.getResources().getTexture2D(refMesh.getTextureRef()));
         ShaderProgram program = null;
         switch (texture.type) {
         case TiledTexture2D:
@@ -52,6 +53,7 @@ public class SpriteMeshFactory {
         default:
             throw new IllegalArgumentException(INVALID_TYPE + texture.type);
         }
+        SpriteMesh mesh = new SpriteMesh(refMesh);
         renderer.createProgram(program);
         mesh.createMesh(program, texture, node.getCount(), node.getSize(), node.getAnchor());
         if (Configuration.getInstance().isUseVBO()) {

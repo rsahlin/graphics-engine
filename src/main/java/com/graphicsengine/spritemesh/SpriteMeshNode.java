@@ -39,16 +39,6 @@ public class SpriteMeshNode extends SpriteNode implements Producer {
     }
 
     /**
-     * The mesh that can be rendered
-     * TODO This should be referenced and not serialized from the node. The node shall have the actor properties, count
-     * etc.
-     * 
-     * 
-     */
-    @SerializedName("charset")
-    private SpriteMesh spriteSheet;
-
-    /**
      * Width and height of a sprite.
      */
     @SerializedName("size")
@@ -80,7 +70,6 @@ public class SpriteMeshNode extends SpriteNode implements Producer {
      */
     protected void set(SpriteMeshNode source) {
         super.set(source);
-        spriteSheet = new SpriteMesh(source.getSpriteSheet());
         setSize(source.getSize());
         anchor = new Anchor(source.anchor);
     }
@@ -142,15 +131,6 @@ public class SpriteMeshNode extends SpriteNode implements Producer {
             this.size[Axis.WIDTH.index] = size[Axis.WIDTH.index];
             this.size[Axis.HEIGHT.index] = size[Axis.HEIGHT.index];
         }
-    }
-
-    /**
-     * Returns the renderable object for this spritecontroller.
-     * 
-     * @return
-     */
-    public SpriteMesh getSpriteSheet() {
-        return spriteSheet;
     }
 
     @Override
