@@ -12,6 +12,8 @@ import com.nucleus.renderer.Configuration;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.Texture2D;
+import com.nucleus.texturing.TiledTexture2D;
+import com.nucleus.texturing.UVTexture2D;
 
 /**
  * Used to create tiled spritesheet.
@@ -42,20 +44,10 @@ public class SpriteMeshFactory {
         Mesh refMesh = scene.getResources().getMesh(node.getMeshRef());
         Texture2D texture = AssetManager.getInstance().getTexture(renderer,
                 scene.getResources().getTexture2D(refMesh.getTextureRef()));
-        ShaderProgram program = null;
-        switch (texture.type) {
-        case TiledTexture2D:
-            program = new TiledSpriteProgram();
-            break;
-        case UVTexture2D:
-            program = new UVSpriteProgram();
-            break;
-        default:
-            throw new IllegalArgumentException(INVALID_TYPE + texture.type);
-        }
+        ShaderProgram program = SpriteMeshFactory.createProgram(texture);
         SpriteMesh mesh = new SpriteMesh(refMesh);
         renderer.createProgram(program);
-        mesh.createMesh(program, texture, node.getCount(), node.getSize(), node.getAnchor());
+        mesh.createMesh(program, texture, node.getCount(), node.getSpriteSize(), node.getAnchor());
         if (Configuration.getInstance().isUseVBO()) {
             BufferObjectsFactory.getInstance().createVBOs(renderer, mesh);
         }
@@ -72,6 +64,24 @@ public class SpriteMeshFactory {
         }
 
         return mesh;
+    }
+
+    /**
+     * Creates the shader program to use with the specified texture.
+     * 
+     * @param texture {@link TiledTexture2D} or {@link UVTexture2D}
+     * @return The shader program for the specified texture.
+     */
+    public static ShaderProgram createProgram(Texture2D texture) {
+        switch (texture.type) {
+        case TiledTexture2D:
+            return new TiledSpriteProgram();
+        case UVTexture2D:
+            return new UVSpriteProgram();
+        default:
+            throw new IllegalArgumentException(INVALID_TYPE + texture.type);
+        }
+
     }
 
 }

@@ -3,12 +3,18 @@ package com.graphicsengine.ui;
 import java.io.IOException;
 
 import com.graphicsengine.io.GraphicsEngineRootNode;
+import com.graphicsengine.spritemesh.SpriteMeshFactory;
+import com.graphicsengine.spritemesh.TiledSpriteProgram;
+import com.graphicsengine.spritemesh.UVSpriteProgram;
 import com.nucleus.assets.AssetManager;
+import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.geometry.Mesh;
+import com.nucleus.geometry.MeshBuilder;
+import com.nucleus.renderer.BufferObjectsFactory;
 import com.nucleus.renderer.Configuration;
 import com.nucleus.renderer.NucleusRenderer;
+import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.Texture2D;
-import com.nucleus.texturing.TiledTexture2D;
 
 /**
  * Factory for UI meshes
@@ -22,27 +28,27 @@ public class UIMeshFactory {
             throws IOException {
 
         Mesh refMesh = scene.getResources().getMesh(node.getMeshRef());
-        TiledTexture2D textureData = (TiledTexture2D) scene.getResources().getTexture2D(
-                refMesh.getTextureRef());
-
-        // PlayfieldProgram program = new PlayfieldProgram();
-        // renderer.createProgram(program);
-        Texture2D texture = AssetManager.getInstance().getTexture(renderer, textureData);
-        // PlayfieldMesh playfieldMesh = new PlayfieldMesh(refMesh);
-        // playfieldMesh.createMesh(program, texture, node.getMapSize(), node.getCharSize(), node.getAnchor());
-        // playfieldMesh.setupCharmap(node.getMapSize(), node.getCharSize(), node.getAnchor());
-
+        Texture2D texture = AssetManager.getInstance().getTexture(renderer,
+                scene.getResources().getTexture2D(refMesh.getTextureRef()));
+        ShaderProgram program = SpriteMeshFactory.createProgram(texture);
+        UIMesh mesh = new UIMesh(refMesh);
+        renderer.createProgram(program);
+        mesh.createMesh(program, texture, 1, node.getSize(), node.getAnchor());
+        mesh.setScale(1, 1, 1);
         if (Configuration.getInstance().isUseVBO()) {
-            // BufferObjectsFactory.getInstance().createVBOs(renderer, playfieldMesh);
+            BufferObjectsFactory.getInstance().createVBOs(renderer, mesh);
         }
 
-        // int charCount = node.getMapSize()[0] * node.getMapSize()[1];
-        // float[] attributeData = playfieldMesh.getAttributeData();
-        // for (int i = 0; i < charCount; i++) {
-        // MeshBuilder.prepareTiledUV(playfieldMesh.getMapper(), attributeData, i);
-        // }
+        float[] attributeData = mesh.getAttributeData();
+        PropertyMapper mapper = new PropertyMapper(program);
+        if (program instanceof TiledSpriteProgram) {
+            MeshBuilder.prepareTiledUV(mapper, attributeData, 0);
+        } else if (program instanceof UVSpriteProgram) {
+        } else {
+            throw new IllegalArgumentException();
+        }
 
-        return null;
+        return mesh;
     }
 
 }

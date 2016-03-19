@@ -3,11 +3,8 @@ package com.graphicsengine.map;
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.dataflow.ArrayInputData;
 import com.graphicsengine.io.GraphicsEngineRootNode;
-import com.nucleus.data.Anchor;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
-import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node;
-import com.nucleus.scene.RootNode;
 import com.nucleus.vecmath.Axis;
 
 /**
@@ -36,44 +33,46 @@ public class PlayfieldNode extends Node {
      */
     @SerializedName("charSize")
     protected float[] charSize = new float[2];
-    /**
-     * Anchor value for all chars, 0 to 1 where 0 is upper/left and 1 is lower/right assuming quad is built normally.
-     */
-    @SerializedName("anchor")
-    protected Anchor anchor;
 
     /**
      * The map data used by this controller.
      */
     transient private int[] mapData;
 
+    public PlayfieldNode() {
+    }
+
     /**
-     * Creates a new empty playfield controller.
+     * Creates a new instance of this node.
+     * This will be a new empty instance.
+     * 
+     * @return New instance of this node
+     */
+    @Override
+    public PlayfieldNode createInstance() {
+        PlayfieldNode copy = new PlayfieldNode();
+        copy.set(this);
+        return copy;
+    }
+
+    @Override
+    public PlayfieldNode copy() {
+        PlayfieldNode copy = createInstance();
+        copy.set(this);
+        return copy;
+    }
+
+    /**
+     * Copies the values from the source node to this node, this will not copy transient values.
      * 
      * @param source
      */
-    PlayfieldNode(Node source) {
-        super(source);
-    }
-
-    /**
-     * Creates a new playfieldnode from the specified source node
-     * The created node will have the same id and properties but it will not contain the
-     * data, ie the mesh and mapdata will not be copied.
-     * Call {@link #createMesh(NucleusRenderer, PlayfieldNode, RootNode)} to create the mesh.
-     * 
-     * @source
-     */
-    PlayfieldNode(PlayfieldNode source) {
-        super(source);
+    protected void set(PlayfieldNode source) {
+        super.set(source);
         mapRef = source.mapRef;
         setMapSize(source.mapSize);
         setCharSize(source.charSize);
-        if (source.anchor != null) {
-            anchor = new Anchor(source.anchor);
-        }
     }
-
     /**
      * Sets the playfield in this controller, creating the map storage if needed, and updates the mesh to contain
      * the charset.
@@ -108,15 +107,6 @@ public class PlayfieldNode extends Node {
      */
     public int[] getMapSize() {
         return mapSize;
-    }
-
-    /**
-     * Returns a reference to the Anchor values, do NOT modify these values.
-     * 
-     * @return
-     */
-    public Anchor getAnchor() {
-        return anchor;
     }
 
     /**

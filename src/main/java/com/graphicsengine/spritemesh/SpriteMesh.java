@@ -112,4 +112,32 @@ public class SpriteMesh extends Mesh implements Consumer {
         attributeData = new float[buffer.getBuffer().capacity()];
     }
 
+    /**
+     * Sets the x, y position and frame of this element
+     * 
+     * @param x
+     * @param y
+     * @param z
+     */
+    public void setPosition(float x, float y, float z) {
+        int index = 0;
+        for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
+            attributeData[index + mapper.TRANSLATE_INDEX] = x;
+            attributeData[index + mapper.TRANSLATE_INDEX + 1] = y;
+            attributeData[index + mapper.TRANSLATE_INDEX + 2] = z;
+            index += mapper.ATTRIBUTES_PER_VERTEX;
+        }
+    }
+
+    public void setScale(float x, float y, float z) {
+        int index = 0;
+        for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
+            attributeData[index + mapper.SCALE_INDEX] = x;
+            attributeData[index + mapper.SCALE_INDEX + 1] = y;
+            attributeData[index + mapper.SCALE_INDEX + 2] = z;
+            index += mapper.ATTRIBUTES_PER_VERTEX;
+        }
+
+    }
+
 }

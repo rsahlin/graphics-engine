@@ -12,7 +12,7 @@
  */
 
  /**
- * Fragment shader for tiled sprite renderer
+ * Vertex shader for tiled sprite renderer
  * @author Richard Sahlin
  */
 #version 100

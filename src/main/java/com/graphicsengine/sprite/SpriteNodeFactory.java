@@ -48,6 +48,7 @@ public class SpriteNodeFactory {
      * @param controller SpriteController instance to create
      * @return New instance of the specified controller or null if instantiation fails
      */
+    @Deprecated
     public static SpriteNode create(SpriteControllers controller) {
         SpriteNode impl;
         try {
@@ -68,6 +69,10 @@ public class SpriteNodeFactory {
      */
     public static void setActorResolver(ActorResolver actorResolver) {
         SpriteNodeFactory.actorResolver = actorResolver;
+    }
+
+    public static ActorResolver getActorResolver() {
+        return SpriteNodeFactory.actorResolver;
     }
 
 }

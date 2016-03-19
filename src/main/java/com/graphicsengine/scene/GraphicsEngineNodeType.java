@@ -13,7 +13,7 @@ public enum GraphicsEngineNodeType implements Key {
     playfieldNode(),
     spriteMeshNode(),
     button(),
-    uinode();
+    uiNode();
 
     @Override
     public String getKey() {

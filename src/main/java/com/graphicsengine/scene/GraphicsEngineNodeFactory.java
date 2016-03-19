@@ -4,10 +4,10 @@ import java.io.IOException;
 
 import com.graphicsengine.io.GraphicsEngineRootNode;
 import com.graphicsengine.map.PlayfieldNode;
-import com.graphicsengine.map.PlayfieldNodeFactory;
 import com.graphicsengine.spritemesh.SpriteMesh;
 import com.graphicsengine.spritemesh.SpriteMeshNode;
-import com.graphicsengine.spritemesh.SpriteMeshNodeFactory;
+import com.graphicsengine.ui.Button;
+import com.graphicsengine.ui.UINode;
 import com.nucleus.camera.ViewFrustum;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshFactory;
@@ -42,23 +42,35 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
 
         switch (type) {
         case playfieldNode:
-            created = PlayfieldNodeFactory.create(renderer, source, gScene);
+            PlayfieldNode playfieldNode = (PlayfieldNode) gScene.getResources().getNode(
+                    GraphicsEngineNodeType.playfieldNode, source.getReference());
+            created = playfieldNode.copy();
             internalCreateNode(renderer, source, created, meshFactory, gScene);
             ((PlayfieldNode) created).createPlayfield(gScene);
             break;
         case spriteMeshNode:
-            created = SpriteMeshNodeFactory.create(renderer, source, gScene);
+            SpriteMeshNode spriteMeshNode = (SpriteMeshNode) gScene.getResources().getNode(
+                    GraphicsEngineNodeType.spriteMeshNode,
+                    source.getReference());
+            // This will set the actor resolver
+            created = spriteMeshNode.copy();
             internalCreateNode(renderer, source, created, meshFactory, gScene);
             // Instead of casting - should the Mesh be attribute consumer?
             ((SpriteMeshNode) created).createSprites(renderer, (SpriteMesh) created.getMeshById(created.getMeshRef()),
                     gScene);
             break;
         case button:
-            // created = UINodeFactory.create(renderer, source, gScene);
-            // internalCreateNode(renderer, source, created, meshFactory, gScene);
+            Button button = (Button) gScene.getResources().getNode(GraphicsEngineNodeType.button,
+                    source.getReference());
+            created = button.copy();
+            internalCreateNode(renderer, source, created, meshFactory, gScene);
             break;
-        case uinode:
-            throw new IllegalArgumentException(NOT_IMPLEMENTED + type);
+        case uiNode:
+            UINode uiNode = (UINode) gScene.getResources().getNode(GraphicsEngineNodeType.uiNode,
+                    source.getReference());
+            created = uiNode.copy();
+            internalCreateNode(renderer, source, created, meshFactory, gScene);
+            break;
         default:
             throw new IllegalArgumentException(NOT_IMPLEMENTED + type);
         }
@@ -80,12 +92,27 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
         node.create();
         node.toReference(source, node);
         Mesh mesh = meshFactory.createMesh(renderer, node, scene);
+        if (mesh == null) {
+            return;
+        }
         // Check if the mesh has an id, if not set to reference
         if (mesh.getId() == null) {
             mesh.setId(source.getReference());
         }
         node.addMesh(mesh);
         node.copyTransform(source);
+    }
+
+    protected void createChildNodes(NucleusRenderer renderer, Node node, MeshFactory meshFactory,
+            GraphicsEngineRootNode scene) throws IOException {
+        // Recursively create children
+        for (Node nd : node.getChildren()) {
+            Node child = create(renderer, nd, meshFactory, scene);
+            if (child != null) {
+                node.addChild(child);
+            }
+        }
+
     }
 
     /**

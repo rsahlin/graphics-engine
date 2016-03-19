@@ -8,6 +8,7 @@ import com.graphicsengine.map.PlayfieldNode;
 import com.graphicsengine.scene.GraphicsEngineNodeType;
 import com.graphicsengine.spritemesh.SpriteMeshNode;
 import com.graphicsengine.ui.Button;
+import com.graphicsengine.ui.UINode;
 import com.nucleus.Error;
 import com.nucleus.io.ResourcesData;
 import com.nucleus.scene.Node;
@@ -29,6 +30,8 @@ public class GraphicsEngineResourcesData extends ResourcesData {
     private ArrayList<PlayfieldNode> playfieldNodes = new ArrayList<PlayfieldNode>();
     @SerializedName("button")
     private ArrayList<Button> buttons = new ArrayList<Button>();
+    @SerializedName("uiNode")
+    private ArrayList<UINode> uiNodes = new ArrayList<>();
 
     /**
      * Other data
@@ -74,10 +77,26 @@ public class GraphicsEngineResourcesData extends ResourcesData {
     }
 
     /**
-     * Adds the node if one does not already exist with the same id.
-     * TODO: Should an exception be thrown if a mesh with same id alredy exists? probably....
+     * Returns the first uiNode with matching id, or null if not found.
      * 
-     * @param spriteControllerData
+     * @param id
+     * @return
+     */
+    public UINode getUINode(String id) {
+        for (UINode ui : uiNodes) {
+            if (id.equals(ui.getId())) {
+                return ui;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Adds the node if one does not already exist with the same id.
+     * TODO: Should an exception be thrown if a node with same id alredy exists? probably....
+     * 
+     * @param type The node type
+     * @param node The node
      */
     public void addNode(GraphicsEngineNodeType type, Node node) {
         switch (type) {
@@ -119,6 +138,8 @@ public class GraphicsEngineResourcesData extends ResourcesData {
             return getNode((ArrayList) playfieldNodes, id);
         case button:
             return getNode((ArrayList) buttons, id);
+        case uiNode:
+            return getNode((ArrayList) uiNodes, id);
         default:
             throw new IllegalArgumentException(Error.NOT_IMPLEMENTED.message + " : " + type);
         }

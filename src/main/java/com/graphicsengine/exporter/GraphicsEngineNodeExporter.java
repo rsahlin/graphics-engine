@@ -2,12 +2,10 @@ package com.graphicsengine.exporter;
 
 import com.graphicsengine.io.GraphicsEngineRootNode;
 import com.graphicsengine.map.Playfield;
-import com.graphicsengine.map.PlayfieldNodeFactory;
 import com.graphicsengine.map.PlayfieldMeshFactory;
 import com.graphicsengine.map.PlayfieldNode;
 import com.graphicsengine.scene.GraphicsEngineNodeType;
 import com.graphicsengine.spritemesh.SpriteMeshNode;
-import com.graphicsengine.spritemesh.SpriteMeshNodeFactory;
 import com.nucleus.exporter.NucleusNodeExporter;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
@@ -26,10 +24,10 @@ public class GraphicsEngineNodeExporter extends NucleusNodeExporter {
         switch (type) {
         case playfieldNode:
             exportDataReferences((PlayfieldNode) source, (GraphicsEngineRootNode) rootNode);
-            return new Node(source);
+            return source.copy();
         case spriteMeshNode:
             exportDataReferences((SpriteMeshNode) source, (GraphicsEngineRootNode) rootNode);
-            return new Node(source);
+            return source.copy();
         default:
             throw new IllegalArgumentException(NOT_IMPLEMENTED + type);
         }
@@ -44,7 +42,7 @@ public class GraphicsEngineNodeExporter extends NucleusNodeExporter {
      */
     private void exportDataReferences(PlayfieldNode playfieldController, GraphicsEngineRootNode sceneData) {
         exportMeshes(playfieldController.getMeshes(), sceneData);
-        PlayfieldNode resource = PlayfieldNodeFactory.copy(playfieldController);
+        PlayfieldNode resource = playfieldController.copy();
         resource.setId(playfieldController.getReference());
         resource.setReference(null);
         sceneData.addResource(resource);
@@ -62,7 +60,7 @@ public class GraphicsEngineNodeExporter extends NucleusNodeExporter {
     private void exportDataReferences(SpriteMeshNode tiledSpriteController,
             GraphicsEngineRootNode sceneData) {
         exportMeshes(tiledSpriteController.getMeshes(), sceneData);
-        SpriteMeshNode resource = SpriteMeshNodeFactory.copy(tiledSpriteController);
+        SpriteMeshNode resource = tiledSpriteController.copy();
         resource.setId(tiledSpriteController.getReference());
         resource.setReference(null);
         sceneData.addResource(resource);

@@ -1,6 +1,5 @@
 package com.graphicsengine.ui;
 
-import com.google.gson.annotations.SerializedName;
 import com.nucleus.scene.Node;
 
 /**
@@ -9,26 +8,24 @@ import com.nucleus.scene.Node;
  * @author Richard Sahlin
  *
  */
-public class Button extends Node {
+public class Button extends Element {
 
-    /**
-     * Reference to the mesh that can be rendered
-     */
-    @SerializedName("mesh")
-    private String mesh;
 
-    public Button(Button source) {
-        super(source);
-        this.mesh = source.mesh;
+    public Button() {
     }
 
-    /**
-     * Returns the name of the mesh for this node.
-     * 
-     * @return
-     */
-    public String getMesh() {
-        return mesh;
+    @Override
+    public Button createInstance() {
+        return new Button();
     }
+
+    @Override
+    public Node copy() {
+        Button copy = createInstance();
+        copy.set(this);
+        return copy;
+
+    }
+
 
 }

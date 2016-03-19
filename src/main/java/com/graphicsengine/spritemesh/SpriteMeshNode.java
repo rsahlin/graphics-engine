@@ -4,11 +4,10 @@ import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.sprite.Sprite;
 import com.graphicsengine.sprite.SpriteFactory;
 import com.graphicsengine.sprite.SpriteNode;
-import com.nucleus.data.Anchor;
+import com.graphicsengine.sprite.SpriteNodeFactory;
 import com.nucleus.geometry.AttributeUpdater.Producer;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.renderer.NucleusRenderer;
-import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.vecmath.Axis;
@@ -41,13 +40,8 @@ public class SpriteMeshNode extends SpriteNode implements Producer {
     /**
      * Width and height of a sprite.
      */
-    @SerializedName("size")
-    protected float[] size = new float[2];
-    /**
-     * Anchor value for all sprites, 0 to 1 where 0 is upper/left and 1 is lower/right assuming quad is built normally.
-     */
-    @SerializedName("anchor")
-    protected Anchor anchor;
+    @SerializedName("spriteSize")
+    private float[] spriteSize = new float[2];
 
     /**
      * Default constructor
@@ -56,10 +50,18 @@ public class SpriteMeshNode extends SpriteNode implements Producer {
         setAttributeProducer(this);
     }
 
-    protected SpriteMeshNode(SpriteMeshNode source) {
-        super(source);
-        set(source);
-        setAttributeProducer(this);
+    @Override
+    public SpriteMeshNode createInstance() {
+        SpriteMeshNode node = new SpriteMeshNode();
+        node.setActorResolver(SpriteNodeFactory.getActorResolver());
+        return node;
+    }
+
+    @Override
+    public SpriteMeshNode copy() {
+        SpriteMeshNode copy = createInstance();
+        copy.set(this);
+        return copy;
     }
 
     /**
@@ -70,13 +72,7 @@ public class SpriteMeshNode extends SpriteNode implements Producer {
      */
     protected void set(SpriteMeshNode source) {
         super.set(source);
-        setSize(source.getSize());
-        anchor = new Anchor(source.anchor);
-    }
-
-    @Override
-    public void copyTo(Node target) {
-        ((SpriteMeshNode) target).set(this);
+        setSpriteSize(source.getSpriteSize());
     }
 
     @Override
@@ -107,17 +103,8 @@ public class SpriteMeshNode extends SpriteNode implements Producer {
      * 
      * @return Width and height of sprite, at index 0 and 1 respectively.
      */
-    public float[] getSize() {
-        return size;
-    }
-
-    /**
-     * Returns the anchor value
-     * 
-     * @return
-     */
-    public Anchor getAnchor() {
-        return anchor;
+    public float[] getSpriteSize() {
+        return spriteSize;
     }
 
     /**
@@ -126,10 +113,10 @@ public class SpriteMeshNode extends SpriteNode implements Producer {
      * 
      * @param size The size to set, or null to not set any values.
      */
-    private void setSize(float[] size) {
+    private void setSpriteSize(float[] size) {
         if (size != null) {
-            this.size[Axis.WIDTH.index] = size[Axis.WIDTH.index];
-            this.size[Axis.HEIGHT.index] = size[Axis.HEIGHT.index];
+            this.spriteSize[Axis.WIDTH.index] = size[Axis.WIDTH.index];
+            this.spriteSize[Axis.HEIGHT.index] = size[Axis.HEIGHT.index];
         }
     }
 
