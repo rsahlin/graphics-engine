@@ -6,9 +6,9 @@ import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.map.Playfield;
 import com.graphicsengine.map.PlayfieldNode;
 import com.graphicsengine.scene.GraphicsEngineNodeType;
+import com.graphicsengine.scene.QuadNode;
 import com.graphicsengine.spritemesh.SpriteMeshNode;
 import com.graphicsengine.ui.Button;
-import com.graphicsengine.ui.UINode;
 import com.nucleus.Error;
 import com.nucleus.io.ResourcesData;
 import com.nucleus.scene.Node;
@@ -31,7 +31,7 @@ public class GraphicsEngineResourcesData extends ResourcesData {
     @SerializedName("button")
     private ArrayList<Button> buttons = new ArrayList<Button>();
     @SerializedName("uiNode")
-    private ArrayList<UINode> uiNodes = new ArrayList<>();
+    private ArrayList<QuadNode> uiNodes = new ArrayList<>();
 
     /**
      * Other data
@@ -82,8 +82,8 @@ public class GraphicsEngineResourcesData extends ResourcesData {
      * @param id
      * @return
      */
-    public UINode getUINode(String id) {
-        for (UINode ui : uiNodes) {
+    public QuadNode getUINode(String id) {
+        for (QuadNode ui : uiNodes) {
             if (id.equals(ui.getId())) {
                 return ui;
             }
@@ -138,7 +138,7 @@ public class GraphicsEngineResourcesData extends ResourcesData {
             return getNode((ArrayList) playfieldNodes, id);
         case button:
             return getNode((ArrayList) buttons, id);
-        case uiNode:
+        case quadNode:
             return getNode((ArrayList) uiNodes, id);
         default:
             throw new IllegalArgumentException(Error.NOT_IMPLEMENTED.message + " : " + type);

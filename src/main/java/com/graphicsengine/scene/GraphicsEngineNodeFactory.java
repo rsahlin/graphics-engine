@@ -7,7 +7,6 @@ import com.graphicsengine.map.PlayfieldNode;
 import com.graphicsengine.spritemesh.SpriteMesh;
 import com.graphicsengine.spritemesh.SpriteMeshNode;
 import com.graphicsengine.ui.Button;
-import com.graphicsengine.ui.UINode;
 import com.nucleus.camera.ViewFrustum;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshFactory;
@@ -65,8 +64,8 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
             created = button.copy();
             internalCreateNode(renderer, source, created, meshFactory, gScene);
             break;
-        case uiNode:
-            UINode uiNode = (UINode) gScene.getResources().getNode(GraphicsEngineNodeType.uiNode,
+        case quadNode:
+            QuadNode uiNode = (QuadNode) gScene.getResources().getNode(GraphicsEngineNodeType.quadNode,
                     source.getReference());
             created = uiNode.copy();
             internalCreateNode(renderer, source, created, meshFactory, gScene);
@@ -131,5 +130,6 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
         }
         node.setViewFrustum(new ViewFrustum(projection));
     }
+
 
 }

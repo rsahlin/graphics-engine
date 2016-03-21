@@ -49,6 +49,7 @@ public class GSONGraphicsEngineFactory extends GSONSceneFactory {
         Node created = nodeFactory.create(renderer, source, meshFactory, scene);
         setViewFrustum(source, created);
         createChildNodes(scene, source, created);
+        created.onCreated();
         return created;
     }
 

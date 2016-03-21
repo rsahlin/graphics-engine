@@ -73,8 +73,8 @@ public class PlayfieldMesh extends SpriteMesh implements Consumer {
      * @param anchor Anchor for quads.
      */
     public void createMesh(PlayfieldProgram program, Texture2D texture, int[] mapSize, float[] size, Anchor anchor) {
-        super.createMesh(program, texture);
         int count = mapSize[0] * mapSize[1];
+        super.createMesh(program, texture, count);
         init(count);
         buildMesh(program, count, size, anchor, GLES20.GL_FLOAT);
         setAttributeUpdater(this);
@@ -99,7 +99,7 @@ public class PlayfieldMesh extends SpriteMesh implements Consumer {
     public void buildMesh(ShaderProgram program, int charCount, float[] charSize, Anchor anchor, int type) {
         int vertexStride = program.getVertexStride();
         float[] quadPositions = MeshBuilder.buildQuadPositionsIndexed(charSize, anchor, vertexStride);
-        MeshBuilder.buildQuadMeshIndexed(this, program, charCount, quadPositions);
+        MeshBuilder.buildQuadMeshIndexed(this, program, 0, charCount, quadPositions);
     }
 
     /**
