@@ -1,6 +1,9 @@
 package com.graphicsengine.scene;
 
+import java.util.ArrayList;
+
 import com.google.gson.annotations.SerializedName;
+import com.graphicsengine.spritemesh.SpriteMesh;
 import com.nucleus.scene.Node;
 
 /**
@@ -17,6 +20,8 @@ public class QuadNode extends Node {
 
     @SerializedName("maxQuads")
     private int maxQuads;
+
+    transient private ArrayList<SharedMeshQuad> quadChildren = new ArrayList<>();
 
     public QuadNode() {
         super();
@@ -54,10 +59,25 @@ public class QuadNode extends Node {
         return maxQuads;
     }
 
+    public int addQuad(SharedMeshQuad quadMeshNode) {
+        int index = quadChildren.size();
+        quadChildren.add(quadMeshNode);
+        return index;
+    }
+
+    public void removeQuad(SharedMeshQuad quadMeshNode) {
+        quadChildren.remove(quadMeshNode);
+    }
+
     @Override
     public void onCreated() {
-        // Setup all childrens vertices
+        // Setup all children in this node
+        SpriteMesh mesh = (SpriteMesh) getMeshById(getMeshRef());
         for (Node n : getChildren()) {
+            if (n instanceof SharedMeshQuad) {
+                int index = addQuad((SharedMeshQuad) n);
+                ((SharedMeshQuad) n).onCreated(mesh, index);
+            }
         }
     }
 

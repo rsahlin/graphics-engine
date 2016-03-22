@@ -9,13 +9,18 @@ import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.ElementBuffer;
 import com.nucleus.geometry.ElementBuffer.Mode;
 import com.nucleus.geometry.ElementBuffer.Type;
+import com.nucleus.geometry.ElementBuilder;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.VertexBuffer;
 import com.nucleus.opengl.GLESWrapper.GLES20;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.Texture2D;
+import com.nucleus.texturing.TextureType;
 import com.nucleus.texturing.TiledTexture2D;
+import com.nucleus.texturing.UVAtlas;
+import com.nucleus.texturing.UVTexture2D;
+import com.nucleus.vecmath.Transform;
 
 /**
  * A number of quads that will be rendered using the same Mesh, ie all quads in this class are rendered using
@@ -34,6 +39,11 @@ public class SpriteMesh extends Mesh implements Consumer {
      * This data must be mapped into the mesh for changes to take place.
      */
     protected transient float[] attributeData;
+
+    /**
+     * Storage for 4 UV components
+     */
+    private transient float[] frames = new float[2 * 4];
 
     /**
      * Creates a new instance of the tiled sprite mesh based on the source.
@@ -78,6 +88,7 @@ public class SpriteMesh extends Mesh implements Consumer {
     public void createMesh(ShaderProgram program, Texture2D texture, int count) {
         super.createMesh(program, texture);
         createBuffers(program, count);
+        ElementBuilder.buildQuadBuffer(indices, indices.getCount() / QUAD_INDICES, 0);
         setAttributeUpdater(this);
     }
 
@@ -102,6 +113,8 @@ public class SpriteMesh extends Mesh implements Consumer {
      * Builds a mesh with data that can be rendered using a tiled sprite renderer, this will draw a number of
      * sprites using one drawcall.
      * With this call all quads will have the same size
+     * This call will build the quads using index buffer, texture UV will be set according to the texture reference.
+     * Either as tiled or uvatlas
      * Vertex buffer will have storage for XYZ + UV.
      * 
      * @param program The shader program to use with the mesh
@@ -111,12 +124,37 @@ public class SpriteMesh extends Mesh implements Consumer {
      */
     private void buildMesh(ShaderProgram program, int spriteCount, float[] size, Anchor anchor) {
         int vertexStride = program.getVertexStride();
-        float[] quadPositions = MeshBuilder.buildQuadPositionsIndexed(size, anchor, vertexStride);
+        float[] quadPositions = MeshBuilder.createQuadPositionsIndexed(size, anchor, vertexStride);
         MeshBuilder.buildQuadMeshIndexed(this, program, 0, spriteCount, quadPositions);
+        prepareUV(mapper, spriteCount);
+    }
+
+    /**
+     * Prepare the texture UV coordinates depending on texture type.
+     * 
+     * @param mapper
+     * @param spriteCount
+     */
+    private void prepareUV(PropertyMapper mapper, int spriteCount) {
+        for (int i = 0; i < spriteCount; i++) {
+            if (getTexture(Texture2D.TEXTURE_0).type == TextureType.TiledTexture2D) {
+                MeshBuilder.prepareTiledUV(mapper, attributeData, i);
+            } else if (getTexture(Texture2D.TEXTURE_0).type == TextureType.UVTexture2D) {
+                // TODO Must prepare UV based on the data in the texture.
+            } else {
+                throw new IllegalArgumentException();
+            }
+        }
+
     }
 
     /**
      * Builds the quad at the specified index, use this call to create the quads to be draw individually.
+     * Before using this call the indexed buffer (indices) must be bulit in the mesh, ie this method will only
+     * set the vertex positions and UV for this quad
+     * This will setup the quad according to the specified size and anchor. Texture UV will be built based
+     * on the texture type.
+     * 
      * @param index
      * @param program
      * @param size
@@ -124,8 +162,9 @@ public class SpriteMesh extends Mesh implements Consumer {
      */
     public void buildQuad(int index, ShaderProgram program, float[] size, Anchor anchor) {
         int vertexStride = program.getVertexStride();
-        float[] quadPositions = MeshBuilder.buildQuadPositionsIndexed(size, anchor, vertexStride);
-        MeshBuilder.buildQuadMeshIndexed(this, program, index, 1, quadPositions);
+        float[] quadPositions = MeshBuilder.createQuadPositionsIndexed(size, anchor, vertexStride);
+        MeshBuilder.buildQuad(this, program, index, quadPositions);
+        prepareUV(mapper, 1);
     }
 
     @Override
@@ -187,6 +226,28 @@ public class SpriteMesh extends Mesh implements Consumer {
     }
 
     /**
+     * Sets the quad at the specified index to the transform - currently only scale and translate supported.
+     * 
+     * @param index
+     * @param transform
+     */
+    public void setTransform(int index, Transform transform) {
+        int offset = index * mapper.ATTRIBUTES_PER_VERTEX;
+        float[] scale = transform.getScale();
+        float[] pos = transform.getTranslate();
+        for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
+            attributeData[offset + mapper.SCALE_INDEX] = scale[0];
+            attributeData[offset + mapper.SCALE_INDEX + 1] = scale[1];
+            attributeData[offset + mapper.SCALE_INDEX + 2] = scale[2];
+            attributeData[offset + mapper.TRANSLATE_INDEX] = pos[0];
+            attributeData[offset + mapper.TRANSLATE_INDEX + 1] = pos[1];
+            attributeData[offset + mapper.TRANSLATE_INDEX + 2] = pos[2];
+            offset += mapper.ATTRIBUTES_PER_VERTEX;
+        }
+
+    }
+
+    /**
      * Sets the x, y and z scale of a quad/sprite in this mesh.
      * 
      * @param index Index of the quad/sprite to set scale for, 0 and up
@@ -203,6 +264,57 @@ public class SpriteMesh extends Mesh implements Consumer {
             offset += mapper.ATTRIBUTES_PER_VERTEX;
         }
 
+    }
+
+    /**
+     * Sets the frame number for the quad/sprite mesh
+     * 
+     * @param index The index of the quad/sprite to set frame of, 0 and up
+     * @param frame
+     */
+    public void setFrame(int index, int frame) {
+        if (texture[Texture2D.TEXTURE_0].type == TextureType.TiledTexture2D) {
+            int offset = index * mapper.ATTRIBUTES_PER_VERTEX;
+            for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
+                attributeData[offset + mapper.FRAME_INDEX] = frame;
+                offset += mapper.ATTRIBUTES_PER_VERTEX;
+            }
+        } else if (texture[Texture2D.TEXTURE_0].type == TextureType.UVTexture2D) {
+            setFrame(index, frame, ((UVTexture2D) texture[Texture2D.TEXTURE_0]).getUVAtlas());
+        }
+    }
+
+    /**
+     * Sets the frame when the mesh uses a UV texture
+     * 
+     * @param index
+     * @param frame
+     * @param uvAtlas
+     */
+    private void setFrame(int index, int frame, UVAtlas uvAtlas) {
+        int offset = index * mapper.ATTRIBUTES_PER_VERTEX;
+        int readIndex = 0;
+        uvAtlas.getUVFrame(frame, frames, 0);
+        for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
+            attributeData[offset + mapper.UV_INDEX] = frames[readIndex++];
+            attributeData[offset + mapper.UV_INDEX + 1] = frames[readIndex++];
+            offset += mapper.ATTRIBUTES_PER_VERTEX;
+        }
+
+    }
+
+    /**
+     * Sets the z axis rotation, in degrees, of this quad/sprite
+     * 
+     * @param index The index of the quad/sprite to rotate, 0 and up
+     * @param rotation The z axis rotation, in degrees
+     */
+    public void setRotation(int index, float rotation) {
+        int offset = index * mapper.ATTRIBUTES_PER_VERTEX;
+        for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
+            attributeData[index + mapper.ROTATE_INDEX] = rotation;
+            offset += mapper.ATTRIBUTES_PER_VERTEX;
+        }
     }
 
 }

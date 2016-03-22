@@ -1,5 +1,6 @@
 package com.graphicsengine.sprite;
 
+import com.graphicsengine.spritemesh.SpriteMesh;
 import com.nucleus.actor.ActorContainer;
 import com.nucleus.actor.ActorItem;
 import com.nucleus.geometry.AttributeUpdater.Producer;
@@ -11,6 +12,8 @@ import com.nucleus.shader.ShaderProgram;
  * Base sprite class, a sprite is a 2D geometry object
  * Has data needed for movement, animation and graphics - increase size of data storage and use together
  * with actor. This is to avoid a very large number of Sprite subclasses for logic.
+ * TODO Shall the methods for setting quad properties (scale, rotation, frame, position) be moved to
+ * {@linkplain SpriteMesh}?
  * 
  * @author Richard Sahlin
  *
@@ -49,6 +52,8 @@ public abstract class Sprite extends ActorContainer implements Producer {
     /**
      * Sets the parent, mapper, attribute data and creates data arrays. After this call the sprite is ready
      * to be used.
+     * TODO Instead of passing attributeData from the Mesh, perhapes the sprite should reference the source mesh and
+     * the mesh has methods for settting frame, position etc?
      * 
      * @param parent
      * @param mapper

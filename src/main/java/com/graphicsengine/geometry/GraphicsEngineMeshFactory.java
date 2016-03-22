@@ -5,10 +5,10 @@ import java.io.IOException;
 import com.graphicsengine.io.GraphicsEngineRootNode;
 import com.graphicsengine.map.PlayfieldMeshFactory;
 import com.graphicsengine.map.PlayfieldNode;
+import com.graphicsengine.scene.SharedMeshQuad;
 import com.graphicsengine.scene.QuadNode;
 import com.graphicsengine.spritemesh.SpriteMeshFactory;
 import com.graphicsengine.spritemesh.SpriteMeshNode;
-import com.graphicsengine.ui.Button;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshFactory;
 import com.nucleus.renderer.NucleusRenderer;
@@ -29,8 +29,8 @@ public class GraphicsEngineMeshFactory implements MeshFactory {
         if (parent instanceof QuadNode) {
             return SpriteMeshFactory.create(renderer, (QuadNode) parent, (GraphicsEngineRootNode) scene);
         }
-        if (parent instanceof Button) {
-            return SpriteMeshFactory.create(renderer, (Button) parent, (GraphicsEngineRootNode) scene);
+        if (parent instanceof SharedMeshQuad) {
+            return SpriteMeshFactory.create(renderer, (SharedMeshQuad) parent, (GraphicsEngineRootNode) scene);
         }
         return null;
     }

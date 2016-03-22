@@ -40,6 +40,7 @@ public class UVSprite extends TiledSprite {
 
     @Override
     public void setFrame(int frame) {
+        // TODO Not necessary to call super, does UVSprite really need the framenumber?
         super.setFrame(frame);
         int index = offset;
         int readIndex = 0;

@@ -98,7 +98,7 @@ public class PlayfieldMesh extends SpriteMesh implements Consumer {
      */
     public void buildMesh(ShaderProgram program, int charCount, float[] charSize, Anchor anchor, int type) {
         int vertexStride = program.getVertexStride();
-        float[] quadPositions = MeshBuilder.buildQuadPositionsIndexed(charSize, anchor, vertexStride);
+        float[] quadPositions = MeshBuilder.createQuadPositionsIndexed(charSize, anchor, vertexStride);
         MeshBuilder.buildQuadMeshIndexed(this, program, 0, charCount, quadPositions);
     }
 

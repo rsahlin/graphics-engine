@@ -7,8 +7,8 @@ import com.graphicsengine.map.Playfield;
 import com.graphicsengine.map.PlayfieldNode;
 import com.graphicsengine.scene.GraphicsEngineNodeType;
 import com.graphicsengine.scene.QuadNode;
+import com.graphicsengine.scene.SharedMeshQuad;
 import com.graphicsengine.spritemesh.SpriteMeshNode;
-import com.graphicsengine.ui.Button;
 import com.nucleus.Error;
 import com.nucleus.io.ResourcesData;
 import com.nucleus.scene.Node;
@@ -28,10 +28,10 @@ public class GraphicsEngineResourcesData extends ResourcesData {
     private ArrayList<SpriteMeshNode> spriteMeshNodes = new ArrayList<SpriteMeshNode>();
     @SerializedName("playfieldNode")
     private ArrayList<PlayfieldNode> playfieldNodes = new ArrayList<PlayfieldNode>();
-    @SerializedName("button")
-    private ArrayList<Button> buttons = new ArrayList<Button>();
-    @SerializedName("uiNode")
-    private ArrayList<QuadNode> uiNodes = new ArrayList<>();
+    @SerializedName("sharedMeshNode")
+    private ArrayList<SharedMeshQuad> sharedMeshNode = new ArrayList<SharedMeshQuad>();
+    @SerializedName("quadNode")
+    private ArrayList<QuadNode> quadNodes = new ArrayList<>();
 
     /**
      * Other data
@@ -77,15 +77,15 @@ public class GraphicsEngineResourcesData extends ResourcesData {
     }
 
     /**
-     * Returns the first uiNode with matching id, or null if not found.
+     * Returns the first quadNode with matching id, or null if not found.
      * 
      * @param id
      * @return
      */
-    public QuadNode getUINode(String id) {
-        for (QuadNode ui : uiNodes) {
-            if (id.equals(ui.getId())) {
-                return ui;
+    public QuadNode getQuadNode(String id) {
+        for (QuadNode quad : quadNodes) {
+            if (id.equals(quad.getId())) {
+                return quad;
             }
         }
         return null;
@@ -106,8 +106,8 @@ public class GraphicsEngineResourcesData extends ResourcesData {
         case spriteMeshNode:
             addNode((ArrayList) spriteMeshNodes, node);
             break;
-        case button:
-            addNode((ArrayList) buttons, node);
+        case sharedMeshNode:
+            addNode((ArrayList) sharedMeshNode, node);
             break;
         default:
             throw new IllegalArgumentException(Error.NOT_IMPLEMENTED.message);
@@ -136,10 +136,10 @@ public class GraphicsEngineResourcesData extends ResourcesData {
             return getNode((ArrayList) spriteMeshNodes, id);
         case playfieldNode:
             return getNode((ArrayList) playfieldNodes, id);
-        case button:
-            return getNode((ArrayList) buttons, id);
+        case sharedMeshNode:
+            return getNode((ArrayList) sharedMeshNode, id);
         case quadNode:
-            return getNode((ArrayList) uiNodes, id);
+            return getNode((ArrayList) quadNodes, id);
         default:
             throw new IllegalArgumentException(Error.NOT_IMPLEMENTED.message + " : " + type);
         }

@@ -6,7 +6,6 @@ import com.graphicsengine.io.GraphicsEngineRootNode;
 import com.graphicsengine.map.PlayfieldNode;
 import com.graphicsengine.spritemesh.SpriteMesh;
 import com.graphicsengine.spritemesh.SpriteMeshNode;
-import com.graphicsengine.ui.Button;
 import com.nucleus.camera.ViewFrustum;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshFactory;
@@ -58,8 +57,9 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
             ((SpriteMeshNode) created).createSprites(renderer, (SpriteMesh) created.getMeshById(created.getMeshRef()),
                     gScene);
             break;
-        case button:
-            Button button = (Button) gScene.getResources().getNode(GraphicsEngineNodeType.button,
+        case sharedMeshNode:
+            SharedMeshQuad button = (SharedMeshQuad) gScene.getResources().getNode(
+                    GraphicsEngineNodeType.sharedMeshNode,
                     source.getReference());
             created = button.copy();
             internalCreateNode(renderer, source, created, meshFactory, gScene);

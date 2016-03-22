@@ -4,11 +4,9 @@ import java.io.IOException;
 
 import com.graphicsengine.io.GraphicsEngineRootNode;
 import com.graphicsengine.scene.QuadNode;
-import com.graphicsengine.ui.Button;
+import com.graphicsengine.scene.SharedMeshQuad;
 import com.nucleus.assets.AssetManager;
-import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.geometry.Mesh;
-import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.renderer.BufferObjectsFactory;
 import com.nucleus.renderer.Configuration;
 import com.nucleus.renderer.NucleusRenderer;
@@ -53,18 +51,6 @@ public class SpriteMeshFactory {
         if (Configuration.getInstance().isUseVBO()) {
             BufferObjectsFactory.getInstance().createVBOs(renderer, mesh);
         }
-
-        float[] attributeData = mesh.getAttributeData();
-        PropertyMapper mapper = new PropertyMapper(program);
-        for (int i = 0; i < node.getCount(); i++) {
-            if (program instanceof TiledSpriteProgram) {
-                MeshBuilder.prepareTiledUV(mapper, attributeData, i);
-            } else if (program instanceof UVSpriteProgram) {
-            } else {
-                throw new IllegalArgumentException();
-            }
-        }
-
         return mesh;
     }
 
@@ -78,53 +64,22 @@ public class SpriteMeshFactory {
         SpriteMesh mesh = new SpriteMesh(refMesh);
         renderer.createProgram(program);
         mesh.createMesh(program, texture, node.getMaxQuads());
-        mesh.setScale(0, 1, 1, 1);
         if (Configuration.getInstance().isUseVBO()) {
             BufferObjectsFactory.getInstance().createVBOs(renderer, mesh);
-        }
-
-        float[] attributeData = mesh.getAttributeData();
-        PropertyMapper mapper = new PropertyMapper(program);
-        if (program instanceof TiledSpriteProgram) {
-            MeshBuilder.prepareTiledUV(mapper, attributeData, 0);
-        } else if (program instanceof UVSpriteProgram) {
-        } else {
-            throw new IllegalArgumentException();
         }
 
         return mesh;
     }
 
-    public static Mesh create(NucleusRenderer renderer, Button node, GraphicsEngineRootNode scene)
+    public static Mesh create(NucleusRenderer renderer, SharedMeshQuad node, GraphicsEngineRootNode scene)
             throws IOException {
 
-        if (node.getMeshRef() == null) {
-            // Use the parents mesh
-            return null;
-        } else {
-            Mesh refMesh = scene.getResources().getMesh(node.getMeshRef());
-            Texture2D texture = AssetManager.getInstance().getTexture(renderer,
-                    scene.getResources().getTexture2D(refMesh.getTextureRef()));
-            ShaderProgram program = SpriteMeshFactory.createProgram(texture);
-            SpriteMesh mesh = new SpriteMesh(refMesh);
-            renderer.createProgram(program);
-            mesh.createMesh(program, texture, 1, node.getSize(), node.getAnchor());
-            mesh.setScale(0, 1, 1, 1);
-            if (Configuration.getInstance().isUseVBO()) {
-                BufferObjectsFactory.getInstance().createVBOs(renderer, mesh);
-            }
-
-            float[] attributeData = mesh.getAttributeData();
-            PropertyMapper mapper = new PropertyMapper(program);
-            if (program instanceof TiledSpriteProgram) {
-                MeshBuilder.prepareTiledUV(mapper, attributeData, 0);
-            } else if (program instanceof UVSpriteProgram) {
-            } else {
-                throw new IllegalArgumentException();
-            }
-
-            return mesh;
+        // TODO shall it not be allowed to reference a mesh - maybe this node MUST share another node?
+        if (node.getMeshRef() != null) {
+            throw new IllegalArgumentException(node.getClass().getSimpleName() + " can not have a mesh reference.");
+            // Using the parents mesh
         }
+        return null;
     }
 
     /**
