@@ -20,6 +20,7 @@ import com.nucleus.texturing.TextureType;
 import com.nucleus.texturing.TiledTexture2D;
 import com.nucleus.texturing.UVAtlas;
 import com.nucleus.texturing.UVTexture2D;
+import com.nucleus.vecmath.Rectangle;
 import com.nucleus.vecmath.Transform;
 
 /**
@@ -65,13 +66,12 @@ public class SpriteMesh extends Mesh implements Consumer {
      * @param program
      * @param texture The texture to use for sprites, must be {@link TiledTexture2D} otherwise tiling will not work.
      * @param count Number of sprites to support
-     * @param size Width and height of quads, all quads will have same size.
-     * @param anchor Anchor for quads.
+     * @param Rectangle The rectangle defining the quad for each sprite
      */
-    public void createMesh(ShaderProgram program, Texture2D texture, int count, float[] size, Anchor anchor) {
+    public void createMesh(ShaderProgram program, Texture2D texture, int count, Rectangle rectangle) {
         super.createMesh(program, texture);
         createBuffers(program, count);
-        buildMesh(program, count, size, anchor);
+        buildMesh(program, count, rectangle);
         setAttributeUpdater(this);
     }
 
@@ -119,12 +119,11 @@ public class SpriteMesh extends Mesh implements Consumer {
      * 
      * @param program The shader program to use with the mesh
      * @param spriteCount Number of sprites to build, this is NOT the vertex count.
-     * @param size Width and height of each sprite
-     * @param anchor Anchor values for sprites
+     * @param rectangle The rectangle defining each char, all chars will be the same
      */
-    private void buildMesh(ShaderProgram program, int spriteCount, float[] size, Anchor anchor) {
+    private void buildMesh(ShaderProgram program, int spriteCount, Rectangle rectangle) {
         int vertexStride = program.getVertexStride();
-        float[] quadPositions = MeshBuilder.createQuadPositionsIndexed(size, anchor, vertexStride);
+        float[] quadPositions = MeshBuilder.createQuadPositionsIndexed(rectangle, vertexStride, 0);
         MeshBuilder.buildQuadMeshIndexed(this, program, 0, spriteCount, quadPositions);
         prepareUV(mapper, spriteCount);
     }
@@ -157,12 +156,11 @@ public class SpriteMesh extends Mesh implements Consumer {
      * 
      * @param index
      * @param program
-     * @param size
-     * @param anchor
+     * @param rectangle The rectangle defining the sprite
      */
-    public void buildQuad(int index, ShaderProgram program, float[] size, Anchor anchor) {
+    public void buildQuad(int index, ShaderProgram program, Rectangle rectangle) {
         int vertexStride = program.getVertexStride();
-        float[] quadPositions = MeshBuilder.createQuadPositionsIndexed(size, anchor, vertexStride);
+        float[] quadPositions = MeshBuilder.createQuadPositionsIndexed(rectangle, vertexStride, 0);
         MeshBuilder.buildQuad(this, program, index, quadPositions);
         prepareUV(mapper, 1);
     }

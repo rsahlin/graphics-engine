@@ -3,7 +3,7 @@ package com.graphicsengine.spritemesh;
 import java.io.IOException;
 
 import com.graphicsengine.io.GraphicsEngineRootNode;
-import com.graphicsengine.scene.QuadNode;
+import com.graphicsengine.scene.QuadParentNode;
 import com.graphicsengine.scene.SharedMeshQuad;
 import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.Mesh;
@@ -47,14 +47,14 @@ public class SpriteMeshFactory {
         ShaderProgram program = SpriteMeshFactory.createProgram(texture);
         SpriteMesh mesh = new SpriteMesh(refMesh);
         renderer.createProgram(program);
-        mesh.createMesh(program, texture, node.getCount(), node.getSpriteSize(), node.getAnchor());
+        mesh.createMesh(program, texture, node.getCount(), node.getSpriteRectangle());
         if (Configuration.getInstance().isUseVBO()) {
             BufferObjectsFactory.getInstance().createVBOs(renderer, mesh);
         }
         return mesh;
     }
 
-    public static Mesh create(NucleusRenderer renderer, QuadNode node, GraphicsEngineRootNode scene)
+    public static Mesh create(NucleusRenderer renderer, QuadParentNode node, GraphicsEngineRootNode scene)
             throws IOException {
 
         Mesh refMesh = scene.getResources().getMesh(node.getMeshRef());

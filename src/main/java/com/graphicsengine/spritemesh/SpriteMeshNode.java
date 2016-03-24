@@ -10,7 +10,7 @@ import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.RootNode;
 import com.nucleus.texturing.Texture2D;
-import com.nucleus.vecmath.Axis;
+import com.nucleus.vecmath.Rectangle;
 
 /**
  * Controller for mesh sprites, this node creates the mesh sprite objects.
@@ -38,10 +38,11 @@ public class SpriteMeshNode extends SpriteNode implements Producer {
     }
 
     /**
-     * Width and height of a sprite.
+     * The rectangle defining the sprites, all sprites will have same size
+     * 4 values = x1,y1 + width and height
      */
-    @SerializedName("spriteSize")
-    private float[] spriteSize = new float[2];
+    @SerializedName("rect")
+    private Rectangle rectangle;
 
     /**
      * Default constructor
@@ -72,7 +73,7 @@ public class SpriteMeshNode extends SpriteNode implements Producer {
      */
     protected void set(SpriteMeshNode source) {
         super.set(source);
-        setSpriteSize(source.getSpriteSize());
+        setSpriteRectangle(source.getSpriteRectangle());
     }
 
     @Override
@@ -99,25 +100,22 @@ public class SpriteMeshNode extends SpriteNode implements Producer {
     }
 
     /**
-     * Returns the dimension of the sprites, in x and y
+     * Returns the rectangle defining the sprites
      * 
-     * @return Width and height of sprite, at index 0 and 1 respectively.
+     * @return Rectangle defining sprite, X1, Y1, width, height.
      */
-    public float[] getSpriteSize() {
-        return spriteSize;
+    public Rectangle getSpriteRectangle() {
+        return rectangle;
     }
 
     /**
-     * Internal method, sets the size of each char.
+     * Internal method, sets the rectangle defining each sprite
      * This will only set the size parameter, createMesh must be called to actually create the mesh
      * 
-     * @param size The size to set, or null to not set any values.
+     * param rectangle values defining sprite, X1, Y1, width, height.
      */
-    private void setSpriteSize(float[] size) {
-        if (size != null) {
-            this.spriteSize[Axis.WIDTH.index] = size[Axis.WIDTH.index];
-            this.spriteSize[Axis.HEIGHT.index] = size[Axis.HEIGHT.index];
-        }
+    private void setSpriteRectangle(Rectangle rectangle) {
+        this.rectangle = new Rectangle(rectangle);
     }
 
     @Override

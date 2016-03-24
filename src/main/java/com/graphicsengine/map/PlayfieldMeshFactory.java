@@ -41,8 +41,12 @@ public class PlayfieldMeshFactory {
         renderer.createProgram(program);
         Texture2D texture = AssetManager.getInstance().getTexture(renderer, textureData);
         PlayfieldMesh playfieldMesh = new PlayfieldMesh(refMesh);
-        playfieldMesh.createMesh(program, texture, node.getMapSize(), node.getCharSize(), node.getAnchor());
-        playfieldMesh.setupCharmap(node.getMapSize(), node.getCharSize(), node.getAnchor());
+        playfieldMesh.createMesh(program, texture, node.getMapSize(), node.getCharRectangle());
+        float[] offset = node.getMapOffset();
+        if (offset == null) {
+            offset = new float[] { 0, 0 };
+        }
+        playfieldMesh.setupCharmap(node.getMapSize(), node.getCharRectangle().getSize(0), offset);
 
         if (Configuration.getInstance().isUseVBO()) {
             BufferObjectsFactory.getInstance().createVBOs(renderer, playfieldMesh);

@@ -6,6 +6,7 @@ import com.graphicsengine.io.GraphicsEngineRootNode;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.scene.Node;
 import com.nucleus.vecmath.Axis;
+import com.nucleus.vecmath.Rectangle;
 
 /**
  * The playfield controller that contains a playfield (mesh) and can be put in a scene.
@@ -29,10 +30,17 @@ public class PlayfieldNode extends Node {
     private int[] mapSize = new int[2];
 
     /**
-     * Width and height of each char.
+     * X and Y offset for map, this controls where the first char of the map is.
      */
-    @SerializedName("charSize")
-    protected float[] charSize = new float[2];
+    @SerializedName("offset")
+    private float[] offset;
+
+    /**
+     * The rectangle defining the chars, all chars will have same size
+     * 4 values = x1,y1 + width and height
+     */
+    @SerializedName("rect")
+    private Rectangle rectangle;
 
     /**
      * The map data used by this controller.
@@ -71,7 +79,9 @@ public class PlayfieldNode extends Node {
         super.set(source);
         mapRef = source.mapRef;
         setMapSize(source.mapSize);
-        setCharSize(source.charSize);
+        setCharRectangle(source.rectangle);
+        setMapOffset(source.offset);
+
     }
     /**
      * Sets the playfield in this controller, creating the map storage if needed, and updates the mesh to contain
@@ -110,12 +120,12 @@ public class PlayfieldNode extends Node {
     }
 
     /**
-     * Returns a reference to the char size, do NOT modify these values
+     * Returns a reference to the rectangle defining each char
      * 
      * @return
      */
-    public float[] getCharSize() {
-        return charSize;
+    public Rectangle getCharRectangle() {
+        return rectangle;
     }
 
     /**
@@ -125,6 +135,16 @@ public class PlayfieldNode extends Node {
      */
     public int[] getMapData() {
         return mapData;
+    }
+
+    /**
+     * Returns the map offset if set, or null
+     * The map offset controls where the first char in the map is.
+     * 
+     * @return
+     */
+    public float[] getMapOffset() {
+        return offset;
     }
 
     /**
@@ -147,12 +167,27 @@ public class PlayfieldNode extends Node {
     }
 
     /**
-     * Sets the charsize from the source values, internal method.
+     * Sets the map offset to that of the offset, values are copied.
      * 
-     * @param charSize Width and height of chars
+     * @param offset Offset values, or null to remove.
      */
-    private void setCharSize(float[] charSize) {
-        System.arraycopy(charSize, 0, this.charSize, 0, 2);
+    private void setMapOffset(float[] offset) {
+        if (offset == null) {
+            this.offset = null;
+        }
+        if (this.offset == null) {
+            this.offset = new float[offset.length];
+            System.arraycopy(offset, 0, this.offset, 0, offset.length);
+        }
+    }
+
+    /**
+     * Sets the rectangle defining each char
+     * 
+     * @param rectangle defining each char
+     */
+    private void setCharRectangle(Rectangle rectangle) {
+        this.rectangle = new Rectangle(rectangle);
 
     }
 

@@ -1,7 +1,6 @@
 package com.graphicsengine.map;
 
 import com.graphicsengine.spritemesh.SpriteMesh;
-import com.nucleus.data.Anchor;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshBuilder;
@@ -10,6 +9,7 @@ import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TiledTexture2D;
 import com.nucleus.vecmath.Axis;
+import com.nucleus.vecmath.Rectangle;
 
 /**
  * Old school charactermap based rendering using a texture and quad mesh, the normal way to use the charmap is to create
@@ -62,6 +62,7 @@ public class PlayfieldMesh extends SpriteMesh implements Consumer {
         charmap = new int[charCount];
     }
 
+
     /**
      * Creates the mesh for this charmap, each char has the specified width and height, z position.
      * Texture UV is set using 1 / framesX and 1/ framesY
@@ -69,14 +70,13 @@ public class PlayfieldMesh extends SpriteMesh implements Consumer {
      * @param program
      * @param texture If tiling should be used this must be instance of {@link TiledTexture2D}
      * @param mapSize Number of chars to support in the mesh
-     * @param size Width and height of quads, all quads will have same size.
-     * @param anchor Anchor for quads.
+     * @param rectangle The rectangle defining a char, all chars will have same size.
      */
-    public void createMesh(PlayfieldProgram program, Texture2D texture, int[] mapSize, float[] size, Anchor anchor) {
+    public void createMesh(PlayfieldProgram program, Texture2D texture, int[] mapSize, Rectangle rectangle) {
         int count = mapSize[0] * mapSize[1];
         super.createMesh(program, texture, count);
         init(count);
-        buildMesh(program, count, size, anchor, GLES20.GL_FLOAT);
+        buildMesh(program, count, rectangle, GLES20.GL_FLOAT);
         setAttributeUpdater(this);
     }
 
@@ -90,15 +90,14 @@ public class PlayfieldMesh extends SpriteMesh implements Consumer {
      * @param mesh The mesh to build buffers for
      * @param texture The texture source, if tiling shall be used it must be {@link TiledTexture2D}
      * @param charCount Number of chars to build, this is NOT the vertex count.
-     * @param charSizeThe width and height of each char
-     * @param anchor chars anchor values
+     * @param rectangle X1, Y1, width and height for each char
      * @param type The datatype for attribute data - GLES20.GL_FLOAT
      * 
      * @throws IllegalArgumentException if type is not GLES20.GL_FLOAT
      */
-    public void buildMesh(ShaderProgram program, int charCount, float[] charSize, Anchor anchor, int type) {
+    public void buildMesh(ShaderProgram program, int charCount, Rectangle rectangle, int type) {
         int vertexStride = program.getVertexStride();
-        float[] quadPositions = MeshBuilder.createQuadPositionsIndexed(charSize, anchor, vertexStride);
+        float[] quadPositions = MeshBuilder.createQuadPositionsIndexed(rectangle, vertexStride, 0);
         MeshBuilder.buildQuadMeshIndexed(this, program, 0, charCount, quadPositions);
     }
 
@@ -110,15 +109,11 @@ public class PlayfieldMesh extends SpriteMesh implements Consumer {
      * The chars will be laid out sequentially across the x axis (row based)
      * Before rendering the attributes in the mesh must be updated with attribute data from this class.
      * 
-     * @param width Width in characters, eg 10 will position 10 chars horizontally beginning at xpos.
-     * @param height Height in characters, eg 10 will position 10 chars vertically beginning at ypos.
-     * @param xpos Starting xpos for the upper left char.
-     * @param ypos Starting ypos for the upper left char.
-     * @param size Width and height of chars, all chars will have same size.
+     * @param mapSize width and height of map, in characters
+     * @param charSize width and height of each char
+     * @param offset Start position of the upper left char, ie the upper left char will have this position.
      */
-    public void setupCharmap(int[] mapSize, float[] charSize, Anchor anchor) {
-
-        float[] offset = anchor.calcOffsets(new float[] { mapSize[0] * charSize[0], mapSize[1] * charSize[1] });
+    public void setupCharmap(int[] mapSize, float[] charSize, float[] offset) {
 
         int index = 0;
         float currentX = offset[0];

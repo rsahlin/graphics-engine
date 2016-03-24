@@ -1,7 +1,9 @@
 package com.graphicsengine.scene;
 
+import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.spritemesh.SpriteMesh;
 import com.nucleus.scene.Node;
+import com.nucleus.vecmath.Rectangle;
 
 /**
  * A Quad child that has to be appended to QuadNode in order to be rendered.
@@ -20,13 +22,19 @@ public class SharedMeshQuad extends Node {
      * The index of this shared mesh quad node with it's parent.
      */
     transient private int childIndex;
+    /**
+     * The rectangle defining the sprites, all sprites will have same size
+     * 4 values = x1,y1 + width and height
+     */
+    @SerializedName("rect")
+    private Rectangle rectangle;
 
     public SharedMeshQuad() {
     }
 
     public void onCreated(SpriteMesh mesh, int index) {
         this.childIndex = index;
-        mesh.buildQuad(index, mesh.getMaterial().getProgram(), getSize(), getAnchor());
+        mesh.buildQuad(index, mesh.getMaterial().getProgram(), rectangle);
         if (transform == null) {
             mesh.setScale(index, 1, 1, 1);
         } else {
@@ -57,5 +65,28 @@ public class SharedMeshQuad extends Node {
 
     }
 
+    /**
+     * Sets the values from the source into this node
+     * 
+     * @param source
+     */
+    public void set(SharedMeshQuad source) {
+        super.set(source);
+        this.frame = source.frame;
+        if (source.rectangle != null) {
+            setQuadRectangle(source.rectangle);
+        } else {
+            rectangle = null;
+        }
+    }
 
+    /**
+     * Internal method, sets the rectangle defining each sprite
+     * This will only set the size parameter, createMesh must be called to actually create the mesh
+     * 
+     * param rectangle values defining sprite, X1, Y1, width, height.
+     */
+    private void setQuadRectangle(Rectangle rectangle) {
+        this.rectangle = new Rectangle(rectangle);
+    }
 }

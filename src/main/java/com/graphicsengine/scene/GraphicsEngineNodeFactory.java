@@ -65,7 +65,7 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
             internalCreateNode(renderer, source, created, meshFactory, gScene);
             break;
         case quadNode:
-            QuadNode uiNode = (QuadNode) gScene.getResources().getNode(GraphicsEngineNodeType.quadNode,
+            QuadParentNode uiNode = (QuadParentNode) gScene.getResources().getNode(GraphicsEngineNodeType.quadNode,
                     source.getReference());
             created = uiNode.copy();
             internalCreateNode(renderer, source, created, meshFactory, gScene);

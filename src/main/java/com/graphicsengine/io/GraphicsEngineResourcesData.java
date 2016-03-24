@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.map.Playfield;
 import com.graphicsengine.map.PlayfieldNode;
 import com.graphicsengine.scene.GraphicsEngineNodeType;
-import com.graphicsengine.scene.QuadNode;
+import com.graphicsengine.scene.QuadParentNode;
 import com.graphicsengine.scene.SharedMeshQuad;
 import com.graphicsengine.spritemesh.SpriteMeshNode;
 import com.nucleus.Error;
@@ -31,7 +31,7 @@ public class GraphicsEngineResourcesData extends ResourcesData {
     @SerializedName("sharedMeshNode")
     private ArrayList<SharedMeshQuad> sharedMeshNode = new ArrayList<SharedMeshQuad>();
     @SerializedName("quadNode")
-    private ArrayList<QuadNode> quadNodes = new ArrayList<>();
+    private ArrayList<QuadParentNode> quadNodes = new ArrayList<>();
 
     /**
      * Other data
@@ -82,8 +82,8 @@ public class GraphicsEngineResourcesData extends ResourcesData {
      * @param id
      * @return
      */
-    public QuadNode getQuadNode(String id) {
-        for (QuadNode quad : quadNodes) {
+    public QuadParentNode getQuadNode(String id) {
+        for (QuadParentNode quad : quadNodes) {
             if (id.equals(quad.getId())) {
                 return quad;
             }

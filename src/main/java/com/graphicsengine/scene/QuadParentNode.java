@@ -16,25 +16,25 @@ import com.nucleus.scene.Node;
  * @author Richard Sahlin
  *
  */
-public class QuadNode extends Node {
+public class QuadParentNode extends Node {
 
     @SerializedName("maxQuads")
     private int maxQuads;
 
     transient private ArrayList<SharedMeshQuad> quadChildren = new ArrayList<>();
 
-    public QuadNode() {
+    public QuadParentNode() {
         super();
     }
 
     @Override
-    public QuadNode createInstance() {
-        return new QuadNode();
+    public QuadParentNode createInstance() {
+        return new QuadParentNode();
     }
 
     @Override
     public Node copy() {
-        QuadNode copy = createInstance();
+        QuadParentNode copy = createInstance();
         copy.set(this);
         return copy;
     }
@@ -44,7 +44,7 @@ public class QuadNode extends Node {
      * 
      * @param source
      */
-    public void set(QuadNode source) {
+    public void set(QuadParentNode source) {
         super.set(source);
         this.maxQuads = source.maxQuads;
     }

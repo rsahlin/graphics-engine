@@ -1,6 +1,6 @@
 package com.graphicsengine.ui;
 
-import com.nucleus.scene.Node;
+import com.graphicsengine.scene.SharedMeshQuad;
 
 /**
  * Base class for UI elements, this is the base for focus and touch events to UI.
@@ -8,8 +8,7 @@ import com.nucleus.scene.Node;
  * @author Richard Sahlin
  *
  */
-public class Element extends Node {
-
+public class Element extends SharedMeshQuad {
 
     public Element() {
     }
