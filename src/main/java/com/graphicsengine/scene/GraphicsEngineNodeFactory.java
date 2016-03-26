@@ -100,6 +100,7 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
         }
         node.addMesh(mesh);
         node.copyTransform(source);
+
     }
 
     protected void createChildNodes(NucleusRenderer renderer, Node node, MeshFactory meshFactory,

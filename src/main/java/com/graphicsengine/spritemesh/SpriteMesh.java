@@ -4,7 +4,6 @@ import static com.nucleus.geometry.VertexBuffer.INDEXED_QUAD_VERTICES;
 import static com.nucleus.geometry.VertexBuffer.QUAD_INDICES;
 import static com.nucleus.geometry.VertexBuffer.XYZ_COMPONENTS;
 
-import com.nucleus.data.Anchor;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.ElementBuffer;
 import com.nucleus.geometry.ElementBuffer.Mode;
@@ -78,8 +77,8 @@ public class SpriteMesh extends Mesh implements Consumer {
     /**
      * Creates the buffers for the specified number of quads/sprites.
      * This method does not build the mesh, that has to be done by calling:
-     * {@link #buildQuad(int, ShaderProgram, float[], Anchor)} for each sprite/quad that shall be rendered.
-     * or {@link #buildMesh(ShaderProgram, int, float[], Anchor)}
+     * {@link #buildQuad(int, ShaderProgram, Rectangle)for each sprite/quad that shall be rendered.
+     * or {@link #buildMesh(ShaderProgram, int, float[])}
      * 
      * @param program
      * @param texture
