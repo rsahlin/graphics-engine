@@ -43,8 +43,6 @@ public class GraphicsEngineNodeExporter extends NucleusNodeExporter {
     private void exportDataReferences(PlayfieldNode playfieldController, GraphicsEngineRootNode sceneData) {
         exportMeshes(playfieldController.getMeshes(), sceneData);
         PlayfieldNode resource = playfieldController.copy();
-        resource.setId(playfieldController.getReference());
-        resource.setReference(null);
         sceneData.addResource(resource);
         Playfield playfield = PlayfieldMeshFactory.createPlayfield(playfieldController);
         sceneData.addResource(playfield);
@@ -61,8 +59,6 @@ public class GraphicsEngineNodeExporter extends NucleusNodeExporter {
             GraphicsEngineRootNode sceneData) {
         exportMeshes(tiledSpriteController.getMeshes(), sceneData);
         SpriteMeshNode resource = tiledSpriteController.copy();
-        resource.setId(tiledSpriteController.getReference());
-        resource.setReference(null);
         sceneData.addResource(resource);
     }
 
