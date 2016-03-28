@@ -40,34 +40,42 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
 
         switch (type) {
         case playfieldNode:
-            PlayfieldNode playfieldNode = (PlayfieldNode) gScene.getResources().getNode(
-                    GraphicsEngineNodeType.playfieldNode, source.getReference());
-            created = playfieldNode.copy();
+            // PlayfieldNode playfieldNode = (PlayfieldNode) gScene.getResources().getNode(
+            // GraphicsEngineNodeType.playfieldNode, source.getReference());
+            created = source.copy();
             internalCreateNode(renderer, source, created, meshFactory, gScene);
             ((PlayfieldNode) created).createPlayfield(gScene);
             break;
         case spriteMeshNode:
-            SpriteMeshNode spriteMeshNode = (SpriteMeshNode) gScene.getResources().getNode(
-                    GraphicsEngineNodeType.spriteMeshNode,
-                    source.getReference());
+            // SpriteMeshNode spriteMeshNode = (SpriteMeshNode) gScene.getResources().getNode(
+            // GraphicsEngineNodeType.spriteMeshNode,
+            // source.getReference());
             // This will set the actor resolver
-            created = spriteMeshNode.copy();
+            created = source.copy();
             internalCreateNode(renderer, source, created, meshFactory, gScene);
             // Instead of casting - should the Mesh be attribute consumer?
             ((SpriteMeshNode) created).createSprites(renderer, (SpriteMesh) created.getMeshById(created.getMeshRef()),
                     gScene);
             break;
         case sharedMeshNode:
-            SharedMeshQuad button = (SharedMeshQuad) gScene.getResources().getNode(
-                    GraphicsEngineNodeType.sharedMeshNode,
-                    source.getReference());
-            created = button.copy();
+            // SharedMeshQuad sharedQuad = (SharedMeshQuad) gScene.getResources().getNode(
+            // GraphicsEngineNodeType.sharedMeshNode,
+            // source.getReference());
+            created = source.copy();
             internalCreateNode(renderer, source, created, meshFactory, gScene);
             break;
         case quadNode:
-            QuadParentNode uiNode = (QuadParentNode) gScene.getResources().getNode(GraphicsEngineNodeType.quadNode,
-                    source.getReference());
-            created = uiNode.copy();
+            // QuadParentNode quadParent = (QuadParentNode)
+            // gScene.getResources().getNode(GraphicsEngineNodeType.quadNode,
+            // source.getReference());
+            created = source.copy();
+            internalCreateNode(renderer, source, created, meshFactory, gScene);
+            break;
+        case element:
+            // Element element = (Element) gScene.getResources().getNode(
+            // GraphicsEngineNodeType.element,
+            // source.getReference());
+            created = source.copy();
             internalCreateNode(renderer, source, created, meshFactory, gScene);
             break;
         default:
@@ -89,17 +97,13 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
     protected void internalCreateNode(NucleusRenderer renderer, Node source, Node node, MeshFactory meshFactory,
             GraphicsEngineRootNode scene) throws IOException {
         node.create();
-        node.toReference(source, node);
+        // Copy properties from source node into the created node.
+        node.setProperties(source);
         Mesh mesh = meshFactory.createMesh(renderer, node, scene);
-        if (mesh == null) {
-            return;
-        }
-        // Check if the mesh has an id, if not set to reference
-        if (mesh.getId() == null) {
-            mesh.setId(source.getReference());
-        }
-        node.addMesh(mesh);
         node.copyTransform(source);
+        if (mesh != null) {
+            node.addMesh(mesh);
+        }
 
     }
 
