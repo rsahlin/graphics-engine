@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.io.Reader;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.graphicsengine.exporter.GraphicsEngineNodeExporter;
 import com.graphicsengine.geometry.GraphicsEngineMeshFactory;
+import com.graphicsengine.io.gson.NodeDeserializer;
 import com.graphicsengine.scene.GraphicsEngineNodeFactory;
 import com.graphicsengine.scene.GraphicsEngineNodeType;
 import com.nucleus.geometry.MeshFactory;
@@ -22,6 +24,8 @@ import com.nucleus.scene.RootNode;
  *
  */
 public class GSONGraphicsEngineFactory extends GSONSceneFactory {
+
+    private NodeDeserializer nodeDeserializer = new NodeDeserializer();
 
     @Override
     protected RootNode getSceneFromJson(Gson gson, Reader reader) {
@@ -66,4 +70,15 @@ public class GSONGraphicsEngineFactory extends GSONSceneFactory {
         return new GraphicsEngineMeshFactory();
     }
 
+    @Override
+    protected void registerTypeAdapter(GsonBuilder builder) {
+        super.registerTypeAdapter(builder);
+        builder.registerTypeAdapter(Node.class, nodeDeserializer);
+    }
+
+    protected void setGson(Gson gson) {
+        super.setGson(gson);
+        nodeDeserializer.setGson(gson);
+    }
+    
 }
