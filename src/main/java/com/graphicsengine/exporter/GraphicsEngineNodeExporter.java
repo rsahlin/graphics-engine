@@ -28,6 +28,9 @@ public class GraphicsEngineNodeExporter extends NucleusNodeExporter {
         case spriteMeshNode:
             exportDataReferences((SpriteMeshNode) source, (GraphicsEngineRootNode) rootNode);
             return source.copy();
+        case quadNode:
+            // exportDataReferences((QuadParentNode) source, (GraphicsEngineRootNode) rootNode);
+            return source.copy();
         default:
             throw new IllegalArgumentException(NOT_IMPLEMENTED + type);
         }
