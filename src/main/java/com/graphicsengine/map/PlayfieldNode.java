@@ -2,7 +2,7 @@ package com.graphicsengine.map;
 
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.dataflow.ArrayInputData;
-import com.graphicsengine.io.GraphicsEngineRootNode;
+import com.graphicsengine.io.GraphicsEngineResourcesData;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.scene.Node;
 import com.nucleus.vecmath.Axis;
@@ -50,16 +50,9 @@ public class PlayfieldNode extends Node {
     public PlayfieldNode() {
     }
 
-    /**
-     * Creates a new instance of this node.
-     * This will be a new empty instance.
-     * 
-     * @return New instance of this node
-     */
     @Override
     public PlayfieldNode createInstance() {
         PlayfieldNode copy = new PlayfieldNode();
-        copy.set(this);
         return copy;
     }
 
@@ -83,15 +76,16 @@ public class PlayfieldNode extends Node {
         setMapOffset(source.offset);
 
     }
+    
     /**
      * Sets the playfield in this controller, creating the map storage if needed, and updates the mesh to contain
      * the charset.
      * 
-     * @param scene
+     * @param resources The scene resources
      */
-    public void createPlayfield(GraphicsEngineRootNode scene) {
+    public void createPlayfield(GraphicsEngineResourcesData resources) {
         PropertyMapper mapper = new PropertyMapper(getMeshById(getMeshRef()).getMaterial().getProgram());
-        Playfield playfieldData = scene.getResources().getPlayfield(getMapRef());
+        Playfield playfieldData = resources.getPlayfield(getMapRef());
         createMap(getMapSize());
         ArrayInputData id = playfieldData.getArrayInput();
         PlayfieldMesh playfield = (PlayfieldMesh) getMeshById(getMeshRef());

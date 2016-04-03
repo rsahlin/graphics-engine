@@ -48,4 +48,10 @@ public class GraphicsEngineRootNode extends RootNode {
     public void addResource(Playfield playfield) {
         getResources().addPlayfield(playfield);
     }
+
+    @Override
+    public RootNode createInstance() {
+        return new GraphicsEngineRootNode();
+    }
+
 }

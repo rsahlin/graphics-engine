@@ -96,7 +96,7 @@ public class GraphicsEngineResourcesData extends ResourcesData {
      * TODO: Should an exception be thrown if a node with same id alredy exists? probably....
      * 
      * @param type The node type
-     * @param node The node
+     * @param node The node to add
      */
     public void addNode(GraphicsEngineNodeType type, Node node) {
         switch (type) {
@@ -114,6 +114,12 @@ public class GraphicsEngineResourcesData extends ResourcesData {
         }
     }
 
+    /**
+     * Internal method to add the node to the list of nodes.
+     * 
+     * @param nodes List of nodes to add the node to
+     * @param node Node to add.
+     */
     private void addNode(ArrayList<Node> nodes, Node node) {
         if (getNode(GraphicsEngineNodeType.valueOf(node.getType()), node.getId()) == null) {
             nodes.add(node);

@@ -1,13 +1,13 @@
 package com.graphicsengine.sprite;
 
 import com.google.gson.annotations.SerializedName;
+import com.graphicsengine.io.GraphicsEngineResourcesData;
 import com.graphicsengine.spritemesh.SpriteMesh;
 import com.nucleus.actor.ActorContainer;
 import com.nucleus.actor.ActorItem;
 import com.nucleus.actor.ActorNode;
 import com.nucleus.actor.ActorResolver;
 import com.nucleus.renderer.NucleusRenderer;
-import com.nucleus.scene.RootNode;
 
 /**
  * Controller for a set of sprites.
@@ -100,9 +100,10 @@ public abstract class SpriteNode extends ActorNode {
      * 
      * @param renderer
      * @param mesh
-     * @param scene
+     * @param resources The resources in the scene
      */
-    protected abstract void createSprites(NucleusRenderer renderer, SpriteMesh mesh, RootNode scene);
+    protected abstract void createSprites(NucleusRenderer renderer, SpriteMesh mesh,
+            GraphicsEngineResourcesData resources);
 
     /**
      * Internal method to check if a actor resolver has been set, call this in implementations of the createSprites()

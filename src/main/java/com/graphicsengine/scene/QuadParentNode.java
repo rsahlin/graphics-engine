@@ -29,7 +29,8 @@ public class QuadParentNode extends Node {
 
     @Override
     public QuadParentNode createInstance() {
-        return new QuadParentNode();
+        QuadParentNode copy = new QuadParentNode();
+        return copy;
     }
 
     @Override

@@ -2,7 +2,7 @@ package com.graphicsengine.spritemesh;
 
 import java.io.IOException;
 
-import com.graphicsengine.io.GraphicsEngineRootNode;
+import com.graphicsengine.io.GraphicsEngineResourcesData;
 import com.graphicsengine.scene.QuadParentNode;
 import com.graphicsengine.scene.SharedMeshQuad;
 import com.nucleus.assets.AssetManager;
@@ -38,12 +38,13 @@ public class SpriteMeshFactory {
      * @return
      * @throws IOException
      */
-    public static SpriteMesh create(NucleusRenderer renderer, SpriteMeshNode node, GraphicsEngineRootNode scene)
+    public static SpriteMesh create(NucleusRenderer renderer, SpriteMeshNode node,
+            GraphicsEngineResourcesData resources)
             throws IOException {
 
-        Mesh refMesh = scene.getResources().getMesh(node.getMeshRef());
+        Mesh refMesh = resources.getMesh(node.getMeshRef());
         Texture2D texture = AssetManager.getInstance().getTexture(renderer,
-                scene.getResources().getTexture2D(refMesh.getTextureRef()));
+                resources.getTexture2D(refMesh.getTextureRef()));
         ShaderProgram program = SpriteMeshFactory.createProgram(texture);
         SpriteMesh mesh = new SpriteMesh(refMesh);
         renderer.createProgram(program);
@@ -54,12 +55,12 @@ public class SpriteMeshFactory {
         return mesh;
     }
 
-    public static Mesh create(NucleusRenderer renderer, QuadParentNode node, GraphicsEngineRootNode scene)
+    public static Mesh create(NucleusRenderer renderer, QuadParentNode node, GraphicsEngineResourcesData resources)
             throws IOException {
 
-        Mesh refMesh = scene.getResources().getMesh(node.getMeshRef());
+        Mesh refMesh = resources.getMesh(node.getMeshRef());
         Texture2D texture = AssetManager.getInstance().getTexture(renderer,
-                scene.getResources().getTexture2D(refMesh.getTextureRef()));
+                resources.getTexture2D(refMesh.getTextureRef()));
         ShaderProgram program = SpriteMeshFactory.createProgram(texture);
         SpriteMesh mesh = new SpriteMesh(refMesh);
         renderer.createProgram(program);
@@ -71,7 +72,7 @@ public class SpriteMeshFactory {
         return mesh;
     }
 
-    public static Mesh create(NucleusRenderer renderer, SharedMeshQuad node, GraphicsEngineRootNode scene)
+    public static Mesh create(NucleusRenderer renderer, SharedMeshQuad node, GraphicsEngineResourcesData resources)
             throws IOException {
 
         // TODO shall it not be allowed to reference a mesh - maybe this node MUST share another node?

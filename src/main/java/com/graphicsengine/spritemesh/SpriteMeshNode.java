@@ -1,6 +1,7 @@
 package com.graphicsengine.spritemesh;
 
 import com.google.gson.annotations.SerializedName;
+import com.graphicsengine.io.GraphicsEngineResourcesData;
 import com.graphicsengine.sprite.Sprite;
 import com.graphicsengine.sprite.SpriteFactory;
 import com.graphicsengine.sprite.SpriteNode;
@@ -8,7 +9,6 @@ import com.graphicsengine.sprite.SpriteNodeFactory;
 import com.nucleus.geometry.AttributeUpdater.Producer;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.renderer.NucleusRenderer;
-import com.nucleus.scene.RootNode;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.vecmath.Rectangle;
 
@@ -77,7 +77,7 @@ public class SpriteMeshNode extends SpriteNode implements Producer {
     }
 
     @Override
-    public void createSprites(NucleusRenderer renderer, SpriteMesh consumer, RootNode scene) {
+    public void createSprites(NucleusRenderer renderer, SpriteMesh consumer, GraphicsEngineResourcesData resources) {
         PropertyMapper mapper = consumer.getMapper();
         float[] attributeData = consumer.getAttributeData();
         Texture2D tex = consumer.getTexture(Texture2D.TEXTURE_0);

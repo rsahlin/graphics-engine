@@ -12,6 +12,7 @@ import com.graphicsengine.scene.GraphicsEngineNodeFactory;
 import com.graphicsengine.scene.GraphicsEngineNodeType;
 import com.nucleus.geometry.MeshFactory;
 import com.nucleus.io.GSONSceneFactory;
+import com.nucleus.io.ResourcesData;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.NodeFactory;
 import com.nucleus.scene.RootNode;
@@ -43,16 +44,22 @@ public class GSONGraphicsEngineFactory extends GSONSceneFactory {
     }
 
     @Override
+    protected RootNode createRoot() {
+        return new GraphicsEngineRootNode();
+    }
+
+    @Override
     protected void registerNodeExporters() {
         super.registerNodeExporters();
         nodeExporter.registerNodeExporter(GraphicsEngineNodeType.values(), new GraphicsEngineNodeExporter());
     }
 
     @Override
-    protected Node createNode(RootNode scene, Node source, Node parent) throws IOException {
-        Node created = nodeFactory.create(renderer, source, meshFactory, scene);
+    protected Node createNode(ResourcesData resources, Node source, Node parent) throws IOException {
+        Node created = nodeFactory.create(renderer, meshFactory, resources, source);
+        created.setRootNode(parent.getRootNode());
         setViewFrustum(source, created);
-        createChildNodes(scene, source, created);
+        createChildNodes(resources, source, created);
         created.onCreated();
         return created;
     }
@@ -76,6 +83,7 @@ public class GSONGraphicsEngineFactory extends GSONSceneFactory {
         builder.registerTypeAdapter(Node.class, nodeDeserializer);
     }
 
+    @Override
     protected void setGson(Gson gson) {
         super.setGson(gson);
         nodeDeserializer.setGson(gson);

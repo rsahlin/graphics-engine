@@ -2,7 +2,7 @@ package com.graphicsengine.map;
 
 import java.io.IOException;
 
-import com.graphicsengine.io.GraphicsEngineRootNode;
+import com.graphicsengine.io.GraphicsEngineResourcesData;
 import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshBuilder;
@@ -30,11 +30,11 @@ public class PlayfieldMeshFactory {
      * @throws IOException
      */
     public static PlayfieldMesh create(NucleusRenderer renderer, PlayfieldNode node,
-            GraphicsEngineRootNode scene)
+            GraphicsEngineResourcesData resources)
             throws IOException {
 
-        Mesh refMesh = scene.getResources().getMesh(node.getMeshRef());
-        TiledTexture2D textureData = (TiledTexture2D) scene.getResources().getTexture2D(
+        Mesh refMesh = resources.getMesh(node.getMeshRef());
+        TiledTexture2D textureData = (TiledTexture2D) resources.getTexture2D(
                 refMesh.getTextureRef());
 
         PlayfieldProgram program = new PlayfieldProgram();

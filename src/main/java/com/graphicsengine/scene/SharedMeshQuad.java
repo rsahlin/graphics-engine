@@ -54,7 +54,8 @@ public class SharedMeshQuad extends Node {
 
     @Override
     public SharedMeshQuad createInstance() {
-        return new SharedMeshQuad();
+        SharedMeshQuad copy = new SharedMeshQuad();
+        return copy;
     }
 
     @Override
