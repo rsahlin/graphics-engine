@@ -136,7 +136,8 @@ public class PlayfieldMesh extends SpriteMesh implements Consumer {
                 currentX += charSize[Axis.WIDTH.index];
             }
             currentX = offset[0];
-            offset[1] += charSize[Axis.HEIGHT.index];
+            // TODO handle Y axis going other direction?
+            offset[1] -= charSize[Axis.HEIGHT.index];
         }
     }
 
