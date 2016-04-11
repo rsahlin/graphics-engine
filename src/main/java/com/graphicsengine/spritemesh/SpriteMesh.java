@@ -124,7 +124,7 @@ public class SpriteMesh extends Mesh implements Consumer {
         int vertexStride = program.getVertexStride();
         float[] quadPositions = MeshBuilder.createQuadPositionsIndexed(rectangle, vertexStride, 0);
         MeshBuilder.buildQuadMeshIndexed(this, program, 0, spriteCount, quadPositions);
-        prepareUV(mapper, spriteCount);
+        prepareUV(mapper, spriteCount, 0);
     }
 
     /**
@@ -132,11 +132,12 @@ public class SpriteMesh extends Mesh implements Consumer {
      * 
      * @param mapper
      * @param spriteCount
+     * @param index Index into the first sprite to prepare
      */
-    private void prepareUV(PropertyMapper mapper, int spriteCount) {
+    private void prepareUV(PropertyMapper mapper, int spriteCount, int index) {
         for (int i = 0; i < spriteCount; i++) {
             if (getTexture(Texture2D.TEXTURE_0).type == TextureType.TiledTexture2D) {
-                MeshBuilder.prepareTiledUV(mapper, attributeData, i);
+                MeshBuilder.prepareTiledUV(mapper, attributeData, index + i);
             } else if (getTexture(Texture2D.TEXTURE_0).type == TextureType.UVTexture2D) {
                 // TODO Must prepare UV based on the data in the texture.
             } else {
@@ -161,7 +162,7 @@ public class SpriteMesh extends Mesh implements Consumer {
         int vertexStride = program.getVertexStride();
         float[] quadPositions = MeshBuilder.createQuadPositionsIndexed(rectangle, vertexStride, 0);
         MeshBuilder.buildQuad(this, program, index, quadPositions);
-        prepareUV(mapper, 1);
+        prepareUV(mapper, 1, index);
     }
 
     @Override
@@ -229,7 +230,7 @@ public class SpriteMesh extends Mesh implements Consumer {
      * @param transform
      */
     public void setTransform(int index, Transform transform) {
-        int offset = index * mapper.ATTRIBUTES_PER_VERTEX;
+        int offset = index * mapper.ATTRIBUTES_PER_VERTEX * ShaderProgram.VERTICES_PER_SPRITE;
         float[] scale = transform.getScale();
         float[] pos = transform.getTranslate();
         for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
@@ -284,12 +285,12 @@ public class SpriteMesh extends Mesh implements Consumer {
     /**
      * Sets the frame when the mesh uses a UV texture
      * 
-     * @param index
+     * @param index The index of the quad/sprite to set frame of, 0 and up
      * @param frame
      * @param uvAtlas
      */
     private void setFrame(int index, int frame, UVAtlas uvAtlas) {
-        int offset = index * mapper.ATTRIBUTES_PER_VERTEX;
+        int offset = index * mapper.ATTRIBUTES_PER_VERTEX * INDEXED_QUAD_VERTICES;
         int readIndex = 0;
         uvAtlas.getUVFrame(frame, frames, 0);
         for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
