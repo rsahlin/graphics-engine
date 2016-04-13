@@ -125,6 +125,7 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
      * @param source The source node containing the viewfrustum
      * @param node Node to check, or null
      */
+    @Override
     protected void setViewFrustum(Node source, Node node) {
         if (node == null) {
             return;
@@ -135,6 +136,5 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
         }
         node.setViewFrustum(new ViewFrustum(projection));
     }
-
 
 }
