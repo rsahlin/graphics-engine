@@ -42,7 +42,7 @@ public class GSONGraphicsEngineFactory extends GSONSceneFactory {
     }
 
     @Override
-    protected RootNode createRoot() {
+    protected RootNode createInstance() {
         return new GraphicsEngineRootNode();
     }
 
