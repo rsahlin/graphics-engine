@@ -13,7 +13,7 @@ import com.graphicsengine.scene.QuadParentNode;
 import com.graphicsengine.scene.SharedMeshQuad;
 import com.graphicsengine.spritemesh.SpriteMeshNode;
 import com.graphicsengine.ui.Element;
-import com.nucleus.Error;
+import com.nucleus.ErrorMessage;
 import com.nucleus.io.NucleusNodeDeserializer;
 import com.nucleus.scene.Node;
 
@@ -37,7 +37,7 @@ public class NodeDeserializer extends NucleusNodeDeserializer implements JsonDes
             case spriteMeshNode:
                 return gson.fromJson(json, SpriteMeshNode.class);
             default:
-                throw new IllegalArgumentException(Error.NOT_IMPLEMENTED.message);
+                throw new IllegalArgumentException(ErrorMessage.NOT_IMPLEMENTED.message);
             }
         } catch (IllegalArgumentException e) {
             //Try with super

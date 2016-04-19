@@ -136,9 +136,9 @@ public class SpriteMesh extends Mesh implements Consumer {
      */
     private void prepareUV(PropertyMapper mapper, int spriteCount, int index) {
         for (int i = 0; i < spriteCount; i++) {
-            if (getTexture(Texture2D.TEXTURE_0).type == TextureType.TiledTexture2D) {
+            if (getTexture(Texture2D.TEXTURE_0).textureType == TextureType.TiledTexture2D) {
                 MeshBuilder.prepareTiledUV(mapper, attributeData, index + i);
-            } else if (getTexture(Texture2D.TEXTURE_0).type == TextureType.UVTexture2D) {
+            } else if (getTexture(Texture2D.TEXTURE_0).textureType == TextureType.UVTexture2D) {
                 // TODO Must prepare UV based on the data in the texture.
             } else {
                 throw new IllegalArgumentException();
@@ -271,13 +271,13 @@ public class SpriteMesh extends Mesh implements Consumer {
      * @param frame
      */
     public void setFrame(int index, int frame) {
-        if (texture[Texture2D.TEXTURE_0].type == TextureType.TiledTexture2D) {
+        if (texture[Texture2D.TEXTURE_0].textureType == TextureType.TiledTexture2D) {
             int offset = index * mapper.ATTRIBUTES_PER_VERTEX;
             for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
                 attributeData[offset + mapper.FRAME_INDEX] = frame;
                 offset += mapper.ATTRIBUTES_PER_VERTEX;
             }
-        } else if (texture[Texture2D.TEXTURE_0].type == TextureType.UVTexture2D) {
+        } else if (texture[Texture2D.TEXTURE_0].textureType == TextureType.UVTexture2D) {
             setFrame(index, frame, ((UVTexture2D) texture[Texture2D.TEXTURE_0]).getUVAtlas());
         }
     }

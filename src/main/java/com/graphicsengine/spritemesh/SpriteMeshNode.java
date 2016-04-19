@@ -82,7 +82,7 @@ public class SpriteMeshNode extends SpriteNode implements Producer {
         float[] attributeData = consumer.getAttributeData();
         Texture2D tex = consumer.getTexture(Texture2D.TEXTURE_0);
         for (int i = 0; i < count; i++) {
-            switch (tex.type) {
+            switch (tex.textureType) {
             case TiledTexture2D:
                 sprites[i] = SpriteFactory.create(TiledSprite.class, this, mapper, attributeData, i);
                 break;

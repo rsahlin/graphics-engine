@@ -3,7 +3,7 @@ package com.graphicsengine.io;
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.map.Playfield;
 import com.graphicsengine.scene.GraphicsEngineNodeType;
-import com.nucleus.Error;
+import com.nucleus.ErrorMessage;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
 
@@ -36,7 +36,7 @@ public class GraphicsEngineRootNode extends RootNode {
             getResources().addNode(type, node);
         } catch (IllegalArgumentException e) {
             // This means the node is not a type that is known by the graphics engine
-            throw new IllegalArgumentException(Error.INVALID_TYPE.message + node.getType());
+            throw new IllegalArgumentException(ErrorMessage.INVALID_TYPE.message + node.getType());
         }
     }
 

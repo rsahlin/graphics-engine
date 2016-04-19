@@ -9,7 +9,7 @@ import com.graphicsengine.scene.GraphicsEngineNodeType;
 import com.graphicsengine.scene.QuadParentNode;
 import com.graphicsengine.scene.SharedMeshQuad;
 import com.graphicsengine.spritemesh.SpriteMeshNode;
-import com.nucleus.Error;
+import com.nucleus.ErrorMessage;
 import com.nucleus.io.ResourcesData;
 import com.nucleus.scene.Node;
 
@@ -110,7 +110,7 @@ public class GraphicsEngineResourcesData extends ResourcesData {
             addNode((ArrayList) sharedMeshNode, node);
             break;
         default:
-            throw new IllegalArgumentException(Error.NOT_IMPLEMENTED.message);
+            throw new IllegalArgumentException(ErrorMessage.NOT_IMPLEMENTED.message);
         }
     }
 
@@ -147,7 +147,7 @@ public class GraphicsEngineResourcesData extends ResourcesData {
         case quadNode:
             return getNode((ArrayList) quadNodes, id);
         default:
-            throw new IllegalArgumentException(Error.NOT_IMPLEMENTED.message + " : " + type);
+            throw new IllegalArgumentException(ErrorMessage.NOT_IMPLEMENTED.message + " : " + type);
         }
     }
 

@@ -90,13 +90,13 @@ public class SpriteMeshFactory {
      * @return The shader program for the specified texture.
      */
     public static ShaderProgram createProgram(Texture2D texture) {
-        switch (texture.type) {
+        switch (texture.textureType) {
         case TiledTexture2D:
             return new TiledSpriteProgram();
         case UVTexture2D:
             return new UVSpriteProgram();
         default:
-            throw new IllegalArgumentException(INVALID_TYPE + texture.type);
+            throw new IllegalArgumentException(INVALID_TYPE + texture.textureType);
         }
 
     }
