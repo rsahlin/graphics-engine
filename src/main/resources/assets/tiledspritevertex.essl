@@ -18,8 +18,10 @@
 #version 100
 
 //Put array declaration after name for GLSL compatibility
-uniform mat4 uMVPMatrix;
+uniform mat4 uMVMatrix;
+uniform mat4 uProjectionMatrix;
 uniform vec3 uSpriteData; //tex width, tex height, frames per line
+uniform vec2 uScreenSize; //Width and height of screen
 
 attribute vec4 aPosition;
 attribute vec4 aTranslate; //sprite x, sprite y, sprite z 
@@ -31,7 +33,8 @@ varying vec2 vTexCoord;
 mat4 calculateTransformMatrix();
 
 void main() {
-    gl_Position = calculateTransformMatrix() * (vec4(aScale.x,aScale.y,1,1) * aPosition) + (uMVPMatrix * vec4(aTranslate.x, aTranslate.y, aTranslate.z, 0.0));
+    vec4 pos = uMVMatrix * (vec4(aTranslate.x, aTranslate.y, aTranslate.z, 0.0) + (calculateTransformMatrix() * aPosition));
+    gl_Position = uProjectionMatrix * vec4(floor((uScreenSize * vec2(pos)) + 0.5) / uScreenSize, pos.z, pos.w);
     float y = floor(aFrameData.z / uSpriteData.z);
     vTexCoord = vec2(aFrameData.x * uSpriteData.x + 
                      mod(aFrameData.z, uSpriteData.z) * uSpriteData.x,
@@ -49,11 +52,11 @@ mat4 calculateTransformMatrix(){
     float cz = cos(aRotate.z);
     float sz = sin(aRotate.z);
 
-    modelview[0][0]  =  cz;
-    modelview[0][1]  =  sz;
+    modelview[0][0]  =  cz * aScale.x;
+    modelview[0][1]  =  sz * aScale.x;
 
-    modelview[1][0]  =  -sz;
-    modelview[1][1]  = cz;
+    modelview[1][0]  =  -sz * aScale.y;
+    modelview[1][1]  = cz * aScale.y;
         
-    return uMVPMatrix * modelview;
+    return modelview;
 }

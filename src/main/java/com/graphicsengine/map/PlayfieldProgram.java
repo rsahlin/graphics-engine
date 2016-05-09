@@ -7,12 +7,14 @@ import com.nucleus.geometry.Mesh.BufferIndex;
 import com.nucleus.geometry.VertexBuffer;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.GLException;
+import com.nucleus.renderer.Window;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.shader.ShaderVariable;
 import com.nucleus.shader.ShaderVariable.VariableType;
 import com.nucleus.shader.VariableMapping;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TiledTexture2D;
+import com.nucleus.vecmath.Matrix;
 
 /**
  * This class defines the mappings for the charset vertex and fragment shaders.
@@ -53,11 +55,13 @@ public class PlayfieldProgram extends ShaderProgram {
     private final static int ATTRIBUTE_CHARMAP_FRAME_INDEX = 4;
 
     public enum VARIABLES implements VariableMapping {
-        uMVPMatrix(0, 0, ShaderVariable.VariableType.UNIFORM, null),
-        uCharsetData(1, 16, ShaderVariable.VariableType.UNIFORM, null),
-        aPosition(2, 0, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.VERTICES),
-        aCharset(3, 0, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
-        aCharset2(4, 4, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES);
+        uMVMatrix(0, 0, ShaderVariable.VariableType.UNIFORM, null),
+        uProjectionMatrix(1, 16, ShaderVariable.VariableType.UNIFORM, null),
+        uCharsetData(2, 32, ShaderVariable.VariableType.UNIFORM, null),
+        uScreenSize(3, 35, ShaderVariable.VariableType.UNIFORM, null),
+        aPosition(4, 0, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.VERTICES),
+        aCharset(5, 0, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
+        aCharset2(6, 4, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES);
 
         private final int index;
         private final VariableType type;
@@ -120,18 +124,28 @@ public class PlayfieldProgram extends ShaderProgram {
     }
 
     @Override
-    public void bindUniforms(GLES20Wrapper gles, float[] modelviewMatrix, Mesh mesh) throws GLException {
+    public void bindUniforms(GLES20Wrapper gles, float[] modelviewMatrix, float[] projectionMatrix, Mesh mesh)
+            throws GLException {
         // Refresh the matrix
-        System.arraycopy(modelviewMatrix, 0, mesh.getUniforms(), VARIABLES.uMVPMatrix.offset, modelviewMatrix.length);
+        System.arraycopy(modelviewMatrix, 0, mesh.getUniforms(), VARIABLES.uMVMatrix.offset, Matrix.MATRIX_ELEMENTS);
+        System.arraycopy(projectionMatrix, 0, mesh.getUniforms(), VARIABLES.uProjectionMatrix.offset,
+                Matrix.MATRIX_ELEMENTS);
         bindUniforms(gles, uniforms, mesh.getUniforms());
     }
 
     @Override
     public void setupUniforms(Mesh mesh) {
         createUniformStorage(mesh, shaderVariables);
+        int screenSizeOffset = shaderVariables[VARIABLES.uScreenSize.index].getOffset();
+        float[] uniforms = mesh.getUniforms();
+//      uniforms[screenSizeOffset++] = Window.getInstance().getWidth();
+//      uniforms[screenSizeOffset++] = Window.getInstance().getHeight();
+        uniforms[screenSizeOffset++] = Window.getInstance().getWidth();
+        uniforms[screenSizeOffset++] = Window.getInstance().getHeight();
         Texture2D texture = mesh.getTexture(Texture2D.TEXTURE_0);
         if (texture instanceof TiledTexture2D) {
-            setTextureUniforms((TiledTexture2D) texture, mesh.getUniforms(), VARIABLES.uCharsetData,
+            setTextureUniforms((TiledTexture2D) texture, uniforms,
+                    shaderVariables[VARIABLES.uCharsetData.index],
                     UNIFORM_TEX_OFFSET);
         } else {
             System.err.println(INVALID_TEXTURE_TYPE + texture);

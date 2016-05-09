@@ -7,12 +7,14 @@ import com.nucleus.geometry.Mesh.BufferIndex;
 import com.nucleus.geometry.VertexBuffer;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.GLException;
+import com.nucleus.renderer.Window;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.shader.ShaderVariable;
 import com.nucleus.shader.ShaderVariable.VariableType;
 import com.nucleus.shader.VariableMapping;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TiledTexture2D;
+import com.nucleus.vecmath.Matrix;
 
 /**
  * This class defines the mappings for the tile sprite vertex and fragment shaders.
@@ -62,13 +64,15 @@ public class TiledSpriteProgram extends ShaderProgram {
     final static int ATTRIBUTE_SPRITE_UV = 12;
 
     public enum VARIABLES implements VariableMapping {
-        uMVPMatrix(0, 0, ShaderVariable.VariableType.UNIFORM, null),
-        uSpriteData(1, 16, ShaderVariable.VariableType.UNIFORM, null),
-        aPosition(2, 0, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.VERTICES),
-        aTranslate(3, 0, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
-        aRotate(4, 4, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
-        aScale(5, 8, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
-        aFrameData(6, 12, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES);
+        uMVMatrix(0, 0, ShaderVariable.VariableType.UNIFORM, null),
+        uProjectionMatrix(1, 16, ShaderVariable.VariableType.UNIFORM, null),
+        uSpriteData(2, 32, ShaderVariable.VariableType.UNIFORM, null),
+        uScreenSize(3, 35, ShaderVariable.VariableType.UNIFORM, null),
+        aPosition(4, 0, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.VERTICES),
+        aTranslate(5, 0, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
+        aRotate(6, 4, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
+        aScale(7, 8, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
+        aFrameData(8, 12, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES);
 
         private final int index;
         private final VariableType type;
@@ -130,9 +134,12 @@ public class TiledSpriteProgram extends ShaderProgram {
     }
 
     @Override
-    public void bindUniforms(GLES20Wrapper gles, float[] modelviewMatrix, Mesh mesh) throws GLException {
+    public void bindUniforms(GLES20Wrapper gles, float[] modelviewMatrix, float[] projectionMatrix, Mesh mesh)
+            throws GLException {
         // Refresh the uniform matrix
-        System.arraycopy(modelviewMatrix, 0, mesh.getUniforms(), VARIABLES.uMVPMatrix.offset, modelviewMatrix.length);
+        System.arraycopy(modelviewMatrix, 0, mesh.getUniforms(), VARIABLES.uMVMatrix.offset, Matrix.MATRIX_ELEMENTS);
+        System.arraycopy(projectionMatrix, 0, mesh.getUniforms(), VARIABLES.uProjectionMatrix.offset,
+                Matrix.MATRIX_ELEMENTS);
         bindUniforms(gles, uniforms, mesh.getUniforms());
     }
 
@@ -149,12 +156,26 @@ public class TiledSpriteProgram extends ShaderProgram {
     public void setupUniforms(Mesh mesh) {
         createUniformStorage(mesh, shaderVariables);
         float[] uniforms = mesh.getUniforms();
+        setScreenSize(uniforms);
         Texture2D texture = mesh.getTexture(Texture2D.TEXTURE_0);
         if (texture instanceof TiledTexture2D) {
-            setTextureUniforms((TiledTexture2D) texture, uniforms, VARIABLES.uSpriteData, UNIFORM_TEX_OFFSET);
+            setTextureUniforms((TiledTexture2D) texture, uniforms, shaderVariables[VARIABLES.uSpriteData.index],
+                    UNIFORM_TEX_OFFSET);
         } else {
             System.err.println(INVALID_TEXTURE_TYPE + texture);
         }
+    }
+
+    /**
+     * Sets the screensize to uniform storage
+     * 
+     * @param uniforms
+     */
+    protected void setScreenSize(float[] uniforms) {
+        int screenSizeOffset = shaderVariables[VARIABLES.uScreenSize.index].getOffset();
+        uniforms[screenSizeOffset++] = Window.getInstance().getWidth();
+        uniforms[screenSizeOffset++] = Window.getInstance().getHeight();
+
     }
 
     @Override
