@@ -25,7 +25,7 @@ public abstract class Sprite extends ActorContainer implements Producer {
     /**
      * Number of float data values reserved for sprite, first free index is SPRITE_FLOAT_COUNT
      */
-    public final static int SPRITE_FLOAT_COUNT = SCALE + 1;
+    public final static int SPRITE_FLOAT_COUNT = ROTATION + 1;
 
     /**
      * The sprite actor implementation

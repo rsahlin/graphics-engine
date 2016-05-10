@@ -66,8 +66,8 @@ public class TiledSpriteProgram extends ShaderProgram {
     public enum VARIABLES implements VariableMapping {
         uMVMatrix(0, 0, ShaderVariable.VariableType.UNIFORM, null),
         uProjectionMatrix(1, 16, ShaderVariable.VariableType.UNIFORM, null),
-        uSpriteData(2, 32, ShaderVariable.VariableType.UNIFORM, null),
-        uScreenSize(3, 35, ShaderVariable.VariableType.UNIFORM, null),
+        uScreenSize(2, 32, ShaderVariable.VariableType.UNIFORM, null),
+        uSpriteData(3, 34, ShaderVariable.VariableType.UNIFORM, null),
         aPosition(4, 0, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.VERTICES),
         aTranslate(5, 0, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
         aRotate(6, 4, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),

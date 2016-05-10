@@ -20,7 +20,6 @@
 //Put array declaration after name for GLSL compatibility
 uniform mat4 uMVMatrix;
 uniform mat4 uProjectionMatrix;
-uniform vec3 uSpriteData; //tex width, tex height, frames per line
 uniform vec2 uScreenSize; //Screen width and height
 
 attribute vec4 aPosition;
@@ -35,10 +34,6 @@ mat4 calculateTransformMatrix();
 void main() {
     vec4 pos = uMVMatrix * (vec4(aTranslate.x, aTranslate.y, aTranslate.z, 0.0) + (calculateTransformMatrix() * aPosition));
     gl_Position = uProjectionMatrix * vec4(floor((uScreenSize * vec2(pos)) + 0.5) / uScreenSize, pos.z, pos.w);
-//    vec4 pos = uMVMatrix * (vec4(aTranslate.x, aTranslate.y, aTranslate.z, 0.0) + (calculateTransformMatrix() * aPosition));
-//    gl_Position = pos * uProjectionMatrix;
-    
-    float y = floor(aFrameData.z / uSpriteData.z);
     vTexCoord = vec2(aFrameData.x, aFrameData.y);
 }
 /**

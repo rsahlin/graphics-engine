@@ -52,11 +52,13 @@ mat4 calculateTransformMatrix(){
     float cz = cos(aRotate.z);
     float sz = sin(aRotate.z);
 
-    modelview[0][0]  =  cz * aScale.x;
-    modelview[0][1]  =  sz * aScale.x;
+    modelview[1][1]  =  cz * aScale.y;
+    modelview[1][0]  =  sz * aScale.y;
 
-    modelview[1][0]  =  -sz * aScale.y;
-    modelview[1][1]  = cz * aScale.y;
+    modelview[0][1]  =  -sz * aScale.x;
+    modelview[0][0]  = cz * aScale.x;
+//        destination[1] = (source[0] * sin) + (source[1] * cos);
+//        destination[0] = (source[0] * cos) - (source[1] * sin);
         
     return modelview;
 }
