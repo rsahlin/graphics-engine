@@ -5,7 +5,6 @@ import java.io.IOException;
 import com.graphicsengine.io.GraphicsEngineResourcesData;
 import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.Mesh;
-import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.renderer.BufferObjectsFactory;
 import com.nucleus.renderer.Configuration;
 import com.nucleus.renderer.NucleusRenderer;
@@ -51,13 +50,6 @@ public class PlayfieldMeshFactory {
         if (Configuration.getInstance().isUseVBO()) {
             BufferObjectsFactory.getInstance().createVBOs(renderer, playfieldMesh);
         }
-
-        int charCount = node.getMapSize()[0] * node.getMapSize()[1];
-        float[] attributeData = playfieldMesh.getAttributeData();
-        for (int i = 0; i < charCount; i++) {
-            MeshBuilder.prepareTiledUV(playfieldMesh.getMapper(), attributeData, i);
-        }
-
         return playfieldMesh;
     }
 

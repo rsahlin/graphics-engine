@@ -57,11 +57,7 @@ public class TiledSpriteProgram extends ShaderProgram {
     /**
      * Index into aFrameData texture coordinates and frame - this is used to calculate texture coordinate with frame.
      */
-    final static int ATTRIBUTE_SPRITE_FRAMEDATA = 14;
-    /**
-     * Index into attribute to get direct acces to uv coordinates
-     */
-    final static int ATTRIBUTE_SPRITE_UV = 12;
+    final static int ATTRIBUTE_SPRITE_FRAMEDATA = 12;
 
     public enum VARIABLES implements VariableMapping {
         uMVMatrix(0, 0, ShaderVariable.VariableType.UNIFORM, null),
@@ -69,10 +65,11 @@ public class TiledSpriteProgram extends ShaderProgram {
         uScreenSize(2, 32, ShaderVariable.VariableType.UNIFORM, null),
         uSpriteData(3, 34, ShaderVariable.VariableType.UNIFORM, null),
         aPosition(4, 0, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.VERTICES),
-        aTranslate(5, 0, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
-        aRotate(6, 4, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
-        aScale(7, 8, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
-        aFrameData(8, 12, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES);
+        aUV(5, 3, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.VERTICES),
+        aTranslate(6, 0, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
+        aRotate(7, 4, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
+        aScale(8, 8, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
+        aFrameData(9, 12, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES);
 
         private final int index;
         private final VariableType type;
@@ -121,6 +118,7 @@ public class TiledSpriteProgram extends ShaderProgram {
         vertexShaderName = VERTEX_SHADER_NAME;
         fragmentShaderName = FRAGMENT_SHADER_NAME;
         attributesPerVertex = ATTRIBUTES_PER_VERTEX;
+        components = VertexBuffer.XYZUV_COMPONENTS;
     }
 
     @Override
@@ -194,8 +192,6 @@ public class TiledSpriteProgram extends ShaderProgram {
             return ATTRIBUTE_SPRITE_SCALE_INDEX;
         case FRAME:
             return ATTRIBUTE_SPRITE_FRAMEDATA;
-        case UV:
-            return ATTRIBUTE_SPRITE_UV;
         default:
             return -1;
         }

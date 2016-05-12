@@ -46,10 +46,6 @@ public class PlayfieldProgram extends ShaderProgram {
      */
     private final static int ATTRIBUTE_CHARMAP_TRANSLATE_INDEX = 0;
     /**
-     * Index into aCharset texture uv coordinate - this is used to calculate texture coordinate with frame.
-     */
-    private final static int ATTRIBUTE_CHARMAP_UV_INDEX = 2;
-    /**
      * The char frame number
      */
     private final static int ATTRIBUTE_CHARMAP_FRAME_INDEX = 4;
@@ -60,8 +56,9 @@ public class PlayfieldProgram extends ShaderProgram {
         uCharsetData(2, 32, ShaderVariable.VariableType.UNIFORM, null),
         uScreenSize(3, 35, ShaderVariable.VariableType.UNIFORM, null),
         aPosition(4, 0, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.VERTICES),
-        aCharset(5, 0, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
-        aCharset2(6, 4, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES);
+        aUV(5, 3, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.VERTICES),
+        aCharset(6, 0, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
+        aCharset2(7, 4, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES);
 
         private final int index;
         private final VariableType type;
@@ -111,6 +108,7 @@ public class PlayfieldProgram extends ShaderProgram {
         attributesPerVertex = ATTRIBUTES_PER_VERTEX;
         vertexShaderName = VERTEX_SHADER_NAME;
         fragmentShaderName = FRAGMENT_SHADER_NAME;
+        components = VertexBuffer.XYZUV_COMPONENTS;
     }
 
     @Override
@@ -178,8 +176,6 @@ public class PlayfieldProgram extends ShaderProgram {
             return ATTRIBUTE_CHARMAP_TRANSLATE_INDEX;
         case FRAME:
             return ATTRIBUTE_CHARMAP_FRAME_INDEX;
-        case UV:
-            return ATTRIBUTE_CHARMAP_UV_INDEX;
         default:
             return -1;
         }

@@ -1,10 +1,7 @@
 package com.graphicsengine.map;
 
 import com.graphicsengine.spritemesh.SpriteMesh;
-import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.Mesh;
-import com.nucleus.geometry.MeshBuilder;
-import com.nucleus.opengl.GLESWrapper.GLES20;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TiledTexture2D;
@@ -20,7 +17,7 @@ import com.nucleus.vecmath.Rectangle;
  * @author Richard Sahlin
  *
  */
-public class PlayfieldMesh extends SpriteMesh implements Consumer {
+public class PlayfieldMesh extends SpriteMesh {
 
     /**
      * playfield character data, one value for each char - this is the source map that can be used for collision etc.
@@ -74,31 +71,10 @@ public class PlayfieldMesh extends SpriteMesh implements Consumer {
      */
     public void createMesh(PlayfieldProgram program, Texture2D texture, int[] mapSize, Rectangle rectangle) {
         int count = mapSize[0] * mapSize[1];
-        super.createMesh(program, texture, count);
+        super.createMesh(program, texture, count, rectangle);
         init(count);
-        buildMesh(program, count, rectangle, GLES20.GL_FLOAT);
-        setAttributeUpdater(this);
-    }
-
-    /**
-     * Builds a mesh with data that can be rendered using a tiled charmap renderer, this will draw a number of
-     * charmaps using one drawcall.
-     * Vertex buffer will have storage for XYZ + UV.
-     * Before using the mesh the chars needs to be positioned, this call just creates the buffers. All chars will
-     * have a position of 0.
-     * 
-     * @param mesh The mesh to build buffers for
-     * @param texture The texture source, if tiling shall be used it must be {@link TiledTexture2D}
-     * @param charCount Number of chars to build, this is NOT the vertex count.
-     * @param rectangle X1, Y1, width and height for each char
-     * @param type The datatype for attribute data - GLES20.GL_FLOAT
-     * 
-     * @throws IllegalArgumentException if type is not GLES20.GL_FLOAT
-     */
-    public void buildMesh(ShaderProgram program, int charCount, Rectangle rectangle, int type) {
-        int vertexStride = program.getVertexStride();
-        float[] quadPositions = MeshBuilder.createQuadPositionsIndexed(rectangle, vertexStride, 0);
-        MeshBuilder.buildQuadMeshIndexed(this, program, 0, charCount, quadPositions);
+        // buildMesh(program, count, rectangle);
+        // setAttributeUpdater(this);
     }
 
     /**

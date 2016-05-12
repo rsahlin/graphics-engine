@@ -2,6 +2,7 @@ package com.graphicsengine.spritemesh;
 
 import static com.nucleus.geometry.VertexBuffer.INDEXED_QUAD_VERTICES;
 import static com.nucleus.geometry.VertexBuffer.QUAD_INDICES;
+import static com.nucleus.geometry.VertexBuffer.XYZUV_COMPONENTS;
 import static com.nucleus.geometry.VertexBuffer.XYZ_COMPONENTS;
 
 import com.nucleus.geometry.AttributeUpdater.Consumer;
@@ -93,18 +94,26 @@ public class SpriteMesh extends Mesh implements Consumer {
 
     /**
      * Creates the buffers, vertex and indexbuffers as needed. Attribute and uniform storage.
+     * If texture is {@link TiledTexture2D} then vertice and index storage will be createde for 1 sprite.
      * 
      * @param program
      * @param spriteCount
      */
     private void createBuffers(ShaderProgram program, int spriteCount) {
         attributes = new VertexBuffer[program.getAttributeBufferCount()];
-        attributes[BufferIndex.VERTICES.index] = new VertexBuffer(spriteCount * INDEXED_QUAD_VERTICES, XYZ_COMPONENTS,
-                XYZ_COMPONENTS,
-                GLES20.GL_FLOAT);
         attributes[BufferIndex.ATTRIBUTES.index] = program.createAttributeBuffer(spriteCount * INDEXED_QUAD_VERTICES,
                 this);
-        indices = new ElementBuffer(Mode.TRIANGLES, QUAD_INDICES * spriteCount, Type.SHORT);
+        if (getTexture(Texture2D.TEXTURE_0).textureType == TextureType.TiledTexture2D) {
+            attributes[BufferIndex.VERTICES.index] = new VertexBuffer(spriteCount * INDEXED_QUAD_VERTICES,
+                    XYZUV_COMPONENTS,
+                    XYZUV_COMPONENTS, GLES20.GL_FLOAT);
+        } else {
+            attributes[BufferIndex.VERTICES.index] = new VertexBuffer(spriteCount * INDEXED_QUAD_VERTICES,
+                    XYZ_COMPONENTS,
+                    XYZ_COMPONENTS, GLES20.GL_FLOAT);
+        }
+        indices = new ElementBuffer(Mode.TRIANGLES, spriteCount * QUAD_INDICES, Type.SHORT);
+
         program.setupUniforms(this);
     }
 
@@ -120,10 +129,17 @@ public class SpriteMesh extends Mesh implements Consumer {
      * @param spriteCount Number of sprites to build, this is NOT the vertex count.
      * @param rectangle The rectangle defining each char, all chars will be the same
      */
-    private void buildMesh(ShaderProgram program, int spriteCount, Rectangle rectangle) {
+    protected void buildMesh(ShaderProgram program, int spriteCount, Rectangle rectangle) {
         int vertexStride = program.getVertexStride();
-        float[] quadPositions = MeshBuilder.createQuadPositionsIndexed(rectangle, vertexStride, 0);
-        MeshBuilder.buildQuadMeshIndexed(this, program, 0, spriteCount, quadPositions);
+        int quadCount = indices.getCount() / VertexBuffer.QUAD_INDICES;
+        if (getTexture(Texture2D.TEXTURE_0).textureType == TextureType.TiledTexture2D) {
+            float[] quadPositions = MeshBuilder.createQuadPositionsUVIndexed(rectangle, vertexStride, 0);
+            MeshBuilder.buildQuadMeshIndexed(this, program, quadCount, quadPositions);
+
+        } else {
+            float[] quadPositions = MeshBuilder.createQuadPositionsIndexed(rectangle, vertexStride, 0);
+            MeshBuilder.buildQuadMeshIndexed(this, program, quadCount, quadPositions);
+        }
         prepareUV(mapper, spriteCount, 0);
     }
 
@@ -134,15 +150,13 @@ public class SpriteMesh extends Mesh implements Consumer {
      * @param spriteCount
      * @param index Index into the first sprite to prepare
      */
-    private void prepareUV(PropertyMapper mapper, int spriteCount, int index) {
-        for (int i = 0; i < spriteCount; i++) {
-            if (getTexture(Texture2D.TEXTURE_0).textureType == TextureType.TiledTexture2D) {
-                MeshBuilder.prepareTiledUV(mapper, attributeData, index + i);
-            } else if (getTexture(Texture2D.TEXTURE_0).textureType == TextureType.UVTexture2D) {
-                // TODO Must prepare UV based on the data in the texture.
-            } else {
-                throw new IllegalArgumentException();
-            }
+    protected void prepareUV(PropertyMapper mapper, int spriteCount, int index) {
+        if (getTexture(Texture2D.TEXTURE_0).textureType == TextureType.TiledTexture2D) {
+            // MeshBuilder.buildTiledUV(getVerticeBuffer(BufferIndex.ATTRIBUTES_STATIC));
+        } else if (getTexture(Texture2D.TEXTURE_0).textureType == TextureType.UVTexture2D) {
+            // TODO Must prepare UV based on the data in the texture.
+        } else {
+            throw new IllegalArgumentException();
         }
 
     }
