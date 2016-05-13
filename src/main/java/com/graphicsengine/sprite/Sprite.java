@@ -89,7 +89,7 @@ public abstract class Sprite extends ActorContainer implements Producer {
     }
 
     /**
-     * Sets the x, y position and frame of this sprite.
+     * Sets the x, y and z position
      * 
      * @param x
      * @param y

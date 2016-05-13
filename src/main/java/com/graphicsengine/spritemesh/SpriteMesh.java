@@ -186,6 +186,7 @@ public class SpriteMesh extends Mesh implements Consumer {
         }
         VertexBuffer positions = getVerticeBuffer(BufferIndex.ATTRIBUTES);
         positions.setArray(attributeData, 0, 0, attributeData.length);
+        positions.setDirty(true);
     }
 
     @Override

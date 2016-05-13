@@ -25,10 +25,10 @@ uniform vec2 uScreenSize; //Width and height of screen
 
 attribute vec3 aPosition;
 attribute vec2 aUV;
-attribute vec4 aTranslate; //sprite x, sprite y, sprite z 
-attribute vec4 aRotate;  
-attribute vec4 aScale;  
-attribute vec4 aFrameData;//frame
+attribute vec3 aTranslate; //sprite x, sprite y, sprite z
+attribute vec3 aRotate;
+attribute vec3 aScale;
+attribute vec2 aFrameData;//frame
 
 varying vec2 vTexCoord;
 mat4 calculateTransformMatrix();

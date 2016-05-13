@@ -36,7 +36,7 @@ public class TiledSpriteProgram extends ShaderProgram {
     /**
      * Number of float data per vertex
      */
-    final static int ATTRIBUTES_PER_VERTEX = 16;
+    final static int ATTRIBUTES_PER_VERTEX = 11;
     /**
      * Number of floats for each tiled sprite in the attribute data.
      */
@@ -49,15 +49,15 @@ public class TiledSpriteProgram extends ShaderProgram {
     /**
      * Index into aRotate for rotation
      */
-    final static int ATTRIBUTE_SPRITE_ROTATION_INDEX = 4;
+    final static int ATTRIBUTE_SPRITE_ROTATION_INDEX = 3;
     /**
      * Index into aScale for scale
      */
-    final static int ATTRIBUTE_SPRITE_SCALE_INDEX = 8;
+    final static int ATTRIBUTE_SPRITE_SCALE_INDEX = 6;
     /**
      * Index into aFrameData texture coordinates and frame - this is used to calculate texture coordinate with frame.
      */
-    final static int ATTRIBUTE_SPRITE_FRAMEDATA = 12;
+    final static int ATTRIBUTE_SPRITE_FRAMEDATA = 9;
 
     public enum VARIABLES implements VariableMapping {
         uMVMatrix(0, 0, ShaderVariable.VariableType.UNIFORM, null),
@@ -67,9 +67,9 @@ public class TiledSpriteProgram extends ShaderProgram {
         aPosition(4, 0, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.VERTICES),
         aUV(5, 3, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.VERTICES),
         aTranslate(6, 0, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
-        aRotate(7, 4, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
-        aScale(8, 8, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
-        aFrameData(9, 12, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES);
+        aRotate(7, 3, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
+        aScale(8, 6, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
+        aFrameData(9, 9, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES);
 
         private final int index;
         private final VariableType type;

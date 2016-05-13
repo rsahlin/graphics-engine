@@ -209,6 +209,7 @@ public class PlayfieldMesh extends SpriteMesh {
         destIndex += mapper.ATTRIBUTES_PER_VERTEX;
         attributeData[destIndex] = value;
         destIndex += mapper.ATTRIBUTES_PER_VERTEX;
+        getVerticeBuffer(BufferIndex.ATTRIBUTES).setDirty(true);
     }
 
     /**
