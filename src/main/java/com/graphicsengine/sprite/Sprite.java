@@ -72,6 +72,7 @@ public abstract class Sprite extends ActorContainer implements Producer {
     public void process(float deltaTime) {
         if (actor != null) {
             actor.process(this, deltaTime);
+            updateAttributeData();
         }
     }
 

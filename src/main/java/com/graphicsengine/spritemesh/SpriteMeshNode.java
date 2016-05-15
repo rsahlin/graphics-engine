@@ -148,10 +148,6 @@ public class SpriteMeshNode extends SpriteNode implements Producer {
 
     @Override
     public void updateAttributeData() {
-        for (Sprite sprite : sprites) {
-            sprite.updateAttributeData();
-        }
-
     }
 
 }
