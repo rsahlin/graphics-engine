@@ -132,8 +132,10 @@ public class SpriteMesh extends Mesh implements Consumer {
     protected void buildMesh(ShaderProgram program, int spriteCount, Rectangle rectangle) {
         int vertexStride = program.getVertexStride();
         int quadCount = indices.getCount() / VertexBuffer.QUAD_INDICES;
-        if (getTexture(Texture2D.TEXTURE_0).textureType == TextureType.TiledTexture2D) {
-            float[] quadPositions = MeshBuilder.createQuadPositionsUVIndexed(rectangle, vertexStride, 0);
+        Texture2D texture = getTexture(Texture2D.TEXTURE_0);
+        if (texture.textureType == TextureType.TiledTexture2D) {
+            float[] quadPositions = MeshBuilder.createQuadPositionsUVIndexed(rectangle, vertexStride, 0,
+                    (TiledTexture2D) texture);
             MeshBuilder.buildQuadMeshIndexed(this, program, quadCount, quadPositions);
 
         } else {
