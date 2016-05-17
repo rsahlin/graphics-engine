@@ -34,6 +34,6 @@ void main() {
     vec4 pos = uMVMatrix * vec4(aPosition, 1.0) + (uMVMatrix * vec4(aCharset.x, aCharset.y,aCharset.z, 0.0));
     gl_Position = uProjectionMatrix * vec4(floor((uScreenSize * vec2(pos)) + 0.5) / uScreenSize, pos.z, pos.w);
     float u = aUV.x * uCharsetData.x + mod(aCharset2.x, uCharsetData.z) * uCharsetData.x;
-    float v = aUV.y * uCharsetData.y + (floor((aCharset2.x / uCharsetData.z) + 0.5) * uCharsetData.y);
+    float v = aUV.y * uCharsetData.y + (floor((aCharset2.x / uCharsetData.z)) * uCharsetData.y);
     vTexCoord = vec2(u,v);
 }
