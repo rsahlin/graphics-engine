@@ -31,23 +31,27 @@ attribute vec3 aScale;
 attribute vec2 aFrameData;//frame
 
 varying vec2 vTexCoord;
-mat4 calculateTransformMatrix();
+mat2 calculateTransformMatrix();
 
 void main() {
-    vec4 pos = uMVMatrix * (vec4(aTranslate.x, aTranslate.y, aTranslate.z, 0.0) + (calculateTransformMatrix() * vec4(aPosition,1.0)));
+    vec4 pos = uMVMatrix * (vec4(aTranslate.x, aTranslate.y, aTranslate.z, 1.0) + vec4(calculateTransformMatrix() * vec2(aPosition), 0.0, 0.0));
     gl_Position = uProjectionMatrix * vec4(floor((uScreenSize * vec2(pos)) + 0.5) / uScreenSize, pos.z, pos.w);
     float y = floor(aFrameData.x / uSpriteData.z);
     vTexCoord = vec2(aUV.x * uSpriteData.x + 
                      mod(aFrameData.x, uSpriteData.z) * uSpriteData.x,
                      aUV.y * uSpriteData.y + y * uSpriteData.y);
+//    vec2 rot = mat2(uMVMatrix) * vec2(aPosition) * calculateTransformMatrix();
+//    vec4 pos = uMVMatrix * (vec4(aTranslate.x, aTranslate.y, aTranslate.z, 1.0));
+//    gl_Position = uProjectionMatrix * vec4( (floor((uScreenSize * vec2(pos)) + 0.5) + floor((uScreenSize * vec2(rot)) + 0.5)) / uScreenSize, pos.z, 1);
+                     
 }
 /**
  * Returns a matrix with z axis rotation set from attribute aRotate.z, x and y axis scale.
  * @return Matrix with z axis rotation set from aRotate.z, scale from aScale.x + aScale.y
  */
-mat4 calculateTransformMatrix(){
+mat2 calculateTransformMatrix(){
 
-    mat4 modelview = mat4(1);
+    mat2 modelview = mat2(1);
 
     //Rotate
     float cz = cos(aRotate.z);
