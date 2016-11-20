@@ -47,6 +47,13 @@ public class SpriteMesh extends Mesh implements Consumer {
     private transient float[] frames = new float[2 * 4];
 
     /**
+     * Creates a new instance, mesh will NOT be created.
+     */
+    protected SpriteMesh() {
+        super();
+    }
+
+    /**
      * Creates a new instance of the tiled sprite mesh based on the source.
      * This will NOT create the mesh and sprites it will only set the values from the source.
      * {@link #createMesh(TiledSpriteProgram, Texture2D, float[], float[])}
@@ -182,7 +189,7 @@ public class SpriteMesh extends Mesh implements Consumer {
     }
 
     @Override
-    public void setAttributeData() {
+    public void updateAttributeData() {
         if (attributeData == null) {
             throw new IllegalArgumentException(Consumer.BUFFER_NOT_BOUND);
         }

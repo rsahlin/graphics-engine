@@ -5,8 +5,8 @@ import com.graphicsengine.io.GraphicsEngineResourcesData;
 import com.graphicsengine.spritemesh.SpriteMesh;
 import com.nucleus.actor.ActorContainer;
 import com.nucleus.actor.ActorItem;
-import com.nucleus.actor.ActorNode;
 import com.nucleus.actor.ActorResolver;
+import com.nucleus.actor.ComponentNode;
 import com.nucleus.renderer.NucleusRenderer;
 
 /**
@@ -17,7 +17,7 @@ import com.nucleus.renderer.NucleusRenderer;
  * @author Richard Sahlin
  *
  */
-public abstract class SpriteNode extends ActorNode {
+public abstract class SpriteNode extends ComponentNode {
 
     private final static String ACTORRESOLVER_NOT_SET = "ActorResolver not set, must set before calling.";
     private final static String ACTOR_NOT_FOUND_ERROR = "Actor not found for id: ";
@@ -36,7 +36,7 @@ public abstract class SpriteNode extends ActorNode {
 
     transient protected Sprite[] sprites;
     transient protected ActorResolver actorResolver;
-
+    
     /**
      * Default constructor
      */
@@ -56,7 +56,9 @@ public abstract class SpriteNode extends ActorNode {
      */
     protected void set(SpriteNode source) {
         super.set(source);
-        actorData = new ActorData(source.getActorData());
+        if (source.getActorData() != null) {
+            actorData = new ActorData(source.getActorData());
+        }
         count = source.count;
     }
 

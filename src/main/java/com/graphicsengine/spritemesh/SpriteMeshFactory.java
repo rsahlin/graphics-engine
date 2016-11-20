@@ -7,6 +7,8 @@ import com.graphicsengine.scene.QuadParentNode;
 import com.graphicsengine.scene.SharedMeshQuad;
 import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.Mesh;
+import com.nucleus.io.ExternalReference;
+import com.nucleus.io.ResourcesData;
 import com.nucleus.renderer.BufferObjectsFactory;
 import com.nucleus.renderer.Configuration;
 import com.nucleus.renderer.NucleusRenderer;
@@ -14,6 +16,7 @@ import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TiledTexture2D;
 import com.nucleus.texturing.UVTexture2D;
+import com.nucleus.vecmath.Rectangle;
 
 /**
  * Used to create tiled spritesheet.
@@ -27,42 +30,55 @@ public class SpriteMeshFactory {
     private final static String INVALID_TYPE = "Invalid type: ";
 
     /**
-     * This will create an old school sprite mesh, where each sprite has a frame, the sprite can be rotated in x axis
-     * and positioned in x and y.
-     * The attribute data will be prepared, ie when this call returns the mesh is ready to be rendered.
+     * Creates a SpriteMesh - same as calling
+     * {@link #createSpriteMesh(NucleusRenderer, GraphicsEngineResourcesData, String, int, Rectangle)}
      * 
      * @param renderer
      * @param node The node that the mesh shall be created for
      * @param program The shader program to use with the mesh
      * @param scene
-     * @return
-     * @throws IOException
+     * @return The created sprite mesh
+     * @throws IOException If there is an error fetching texture resource
      */
     public static SpriteMesh create(NucleusRenderer renderer, SpriteMeshNode node,
             GraphicsEngineResourcesData resources)
             throws IOException {
+        return createSpriteMesh(renderer, resources, node.getTextureRef(), node.getCount(), node.getSpriteRectangle());
+    }
 
-        Mesh refMesh = resources.getMesh(node.getMeshRef());
-        Texture2D texture = AssetManager.getInstance().getTexture(renderer,
-                resources.getTexture2D(refMesh.getTextureRef()));
+    /**
+     * This will create an old school sprite mesh, where each sprite has a frame, the sprite can be rotated in x axis
+     * and positioned in x and y.
+     * The attribute data will be prepared, ie when this call returns the mesh is ready to be rendered.
+     * 
+     * @param renderer
+     * @param resources
+     * @param textureRef
+     * @param count
+     * @param spriteRect
+     * @return The created sprite mesh
+     * @throws IOException If there is an error fetching texture resource
+     */
+    public static SpriteMesh createSpriteMesh(NucleusRenderer renderer, ResourcesData resources,
+            ExternalReference textureRef, int count, Rectangle spriteRect) throws IOException {
+        Texture2D texture = AssetManager.getInstance().getTexture(renderer, textureRef);
         ShaderProgram program = SpriteMeshFactory.createProgram(texture);
-        SpriteMesh mesh = new SpriteMesh(refMesh);
+        SpriteMesh mesh = new SpriteMesh();
         renderer.createProgram(program);
-        mesh.createMesh(program, texture, node.getCount(), node.getSpriteRectangle());
+        mesh.createMesh(program, texture, count, spriteRect);
         if (Configuration.getInstance().isUseVBO()) {
             BufferObjectsFactory.getInstance().createVBOs(renderer, mesh);
         }
         return mesh;
+
     }
 
     public static Mesh create(NucleusRenderer renderer, QuadParentNode node, GraphicsEngineResourcesData resources)
             throws IOException {
 
-        Mesh refMesh = resources.getMesh(node.getMeshRef());
-        Texture2D texture = AssetManager.getInstance().getTexture(renderer,
-                resources.getTexture2D(refMesh.getTextureRef()));
+        Texture2D texture = AssetManager.getInstance().getTexture(renderer, node.getTextureRef());
         ShaderProgram program = SpriteMeshFactory.createProgram(texture);
-        SpriteMesh mesh = new SpriteMesh(refMesh);
+        SpriteMesh mesh = new SpriteMesh();
         renderer.createProgram(program);
         mesh.createMesh(program, texture, node.getMaxQuads());
         if (Configuration.getInstance().isUseVBO()) {
@@ -74,12 +90,6 @@ public class SpriteMeshFactory {
 
     public static Mesh create(NucleusRenderer renderer, SharedMeshQuad node, GraphicsEngineResourcesData resources)
             throws IOException {
-
-        // TODO shall it not be allowed to reference a mesh - maybe this node MUST share another node?
-        if (node.getMeshRef() != null) {
-            throw new IllegalArgumentException(node.getClass().getSimpleName() + " can not have a mesh reference.");
-            // Using the parents mesh
-        }
         return null;
     }
 

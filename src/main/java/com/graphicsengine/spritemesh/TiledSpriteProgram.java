@@ -7,7 +7,6 @@ import com.nucleus.geometry.Mesh.BufferIndex;
 import com.nucleus.geometry.VertexBuffer;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.GLException;
-import com.nucleus.renderer.Window;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.shader.ShaderVariable;
 import com.nucleus.shader.ShaderVariable.VariableType;
@@ -154,7 +153,7 @@ public class TiledSpriteProgram extends ShaderProgram {
     public void setupUniforms(Mesh mesh) {
         createUniformStorage(mesh, shaderVariables);
         float[] uniforms = mesh.getUniforms();
-        setScreenSize(uniforms);
+        setScreenSize(uniforms, VARIABLES.uScreenSize);
         Texture2D texture = mesh.getTexture(Texture2D.TEXTURE_0);
         if (texture instanceof TiledTexture2D) {
             setTextureUniforms((TiledTexture2D) texture, uniforms, shaderVariables[VARIABLES.uSpriteData.index],
@@ -162,18 +161,6 @@ public class TiledSpriteProgram extends ShaderProgram {
         } else {
             System.err.println(INVALID_TEXTURE_TYPE + texture);
         }
-    }
-
-    /**
-     * Sets the screensize to uniform storage
-     * 
-     * @param uniforms
-     */
-    protected void setScreenSize(float[] uniforms) {
-        int screenSizeOffset = shaderVariables[VARIABLES.uScreenSize.index].getOffset();
-        uniforms[screenSizeOffset++] = Window.getInstance().getWidth();
-        uniforms[screenSizeOffset++] = Window.getInstance().getHeight();
-
     }
 
     @Override

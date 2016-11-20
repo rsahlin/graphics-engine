@@ -32,7 +32,7 @@ public class UVSprite extends TiledSprite {
     @Override
     protected void setup(Node parent, PropertyMapper mapper, float[] data, int index) {
         super.setup(parent, mapper, data, index);
-        Texture2D tex = ((SpriteMeshNode) parent).getMeshById(parent.getMeshRef()).getTexture(Texture2D.TEXTURE_0);
+        Texture2D tex = ((SpriteMeshNode) parent).getMeshes().get(0).getTexture(Texture2D.TEXTURE_0);
         if (tex.textureType == TextureType.UVTexture2D) {
             uvAtlas = ((UVTexture2D) tex).getUVAtlas();
         }

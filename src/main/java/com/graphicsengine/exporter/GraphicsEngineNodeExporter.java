@@ -1,8 +1,8 @@
 package com.graphicsengine.exporter;
 
 import com.graphicsengine.io.GraphicsEngineRootNode;
-import com.graphicsengine.map.Playfield;
-import com.graphicsengine.map.PlayfieldMeshFactory;
+import com.graphicsengine.map.Map;
+import com.graphicsengine.map.MapFactory;
 import com.graphicsengine.map.PlayfieldNode;
 import com.graphicsengine.scene.GraphicsEngineNodeType;
 import com.graphicsengine.spritemesh.SpriteMeshNode;
@@ -37,18 +37,18 @@ public class GraphicsEngineNodeExporter extends NucleusNodeExporter {
     }
 
     /**
-     * Collect the data needed for the playfieldcontroller and store in resources
+     * Collect the data needed for the playfield node and store in resources
      * This shall only export the references - not the node itself
      * 
      * @param playfield
      * @param sceneData
      */
-    private void exportDataReferences(PlayfieldNode playfieldController, GraphicsEngineRootNode sceneData) {
-        exportMeshes(playfieldController.getMeshes(), sceneData);
-        PlayfieldNode resource = playfieldController.copy();
-        sceneData.addResource(resource);
-        Playfield playfield = PlayfieldMeshFactory.createPlayfield(playfieldController);
-        sceneData.addResource(playfield);
+    private void exportDataReferences(PlayfieldNode playfieldNode, GraphicsEngineRootNode sceneData) {
+        exportMeshes(playfieldNode.getMeshes(), sceneData);
+        PlayfieldNode resource = playfieldNode.copy();
+        // sceneData.addResource(resource);
+        Map map = MapFactory.createMap(playfieldNode);
+        sceneData.addResource(map);
     }
 
     /**
@@ -62,7 +62,7 @@ public class GraphicsEngineNodeExporter extends NucleusNodeExporter {
             GraphicsEngineRootNode sceneData) {
         exportMeshes(tiledSpriteController.getMeshes(), sceneData);
         SpriteMeshNode resource = tiledSpriteController.copy();
-        sceneData.addResource(resource);
+        // sceneData.addResource(resource);
     }
 
     @Override

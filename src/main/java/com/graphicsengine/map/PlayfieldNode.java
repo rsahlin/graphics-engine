@@ -1,16 +1,21 @@
 package com.graphicsengine.map;
 
+import java.io.FileNotFoundException;
+
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.dataflow.ArrayInputData;
 import com.graphicsengine.io.GraphicsEngineResourcesData;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
+import com.nucleus.io.ExternalReference;
 import com.nucleus.scene.Node;
+import com.nucleus.scene.NodeException;
 import com.nucleus.vecmath.Axis;
 import com.nucleus.vecmath.Rectangle;
 
 /**
- * The playfield controller that contains a playfield (mesh) and can be put in a scene.
- * It has a map that make up the chars in the playfield.
+ * The playfield node that contains a mesh and can be put in a scene.
+ * It has a map that make up the chars in the playfield (mesh) - the map in this class
+ * can be larger than the map displayed by the mesh to create scrolling.
  * This is the main node for a tiled charmap (playfield) that can be rendered.
  * 
  * @author Richard Sahlin
@@ -18,15 +23,15 @@ import com.nucleus.vecmath.Rectangle;
  */
 public class PlayfieldNode extends Node {
 
-    @SerializedName("mapRef")
     /**
      * Reference to map data
      */
-    private String mapRef;
-    @SerializedName("mapSize")
+    @SerializedName("mapRef")
+    private ExternalReference mapRef;
     /**
      * The size of the map in this controller
      */
+    @SerializedName("mapSize")
     private int[] mapSize = new int[2];
 
     /**
@@ -78,30 +83,43 @@ public class PlayfieldNode extends Node {
     }
     
     /**
-     * Sets the playfield in this controller, creating the map storage if needed, and updates the mesh to contain
+     * Sets the map in this node, creating the map storage if needed, and updates the mesh to contain
      * the charset.
      * 
      * @param resources The scene resources
+     * @throws NodeException If referenced map can not be loaded.
      */
-    public void createPlayfield(GraphicsEngineResourcesData resources) {
-        PropertyMapper mapper = new PropertyMapper(getMeshById(getMeshRef()).getMaterial().getProgram());
-        Playfield playfieldData = resources.getPlayfield(getMapRef());
-        createMap(getMapSize());
-        ArrayInputData id = playfieldData.getArrayInput();
-        PlayfieldMesh playfield = (PlayfieldMesh) getMeshById(getMeshRef());
-        if (id != null) {
-            if (mapData == null) {
-                mapData = new int[mapSize[Axis.WIDTH.index] * mapSize[Axis.HEIGHT.index]];
+    public void createMap(GraphicsEngineResourcesData resources) throws NodeException {
+        PropertyMapper mapper = new PropertyMapper(getMeshes().get(0).getMaterial().getProgram());
+        try {
+            Map data = MapFactory.createMap(mapRef);
+            createMap(getMapSize());
+            ArrayInputData id = data.getArrayInput();
+            PlayfieldMesh playfield = (PlayfieldMesh) getMeshes().get(0);
+            if (data.getExternalReference() != null) {
+                try {
+                    Map loaded = MapFactory.createMap(data.getExternalReference());
+                    playfield.copyCharmap(mapper, loaded);
+                } catch (FileNotFoundException e) {
+                    throw new NodeException("Could not load playfield " + data.getExternalReference().getSource());
+                }
+            } else if (id != null) {
+                if (mapData == null) {
+                    mapData = new int[mapSize[Axis.WIDTH.index] * mapSize[Axis.HEIGHT.index]];
+                }
+                id.copyArray(mapData,
+                        mapSize[Axis.WIDTH.index],
+                        mapSize[Axis.HEIGHT.index], 0, 0);
+                playfield.copyCharmap(mapper, getMapData(), 0, 0, getMapData().length);
+            } else {
+                if (data.getMap() != null && data.getMapSize() != null) {
+                    playfield.copyCharmap(mapper, data);
+                }
             }
-            id.copyArray(mapData,
-                    mapSize[Axis.WIDTH.index],
-                    mapSize[Axis.HEIGHT.index], 0, 0);
-            playfield.setCharmap(mapper, getMapData(), 0, 0, getMapData().length);
-        } else {
-            if (playfieldData.getMap() != null && playfieldData.getMapSize() != null) {
-                playfield.setCharmap(mapper, playfieldData, mapSize);
-            }
+        } catch (FileNotFoundException e) {
+            throw new NodeException(e);
         }
+
     }
 
     /**
@@ -146,7 +164,7 @@ public class PlayfieldNode extends Node {
      * 
      * @return
      */
-    public String getMapRef() {
+    public ExternalReference getMapRef() {
         return mapRef;
     }
 
@@ -168,11 +186,10 @@ public class PlayfieldNode extends Node {
     private void setMapOffset(float[] offset) {
         if (offset == null) {
             this.offset = null;
+            return;
         }
-        if (this.offset == null) {
-            this.offset = new float[offset.length];
-            System.arraycopy(offset, 0, this.offset, 0, offset.length);
-        }
+        this.offset = new float[offset.length];
+        System.arraycopy(offset, 0, this.offset, 0, offset.length);
     }
 
     /**
@@ -186,7 +203,7 @@ public class PlayfieldNode extends Node {
     }
 
     /**
-     * Creates the map storage
+     * Creates the map storage for this node, this map may be larger than the map displayed by the mesh.
      * 
      * @param mapSize
      */

@@ -1,6 +1,7 @@
 package com.graphicsengine.spritemesh;
 
 import com.google.gson.annotations.SerializedName;
+import com.graphicsengine.component.SpriteComponent;
 import com.graphicsengine.io.GraphicsEngineResourcesData;
 import com.graphicsengine.sprite.Sprite;
 import com.graphicsengine.sprite.SpriteFactory;
@@ -13,6 +14,9 @@ import com.nucleus.texturing.Texture2D;
 import com.nucleus.vecmath.Rectangle;
 
 /**
+ * This class is deprecated, use {@link SpriteComponent} instead.
+ * 
+ * 
  * Controller for mesh sprites, this node creates the mesh sprite objects.
  * A mesh sprite (quad) can be drawn in one draw call together with a large number of other sprites (they share the
  * same Mesh).
@@ -23,6 +27,7 @@ import com.nucleus.vecmath.Rectangle;
  * @author Richard Sahlin
  *
  */
+@Deprecated
 public class SpriteMeshNode extends SpriteNode implements Producer {
 
 
@@ -115,7 +120,11 @@ public class SpriteMeshNode extends SpriteNode implements Producer {
      * param rectangle values defining sprite, X1, Y1, width, height.
      */
     private void setSpriteRectangle(Rectangle rectangle) {
-        this.rectangle = new Rectangle(rectangle);
+        if (rectangle != null) {
+            this.rectangle = new Rectangle(rectangle);
+        } else {
+            this.rectangle = null;
+        }
     }
 
     @Override

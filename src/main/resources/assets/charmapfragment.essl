@@ -16,6 +16,7 @@
  * @author Richard Sahlin
  */
 #version 100
+precision mediump float;
 
 uniform sampler2D texture;      //The texture sampler
 varying vec2 vTexCoord;

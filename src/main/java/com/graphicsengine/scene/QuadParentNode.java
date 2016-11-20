@@ -73,7 +73,7 @@ public class QuadParentNode extends Node {
     @Override
     public void onCreated() {
         // Setup all children in this node
-        SpriteMesh mesh = (SpriteMesh) getMeshById(getMeshRef());
+        SpriteMesh mesh = (SpriteMesh) getMeshes().get(0);
         for (Node n : getChildren()) {
             if (n instanceof SharedMeshQuad) {
                 int index = addQuad((SharedMeshQuad) n);

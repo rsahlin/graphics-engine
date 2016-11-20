@@ -33,16 +33,15 @@ attribute vec2 aFrameData;//frame
 varying vec2 vTexCoord;
 mat2 calculateTransformMatrix();
 
+precision highp float;
+
 void main() {
     vec4 pos = uMVMatrix * (vec4(aTranslate.x, aTranslate.y, aTranslate.z, 1.0) + vec4(calculateTransformMatrix() * vec2(aPosition), 0.0, 0.0));
-    gl_Position = uProjectionMatrix * vec4(floor((uScreenSize * vec2(pos)) + 0.5) / uScreenSize, pos.z, pos.w);
+    gl_Position = uProjectionMatrix * vec4(floor((uScreenSize * vec2(pos) + 0.5)) / uScreenSize, pos.z, pos.w);
     float y = floor(aFrameData.x / uSpriteData.z);
-    vTexCoord = vec2(aUV.x * uSpriteData.x + 
+    vTexCoord = vec2(aUV.x + 
                      mod(aFrameData.x, uSpriteData.z) * uSpriteData.x,
-                     aUV.y * uSpriteData.y + y * uSpriteData.y);
-//    vec2 rot = mat2(uMVMatrix) * vec2(aPosition) * calculateTransformMatrix();
-//    vec4 pos = uMVMatrix * (vec4(aTranslate.x, aTranslate.y, aTranslate.z, 1.0));
-//    gl_Position = uProjectionMatrix * vec4( (floor((uScreenSize * vec2(pos)) + 0.5) + floor((uScreenSize * vec2(rot)) + 0.5)) / uScreenSize, pos.z, 1);
+                     aUV.y + y * uSpriteData.y);
                      
 }
 /**

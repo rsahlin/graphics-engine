@@ -7,7 +7,6 @@ import com.nucleus.geometry.Mesh.BufferIndex;
 import com.nucleus.geometry.VertexBuffer;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.GLException;
-import com.nucleus.renderer.Window;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.shader.ShaderVariable;
 import com.nucleus.shader.ShaderVariable.VariableType;
@@ -134,12 +133,8 @@ public class PlayfieldProgram extends ShaderProgram {
     @Override
     public void setupUniforms(Mesh mesh) {
         createUniformStorage(mesh, shaderVariables);
-        int screenSizeOffset = shaderVariables[VARIABLES.uScreenSize.index].getOffset();
         float[] uniforms = mesh.getUniforms();
-//      uniforms[screenSizeOffset++] = Window.getInstance().getWidth();
-//      uniforms[screenSizeOffset++] = Window.getInstance().getHeight();
-        uniforms[screenSizeOffset++] = Window.getInstance().getWidth();
-        uniforms[screenSizeOffset++] = Window.getInstance().getHeight();
+        setScreenSize(uniforms, VARIABLES.uScreenSize);
         Texture2D texture = mesh.getTexture(Texture2D.TEXTURE_0);
         if (texture instanceof TiledTexture2D) {
             setTextureUniforms((TiledTexture2D) texture, uniforms,

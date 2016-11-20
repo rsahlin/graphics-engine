@@ -31,7 +31,7 @@ public class UVSpriteProgram extends TiledSpriteProgram {
     @Override
     public void setupUniforms(Mesh mesh) {
         createUniformStorage(mesh, shaderVariables);
-        setScreenSize(mesh.getUniforms());
+        setScreenSize(mesh.getUniforms(), VARIABLES.uScreenSize);
     }
 
     @Override

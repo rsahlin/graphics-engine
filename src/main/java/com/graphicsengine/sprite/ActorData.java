@@ -27,7 +27,6 @@ public class ActorData {
 
     }
 
-
     /**
      * Returs the actor array.
      * 

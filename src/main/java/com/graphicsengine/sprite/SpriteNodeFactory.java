@@ -43,6 +43,7 @@ public class SpriteNodeFactory {
     public final static String TILED = "tiled";
 
     /**
+     * Deprecated use System-Component for actor based behavior.
      * Creates a SpriteController instance and setting the current actor resolver.
      * 
      * @param controller SpriteController instance to create

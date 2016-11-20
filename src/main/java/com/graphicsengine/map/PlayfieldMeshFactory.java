@@ -4,12 +4,11 @@ import java.io.IOException;
 
 import com.graphicsengine.io.GraphicsEngineResourcesData;
 import com.nucleus.assets.AssetManager;
-import com.nucleus.geometry.Mesh;
 import com.nucleus.renderer.BufferObjectsFactory;
 import com.nucleus.renderer.Configuration;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.texturing.Texture2D;
-import com.nucleus.texturing.TiledTexture2D;
+import com.nucleus.vecmath.Rectangle;
 
 /**
  * Use to create charmaps
@@ -32,37 +31,24 @@ public class PlayfieldMeshFactory {
             GraphicsEngineResourcesData resources)
             throws IOException {
 
-        Mesh refMesh = resources.getMesh(node.getMeshRef());
-        TiledTexture2D textureData = (TiledTexture2D) resources.getTexture2D(
-                refMesh.getTextureRef());
-
+        // TiledTexture2D textureData = (TiledTexture2D) resources.getTexture2D(node.getTextureRef());
         PlayfieldProgram program = new PlayfieldProgram();
         renderer.createProgram(program);
-        Texture2D texture = AssetManager.getInstance().getTexture(renderer, textureData);
-        PlayfieldMesh playfieldMesh = new PlayfieldMesh(refMesh);
+        Texture2D texture = AssetManager.getInstance().getTexture(renderer, node.getTextureRef());
+        PlayfieldMesh playfieldMesh = new PlayfieldMesh();
         playfieldMesh.createMesh(program, texture, node.getMapSize(), node.getCharRectangle());
         float[] offset = node.getMapOffset();
         if (offset == null) {
-            offset = new float[] { 0, 0 };
+            offset = new float[] {
+                    -(node.getMapSize()[0] >>> 1) * node.getCharRectangle().getValues()[Rectangle.WIDTH],
+                    (node.getMapSize()[1] >>> 1) * node.getCharRectangle().getValues()[Rectangle.HEIGHT] };
         }
-        playfieldMesh.setupCharmap(node.getMapSize(), node.getCharRectangle().getSize(0), offset);
+        playfieldMesh.setupCharmap(node.getMapSize(), node.getCharRectangle().getSize(), offset);
 
         if (Configuration.getInstance().isUseVBO()) {
             BufferObjectsFactory.getInstance().createVBOs(renderer, playfieldMesh);
         }
         return playfieldMesh;
-    }
-
-    /**
-     * Creates a new playfield from the controller source
-     * This playfield will contain the mapdata from the source, the id will be the mapReference from the source.
-     * Use this when exporting
-     * 
-     * @param source
-     * @return
-     */
-    public static Playfield createPlayfield(PlayfieldNode source) {
-        return new Playfield(source);
     }
 
 }

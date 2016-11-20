@@ -1,10 +1,7 @@
 package com.graphicsengine.io;
 
 import com.google.gson.annotations.SerializedName;
-import com.graphicsengine.map.Playfield;
-import com.graphicsengine.scene.GraphicsEngineNodeType;
-import com.nucleus.ErrorMessage;
-import com.nucleus.scene.Node;
+import com.graphicsengine.map.Map;
 import com.nucleus.scene.RootNode;
 
 /**
@@ -25,28 +22,12 @@ public class GraphicsEngineRootNode extends RootNode {
     }
 
     /**
-     * Adds the node the the resources in this class - the node must be a type that is known by the graphics engine.
+     * Adds map to the resources.
      * 
-     * @param node
-     * @throws IllegalArgumentException If the node type is not one of {@link GraphicsEngineNodeType}
+     * @param map
      */
-    public void addResource(Node node) {
-        try {
-            GraphicsEngineNodeType type = GraphicsEngineNodeType.valueOf(node.getType());
-            getResources().addNode(type, node);
-        } catch (IllegalArgumentException e) {
-            // This means the node is not a type that is known by the graphics engine
-            throw new IllegalArgumentException(ErrorMessage.INVALID_TYPE.message + node.getType());
-        }
-    }
-
-    /**
-     * Adds playfield to the resources.
-     * 
-     * @param playfield
-     */
-    public void addResource(Playfield playfield) {
-        getResources().addPlayfield(playfield);
+    public void addResource(Map map) {
+        getResources().addMap(map);
     }
 
     @Override

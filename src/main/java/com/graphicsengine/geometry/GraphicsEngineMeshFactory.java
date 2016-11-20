@@ -9,6 +9,7 @@ import com.graphicsengine.scene.QuadParentNode;
 import com.graphicsengine.scene.SharedMeshQuad;
 import com.graphicsengine.spritemesh.SpriteMeshFactory;
 import com.graphicsengine.spritemesh.SpriteMeshNode;
+import com.nucleus.actor.ComponentNode;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshFactory;
 import com.nucleus.io.ResourcesData;
@@ -34,7 +35,19 @@ public class GraphicsEngineMeshFactory implements MeshFactory {
         if (parent instanceof SharedMeshQuad) {
             return SpriteMeshFactory.create(renderer, (SharedMeshQuad) parent, (GraphicsEngineResourcesData) resources);
         }
-        return null;
+        if (parent instanceof ComponentNode) {
+            /**
+             * If ComponentNode then don't create mesh
+             */
+            return null;
+        }
+        if (parent instanceof Node) {
+            /**
+             * If Node then don't create mesh
+             */
+            return null;
+        }
+        throw new IllegalArgumentException("Not implemented support for " + parent.getClass().getName());
     }
 
 

@@ -24,6 +24,17 @@ public class PlayfieldMesh extends SpriteMesh {
      * This MUST be in sync with {@link #attributeData}
      */
     transient int[] charmap;
+    /**
+     * The width and height of the charmap
+     */
+    final transient int[] size = new int[2];
+
+    /**
+     * Creates a new instance of an empty playfield mesh.
+     */
+    protected PlayfieldMesh() {
+        super();
+    }
 
     /**
      * Creates a copy of the playfield - NOTE this will ONLY create the character and attribute storage.
@@ -73,12 +84,10 @@ public class PlayfieldMesh extends SpriteMesh {
         int count = mapSize[0] * mapSize[1];
         super.createMesh(program, texture, count, rectangle);
         init(count);
-        // buildMesh(program, count, rectangle);
-        // setAttributeUpdater(this);
     }
 
     /**
-     * Positions the characters using width and height number of chars, starting at xpos, ypos
+     * Creates and positions the characters using width and height number of chars, starting at xpos, ypos
      * This will set the position for each character, the map can be moved by translating
      * the node it is attached to.
      * Use this method to layout the characters on your visible screen as needed.
@@ -88,9 +97,14 @@ public class PlayfieldMesh extends SpriteMesh {
      * @param mapSize width and height of map, in characters
      * @param charSize width and height of each char
      * @param offset Start position of the upper left char, ie the upper left char will have this position.
+     * @throws IllegalArgumentException If the size of the map does not mach number of chars in this class
      */
     public void setupCharmap(int[] mapSize, float[] charSize, float[] offset) {
-
+        if (mapSize[Axis.WIDTH.index] * mapSize[Axis.HEIGHT.index] != charmap.length) {
+            throw new IllegalArgumentException("Size of map does not match number of chars in mesh");
+        }
+        size[Axis.WIDTH.index] = mapSize[Axis.WIDTH.index];
+        size[Axis.HEIGHT.index] = mapSize[Axis.HEIGHT.index];
         int index = 0;
         float currentX = offset[0];
         float currentY = offset[1];
@@ -129,30 +143,29 @@ public class PlayfieldMesh extends SpriteMesh {
      * @param count Number of chars to copy
      * @throws ArrayIndexOutOfBoundsException If source or destination does not contain enough data.
      */
-    public void setCharmap(PropertyMapper mapper, int[] source, int sourceOffset, int destOffset, int count) {
+    public void copyCharmap(PropertyMapper mapper, int[] source, int sourceOffset, int destOffset, int count) {
         for (int i = 0; i < count; i++) {
             setChar(mapper, destOffset++, source[sourceOffset++]);
         }
     }
 
     /**
-     * Copies the data from the source map into this class.
+     * Copies the data from the source map into this class
+     * The copy will be done on a row by row basis, adjusting to different size of source and destination.
      * 
      * @param mapper The attribute property mapper
      * @param source Map data will be copied from this
      */
-    public void setCharmap(PropertyMapper mapper, Playfield source, int[] mapSize) {
+    public void copyCharmap(PropertyMapper mapper, Map source) {
         if (source == null || source.getMapSize() == null) {
             return;
         }
         int[] sourceSize = source.getMapSize();
 
-        int width = Math.min(mapSize[Axis.WIDTH.index], sourceSize[Axis.WIDTH.index]);
-        int height = Math.min(mapSize[Axis.HEIGHT.index], sourceSize[Axis.HEIGHT.index]);
-        int sourceOffset = 0;
+        int height = Math.min(size[Axis.HEIGHT.index], sourceSize[Axis.HEIGHT.index]);
+        int width = Math.min(size[Axis.WIDTH.index], sourceSize[Axis.WIDTH.index]);
         for (int y = 0; y < height; y++) {
-            setCharmap(mapper, source.getMap(), sourceOffset, y * mapSize[Axis.WIDTH.index], width);
-            sourceOffset += sourceSize[Axis.WIDTH.index];
+            copyCharmap(mapper, source.getMap(), y * sourceSize[Axis.WIDTH.index], y * size[Axis.WIDTH.index], width);
         }
 
     }

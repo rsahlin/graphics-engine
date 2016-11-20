@@ -38,7 +38,6 @@ public class TiledSprite extends Sprite {
     @Override
     protected void setup(Node parent, PropertyMapper mapper, float[] data, int index) {
         super.setup(parent, mapper, data, index);
-
     }
 
     @Override

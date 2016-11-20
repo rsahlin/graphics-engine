@@ -6,13 +6,16 @@ import com.graphicsengine.io.GraphicsEngineResourcesData;
 import com.graphicsengine.map.PlayfieldNode;
 import com.graphicsengine.spritemesh.SpriteMesh;
 import com.graphicsengine.spritemesh.SpriteMeshNode;
+import com.nucleus.actor.ComponentNode;
 import com.nucleus.camera.ViewFrustum;
+import com.nucleus.component.ComponentException;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshFactory;
 import com.nucleus.io.ResourcesData;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.DefaultNodeFactory;
 import com.nucleus.scene.Node;
+import com.nucleus.scene.NodeException;
 import com.nucleus.scene.NodeFactory;
 
 /**
@@ -28,7 +31,7 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
 
     @Override
     public Node create(NucleusRenderer renderer, MeshFactory meshFactory, ResourcesData resources, Node source)
-            throws IOException {
+            throws NodeException {
         GraphicsEngineNodeType type = null;
         try {
             type = GraphicsEngineNodeType.valueOf(source.getType());
@@ -40,41 +43,31 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
 
         switch (type) {
         case playfieldNode:
-            // PlayfieldNode playfieldNode = (PlayfieldNode) gScene.getResources().getNode(
-            // GraphicsEngineNodeType.playfieldNode, source.getReference());
             created = source.copy();
             internalCreateNode(renderer, source, created, meshFactory, gResources);
-            ((PlayfieldNode) created).createPlayfield(gResources);
+            ((PlayfieldNode) created).createMap(gResources);
             break;
         case spriteMeshNode:
-            // SpriteMeshNode spriteMeshNode = (SpriteMeshNode) gScene.getResources().getNode(
-            // GraphicsEngineNodeType.spriteMeshNode,
-            // source.getReference());
             // This will set the actor resolver
             created = source.copy();
             internalCreateNode(renderer, source, created, meshFactory, gResources);
             // Instead of casting - should the Mesh be attribute consumer?
-            ((SpriteMeshNode) created).createSprites(renderer, (SpriteMesh) created.getMeshById(created.getMeshRef()),
-                    gResources);
+            ((SpriteMeshNode) created).createSprites(renderer,
+                    (SpriteMesh) created.getMeshes().get(0), gResources);
+            break;
+        case spriteComponentNode:
+            created = source.copy();
+            internalCreateNode(renderer, source, created, meshFactory, gResources);
             break;
         case sharedMeshNode:
-            // SharedMeshQuad sharedQuad = (SharedMeshQuad) gScene.getResources().getNode(
-            // GraphicsEngineNodeType.sharedMeshNode,
-            // source.getReference());
             created = source.copy();
             internalCreateNode(renderer, source, created, meshFactory, gResources);
             break;
         case quadNode:
-            // QuadParentNode quadParent = (QuadParentNode)
-            // gScene.getResources().getNode(GraphicsEngineNodeType.quadNode,
-            // source.getReference());
             created = source.copy();
             internalCreateNode(renderer, source, created, meshFactory, gResources);
             break;
         case element:
-            // Element element = (Element) gScene.getResources().getNode(
-            // GraphicsEngineNodeType.element,
-            // source.getReference());
             created = source.copy();
             internalCreateNode(renderer, source, created, meshFactory, gResources);
             break;
@@ -92,23 +85,44 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
      * @param node
      * @param meshFactory
      * @param resources The resources in the scene
-     * @throws IOException
+     * @throws NodeException If there is an error creating the node
      */
     protected void internalCreateNode(NucleusRenderer renderer, Node source, Node node, MeshFactory meshFactory,
-            GraphicsEngineResourcesData resources) throws IOException {
-        node.create();
-        // Copy properties from source node into the created node.
-        node.setProperties(source);
-        Mesh mesh = meshFactory.createMesh(renderer, node, resources);
-        node.copyTransform(source);
-        if (mesh != null) {
-            node.addMesh(mesh);
+            GraphicsEngineResourcesData resources) throws NodeException {
+        try {
+            node.create();
+            // Copy properties from source node into the created node.
+            node.setProperties(source);
+            Mesh mesh = meshFactory.createMesh(renderer, node, resources);
+            node.copyTransform(source);
+            if (mesh != null) {
+                node.addMesh(mesh);
+            }
+            if (node instanceof ComponentNode) {
+                internalCreateComponents(renderer, (ComponentNode) node, meshFactory, resources);
+            }
+        } catch (IOException | ComponentException e) {
+            throw new NodeException(e);
         }
+    }
 
+    /**
+     * Creates the components in the node, this could for instance mean creating the mesh that is
+     * needed by component.
+     * 
+     * @param renderer
+     * @param node
+     * @param meshFactory
+     * @param resources
+     * @throws ComponentException
+     */
+    protected void internalCreateComponents(NucleusRenderer renderer, ComponentNode node, MeshFactory meshFactory,
+            GraphicsEngineResourcesData resources) throws ComponentException {
+        node.createComponents(renderer, resources);
     }
 
     protected void createChildNodes(NucleusRenderer renderer, Node node, MeshFactory meshFactory,
-            GraphicsEngineResourcesData resources) throws IOException {
+            GraphicsEngineResourcesData resources) throws NodeException {
         // Recursively create children
         for (Node nd : node.getChildren()) {
             Node child = create(renderer, meshFactory, resources, nd);
