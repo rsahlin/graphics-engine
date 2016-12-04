@@ -36,7 +36,7 @@ public class PlayfieldMeshFactory {
         renderer.createProgram(program);
         Texture2D texture = AssetManager.getInstance().getTexture(renderer, node.getTextureRef());
         PlayfieldMesh playfieldMesh = new PlayfieldMesh();
-        playfieldMesh.createMesh(program, texture, node.getMapSize(), node.getCharRectangle());
+        playfieldMesh.createMesh(program, texture, node.getMaterial(), node.getMapSize(), node.getCharRectangle());
         float[] offset = node.getMapOffset();
         if (offset == null) {
             offset = new float[] {

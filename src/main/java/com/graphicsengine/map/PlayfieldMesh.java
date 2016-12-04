@@ -1,6 +1,7 @@
 package com.graphicsengine.map;
 
 import com.graphicsengine.spritemesh.SpriteMesh;
+import com.nucleus.geometry.Material;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.Texture2D;
@@ -77,12 +78,14 @@ public class PlayfieldMesh extends SpriteMesh {
      * 
      * @param program
      * @param texture If tiling should be used this must be instance of {@link TiledTexture2D}
+     * @param material
      * @param mapSize Number of chars to support in the mesh
      * @param rectangle The rectangle defining a char, all chars will have same size.
      */
-    public void createMesh(PlayfieldProgram program, Texture2D texture, int[] mapSize, Rectangle rectangle) {
+    public void createMesh(PlayfieldProgram program, Texture2D texture, Material material, int[] mapSize,
+            Rectangle rectangle) {
         int count = mapSize[0] * mapSize[1];
-        super.createMesh(program, texture, count, rectangle);
+        super.createMesh(program, texture, material, count, rectangle);
         init(count);
     }
 

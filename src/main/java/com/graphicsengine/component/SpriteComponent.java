@@ -137,7 +137,8 @@ public class SpriteComponent extends Component implements Consumer {
     public void create(NucleusRenderer renderer, ResourcesData resources, ComponentNode parent)
             throws ComponentException {
         try {
-            spriteMesh = SpriteMeshFactory.createSpriteMesh(renderer, resources, parent.getTextureRef(), count,
+            spriteMesh = SpriteMeshFactory.createSpriteMesh(renderer, parent.getTextureRef(), parent.getMaterial(),
+                    count,
                     rectangle);
         } catch (IOException e) {
             throw new ComponentException("Could not create component: " + e.getMessage());

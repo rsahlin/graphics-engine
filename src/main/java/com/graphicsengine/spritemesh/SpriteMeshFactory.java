@@ -6,9 +6,9 @@ import com.graphicsengine.io.GraphicsEngineResourcesData;
 import com.graphicsengine.scene.QuadParentNode;
 import com.graphicsengine.scene.SharedMeshQuad;
 import com.nucleus.assets.AssetManager;
+import com.nucleus.geometry.Material;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.io.ExternalReference;
-import com.nucleus.io.ResourcesData;
 import com.nucleus.renderer.BufferObjectsFactory;
 import com.nucleus.renderer.Configuration;
 import com.nucleus.renderer.NucleusRenderer;
@@ -43,7 +43,8 @@ public class SpriteMeshFactory {
     public static SpriteMesh create(NucleusRenderer renderer, SpriteMeshNode node,
             GraphicsEngineResourcesData resources)
             throws IOException {
-        return createSpriteMesh(renderer, resources, node.getTextureRef(), node.getCount(), node.getSpriteRectangle());
+        return createSpriteMesh(renderer, node.getTextureRef(), node.getMaterial(), node.getCount(),
+                node.getSpriteRectangle());
     }
 
     /**
@@ -59,13 +60,13 @@ public class SpriteMeshFactory {
      * @return The created sprite mesh
      * @throws IOException If there is an error fetching texture resource
      */
-    public static SpriteMesh createSpriteMesh(NucleusRenderer renderer, ResourcesData resources,
-            ExternalReference textureRef, int count, Rectangle spriteRect) throws IOException {
+    public static SpriteMesh createSpriteMesh(NucleusRenderer renderer, ExternalReference textureRef,
+            Material material, int count, Rectangle spriteRect) throws IOException {
         Texture2D texture = AssetManager.getInstance().getTexture(renderer, textureRef);
         ShaderProgram program = SpriteMeshFactory.createProgram(texture);
         SpriteMesh mesh = new SpriteMesh();
         renderer.createProgram(program);
-        mesh.createMesh(program, texture, count, spriteRect);
+        mesh.createMesh(program, texture, material, count, spriteRect);
         if (Configuration.getInstance().isUseVBO()) {
             BufferObjectsFactory.getInstance().createVBOs(renderer, mesh);
         }
@@ -80,7 +81,7 @@ public class SpriteMeshFactory {
         ShaderProgram program = SpriteMeshFactory.createProgram(texture);
         SpriteMesh mesh = new SpriteMesh();
         renderer.createProgram(program);
-        mesh.createMesh(program, texture, node.getMaxQuads());
+        mesh.createMesh(program, texture, node.getMaterial(), node.getMaxQuads());
         if (Configuration.getInstance().isUseVBO()) {
             BufferObjectsFactory.getInstance().createVBOs(renderer, mesh);
         }

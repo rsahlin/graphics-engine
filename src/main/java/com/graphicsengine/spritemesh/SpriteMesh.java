@@ -10,6 +10,7 @@ import com.nucleus.geometry.ElementBuffer;
 import com.nucleus.geometry.ElementBuffer.Mode;
 import com.nucleus.geometry.ElementBuffer.Type;
 import com.nucleus.geometry.ElementBuilder;
+import com.nucleus.geometry.Material;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.VertexBuffer;
@@ -72,11 +73,13 @@ public class SpriteMesh extends Mesh implements Consumer {
      * 
      * @param program
      * @param texture The texture to use for sprites, must be {@link TiledTexture2D} otherwise tiling will not work.
+     * @param material The material for the mesh
      * @param count Number of sprites to support
      * @param Rectangle The rectangle defining the quad for each sprite
      */
-    public void createMesh(ShaderProgram program, Texture2D texture, int count, Rectangle rectangle) {
-        super.createMesh(program, texture);
+    public void createMesh(ShaderProgram program, Texture2D texture, Material material, int count,
+            Rectangle rectangle) {
+        super.createMesh(program, texture, material);
         createBuffers(program, count);
         buildMesh(program, count, rectangle);
         setAttributeUpdater(this);
@@ -90,10 +93,11 @@ public class SpriteMesh extends Mesh implements Consumer {
      * 
      * @param program
      * @param texture
+     * @param material
      * @param count
      */
-    public void createMesh(ShaderProgram program, Texture2D texture, int count) {
-        super.createMesh(program, texture);
+    public void createMesh(ShaderProgram program, Texture2D texture, Material material, int count) {
+        super.createMesh(program, texture, material);
         createBuffers(program, count);
         ElementBuilder.buildQuadBuffer(indices, indices.getCount() / QUAD_INDICES, 0);
         setAttributeUpdater(this);
