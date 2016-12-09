@@ -135,6 +135,7 @@ public class SpriteMesh extends Mesh implements Consumer {
      * This call will build the quads using index buffer, texture UV will be set according to the texture reference.
      * Either as tiled or uvatlas
      * Vertex buffer will have storage for XYZ + UV.
+     * Note that element data must have been created, and initialized, for spriteCount
      * 
      * @param program The shader program to use with the mesh
      * @param spriteCount Number of sprites to build, this is NOT the vertex count.
@@ -142,41 +143,23 @@ public class SpriteMesh extends Mesh implements Consumer {
      */
     protected void buildMesh(ShaderProgram program, int spriteCount, Rectangle rectangle) {
         int vertexStride = program.getVertexStride();
-        int quadCount = indices.getCount() / VertexBuffer.QUAD_INDICES;
         Texture2D texture = getTexture(Texture2D.TEXTURE_0);
+        float[] quadPositions = buildQuadPosBuffer(texture, rectangle, vertexStride);
+        MeshBuilder.buildQuadMeshIndexed(this, program, spriteCount, quadPositions);
+    }
+
+    float[] buildQuadPosBuffer(Texture2D texture, Rectangle rectangle, int vertexStride) {
         if (texture.textureType == TextureType.TiledTexture2D) {
-            float[] quadPositions = MeshBuilder.createQuadPositionsUVIndexed(rectangle, vertexStride, 0,
+            return MeshBuilder.createQuadPositionsUVIndexed(rectangle, vertexStride, 0,
                     (TiledTexture2D) texture);
-            MeshBuilder.buildQuadMeshIndexed(this, program, quadCount, quadPositions);
-
         } else {
-            float[] quadPositions = MeshBuilder.createQuadPositionsIndexed(rectangle, vertexStride, 0);
-            MeshBuilder.buildQuadMeshIndexed(this, program, quadCount, quadPositions);
+            return MeshBuilder.createQuadPositionsIndexed(rectangle, vertexStride, 0);
         }
-        prepareUV(mapper, spriteCount, 0);
     }
 
     /**
-     * Prepare the texture UV coordinates depending on texture type.
-     * 
-     * @param mapper
-     * @param spriteCount
-     * @param index Index into the first sprite to prepare
-     */
-    protected void prepareUV(PropertyMapper mapper, int spriteCount, int index) {
-        if (getTexture(Texture2D.TEXTURE_0).textureType == TextureType.TiledTexture2D) {
-            // MeshBuilder.buildTiledUV(getVerticeBuffer(BufferIndex.ATTRIBUTES_STATIC));
-        } else if (getTexture(Texture2D.TEXTURE_0).textureType == TextureType.UVTexture2D) {
-            // TODO Must prepare UV based on the data in the texture.
-        } else {
-            throw new IllegalArgumentException();
-        }
-
-    }
-
-    /**
-     * Builds the quad at the specified index, use this call to create the quads to be draw individually.
-     * Before using this call the indexed buffer (indices) must be bulit in the mesh, ie this method will only
+     * Builds one quad at the specified index, use this call to create the quads to be draw individually.
+     * Before using this call the indexed buffer (indices) must be built in the mesh, ie this method will only
      * set the vertex positions and UV for this quad
      * This will setup the quad according to the specified size and anchor. Texture UV will be built based
      * on the texture type.
@@ -187,9 +170,9 @@ public class SpriteMesh extends Mesh implements Consumer {
      */
     public void buildQuad(int index, ShaderProgram program, Rectangle rectangle) {
         int vertexStride = program.getVertexStride();
-        float[] quadPositions = MeshBuilder.createQuadPositionsIndexed(rectangle, vertexStride, 0);
-        MeshBuilder.buildQuad(this, program, index, quadPositions);
-        prepareUV(mapper, 1, index);
+        Texture2D texture = getTexture(Texture2D.TEXTURE_0);
+        float[] quadPositions = buildQuadPosBuffer(texture, rectangle, vertexStride);
+        MeshBuilder.buildQuads(this, program, 1, index, quadPositions);
     }
 
     @Override
@@ -322,8 +305,8 @@ public class SpriteMesh extends Mesh implements Consumer {
         int readIndex = 0;
         uvAtlas.getUVFrame(frame, frames, 0);
         for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
-            attributeData[offset + mapper.UV_INDEX] = frames[readIndex++];
-            attributeData[offset + mapper.UV_INDEX + 1] = frames[readIndex++];
+            attributeData[offset + mapper.FRAME_INDEX] = frames[readIndex++];
+            attributeData[offset + mapper.FRAME_INDEX + 1] = frames[readIndex++];
             offset += mapper.ATTRIBUTES_PER_VERTEX;
         }
 

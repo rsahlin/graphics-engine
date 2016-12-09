@@ -1,6 +1,5 @@
 package com.graphicsengine.spritemesh;
 
-import com.nucleus.geometry.AttributeUpdater.Property;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.VertexBuffer;
 
@@ -15,10 +14,6 @@ import com.nucleus.geometry.VertexBuffer;
 public class UVSpriteProgram extends TiledSpriteProgram {
 
     protected final static String VERTEX_SHADER_NAME = "assets/uvspritevertex.essl";
-    /**
-     * Index into attribute to get direct access to uv coordinates
-     */
-    final static int ATTRIBUTE_SPRITE_UV = 12;
 
     public UVSpriteProgram() {
         super();
@@ -32,14 +27,6 @@ public class UVSpriteProgram extends TiledSpriteProgram {
     public void setupUniforms(Mesh mesh) {
         createUniformStorage(mesh, shaderVariables);
         setScreenSize(mesh.getUniforms(), VARIABLES.uScreenSize);
-    }
-
-    @Override
-    public int getPropertyOffset(Property property) {
-        if (property == Property.UV) {
-            return ATTRIBUTE_SPRITE_UV;
-        }
-        return super.getPropertyOffset(property);
     }
 
 }

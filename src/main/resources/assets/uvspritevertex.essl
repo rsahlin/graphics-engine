@@ -26,7 +26,7 @@ attribute vec3 aPosition;
 attribute vec4 aTranslate; //sprite x, sprite y, sprite z 
 attribute vec4 aRotate;  
 attribute vec4 aScale;  
-attribute vec4 aFrameData;//texture u, texture v,  frame
+attribute vec4 aFrameData;//texture u, texture v
 
 varying vec2 vTexCoord;
 mat4 calculateTransformMatrix();

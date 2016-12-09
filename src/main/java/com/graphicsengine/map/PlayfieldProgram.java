@@ -34,21 +34,10 @@ public class PlayfieldProgram extends ShaderProgram {
      * Number of float data per vertex
      */
     private final static int ATTRIBUTES_PER_VERTEX = 8;
-    /**
-     * Number of floats for each char in the attribute data.
-     */
-    private final static int ATTRIBUTES_PER_CHAR = PlayfieldProgram.ATTRIBUTES_PER_VERTEX
-            * VERTICES_PER_SPRITE;
 
     /**
-     * Index into aCharset for translate position
+     * The shader names used, the variable names used in shader sources MUST be defined here.
      */
-    private final static int ATTRIBUTE_CHARMAP_TRANSLATE_INDEX = 0;
-    /**
-     * The char frame number
-     */
-    private final static int ATTRIBUTE_CHARMAP_FRAME_INDEX = 4;
-
     public enum VARIABLES implements VariableMapping {
         uMVMatrix(0, 0, ShaderVariable.VariableType.UNIFORM, null),
         uProjectionMatrix(1, 16, ShaderVariable.VariableType.UNIFORM, null),
@@ -168,9 +157,9 @@ public class PlayfieldProgram extends ShaderProgram {
     public int getPropertyOffset(Property property) {
         switch (property) {
         case TRANSLATE:
-            return ATTRIBUTE_CHARMAP_TRANSLATE_INDEX;
+            return VARIABLES.aCharset.offset;
         case FRAME:
-            return ATTRIBUTE_CHARMAP_FRAME_INDEX;
+            return VARIABLES.aCharset2.offset;
         default:
             return -1;
         }

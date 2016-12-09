@@ -4,13 +4,15 @@ import java.util.ArrayList;
 
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.spritemesh.SpriteMesh;
+import com.nucleus.component.Component;
 import com.nucleus.scene.Node;
 
 /**
  * Node containing Quad elements, the intended usage is to group as many quad objects as possible under one node
  * and use the mesh in the parent node to render the objects.
  * This means that they need to share the mesh in this node.
- * Use this node for simple objects that does not need to have special behavior. Use actor/sprite for that.
+ * Use this node for simple objects that does not need to have special behavior. Use component node for that,
+ * see {@linkplain Component}
  * This class can be serialized using GSON
  * 
  * @author Richard Sahlin
