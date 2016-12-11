@@ -4,12 +4,15 @@ import com.graphicsengine.spritemesh.SpriteMeshNode;
 import com.nucleus.actor.ActorResolver;
 
 /**
+ * This class is deprecated - do not use SpriteNode, use component-system instead.
+ * 
  * Used to create instances of spritecontrollers (nodes), the controllers need to have the actor resolvers setup
  * according to implementation needs, do this by calling {@link #setActorResolver(ActorResolver)}
  * 
  * @author Richard Sahlin
  *
  */
+@Deprecated
 public class SpriteNodeFactory {
 
     /**
@@ -68,10 +71,12 @@ public class SpriteNodeFactory {
      * 
      * @param actorResolver
      */
+    @Deprecated
     public static void setActorResolver(ActorResolver actorResolver) {
         SpriteNodeFactory.actorResolver = actorResolver;
     }
 
+    @Deprecated
     public static ActorResolver getActorResolver() {
         return SpriteNodeFactory.actorResolver;
     }

@@ -7,9 +7,16 @@ import com.nucleus.actor.ActorContainer;
 import com.nucleus.actor.ActorItem;
 import com.nucleus.actor.ActorResolver;
 import com.nucleus.actor.ComponentNode;
+import com.nucleus.component.Component;
 import com.nucleus.renderer.NucleusRenderer;
+import com.nucleus.system.System;
 
 /**
+ * This class is deprecated - avoid using behavior that is split up (data) in an actor type of way.
+ * Use component-system to centralize data and make it possible to accelerate logic processing.
+ * {@linkplain System}
+ * {@linkplain Component}
+ * 
  * Controller for a set of sprites.
  * This can be added as a node to the scenegraph.
  * This class can be serialized using GSON
@@ -17,6 +24,7 @@ import com.nucleus.renderer.NucleusRenderer;
  * @author Richard Sahlin
  *
  */
+@Deprecated
 public abstract class SpriteNode extends ComponentNode {
 
     private final static String ACTORRESOLVER_NOT_SET = "ActorResolver not set, must set before calling.";
