@@ -53,8 +53,8 @@ public class SpriteSystem extends System {
         int writeIndex = 0;
         int readLength = SpriteComponent.SpriteData.getSize();
         for (int sprite = 0; sprite < spriteCount; sprite++) {
-            // spriteData[SpriteData.ROTATE.index + readIndex] += deltaTime
-            // * spriteData[SpriteData.ROTATE_SPEED.index + readIndex];
+            spriteData[SpriteData.ROTATE.index + readIndex] += deltaTime
+                    * spriteData[SpriteData.ROTATE_SPEED.index + readIndex];
             if (spriteData[SpriteData.ROTATE.index + readIndex] > TWOPI) {
                 spriteData[SpriteData.ROTATE.index + readIndex] -= TWOPI;
             }

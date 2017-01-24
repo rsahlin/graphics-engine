@@ -1,14 +1,20 @@
 package com.graphicsengine.sprite;
 
 import com.google.gson.annotations.SerializedName;
+import com.nucleus.component.Component;
 
 /**
+ * This class is deprecated - do not use actors that have behavior per object. Use
+ * {@linkplain com.nucleus.system.System}
+ * and {@linkplain Component}
+ * 
  * The data for actor objects, this belongs to a node where the node controlls the number of actors that are supported.
  * This class can be serialized using GSON
  * 
  * @author Richard Sahlin
  *
  */
+@Deprecated
 public class ActorData {
 
     @SerializedName("data")

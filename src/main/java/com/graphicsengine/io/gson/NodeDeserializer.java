@@ -20,13 +20,14 @@ public class NodeDeserializer extends NucleusNodeDeserializer implements JsonDes
     public Node deserialize(JsonElement json, Type type, JsonDeserializationContext context)
             throws JsonParseException {
         JsonObject obj = json.getAsJsonObject();
+        GraphicsEngineNodeType t;
         try {
-            GraphicsEngineNodeType t = GraphicsEngineNodeType.valueOf(obj.get(NODETYPE_JSON_KEY).getAsString());
-            return (Node) gson.fromJson(json, t.getTypeClass());
+            t = GraphicsEngineNodeType.valueOf(obj.get(NODETYPE_JSON_KEY).getAsString());
         } catch (IllegalArgumentException e) {
             //Try with super
             return super.deserialize(json, type, context);
         }
+        return (Node) gson.fromJson(json, t.getTypeClass());
         
     }
 

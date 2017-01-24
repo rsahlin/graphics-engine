@@ -99,6 +99,7 @@ public abstract class SpriteNode extends ComponentNode {
      * 
      * @param resolver The resolver to add, used when createSprites() is called.
      */
+    @Deprecated
     public void setActorResolver(ActorResolver resolver) {
         actorResolver = resolver;
     }

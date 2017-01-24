@@ -15,22 +15,27 @@ import com.nucleus.geometry.VertexBuffer;
 import com.nucleus.io.ResourcesData;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.shader.ShaderProgram;
-import com.nucleus.system.ComponentHandler;
+import com.nucleus.system.System;
 import com.nucleus.vecmath.Rectangle;
 import com.nucleus.vecmath.Vector2D;
 
 /**
  * The old school sprite component, this is a collection of a number of (similar) sprite components
  * that have the data in a shared buffer.
- * This class is used by the {@linkplain SpriteSystem} to process behavior.
+ * The component can be seen as a container for the data needed to process the sprites - but not the behavior itself.
+ * This class is used by the {@linkplain SpriteSystem} to process behavior, the System is where the logic is.
+ * 
  * This component will hold data for the sprite properties, such as position, movement, frame.
- * It holds a reference to the {@link SpriteMesh}
  * The class can be serialized using gson
+ * 
+ * TODO Shall this class have a reference to {@linkplain SpriteMesh} or just reference the attribute data (as is now)
+ * TODO Make it possible to controll which {@linkplain System} is used to process logic.
  * 
  * @author Richard Sahlin
  *
  */
 public class SpriteComponent extends Component implements Consumer {
+
     public enum SpriteData {
         TRANSLATE(0),
         TRANSLATE_X(0),
@@ -86,20 +91,15 @@ public class SpriteComponent extends Component implements Consumer {
      * The sprites float data storage, this is the sprite properties such as position, movement and frame
      */
     transient public float[] floatData;
+    /**
+     * This is a reference to the spritemesh attribute data.
+     */
     transient private float[] attributeData;
     // TODO move into floatdata
     transient public Vector2D[] moveVector;
     // TODO move to renderable component
     transient protected PropertyMapper mapper;
     transient protected SpriteMesh spriteMesh;
-
-    /**
-     * Used by {@linkplain GraphicsEngineComponentFactory}
-     */
-    SpriteComponent() {
-        ComponentHandler handler = ComponentHandler.getInstance();
-        handler.registerComponent(this, new SpriteSystem());
-    }
 
     @Override
     public Component createInstance() {
