@@ -106,6 +106,8 @@ public class SpriteMeshFactory {
             return new TiledSpriteProgram();
         case UVTexture2D:
             return new UVSpriteProgram();
+        case Untextured:
+            return new UntexturedSpriteProgram();
         default:
             throw new IllegalArgumentException(INVALID_TYPE + texture.textureType);
         }

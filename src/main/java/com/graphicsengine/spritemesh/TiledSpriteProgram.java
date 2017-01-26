@@ -19,7 +19,7 @@ import com.nucleus.vecmath.Matrix;
  * This class defines the mappings for the tile sprite vertex and fragment shaders.
  * This program has support for rotated sprites in Z axis, the sprite position and frame index can be set for each
  * sprite.
- * It is used by the {@link SpriteMeshNode}
+ * It is used by the {@link SpriteMesh}
  * 
  * @author Richard Sahlin
  *

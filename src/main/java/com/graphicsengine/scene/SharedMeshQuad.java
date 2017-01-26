@@ -36,7 +36,7 @@ public class SharedMeshQuad extends Node {
         this.childIndex = index;
         mesh.buildQuad(index, mesh.getMaterial().getProgram(), rectangle);
         if (transform == null) {
-            mesh.setScale(index, 1, 1, 1);
+            mesh.setScale(index, 1, 1);
         } else {
             mesh.setTransform(index, transform);
         }

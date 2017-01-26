@@ -15,21 +15,26 @@ import com.nucleus.geometry.VertexBuffer;
 import com.nucleus.io.ResourcesData;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.shader.ShaderProgram;
-import com.nucleus.system.System;
+import com.nucleus.texturing.Texture2D;
+import com.nucleus.texturing.TextureType;
+import com.nucleus.texturing.UVAtlas;
+import com.nucleus.texturing.UVTexture2D;
 import com.nucleus.vecmath.Rectangle;
 import com.nucleus.vecmath.Vector2D;
 
 /**
- * The old school sprite component, this is a collection of a number of (similar) sprite components
+ * The old school sprite component, this is a collection of a number of (similar) sprite objects
  * that have the data in a shared buffer.
  * The component can be seen as a container for the data needed to process the sprites - but not the behavior itself.
  * This class is used by the {@linkplain SpriteSystem} to process behavior, the System is where the logic is.
  * 
- * This component will hold data for the sprite properties, such as position, movement, frame.
+ * This component will hold data for the sprite properties, such as position, movement, frame - this data is held in the
+ * attribute buffer that can be fetched using {@link #getAttributeData()} and must match the data used by the shader
+ * program.
+ * 
  * The class can be serialized using gson
  * 
  * TODO Shall this class have a reference to {@linkplain SpriteMesh} or just reference the attribute data (as is now)
- * TODO Make it possible to controll which {@linkplain System} is used to process logic.
  * 
  * @author Richard Sahlin
  *
@@ -65,17 +70,6 @@ public class SpriteComponent extends Component implements Consumer {
         }
     }
 
-    public enum ProgramType {
-        /**
-         * Using tiled texture and program
-         */
-        TILED(),
-        /**
-         * Using UV texture and program
-         */
-        UV();
-    }
-
     /**
      * The rectangle defining the sprites, all sprites will have same size
      * 4 values = x1,y1 + width and height
@@ -99,7 +93,14 @@ public class SpriteComponent extends Component implements Consumer {
     transient public Vector2D[] moveVector;
     // TODO move to renderable component
     transient protected PropertyMapper mapper;
+    /**
+     * This is the mesh that holds all sprite objects, it is drawn using one drawcall.
+     */
     transient protected SpriteMesh spriteMesh;
+    transient protected TextureType textureType;
+    transient protected UVAtlas uvAtlas;
+    transient protected float[] uvFrame = new float[ShaderProgram.VERTICES_PER_SPRITE * 2];
+    transient protected int spritedataSize = SpriteData.getSize();
 
     @Override
     public Component createInstance() {
@@ -126,7 +127,7 @@ public class SpriteComponent extends Component implements Consumer {
      * Creates the arrays for this spritecomponent
      */
     private void createBuffers() {
-        this.floatData = new float[SpriteComponent.SpriteData.getSize() * count];
+        this.floatData = new float[spritedataSize * count];
         this.moveVector = new Vector2D[count];
         for (int i = 0; i < count; i++) {
             moveVector[i] = new Vector2D();
@@ -138,8 +139,17 @@ public class SpriteComponent extends Component implements Consumer {
             throws ComponentException {
         try {
             spriteMesh = SpriteMeshFactory.createSpriteMesh(renderer, parent.getTextureRef(), parent.getMaterial(),
-                    count,
-                    rectangle);
+                    count, rectangle);
+            this.textureType = spriteMesh.getTexture(Texture2D.TEXTURE_0).getTextureType();
+            switch (textureType) {
+            case TiledTexture2D:
+                break;
+            case UVTexture2D:
+                uvAtlas = ((UVTexture2D) spriteMesh.getTexture(Texture2D.TEXTURE_0)).getUVAtlas();
+                break;
+            default:
+                break;
+            }
         } catch (IOException e) {
             throw new ComponentException("Could not create component: " + e.getMessage());
         }
@@ -177,11 +187,6 @@ public class SpriteComponent extends Component implements Consumer {
         return count;
     }
 
-    /**
-     * Returns the attributedata owned by this component
-     * 
-     * @return
-     */
     @Override
     public float[] getAttributeData() {
         return attributeData;
@@ -213,7 +218,8 @@ public class SpriteComponent extends Component implements Consumer {
     }
 
     /**
-     * Sets the x, y and z position
+     * Sets the x, y and z position, this calls {@linkplain SpriteMesh#setPosition(int, float, float, float)} to update
+     * the attribute data
      * 
      * @param index The sprite number
      * @param x X position
@@ -221,78 +227,62 @@ public class SpriteComponent extends Component implements Consumer {
      * @param z Z position
      */
     public void setPosition(int index, float x, float y, float z) {
-        int offset = index * SpriteData.getSize();
+        int offset = index * spritedataSize;
         floatData[offset++ + SpriteData.TRANSLATE.index] = x;
         floatData[offset++ + SpriteData.TRANSLATE.index] = y;
         floatData[offset++ + SpriteData.TRANSLATE.index] = z;
-        offset = index * mapper.ATTRIBUTES_PER_VERTEX * ShaderProgram.VERTICES_PER_SPRITE;
-        for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
-            attributeData[offset + mapper.TRANSLATE_INDEX] = x;
-            attributeData[offset + mapper.TRANSLATE_INDEX + 1] = y;
-            attributeData[offset + mapper.TRANSLATE_INDEX + 2] = z;
-            offset += mapper.ATTRIBUTES_PER_VERTEX;
-        }
+        spriteMesh.setPosition(index, x, y, z);
     }
 
     /**
-     * Sets the frame number, must be used for instance by sprites using the UVTexture otherwise
-     * UV coordinates are not updated.
+     * Sets the frame number of the sprite index, this calls {@linkplain SpriteMesh#setFrame(int, int)} to update
+     * the attribute data
      * 
-     * @param index The sprite number
-     * @param frame The frame number to set
+     * @param index Index to the sprite object to set the frame on
+     * @param frame Sprite frame number to set
      */
     public void setFrame(int index, int frame) {
-        int offset = index * SpriteData.getSize();
+        int offset = index * spritedataSize;
         floatData[offset + SpriteData.FRAME.index] = frame;
-        offset = index * mapper.ATTRIBUTES_PER_VERTEX * ShaderProgram.VERTICES_PER_SPRITE;
-        for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
-            attributeData[offset + mapper.FRAME_INDEX] = frame;
-            offset += mapper.ATTRIBUTES_PER_VERTEX;
-        }
+        spriteMesh.setFrame(index, frame);
     }
 
     public void setRotateSpeed(int index, float speed) {
-        int offset = index * SpriteData.getSize();
+        int offset = index * spritedataSize;
         floatData[offset + SpriteData.ROTATE_SPEED.index] = speed;
     }
 
     public void setElasticity(int index, float elasticity) {
-        int offset = index * SpriteData.getSize();
+        int offset = index * spritedataSize;
         floatData[offset + SpriteData.ELASTICITY.index] = elasticity;
     }
 
     /**
-     * Sets the scale in x and y axis
+     * Sets the scale in x and y axis, this calls {@linkplain SpriteMesh#setScale(int, float, float)} to update
+     * the attribute data
      * 
      * @param index The sprite number
      * @param x X axis scale
      * @param y Y axis scale
      */
     public void setScale(int index, float x, float y) {
-        int offset = index * SpriteData.getSize();
+        int offset = index * spritedataSize;
         floatData[offset++ + SpriteData.SCALE.index] = x;
         floatData[offset + SpriteData.SCALE.index] = y;
-        offset = index * mapper.ATTRIBUTES_PER_VERTEX * ShaderProgram.VERTICES_PER_SPRITE;
-        for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
-            attributeData[offset + mapper.SCALE_INDEX] = x;
-            attributeData[offset + mapper.SCALE_INDEX + 1] = y;
-            offset += mapper.ATTRIBUTES_PER_VERTEX;
-        }
+        spriteMesh.setScale(index, x, y);
     }
 
     /**
+     * Sets the rotation, this calls {@linkplain SpriteMesh#setRotation(int, float)} to update
+     * the attribute data
      * 
      * @param index The sprite number
      * @param rotation
      */
     public void setRotation(int index, float rotation) {
-        int offset = index * SpriteData.getSize();
+        int offset = index * spritedataSize;
         floatData[offset + SpriteData.ROTATE.index] = rotation;
-        offset = index * mapper.ATTRIBUTES_PER_VERTEX * ShaderProgram.VERTICES_PER_SPRITE;
-        for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
-            attributeData[offset + mapper.ROTATE_INDEX] = rotation;
-            offset += mapper.ATTRIBUTES_PER_VERTEX;
-        }
+        spriteMesh.setRotation(index, rotation);
     }
 
     @Override

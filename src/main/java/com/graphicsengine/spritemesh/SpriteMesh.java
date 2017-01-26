@@ -225,7 +225,8 @@ public class SpriteMesh extends Mesh implements Consumer {
      * @param z
      */
     public void setPosition(int index, float x, float y, float z) {
-        int offset = index * mapper.ATTRIBUTES_PER_VERTEX;
+        // TODO Precalculate ATTRIBUTES_PER_VERTEX * VERTICES_PER_SPRITE
+        int offset = index * mapper.ATTRIBUTES_PER_VERTEX * ShaderProgram.VERTICES_PER_SPRITE;
         for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
             attributeData[offset + mapper.TRANSLATE_INDEX] = x;
             attributeData[offset + mapper.TRANSLATE_INDEX + 1] = y;
@@ -241,6 +242,7 @@ public class SpriteMesh extends Mesh implements Consumer {
      * @param transform
      */
     public void setTransform(int index, Transform transform) {
+        // TODO Precalculate ATTRIBUTES_PER_VERTEX * VERTICES_PER_SPRITE
         int offset = index * mapper.ATTRIBUTES_PER_VERTEX * ShaderProgram.VERTICES_PER_SPRITE;
         float[] scale = transform.getScale();
         float[] pos = transform.getTranslate();
@@ -260,19 +262,17 @@ public class SpriteMesh extends Mesh implements Consumer {
      * Sets the x, y and z scale of a quad/sprite in this mesh.
      * 
      * @param index Index of the quad/sprite to set scale for, 0 and up
-     * @param x
-     * @param y
-     * @param z
+     * @param x Scale in x axis, where 1 is normal size
+     * @param y Scale in y axis, where 1 is normal size
      */
-    public void setScale(int index, float x, float y, float z) {
-        int offset = index * mapper.ATTRIBUTES_PER_VERTEX;
+    public void setScale(int index, float x, float y) {
+        // TODO Precalculate ATTRIBUTES_PER_VERTEX * VERTICES_PER_SPRITE
+        int offset = index * mapper.ATTRIBUTES_PER_VERTEX * ShaderProgram.VERTICES_PER_SPRITE;
         for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
             attributeData[offset + mapper.SCALE_INDEX] = x;
             attributeData[offset + mapper.SCALE_INDEX + 1] = y;
-            attributeData[offset + mapper.SCALE_INDEX + 2] = z;
             offset += mapper.ATTRIBUTES_PER_VERTEX;
         }
-
     }
 
     /**
@@ -283,7 +283,8 @@ public class SpriteMesh extends Mesh implements Consumer {
      */
     public void setFrame(int index, int frame) {
         if (texture[Texture2D.TEXTURE_0].textureType == TextureType.TiledTexture2D) {
-            int offset = index * mapper.ATTRIBUTES_PER_VERTEX;
+            // TODO Precalculate ATTRIBUTES_PER_VERTEX * VERTICES_PER_SPRITE
+            int offset = index * mapper.ATTRIBUTES_PER_VERTEX * ShaderProgram.VERTICES_PER_SPRITE;
             for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
                 attributeData[offset + mapper.FRAME_INDEX] = frame;
                 offset += mapper.ATTRIBUTES_PER_VERTEX;
@@ -301,7 +302,8 @@ public class SpriteMesh extends Mesh implements Consumer {
      * @param uvAtlas
      */
     private void setFrame(int index, int frame, UVAtlas uvAtlas) {
-        int offset = index * mapper.ATTRIBUTES_PER_VERTEX * INDEXED_QUAD_VERTICES;
+        // TODO Precalculate ATTRIBUTES_PER_VERTEX * VERTICES_PER_SPRITE
+        int offset = index * mapper.ATTRIBUTES_PER_VERTEX * ShaderProgram.VERTICES_PER_SPRITE;
         int readIndex = 0;
         uvAtlas.getUVFrame(frame, frames, 0);
         for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
@@ -319,9 +321,9 @@ public class SpriteMesh extends Mesh implements Consumer {
      * @param rotation The z axis rotation, in degrees
      */
     public void setRotation(int index, float rotation) {
-        int offset = index * mapper.ATTRIBUTES_PER_VERTEX;
+        int offset = index * mapper.ATTRIBUTES_PER_VERTEX * ShaderProgram.VERTICES_PER_SPRITE;
         for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
-            attributeData[index + mapper.ROTATE_INDEX] = rotation;
+            attributeData[offset + mapper.ROTATE_INDEX] = rotation;
             offset += mapper.ATTRIBUTES_PER_VERTEX;
         }
     }
