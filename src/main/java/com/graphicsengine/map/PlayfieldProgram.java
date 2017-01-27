@@ -1,6 +1,5 @@
 package com.graphicsengine.map;
 
-import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.AttributeUpdater.Property;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.Mesh.BufferIndex;
@@ -142,15 +141,6 @@ public class PlayfieldProgram extends ShaderProgram {
     @Override
     public int getAttributeOffset(int vertex) {
         return vertex * ATTRIBUTES_PER_VERTEX;
-    }
-
-    @Override
-    public VertexBuffer createAttributeBuffer(int verticeCount, Mesh mesh) {
-        VertexBuffer buffer = super.createAttributeBuffer(verticeCount, mesh);
-        if (mesh instanceof Consumer) {
-            ((Consumer) mesh).bindAttributeBuffer(buffer);
-        }
-        return buffer;
     }
 
     @Override

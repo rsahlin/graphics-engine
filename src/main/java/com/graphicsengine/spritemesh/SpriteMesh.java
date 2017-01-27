@@ -2,8 +2,6 @@ package com.graphicsengine.spritemesh;
 
 import static com.nucleus.geometry.VertexBuffer.INDEXED_QUAD_VERTICES;
 import static com.nucleus.geometry.VertexBuffer.QUAD_INDICES;
-import static com.nucleus.geometry.VertexBuffer.XYZUV_COMPONENTS;
-import static com.nucleus.geometry.VertexBuffer.XYZ_COMPONENTS;
 
 import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.ElementBuffer;
@@ -14,7 +12,6 @@ import com.nucleus.geometry.Material;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.VertexBuffer;
-import com.nucleus.opengl.GLESWrapper.GLES20;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TextureType;
@@ -112,19 +109,12 @@ public class SpriteMesh extends Mesh implements Consumer {
      */
     private void createBuffers(ShaderProgram program, int spriteCount) {
         attributes = new VertexBuffer[program.getAttributeBufferCount()];
-        attributes[BufferIndex.ATTRIBUTES.index] = program.createAttributeBuffer(spriteCount * INDEXED_QUAD_VERTICES,
+        attributes[BufferIndex.ATTRIBUTES.index] = program.createAttributeBuffer(BufferIndex.ATTRIBUTES,
+                spriteCount * INDEXED_QUAD_VERTICES,
                 this);
-        if (getTexture(Texture2D.TEXTURE_0).textureType == TextureType.TiledTexture2D) {
-            attributes[BufferIndex.VERTICES.index] = new VertexBuffer(spriteCount * INDEXED_QUAD_VERTICES,
-                    XYZUV_COMPONENTS,
-                    XYZUV_COMPONENTS, GLES20.GL_FLOAT);
-        } else {
-            attributes[BufferIndex.VERTICES.index] = new VertexBuffer(spriteCount * INDEXED_QUAD_VERTICES,
-                    XYZ_COMPONENTS,
-                    XYZ_COMPONENTS, GLES20.GL_FLOAT);
-        }
+        attributes[BufferIndex.VERTICES.index] = program.createAttributeBuffer(BufferIndex.VERTICES,
+                spriteCount * INDEXED_QUAD_VERTICES, this);
         indices = new ElementBuffer(Mode.TRIANGLES, spriteCount * QUAD_INDICES, Type.SHORT);
-
         program.setupUniforms(this);
     }
 

@@ -1,6 +1,5 @@
 package com.graphicsengine.spritemesh;
 
-import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.AttributeUpdater.Property;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.Mesh.BufferIndex;
@@ -119,15 +118,6 @@ public class TiledSpriteProgram extends ShaderProgram {
         System.arraycopy(projectionMatrix, 0, mesh.getUniforms(), VARIABLES.uProjectionMatrix.offset,
                 Matrix.MATRIX_ELEMENTS);
         bindUniforms(gles, uniforms, mesh.getUniforms());
-    }
-
-    @Override
-    public VertexBuffer createAttributeBuffer(int verticeCount, Mesh mesh) {
-        VertexBuffer buffer = super.createAttributeBuffer(verticeCount, mesh);
-        if (mesh instanceof Consumer) {
-            ((Consumer) mesh).bindAttributeBuffer(buffer);
-        }
-        return buffer;
     }
 
     @Override
