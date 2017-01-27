@@ -27,19 +27,19 @@ attribute vec4 aTranslate; //sprite x, sprite y, sprite z
 attribute vec4 aRotate;  
 attribute vec4 aScale;  
 
-mat4 calculateTransformMatrix();
+mat2 calculateTransformMatrix();
 
 void main() {
-    vec4 pos = uMVMatrix * (vec4(aTranslate.x, aTranslate.y, aTranslate.z, 1.0) + (calculateTransformMatrix() * vec4(aPosition, 0.0)));
-    gl_Position = uProjectionMatrix * vec4(floor((uScreenSize * vec2(pos)) + 0.5) / uScreenSize, pos.z, pos.w);
+    vec4 pos = uMVMatrix * (vec4(aTranslate.x, aTranslate.y, aTranslate.z, 1.0) + vec4(calculateTransformMatrix() * vec2(aPosition), aPosition.z, 0.0));
+    gl_Position = uProjectionMatrix * pos;
 }
 /**
  * Returns a matrix with z axis rotation set from attribute aRotate.z, x and y axis scale.
  * @return Matrix with z axis rotation set from aRotate.z, scale from aScale.x + aScale.y
  */
-mat4 calculateTransformMatrix(){
+mat2 calculateTransformMatrix(){
 
-    mat4 modelview = mat4(1);
+    mat2 modelview = mat2(1);
 
     //Rotate
     float cz = cos(aRotate.z);
