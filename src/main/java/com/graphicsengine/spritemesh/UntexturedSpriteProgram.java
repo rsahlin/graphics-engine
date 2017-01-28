@@ -15,6 +15,11 @@ public class UntexturedSpriteProgram extends TiledSpriteProgram {
 
     protected final static String VERTEX_SHADER_NAME = "assets/untexturedspritevertex.essl";
     protected final static String FRAGMENT_SHADER_NAME = "assets/untexturedspritefragment.essl";
+    /**
+     * Number of float data per vertex
+     */
+    final static int ATTRIBUTES_PER_VERTEX = 12;
+
 
     public UntexturedSpriteProgram() {
         super();
@@ -26,6 +31,8 @@ public class UntexturedSpriteProgram extends TiledSpriteProgram {
 
     @Override
     public void setupUniforms(Mesh mesh) {
+        // Must override since we shall not store screensize in uniform
         createUniformStorage(mesh, shaderVariables);
     }
+
 }

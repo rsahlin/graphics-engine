@@ -169,6 +169,16 @@ public class SpriteComponent extends Component implements Consumer {
     }
 
     /**
+     * Returns the texture type used for this component.
+     * TODO: Shall this be stored as a Component enum instead?
+     * 
+     * @return Type of texture used
+     */
+    public TextureType getTextureType() {
+        return textureType;
+    }
+
+    /**
      * Internal method, sets the rectangle defining each sprite
      * This will only set the size parameter, createMesh must be called to actually create the mesh
      * 
@@ -245,6 +255,17 @@ public class SpriteComponent extends Component implements Consumer {
         int offset = index * spritedataSize;
         floatData[offset + SpriteData.FRAME.index] = frame;
         spriteMesh.setFrame(index, frame);
+    }
+
+    /**
+     * Sets the color of the sprite, this calls {@linkplain SpriteMesh#setColor(int, float[])} to update the attribute
+     * data
+     * 
+     * @param index
+     * @param rgba Array with at least 4 float values, index 0 is RED, 1 is GREEN, 2 is BLUE, 3 is ALPHA
+     */
+    public void setColor(int index, float[] rgba) {
+        spriteMesh.setColor(index, rgba);
     }
 
     public void setRotateSpeed(int index, float speed) {

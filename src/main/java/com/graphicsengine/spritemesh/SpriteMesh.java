@@ -285,6 +285,26 @@ public class SpriteMesh extends Mesh implements Consumer {
     }
 
     /**
+     * Sets the ARGB color of the sprite
+     * 
+     * @param index The index of the sprite to set color to
+     * @param rgba Array with at least 4 float values, index 0 is RED, 1 is GREEN, 2 is BLUE, 3 is ALPHA
+     * @throws ArrayIndexOutOfBoundsException If program used does not support color parameter or if size of argb array
+     * is < 4
+     */
+    public void setColor(int index, float[] rgba) {
+        // TODO Precalculate ATTRIBUTES_PER_VERTEX * VERTICES_PER_SPRITE
+        int offset = index * mapper.ATTRIBUTES_PER_VERTEX * ShaderProgram.VERTICES_PER_SPRITE;
+        for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
+            attributeData[offset + mapper.COLOR_INDEX] = rgba[0];
+            attributeData[offset + mapper.COLOR_INDEX + 1] = rgba[1];
+            attributeData[offset + mapper.COLOR_INDEX + 2] = rgba[2];
+            attributeData[offset + mapper.COLOR_INDEX + 3] = rgba[3];
+            offset += mapper.ATTRIBUTES_PER_VERTEX;
+        }
+    }
+
+    /**
      * Sets the frame when the mesh uses a UV texture
      * 
      * @param index The index of the quad/sprite to set frame of, 0 and up

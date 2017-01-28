@@ -34,7 +34,7 @@ public class TiledSpriteProgram extends ShaderProgram {
     /**
      * Number of float data per vertex
      */
-    final static int ATTRIBUTES_PER_VERTEX = 11;
+    final static int ATTRIBUTES_PER_VERTEX = 13;
 
     /**
      * The shader names used, the variable names used in shader sources MUST be defined here.
@@ -48,8 +48,12 @@ public class TiledSpriteProgram extends ShaderProgram {
         aUV(5, 3, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.VERTICES),
         aTranslate(6, 0, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
         aRotate(7, 3, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
+        /**
+         * Scale in z has no meaning, use only x and y
+         */
         aScale(8, 6, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
-        aFrameData(9, 9, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES);
+        aColor(9, 8, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
+        aFrameData(10, 12, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES);
         private final int index;
         private final VariableType type;
         private final int offset;
@@ -150,6 +154,8 @@ public class TiledSpriteProgram extends ShaderProgram {
             return VARIABLES.aScale.offset;
         case FRAME:
             return VARIABLES.aFrameData.offset;
+        case COLOR:
+            return VARIABLES.aColor.offset;
         default:
             return -1;
         }

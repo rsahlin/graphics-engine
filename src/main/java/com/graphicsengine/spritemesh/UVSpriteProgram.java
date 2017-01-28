@@ -14,6 +14,10 @@ import com.nucleus.geometry.VertexBuffer;
 public class UVSpriteProgram extends TiledSpriteProgram {
 
     protected final static String VERTEX_SHADER_NAME = "assets/uvspritevertex.essl";
+    /**
+     * Number of float data per vertex
+     */
+    final static int ATTRIBUTES_PER_VERTEX = 14;
 
     public UVSpriteProgram() {
         super();
