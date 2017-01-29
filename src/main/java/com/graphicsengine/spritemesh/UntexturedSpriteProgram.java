@@ -25,7 +25,7 @@ public class UntexturedSpriteProgram extends TiledSpriteProgram {
         super();
         vertexShaderName = VERTEX_SHADER_NAME;
         fragmentShaderName = FRAGMENT_SHADER_NAME;
-        attributesPerVertex = ATTRIBUTES_PER_VERTEX;
+        // attributesPerVertex = ATTRIBUTES_PER_VERTEX;
         components = VertexBuffer.XYZ_COMPONENTS;
     }
 

@@ -100,7 +100,7 @@ public class TiledSpriteProgram extends ShaderProgram {
         super(VARIABLES.values());
         vertexShaderName = VERTEX_SHADER_NAME;
         fragmentShaderName = FRAGMENT_SHADER_NAME;
-        attributesPerVertex = ATTRIBUTES_PER_VERTEX;
+        // attributesPerVertex = ATTRIBUTES_PER_VERTEX;
         components = VertexBuffer.XYZUV_COMPONENTS;
     }
 
@@ -136,11 +136,6 @@ public class TiledSpriteProgram extends ShaderProgram {
         } else {
             System.err.println(INVALID_TEXTURE_TYPE + texture);
         }
-    }
-
-    @Override
-    public int getAttributeOffset(int vertex) {
-        return vertex * ATTRIBUTES_PER_VERTEX;
     }
 
     @Override

@@ -92,7 +92,7 @@ public class PlayfieldProgram extends ShaderProgram {
 
     PlayfieldProgram() {
         super(VARIABLES.values());
-        attributesPerVertex = ATTRIBUTES_PER_VERTEX;
+        // attributesPerVertex = ATTRIBUTES_PER_VERTEX;
         vertexShaderName = VERTEX_SHADER_NAME;
         fragmentShaderName = FRAGMENT_SHADER_NAME;
         components = VertexBuffer.XYZUV_COMPONENTS;
@@ -136,11 +136,6 @@ public class PlayfieldProgram extends ShaderProgram {
     @Override
     public void createProgram(GLES20Wrapper gles) {
         super.createProgram(gles);
-    }
-
-    @Override
-    public int getAttributeOffset(int vertex) {
-        return vertex * ATTRIBUTES_PER_VERTEX;
     }
 
     @Override

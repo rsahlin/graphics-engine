@@ -1,6 +1,5 @@
 package com.graphicsengine.spritemesh;
 
-import static com.nucleus.geometry.VertexBuffer.INDEXED_QUAD_VERTICES;
 import static com.nucleus.geometry.VertexBuffer.QUAD_INDICES;
 
 import com.nucleus.geometry.AttributeUpdater.Consumer;
@@ -108,12 +107,7 @@ public class SpriteMesh extends Mesh implements Consumer {
      * @param spriteCount
      */
     private void createBuffers(ShaderProgram program, int spriteCount) {
-        attributes = new VertexBuffer[program.getAttributeBufferCount()];
-        attributes[BufferIndex.ATTRIBUTES.index] = program.createAttributeBuffer(BufferIndex.ATTRIBUTES,
-                spriteCount * INDEXED_QUAD_VERTICES,
-                this);
-        attributes[BufferIndex.VERTICES.index] = program.createAttributeBuffer(BufferIndex.VERTICES,
-                spriteCount * INDEXED_QUAD_VERTICES, this);
+        attributes = program.createAttributeBuffers(this, spriteCount * VertexBuffer.INDEXED_QUAD_VERTICES);
         indices = new ElementBuffer(Mode.TRIANGLES, spriteCount * QUAD_INDICES, Type.SHORT);
         program.setupUniforms(this);
     }
