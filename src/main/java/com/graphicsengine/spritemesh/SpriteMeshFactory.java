@@ -6,6 +6,7 @@ import com.graphicsengine.io.GraphicsEngineResourcesData;
 import com.graphicsengine.scene.QuadParentNode;
 import com.graphicsengine.scene.SharedMeshQuad;
 import com.nucleus.assets.AssetManager;
+import com.nucleus.component.Component;
 import com.nucleus.geometry.Material;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.io.ExternalReference;
@@ -13,9 +14,11 @@ import com.nucleus.renderer.BufferObjectsFactory;
 import com.nucleus.renderer.Configuration;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.shader.ShaderProgram;
+import com.nucleus.system.System;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TiledTexture2D;
 import com.nucleus.texturing.UVTexture2D;
+import com.nucleus.texturing.Untextured;
 import com.nucleus.vecmath.Rectangle;
 
 /**
@@ -30,6 +33,7 @@ public class SpriteMeshFactory {
     private final static String INVALID_TYPE = "Invalid type: ";
 
     /**
+     * This method is deprecated use Component - System instead {@linkplain System} {@linkplain Component}
      * Creates a SpriteMesh - same as calling
      * {@link #createSpriteMesh(NucleusRenderer, GraphicsEngineResourcesData, String, int, Rectangle)}
      * 
@@ -40,6 +44,7 @@ public class SpriteMeshFactory {
      * @return The created sprite mesh
      * @throws IOException If there is an error fetching texture resource
      */
+    @Deprecated
     public static SpriteMesh create(NucleusRenderer renderer, SpriteMeshNode node,
             GraphicsEngineResourcesData resources)
             throws IOException {
@@ -107,7 +112,7 @@ public class SpriteMeshFactory {
         case UVTexture2D:
             return new UVSpriteProgram();
         case Untextured:
-            return new UntexturedSpriteProgram();
+            return new UntexturedSpriteProgram(((Untextured) texture).getShading());
         default:
             throw new IllegalArgumentException(INVALID_TYPE + texture.textureType);
         }

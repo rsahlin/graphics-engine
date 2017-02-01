@@ -1,7 +1,6 @@
 package com.graphicsengine.spritemesh;
 
 import com.nucleus.geometry.Mesh;
-import com.nucleus.geometry.VertexBuffer;
 
 /**
  * This class defines the mapping for the UV sprite vertex and fragment shaders.
@@ -23,8 +22,6 @@ public class UVSpriteProgram extends TiledSpriteProgram {
         super();
         vertexShaderName = VERTEX_SHADER_NAME;
         fragmentShaderName = FRAGMENT_SHADER_NAME;
-        // attributesPerVertex = ATTRIBUTES_PER_VERTEX;
-        components = VertexBuffer.XYZ_COMPONENTS;
     }
 
     @Override

@@ -17,6 +17,8 @@ import com.nucleus.texturing.TextureType;
 import com.nucleus.texturing.TiledTexture2D;
 import com.nucleus.texturing.UVAtlas;
 import com.nucleus.texturing.UVTexture2D;
+import com.nucleus.texturing.Untextured;
+import com.nucleus.texturing.Untextured.Shading;
 import com.nucleus.vecmath.Rectangle;
 import com.nucleus.vecmath.Transform;
 
@@ -136,13 +138,17 @@ public class SpriteMesh extends Mesh implements Consumer {
         if (texture.textureType == TextureType.TiledTexture2D) {
             return MeshBuilder.createQuadPositionsUVIndexed(rectangle, vertexStride, 0,
                     (TiledTexture2D) texture);
-        } else {
-            return MeshBuilder.createQuadPositionsIndexed(rectangle, vertexStride, 0);
+        } else if (texture.textureType == TextureType.Untextured) {
+            if (((Untextured) texture).getShading() == Shading.parametric) {
+                return MeshBuilder.createQuadPositionsUVIndexed(rectangle, vertexStride, 0,
+                        new float[] { -1, -1, 1, -1, 1, 1, -1, 1 });
+            }
         }
+        return MeshBuilder.createQuadPositionsIndexed(rectangle, vertexStride, 0);
     }
 
     /**
-     * Builds one quad at the specified index, use this call to create the quads to be draw individually.
+     * Builds one quad at the specified index, use this call to create the quads to be drawn individually.
      * Before using this call the indexed buffer (indices) must be built in the mesh, ie this method will only
      * set the vertex positions and UV for this quad
      * This will setup the quad according to the specified size and anchor. Texture UV will be built based

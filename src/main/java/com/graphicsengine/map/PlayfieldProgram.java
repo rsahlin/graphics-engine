@@ -3,7 +3,6 @@ package com.graphicsengine.map;
 import com.nucleus.geometry.AttributeUpdater.Property;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.Mesh.BufferIndex;
-import com.nucleus.geometry.VertexBuffer;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.GLException;
 import com.nucleus.shader.ShaderProgram;
@@ -92,10 +91,8 @@ public class PlayfieldProgram extends ShaderProgram {
 
     PlayfieldProgram() {
         super(VARIABLES.values());
-        // attributesPerVertex = ATTRIBUTES_PER_VERTEX;
         vertexShaderName = VERTEX_SHADER_NAME;
         fragmentShaderName = FRAGMENT_SHADER_NAME;
-        components = VertexBuffer.XYZUV_COMPONENTS;
     }
 
     @Override

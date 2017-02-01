@@ -3,7 +3,6 @@ package com.graphicsengine.spritemesh;
 import com.nucleus.geometry.AttributeUpdater.Property;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.Mesh.BufferIndex;
-import com.nucleus.geometry.VertexBuffer;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.GLException;
 import com.nucleus.shader.ShaderProgram;
@@ -25,6 +24,7 @@ import com.nucleus.vecmath.Matrix;
  */
 public class TiledSpriteProgram extends ShaderProgram {
 
+    public static final String SPRITE = "sprite";
     private final static String INVALID_TEXTURE_TYPE = "Invalid texture type: ";
     /**
      * Offset into uniform variable data where texture UV are.
@@ -100,8 +100,6 @@ public class TiledSpriteProgram extends ShaderProgram {
         super(VARIABLES.values());
         vertexShaderName = VERTEX_SHADER_NAME;
         fragmentShaderName = FRAGMENT_SHADER_NAME;
-        // attributesPerVertex = ATTRIBUTES_PER_VERTEX;
-        components = VertexBuffer.XYZUV_COMPONENTS;
     }
 
     @Override

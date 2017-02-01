@@ -37,7 +37,7 @@ public class GraphicsEngineMeshFactory implements MeshFactory {
         }
         if (parent instanceof ComponentNode) {
             /**
-             * If ComponentNode then don't create mesh
+             * If ComponentNode then don't create mesh, mesh is created when create on component is called.
              */
             return null;
         }
