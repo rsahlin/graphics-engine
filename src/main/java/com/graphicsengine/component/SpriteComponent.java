@@ -9,6 +9,7 @@ import com.graphicsengine.system.SpriteSystem;
 import com.nucleus.actor.ComponentNode;
 import com.nucleus.component.Component;
 import com.nucleus.component.ComponentException;
+import com.nucleus.geometry.AttributeUpdater;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.geometry.VertexBuffer;
@@ -41,6 +42,13 @@ import com.nucleus.vecmath.Vector2D;
  */
 public class SpriteComponent extends Component implements Consumer {
 
+    /**
+     * This is the data defined for each sprite, some of these are the same as defined in the
+     * {@linkplain AttributeUpdater} and should probably be put together instead of as separate defines.
+     * 
+     * @author Richard Sahlin
+     *
+     */
     public enum SpriteData {
         TRANSLATE(0),
         TRANSLATE_X(0),

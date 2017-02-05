@@ -13,10 +13,6 @@ import com.nucleus.geometry.Mesh;
 public class UVSpriteProgram extends TiledSpriteProgram {
 
     protected final static String VERTEX_SHADER_NAME = "assets/uvspritevertex.essl";
-    /**
-     * Number of float data per vertex
-     */
-    final static int ATTRIBUTES_PER_VERTEX = 14;
 
     public UVSpriteProgram() {
         super();
@@ -27,7 +23,7 @@ public class UVSpriteProgram extends TiledSpriteProgram {
     @Override
     public void setupUniforms(Mesh mesh) {
         createUniformStorage(mesh, shaderVariables);
-        setScreenSize(mesh.getUniforms(), VARIABLES.uScreenSize);
+        setScreenSize(mesh);
     }
 
 }

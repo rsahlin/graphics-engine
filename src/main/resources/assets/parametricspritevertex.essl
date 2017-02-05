@@ -28,9 +28,11 @@ attribute vec4 aTranslate; //sprite x, sprite y, sprite z
 attribute vec4 aRotate;  
 attribute vec4 aScale;
 attribute vec4 aColor;
+attribute vec4 aFrameData;
 
 varying vec4 color;
 varying vec2 xy;
+varying vec4 data;
 
 mat2 calculateTransformMatrix();
 
@@ -39,6 +41,7 @@ void main() {
     gl_Position = uProjectionMatrix * pos;
     color = aColor;
     xy = aUV;
+    data = aFrameData;
 }
 /**
  * Returns a matrix with z axis rotation set from attribute aRotate.z, x and y axis scale.

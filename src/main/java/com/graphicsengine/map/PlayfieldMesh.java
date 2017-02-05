@@ -114,18 +114,18 @@ public class PlayfieldMesh extends SpriteMesh {
         for (int y = 0; y < mapSize[1]; y++) {
             currentY = offset[1];
             for (int x = 0; x < mapSize[0]; x++) {
-                attributeData[index + mapper.TRANSLATE_INDEX] = currentX;
-                attributeData[index + mapper.TRANSLATE_INDEX + 1] = currentY;
-                index += mapper.ATTRIBUTES_PER_VERTEX;
-                attributeData[index + mapper.TRANSLATE_INDEX] = currentX;
-                attributeData[index + mapper.TRANSLATE_INDEX + 1] = currentY;
-                index += mapper.ATTRIBUTES_PER_VERTEX;
-                attributeData[index + mapper.TRANSLATE_INDEX] = currentX;
-                attributeData[index + mapper.TRANSLATE_INDEX + 1] = currentY;
-                index += mapper.ATTRIBUTES_PER_VERTEX;
-                attributeData[index + mapper.TRANSLATE_INDEX] = currentX;
-                attributeData[index + mapper.TRANSLATE_INDEX + 1] = currentY;
-                index += mapper.ATTRIBUTES_PER_VERTEX;
+                attributeData[index + mapper.translateOffset] = currentX;
+                attributeData[index + mapper.translateOffset + 1] = currentY;
+                index += mapper.attributesPerVertex;
+                attributeData[index + mapper.translateOffset] = currentX;
+                attributeData[index + mapper.translateOffset + 1] = currentY;
+                index += mapper.attributesPerVertex;
+                attributeData[index + mapper.translateOffset] = currentX;
+                attributeData[index + mapper.translateOffset + 1] = currentY;
+                index += mapper.attributesPerVertex;
+                attributeData[index + mapper.translateOffset] = currentX;
+                attributeData[index + mapper.translateOffset + 1] = currentY;
+                index += mapper.attributesPerVertex;
                 currentX += charSize[Axis.WIDTH.index];
             }
             currentX = offset[0];
@@ -215,16 +215,16 @@ public class PlayfieldMesh extends SpriteMesh {
      */
     private void setChar(PropertyMapper mapper, int pos, int value) {
         charmap[pos] = value;
-        int destIndex = pos * mapper.ATTRIBUTES_PER_VERTEX * ShaderProgram.VERTICES_PER_SPRITE
-                + mapper.FRAME_INDEX;
+        int destIndex = pos * mapper.attributesPerVertex * ShaderProgram.VERTICES_PER_SPRITE
+                + mapper.frameOffset;
         attributeData[destIndex] = value;
-        destIndex += mapper.ATTRIBUTES_PER_VERTEX;
+        destIndex += mapper.attributesPerVertex;
         attributeData[destIndex] = value;
-        destIndex += mapper.ATTRIBUTES_PER_VERTEX;
+        destIndex += mapper.attributesPerVertex;
         attributeData[destIndex] = value;
-        destIndex += mapper.ATTRIBUTES_PER_VERTEX;
+        destIndex += mapper.attributesPerVertex;
         attributeData[destIndex] = value;
-        destIndex += mapper.ATTRIBUTES_PER_VERTEX;
+        destIndex += mapper.attributesPerVertex;
         getVerticeBuffer(BufferIndex.ATTRIBUTES).setDirty(true);
     }
 

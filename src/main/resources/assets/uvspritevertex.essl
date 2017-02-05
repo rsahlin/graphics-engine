@@ -23,10 +23,10 @@ uniform mat4 uProjectionMatrix;
 uniform vec2 uScreenSize; //Screen width and height
 
 attribute vec3 aPosition;
-attribute vec4 aTranslate; //sprite x, sprite y, sprite z 
-attribute vec4 aRotate;  
-attribute vec4 aScale;  
-attribute vec4 aFrameData;//texture u, texture v
+attribute vec3 aTranslate; //sprite x, sprite y, sprite z 
+attribute vec3 aRotate;  
+attribute vec2 aScale;  
+attribute vec2 aFrameData;//texture u, texture v
 
 varying vec2 vTexCoord;
 mat2 calculateTransformMatrix();

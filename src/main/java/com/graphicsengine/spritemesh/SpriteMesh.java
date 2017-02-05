@@ -12,6 +12,7 @@ import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.VertexBuffer;
 import com.nucleus.shader.ShaderProgram;
+import com.nucleus.shader.VariableMapping;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TextureType;
 import com.nucleus.texturing.TiledTexture2D;
@@ -141,7 +142,7 @@ public class SpriteMesh extends Mesh implements Consumer {
         } else if (texture.textureType == TextureType.Untextured) {
             if (((Untextured) texture).getShading() == Shading.parametric) {
                 return MeshBuilder.createQuadPositionsUVIndexed(rectangle, vertexStride, 0,
-                        new float[] { -1, -1, 1, -1, 1, 1, -1, 1 });
+                        new float[] { -1, 1, 1, 1, 1, -1, -1, -1 });
             }
         }
         return MeshBuilder.createQuadPositionsIndexed(rectangle, vertexStride, 0);
@@ -207,6 +208,23 @@ public class SpriteMesh extends Mesh implements Consumer {
     }
 
     /**
+     * Sets attribute data for the specified sprite
+     * 
+     * @param index Index to the sprite to set attribute
+     * @param mapping The variable to set
+     * @param attribute
+     */
+    public void setAttribute4(int index, VariableMapping mapping, float[] attribute) {
+        // TODO Precalculate ATTRIBUTES_PER_VERTEX * VERTICES_PER_SPRITE
+        int offset = index * mapper.attributesPerVertex * ShaderProgram.VERTICES_PER_SPRITE;
+        offset += mapping.getOffset();
+        for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
+            throw new IllegalArgumentException("Not implemented");
+            // offset += mapper.ATTRIBUTES_PER_VERTEX;
+        }
+    }
+
+    /**
      * Sets the x, y and z of a quad/sprite in this mesh.
      * 
      * @param index Index of the quad/sprite to set position of, 0 and up
@@ -216,12 +234,12 @@ public class SpriteMesh extends Mesh implements Consumer {
      */
     public void setPosition(int index, float x, float y, float z) {
         // TODO Precalculate ATTRIBUTES_PER_VERTEX * VERTICES_PER_SPRITE
-        int offset = index * mapper.ATTRIBUTES_PER_VERTEX * ShaderProgram.VERTICES_PER_SPRITE;
+        int offset = index * mapper.attributesPerVertex * ShaderProgram.VERTICES_PER_SPRITE;
         for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
-            attributeData[offset + mapper.TRANSLATE_INDEX] = x;
-            attributeData[offset + mapper.TRANSLATE_INDEX + 1] = y;
-            attributeData[offset + mapper.TRANSLATE_INDEX + 2] = z;
-            offset += mapper.ATTRIBUTES_PER_VERTEX;
+            attributeData[offset + mapper.translateOffset] = x;
+            attributeData[offset + mapper.translateOffset + 1] = y;
+            attributeData[offset + mapper.translateOffset + 2] = z;
+            offset += mapper.attributesPerVertex;
         }
     }
 
@@ -233,17 +251,17 @@ public class SpriteMesh extends Mesh implements Consumer {
      */
     public void setTransform(int index, Transform transform) {
         // TODO Precalculate ATTRIBUTES_PER_VERTEX * VERTICES_PER_SPRITE
-        int offset = index * mapper.ATTRIBUTES_PER_VERTEX * ShaderProgram.VERTICES_PER_SPRITE;
+        int offset = index * mapper.attributesPerVertex * ShaderProgram.VERTICES_PER_SPRITE;
         float[] scale = transform.getScale();
         float[] pos = transform.getTranslate();
         for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
-            attributeData[offset + mapper.SCALE_INDEX] = scale[0];
-            attributeData[offset + mapper.SCALE_INDEX + 1] = scale[1];
-            attributeData[offset + mapper.SCALE_INDEX + 2] = scale[2];
-            attributeData[offset + mapper.TRANSLATE_INDEX] = pos[0];
-            attributeData[offset + mapper.TRANSLATE_INDEX + 1] = pos[1];
-            attributeData[offset + mapper.TRANSLATE_INDEX + 2] = pos[2];
-            offset += mapper.ATTRIBUTES_PER_VERTEX;
+            attributeData[offset + mapper.scaleOffset] = scale[0];
+            attributeData[offset + mapper.scaleOffset + 1] = scale[1];
+            attributeData[offset + mapper.scaleOffset + 2] = scale[2];
+            attributeData[offset + mapper.translateOffset] = pos[0];
+            attributeData[offset + mapper.translateOffset + 1] = pos[1];
+            attributeData[offset + mapper.translateOffset + 2] = pos[2];
+            offset += mapper.attributesPerVertex;
         }
 
     }
@@ -257,11 +275,11 @@ public class SpriteMesh extends Mesh implements Consumer {
      */
     public void setScale(int index, float x, float y) {
         // TODO Precalculate ATTRIBUTES_PER_VERTEX * VERTICES_PER_SPRITE
-        int offset = index * mapper.ATTRIBUTES_PER_VERTEX * ShaderProgram.VERTICES_PER_SPRITE;
+        int offset = index * mapper.attributesPerVertex * ShaderProgram.VERTICES_PER_SPRITE;
         for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
-            attributeData[offset + mapper.SCALE_INDEX] = x;
-            attributeData[offset + mapper.SCALE_INDEX + 1] = y;
-            offset += mapper.ATTRIBUTES_PER_VERTEX;
+            attributeData[offset + mapper.scaleOffset] = x;
+            attributeData[offset + mapper.scaleOffset + 1] = y;
+            offset += mapper.attributesPerVertex;
         }
     }
 
@@ -274,10 +292,10 @@ public class SpriteMesh extends Mesh implements Consumer {
     public void setFrame(int index, int frame) {
         if (texture[Texture2D.TEXTURE_0].textureType == TextureType.TiledTexture2D) {
             // TODO Precalculate ATTRIBUTES_PER_VERTEX * VERTICES_PER_SPRITE
-            int offset = index * mapper.ATTRIBUTES_PER_VERTEX * ShaderProgram.VERTICES_PER_SPRITE;
+            int offset = index * mapper.attributesPerVertex * ShaderProgram.VERTICES_PER_SPRITE;
             for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
-                attributeData[offset + mapper.FRAME_INDEX] = frame;
-                offset += mapper.ATTRIBUTES_PER_VERTEX;
+                attributeData[offset + mapper.frameOffset] = frame;
+                offset += mapper.attributesPerVertex;
             }
         } else if (texture[Texture2D.TEXTURE_0].textureType == TextureType.UVTexture2D) {
             setFrame(index, frame, ((UVTexture2D) texture[Texture2D.TEXTURE_0]).getUVAtlas());
@@ -294,13 +312,13 @@ public class SpriteMesh extends Mesh implements Consumer {
      */
     public void setColor(int index, float[] rgba) {
         // TODO Precalculate ATTRIBUTES_PER_VERTEX * VERTICES_PER_SPRITE
-        int offset = index * mapper.ATTRIBUTES_PER_VERTEX * ShaderProgram.VERTICES_PER_SPRITE;
+        int offset = index * mapper.attributesPerVertex * ShaderProgram.VERTICES_PER_SPRITE;
         for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
-            attributeData[offset + mapper.COLOR_INDEX] = rgba[0];
-            attributeData[offset + mapper.COLOR_INDEX + 1] = rgba[1];
-            attributeData[offset + mapper.COLOR_INDEX + 2] = rgba[2];
-            attributeData[offset + mapper.COLOR_INDEX + 3] = rgba[3];
-            offset += mapper.ATTRIBUTES_PER_VERTEX;
+            attributeData[offset + mapper.colorOffset] = rgba[0];
+            attributeData[offset + mapper.colorOffset + 1] = rgba[1];
+            attributeData[offset + mapper.colorOffset + 2] = rgba[2];
+            attributeData[offset + mapper.colorOffset + 3] = rgba[3];
+            offset += mapper.attributesPerVertex;
         }
     }
 
@@ -313,13 +331,13 @@ public class SpriteMesh extends Mesh implements Consumer {
      */
     private void setFrame(int index, int frame, UVAtlas uvAtlas) {
         // TODO Precalculate ATTRIBUTES_PER_VERTEX * VERTICES_PER_SPRITE
-        int offset = index * mapper.ATTRIBUTES_PER_VERTEX * ShaderProgram.VERTICES_PER_SPRITE;
+        int offset = index * mapper.attributesPerVertex * ShaderProgram.VERTICES_PER_SPRITE;
         int readIndex = 0;
         uvAtlas.getUVFrame(frame, frames, 0);
         for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
-            attributeData[offset + mapper.FRAME_INDEX] = frames[readIndex++];
-            attributeData[offset + mapper.FRAME_INDEX + 1] = frames[readIndex++];
-            offset += mapper.ATTRIBUTES_PER_VERTEX;
+            attributeData[offset + mapper.frameOffset] = frames[readIndex++];
+            attributeData[offset + mapper.frameOffset + 1] = frames[readIndex++];
+            offset += mapper.attributesPerVertex;
         }
 
     }
@@ -331,10 +349,10 @@ public class SpriteMesh extends Mesh implements Consumer {
      * @param rotation The z axis rotation, in degrees
      */
     public void setRotation(int index, float rotation) {
-        int offset = index * mapper.ATTRIBUTES_PER_VERTEX * ShaderProgram.VERTICES_PER_SPRITE;
+        int offset = index * mapper.attributesPerVertex * ShaderProgram.VERTICES_PER_SPRITE;
         for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
-            attributeData[offset + mapper.ROTATE_INDEX] = rotation;
-            offset += mapper.ATTRIBUTES_PER_VERTEX;
+            attributeData[offset + mapper.rotateOffset] = rotation;
+            offset += mapper.attributesPerVertex;
         }
     }
 

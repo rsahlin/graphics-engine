@@ -19,10 +19,13 @@
 precision mediump float;
 
 uniform sampler2D texture;      //The texture sampler
+
 varying vec2 xy;
 varying vec4 color;
+varying vec4 data;
 
 void main()
 {
-	gl_FragColor = color * (xy.x * xy.y);
+    float point = xy.x * xy.x + xy.y * xy.y;
+	gl_FragColor = color * floor(min(data.x,point) / max(data.x,point) + data.y);
 }

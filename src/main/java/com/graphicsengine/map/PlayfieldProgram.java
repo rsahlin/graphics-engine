@@ -119,7 +119,7 @@ public class PlayfieldProgram extends ShaderProgram {
     public void setupUniforms(Mesh mesh) {
         createUniformStorage(mesh, shaderVariables);
         float[] uniforms = mesh.getUniforms();
-        setScreenSize(uniforms, VARIABLES.uScreenSize);
+        setScreenSize(uniforms, shaderVariables[VARIABLES.uScreenSize.index]);
         Texture2D texture = mesh.getTexture(Texture2D.TEXTURE_0);
         if (texture instanceof TiledTexture2D) {
             setTextureUniforms((TiledTexture2D) texture, uniforms,

@@ -63,7 +63,7 @@ public abstract class Sprite extends ActorContainer implements Producer {
     protected void setup(Node parent, PropertyMapper mapper, float[] attributeData, int index) {
         this.parent = parent;
         this.attributeData = attributeData;
-        offset = index * mapper.ATTRIBUTES_PER_VERTEX * ShaderProgram.VERTICES_PER_SPRITE;
+        offset = index * mapper.attributesPerVertex * ShaderProgram.VERTICES_PER_SPRITE;
         this.mapper = mapper;
         createArrays(MIN_FLOAT_COUNT);
     }
@@ -99,10 +99,10 @@ public abstract class Sprite extends ActorContainer implements Producer {
     public void setPosition(float x, float y, float z) {
         int index = offset;
         for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
-            attributeData[index + mapper.TRANSLATE_INDEX] = x;
-            attributeData[index + mapper.TRANSLATE_INDEX + 1] = y;
-            attributeData[index + mapper.TRANSLATE_INDEX + 2] = z;
-            index += mapper.ATTRIBUTES_PER_VERTEX;
+            attributeData[index + mapper.translateOffset] = x;
+            attributeData[index + mapper.translateOffset + 1] = y;
+            attributeData[index + mapper.translateOffset + 2] = z;
+            index += mapper.attributesPerVertex;
         }
 
     }
@@ -116,8 +116,8 @@ public abstract class Sprite extends ActorContainer implements Producer {
     public void setFrame(int frame) {
         int index = offset;
         for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
-            attributeData[index + mapper.FRAME_INDEX] = frame;
-            index += mapper.ATTRIBUTES_PER_VERTEX;
+            attributeData[index + mapper.frameOffset] = frame;
+            index += mapper.attributesPerVertex;
         }
     }
 
@@ -130,17 +130,17 @@ public abstract class Sprite extends ActorContainer implements Producer {
     public void setScale(float x, float y) {
         int index = offset;
         for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
-            attributeData[index + mapper.SCALE_INDEX] = x;
-            attributeData[index + mapper.SCALE_INDEX + 1] = y;
-            index += mapper.ATTRIBUTES_PER_VERTEX;
+            attributeData[index + mapper.scaleOffset] = x;
+            attributeData[index + mapper.scaleOffset + 1] = y;
+            index += mapper.attributesPerVertex;
         }
     }
 
     public void setRotation(float rotation) {
         int index = offset;
         for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
-            attributeData[index + mapper.ROTATE_INDEX] = rotation;
-            index += mapper.ATTRIBUTES_PER_VERTEX;
+            attributeData[index + mapper.rotateOffset] = rotation;
+            index += mapper.attributesPerVertex;
         }
     }
 

@@ -27,7 +27,7 @@ attribute vec3 aPosition;
 attribute vec2 aUV;
 attribute vec3 aTranslate; //sprite x, sprite y, sprite z
 attribute vec3 aRotate;
-attribute vec3 aScale;
+attribute vec2 aScale;
 attribute vec2 aFrameData;//frame
 
 varying vec2 vTexCoord;

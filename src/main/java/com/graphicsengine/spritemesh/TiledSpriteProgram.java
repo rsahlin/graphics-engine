@@ -1,5 +1,6 @@
 package com.graphicsengine.spritemesh;
 
+import com.nucleus.SimpleLogger;
 import com.nucleus.geometry.AttributeUpdater.Property;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.Mesh.BufferIndex;
@@ -30,11 +31,6 @@ public class TiledSpriteProgram extends ShaderProgram {
      * Offset into uniform variable data where texture UV are.
      */
     private final static int UNIFORM_TEX_OFFSET = 0;
-
-    /**
-     * Number of float data per vertex
-     */
-    final static int ATTRIBUTES_PER_VERTEX = 13;
 
     /**
      * The shader names used, the variable names used in shader sources MUST be defined here.
@@ -126,7 +122,7 @@ public class TiledSpriteProgram extends ShaderProgram {
     public void setupUniforms(Mesh mesh) {
         createUniformStorage(mesh, shaderVariables);
         float[] uniforms = mesh.getUniforms();
-        setScreenSize(uniforms, VARIABLES.uScreenSize);
+        setScreenSize(mesh);
         Texture2D texture = mesh.getTexture(Texture2D.TEXTURE_0);
         if (texture instanceof TiledTexture2D) {
             setTextureUniforms((TiledTexture2D) texture, uniforms, shaderVariables[VARIABLES.uSpriteData.index],
@@ -136,22 +132,41 @@ public class TiledSpriteProgram extends ShaderProgram {
         }
     }
 
+    /**
+     * Sets the screensize in the uniforms
+     */
+    protected void setScreenSize(Mesh mesh) {
+        setScreenSize(mesh.getUniforms(), shaderVariables[VARIABLES.uScreenSize.index]);
+    }
+
     @Override
     public int getPropertyOffset(Property property) {
+        ShaderVariable v = null;
         switch (property) {
         case TRANSLATE:
-            return VARIABLES.aTranslate.offset;
+            v = shaderVariables[TiledSpriteProgram.VARIABLES.aPosition.index];
+            break;
         case ROTATE:
-            return VARIABLES.aRotate.offset;
+            v = shaderVariables[TiledSpriteProgram.VARIABLES.aRotate.index];
+            break;
         case SCALE:
-            return VARIABLES.aScale.offset;
+            v = shaderVariables[TiledSpriteProgram.VARIABLES.aScale.index];
+            break;
         case FRAME:
-            return VARIABLES.aFrameData.offset;
+            v = shaderVariables[TiledSpriteProgram.VARIABLES.aFrameData.index];
+            break;
         case COLOR:
-            return VARIABLES.aColor.offset;
+            v = shaderVariables[TiledSpriteProgram.VARIABLES.aColor.index];
+            break;
         default:
-            return -1;
         }
+        if (v != null) {
+            return v.getOffset();
+        } else {
+            SimpleLogger.d(getClass(), "No ShaderVariable for " + property);
+            
+        }
+        return -1;
     }
 
 }
