@@ -16,6 +16,7 @@ import com.nucleus.geometry.VertexBuffer;
 import com.nucleus.io.ResourcesData;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.shader.ShaderProgram;
+import com.nucleus.shader.VariableMapping;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TextureType;
 import com.nucleus.texturing.UVAtlas;
@@ -263,6 +264,17 @@ public class SpriteComponent extends Component implements Consumer {
         int offset = index * spritedataSize;
         floatData[offset + SpriteData.FRAME.index] = frame;
         spriteMesh.setFrame(index, frame);
+    }
+
+    /**
+     * Sets attribute data for the specified sprite
+     * 
+     * @param index Index to the sprite to set attribute
+     * @param mapping The variable to set
+     * @param attribute
+     */
+    public void setAttribute4(int index, VariableMapping mapping, float[] attribute) {
+        spriteMesh.setAttribute4(index, mapping, attribute);
     }
 
     /**

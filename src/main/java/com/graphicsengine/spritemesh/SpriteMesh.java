@@ -12,6 +12,7 @@ import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.VertexBuffer;
 import com.nucleus.shader.ShaderProgram;
+import com.nucleus.shader.ShaderVariable;
 import com.nucleus.shader.VariableMapping;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TextureType;
@@ -212,15 +213,30 @@ public class SpriteMesh extends Mesh implements Consumer {
      * 
      * @param index Index to the sprite to set attribute
      * @param mapping The variable to set
-     * @param attribute
+     * @param attribute The data to set, must contain at least 4 values
      */
     public void setAttribute4(int index, VariableMapping mapping, float[] attribute) {
+        ShaderVariable variable = getMaterial().getProgram().getShaderVariable(mapping);
+        setAttribute4(index, variable, attribute);
+    }
+
+    /**
+     * Sets attribute data for the specified sprite
+     * 
+     * @param index Index to the sprite to set attribute
+     * @param variable The variable to set
+     * @param attribute The data to set, must contain at least 4 values
+     */
+    public void setAttribute4(int index, ShaderVariable variable, float[] attribute) {
         // TODO Precalculate ATTRIBUTES_PER_VERTEX * VERTICES_PER_SPRITE
         int offset = index * mapper.attributesPerVertex * ShaderProgram.VERTICES_PER_SPRITE;
-        offset += mapping.getOffset();
+        offset += variable.getOffset();
         for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
-            throw new IllegalArgumentException("Not implemented");
-            // offset += mapper.ATTRIBUTES_PER_VERTEX;
+            attributeData[offset++] = attribute[0];
+            attributeData[offset++] = attribute[1];
+            attributeData[offset++] = attribute[2];
+            attributeData[offset++] = attribute[3];
+            offset += mapper.attributesPerVertex - 4;
         }
     }
 
