@@ -36,46 +36,38 @@ public class TiledSpriteProgram extends ShaderProgram {
      * The shader names used, the variable names used in shader sources MUST be defined here.
      */
     public enum VARIABLES implements VariableMapping {
-        uMVMatrix(0, 0, ShaderVariable.VariableType.UNIFORM, null),
-        uProjectionMatrix(1, 16, ShaderVariable.VariableType.UNIFORM, null),
-        uScreenSize(2, 32, ShaderVariable.VariableType.UNIFORM, null),
-        uSpriteData(3, 34, ShaderVariable.VariableType.UNIFORM, null),
-        aPosition(4, 0, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.VERTICES),
-        aUV(5, 3, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.VERTICES),
-        aTranslate(6, 0, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
-        aRotate(7, 3, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
+        uMVMatrix(0, ShaderVariable.VariableType.UNIFORM, null),
+        uProjectionMatrix(1, ShaderVariable.VariableType.UNIFORM, null),
+        uScreenSize(2, ShaderVariable.VariableType.UNIFORM, null),
+        uSpriteData(3, ShaderVariable.VariableType.UNIFORM, null),
+        aPosition(4, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.VERTICES),
+        aUV(5, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.VERTICES),
+        aTranslate(6, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
+        aRotate(7, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
         /**
          * Scale in z has no meaning, use only x and y
          */
-        aScale(8, 6, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
-        aColor(9, 8, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
-        aFrameData(10, 12, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES);
+        aScale(8, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
+        aColor(9, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
+        aFrameData(10, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES);
         private final int index;
         private final VariableType type;
-        private final int offset;
         private final BufferIndex bufferIndex;
 
         /**
          * @param index Index of the shader variable
-         * @param offset Offset into data array where the variable data source is
          * @param type Type of variable
          * @param bufferIndex Index of buffer in mesh that holds the variable data
          */
-        private VARIABLES(int index, int offset, VariableType type, BufferIndex bufferIndex) {
+        private VARIABLES(int index, VariableType type, BufferIndex bufferIndex) {
             this.index = index;
             this.type = type;
-            this.offset = offset;
             this.bufferIndex = bufferIndex;
         }
 
         @Override
         public int getIndex() {
             return index;
-        }
-
-        @Override
-        public int getOffset() {
-            return offset;
         }
 
         @Override
@@ -112,8 +104,11 @@ public class TiledSpriteProgram extends ShaderProgram {
     public void bindUniforms(GLES20Wrapper gles, float[] modelviewMatrix, float[] projectionMatrix, Mesh mesh)
             throws GLException {
         // Refresh the uniform matrix
-        System.arraycopy(modelviewMatrix, 0, mesh.getUniforms(), VARIABLES.uMVMatrix.offset, Matrix.MATRIX_ELEMENTS);
-        System.arraycopy(projectionMatrix, 0, mesh.getUniforms(), VARIABLES.uProjectionMatrix.offset,
+        // TODO prefetch the offsets for the shader variables and store in array.
+        System.arraycopy(modelviewMatrix, 0, mesh.getUniforms(), shaderVariables[VARIABLES.uMVMatrix.index].getOffset(),
+                Matrix.MATRIX_ELEMENTS);
+        System.arraycopy(projectionMatrix, 0, mesh.getUniforms(),
+                shaderVariables[VARIABLES.uProjectionMatrix.index].getOffset(),
                 Matrix.MATRIX_ELEMENTS);
         bindUniforms(gles, uniforms, mesh.getUniforms());
     }

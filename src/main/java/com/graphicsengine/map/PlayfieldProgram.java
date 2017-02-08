@@ -1,5 +1,6 @@
 package com.graphicsengine.map;
 
+import com.nucleus.SimpleLogger;
 import com.nucleus.geometry.AttributeUpdater.Property;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.Mesh.BufferIndex;
@@ -37,41 +38,33 @@ public class PlayfieldProgram extends ShaderProgram {
      * The shader names used, the variable names used in shader sources MUST be defined here.
      */
     public enum VARIABLES implements VariableMapping {
-        uMVMatrix(0, 0, ShaderVariable.VariableType.UNIFORM, null),
-        uProjectionMatrix(1, 16, ShaderVariable.VariableType.UNIFORM, null),
-        uCharsetData(2, 32, ShaderVariable.VariableType.UNIFORM, null),
-        uScreenSize(3, 35, ShaderVariable.VariableType.UNIFORM, null),
-        aPosition(4, 0, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.VERTICES),
-        aUV(5, 3, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.VERTICES),
-        aCharset(6, 0, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
-        aCharset2(7, 4, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES);
+        uMVMatrix(0, ShaderVariable.VariableType.UNIFORM, null),
+        uProjectionMatrix(1, ShaderVariable.VariableType.UNIFORM, null),
+        uCharsetData(2, ShaderVariable.VariableType.UNIFORM, null),
+        uScreenSize(3, ShaderVariable.VariableType.UNIFORM, null),
+        aPosition(4, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.VERTICES),
+        aUV(5, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.VERTICES),
+        aCharset(6, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
+        aCharset2(7, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES);
 
         private final int index;
         private final VariableType type;
-        private final int offset;
         private final BufferIndex bufferIndex;
 
         /**
          * @param index Index of the shader variable
-         * @param offset Offset into data array where the variable data source is
          * @param type Type of variable
          * @param bufferIndex Index of buffer in mesh that holds the variable data
          */
-        private VARIABLES(int index, int offset, VariableType type, BufferIndex bufferIndex) {
+        private VARIABLES(int index, VariableType type, BufferIndex bufferIndex) {
             this.index = index;
             this.type = type;
-            this.offset = offset;
             this.bufferIndex = bufferIndex;
         }
 
         @Override
         public int getIndex() {
             return index;
-        }
-
-        @Override
-        public int getOffset() {
-            return offset;
         }
 
         @Override
@@ -109,8 +102,10 @@ public class PlayfieldProgram extends ShaderProgram {
     public void bindUniforms(GLES20Wrapper gles, float[] modelviewMatrix, float[] projectionMatrix, Mesh mesh)
             throws GLException {
         // Refresh the matrix
-        System.arraycopy(modelviewMatrix, 0, mesh.getUniforms(), VARIABLES.uMVMatrix.offset, Matrix.MATRIX_ELEMENTS);
-        System.arraycopy(projectionMatrix, 0, mesh.getUniforms(), VARIABLES.uProjectionMatrix.offset,
+        System.arraycopy(modelviewMatrix, 0, mesh.getUniforms(), shaderVariables[VARIABLES.uMVMatrix.index].getOffset(),
+                Matrix.MATRIX_ELEMENTS);
+        System.arraycopy(projectionMatrix, 0, mesh.getUniforms(),
+                shaderVariables[VARIABLES.uProjectionMatrix.index].getOffset(),
                 Matrix.MATRIX_ELEMENTS);
         bindUniforms(gles, uniforms, mesh.getUniforms());
     }
@@ -137,13 +132,21 @@ public class PlayfieldProgram extends ShaderProgram {
 
     @Override
     public int getPropertyOffset(Property property) {
+        ShaderVariable v = null;
         switch (property) {
         case TRANSLATE:
-            return VARIABLES.aCharset.offset;
+            v = shaderVariables[VARIABLES.aCharset.index];
+            break;
         case FRAME:
-            return VARIABLES.aCharset2.offset;
+            v = shaderVariables[VARIABLES.aCharset2.index];
+            break;
         default:
-            return -1;
         }
+        if (v != null) {
+            return v.getOffset();
+        } else {
+            SimpleLogger.d(getClass(), "No ShaderVariable for " + property);
+        }
+        return -1;
     }
 }
