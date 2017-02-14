@@ -1,4 +1,4 @@
-group = 'com.super2k.graphics-by-opengl'
+group = 'com.super2k.graphics-engine'
 version = '0.0.1-SNAPSHOT'
 
 tasks.withType(JavaCompile) {
