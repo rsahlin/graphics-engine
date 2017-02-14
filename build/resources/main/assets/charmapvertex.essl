@@ -1,0 +1,39 @@
+/* Copyright 2015 Richard Sahlin
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+ /**
+ * Fragment shader for tiled sprite renderer
+ * @author Richard Sahlin
+ */
+#version 100
+
+//Put array declaration after name for GLSL compatibility
+uniform mat4 uMVMatrix;
+uniform mat4 uProjectionMatrix;
+uniform vec3 uCharsetData; //tex width, tex height, frames per line
+uniform vec2 uScreenSize; //Width and  height of screen
+
+attribute vec3 aPosition;
+attribute vec2 aUV;
+attribute vec4 aCharset; //char x, char y
+attribute vec4 aCharset2;//frame
+
+varying vec2 vTexCoord;
+
+void main() {
+    vec4 pos = uMVMatrix * vec4(aPosition, 1.0) + (uMVMatrix * vec4(aCharset.x, aCharset.y,aCharset.z, 0.0));
+    gl_Position = uProjectionMatrix * vec4(floor((uScreenSize * vec2(pos)) + 0.5) / uScreenSize, pos.z, pos.w);
+    vTexCoord = vec2(aUV.x + 
+                     mod(aCharset2.x, uCharsetData.z) * uCharsetData.x,
+                     aUV.y + floor(aCharset2.x / uCharsetData.z) * uCharsetData.y);
+}
