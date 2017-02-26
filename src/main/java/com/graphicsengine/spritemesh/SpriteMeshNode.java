@@ -129,22 +129,22 @@ public class SpriteMeshNode extends SpriteNode implements Producer {
 
     @Override
     public void play() {
-        controllerState = State.PLAY;
+        componentState = ComponentState.PLAY;
     }
 
     @Override
     public void pause() {
-        controllerState = State.PAUSE;
+        componentState = ComponentState.PAUSE;
     }
 
     @Override
     public void stop() {
-        controllerState = State.STOPPED;
+        componentState = ComponentState.STOPPED;
     }
 
     @Override
     public void reset() {
-        controllerState = State.STOPPED;
+        componentState = ComponentState.STOPPED;
     }
 
     @Override
@@ -152,7 +152,7 @@ public class SpriteMeshNode extends SpriteNode implements Producer {
         for (Sprite sprite : sprites) {
             sprite.actor.init(sprite);
         }
-        controllerState = State.INITIALIZED;
+        componentState = ComponentState.INITIALIZED;
     }
 
     @Override

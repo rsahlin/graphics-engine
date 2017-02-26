@@ -41,8 +41,7 @@ public class GSONGraphicsEngineFactory extends GSONSceneFactory {
      */
     public enum GraphicsEngineClasses implements Type<Object> {
 
-        spritecomponent(SpriteComponent.class),
-        spritesystem(SpriteSystem.class);
+        spritecomponent(SpriteComponent.class);
 
         private final Class<?> theClass;
 
