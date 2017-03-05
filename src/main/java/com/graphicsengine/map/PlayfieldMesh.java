@@ -25,6 +25,12 @@ public class PlayfieldMesh extends SpriteMesh {
      * This MUST be in sync with {@link #attributeData}
      */
     transient int[] charmap;
+    
+    /**
+     * flags for the chars
+     */
+    transient int[] flags;
+    
     /**
      * The width and height of the charmap
      */
@@ -69,6 +75,7 @@ public class PlayfieldMesh extends SpriteMesh {
      */
     private void init(int charCount) {
         charmap = new int[charCount];
+        flags = new int[charCount];
     }
 
 
@@ -140,15 +147,17 @@ public class PlayfieldMesh extends SpriteMesh {
      * Do NOT use this method for a large number of data when performance is critical.
      * 
      * @param mapper The attribute property mapper
-     * @param source Source map data
+     * @param map Source map data
+     * @param flags Flags
      * @param sourceOffset Offset into source where data is read
      * @param destOffset Offset where data is written in this class
      * @param count Number of chars to copy
      * @throws ArrayIndexOutOfBoundsException If source or destination does not contain enough data.
      */
-    public void copyCharmap(PropertyMapper mapper, int[] source, int sourceOffset, int destOffset, int count) {
+    public void copyCharmap(PropertyMapper mapper, int[] map, int[] flags, int sourceOffset, int destOffset, int count) {
         for (int i = 0; i < count; i++) {
-            setChar(mapper, destOffset++, source[sourceOffset++]);
+            setChar(mapper, destOffset++, map[sourceOffset], flags[sourceOffset]);
+            sourceOffset++;
         }
     }
 
@@ -168,7 +177,7 @@ public class PlayfieldMesh extends SpriteMesh {
         int height = Math.min(size[Axis.HEIGHT.index], sourceSize[Axis.HEIGHT.index]);
         int width = Math.min(size[Axis.WIDTH.index], sourceSize[Axis.WIDTH.index]);
         for (int y = 0; y < height; y++) {
-            copyCharmap(mapper, source.getMap(), y * sourceSize[Axis.WIDTH.index], y * size[Axis.WIDTH.index], width);
+            copyCharmap(mapper, source.getMap(), source.getFlags(), y * sourceSize[Axis.WIDTH.index], y * size[Axis.WIDTH.index], width);
         }
 
     }
@@ -185,7 +194,7 @@ public class PlayfieldMesh extends SpriteMesh {
      * @param height Height of area to fill
      * @param fill Fill value
      */
-    public void fill(PropertyMapper mapper, int x, int y, int width, int height, int fill, int[] mapSize) {
+    public void fill(PropertyMapper mapper, int x, int y, int width, int height, int fill, int flags, int[] mapSize) {
         if (x > mapSize[Axis.WIDTH.index] || y > mapSize[Axis.HEIGHT.index]) {
             // Completely outside
             return;
@@ -199,7 +208,7 @@ public class PlayfieldMesh extends SpriteMesh {
         }
         while (height-- > 0) {
             for (int i = 0; i < width; i++) {
-                setChar(mapper, startChar++, fill);
+                setChar(mapper, startChar++, fill, flags);
             }
         }
     }
@@ -211,19 +220,27 @@ public class PlayfieldMesh extends SpriteMesh {
      * 
      * @param mapper Property mapper for attribute indexes
      * @param pos The playfield position, from 0 to width * height.
-     * @param value The value to set.
+     * @param chr The char to set.
+     * @param flags Flags for the char
      */
-    private void setChar(PropertyMapper mapper, int pos, int value) {
-        charmap[pos] = value;
+    private void setChar(PropertyMapper mapper, int pos, int chr, int flags) {
+        charmap[pos] = chr;
         int destIndex = pos * mapper.attributesPerVertex * ShaderProgram.VERTICES_PER_SPRITE
                 + mapper.frameOffset;
-        attributeData[destIndex] = value;
+        if ((flags & Map.FLIP_Y) != 0) {
+            
+        }
+        attributeData[destIndex] = chr;
+        attributeData[destIndex + 1] = flags;
         destIndex += mapper.attributesPerVertex;
-        attributeData[destIndex] = value;
+        attributeData[destIndex] = chr;
+        attributeData[destIndex + 1] = flags;
         destIndex += mapper.attributesPerVertex;
-        attributeData[destIndex] = value;
+        attributeData[destIndex] = chr;
+        attributeData[destIndex + 1] = flags;
         destIndex += mapper.attributesPerVertex;
-        attributeData[destIndex] = value;
+        attributeData[destIndex] = chr;
+        attributeData[destIndex + 1] = flags;
         destIndex += mapper.attributesPerVertex;
         getVerticeBuffer(BufferIndex.ATTRIBUTES).setDirty(true);
     }

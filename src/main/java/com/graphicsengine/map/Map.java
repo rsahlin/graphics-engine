@@ -15,8 +15,11 @@ import com.nucleus.vecmath.Axis;
  */
 public class Map extends BaseReference {
 
+    public static final int FLIP_X = 1;
+    public static final int FLIP_Y = 2;
+
     /**
-     * The size of the map
+     * The size of the map, usually 2 values.
      */
     @SerializedName("mapSize")
     private int[] mapSize;
@@ -28,10 +31,7 @@ public class Map extends BaseReference {
 
     @SerializedName("flags")
     private int[] flags;
-    @SerializedName("flipX")
-    private boolean[] flipX;
-    @SerializedName("flipY")
-    private boolean[] flipY;
+
     @SerializedName("arrayInput")
     private ArrayInputData arrayInput;
 
@@ -49,8 +49,6 @@ public class Map extends BaseReference {
         mapSize = new int[] { width, height };
         mapData = new int[width * height];
         flags = new int[width * height];
-        flipX = new boolean[width * height];
-        flipY = new boolean[width * height];
     }
 
     /**
@@ -117,6 +115,15 @@ public class Map extends BaseReference {
     }
 
     /**
+     * Returns the flags, this is a reference to the flags array - any changes will be reflected here.
+     * 
+     * @return
+     */
+    public int[] getFlags() {
+        return flags;
+    }
+
+    /**
      * Returns the array input if set
      * 
      * @return Array input data or null
@@ -143,7 +150,7 @@ public class Map extends BaseReference {
      * @param flip
      */
     public void setFlipX(int index, boolean flip) {
-        flipX[index] = flip;
+        flags[index] = flags[index] | ((flip) ? FLIP_X : 0);
     }
 
     /**
@@ -153,7 +160,7 @@ public class Map extends BaseReference {
      * @param flip
      */
     public void setFlipY(int index, boolean flip) {
-        flipY[index] = flip;
+        flags[index] = flags[index] | ((flip) ? FLIP_Y : 0);
     }
 
     /**
@@ -163,7 +170,7 @@ public class Map extends BaseReference {
      * @return
      */
     public boolean getFlipX(int index) {
-        return flipX[index];
+        return ((flags[index] & FLIP_X) == FLIP_X) ? true : false;
     }
 
     /**
@@ -173,6 +180,18 @@ public class Map extends BaseReference {
      * @return
      */
     public boolean getFlipY(int index) {
-        return flipY[index];
+        return ((flags[index] & FLIP_Y) == FLIP_Y) ? true : false;
     }
+
+    /**
+     * Returns true if the flag(s) is set at the specified index
+     * 
+     * @param index
+     * @param flag
+     * @return
+     */
+    public boolean isFlag(int index, int flag) {
+        return ((flags[index] & flag) == flag) ? true : false;
+    }
+
 }

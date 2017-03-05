@@ -25,15 +25,22 @@ uniform vec2 uScreenSize; //Width and  height of screen
 
 attribute vec3 aPosition;
 attribute vec2 aUV;
-attribute vec4 aCharset; //char x, char y
-attribute vec4 aCharset2;//frame
+attribute vec3 aCharset; //char x, char y, z (not used)
+attribute vec2 aCharset2;//frame
 
 varying vec2 vTexCoord;
 
 void main() {
+    int flags = int(aCharset2.y);
     vec4 pos = uMVMatrix * vec4(aPosition, 1.0) + (uMVMatrix * vec4(aCharset.x, aCharset.y,aCharset.z, 0.0));
     gl_Position = uProjectionMatrix * vec4(floor((uScreenSize * vec2(pos)) + 0.5) / uScreenSize, pos.z, pos.w);
-    vTexCoord = vec2(aUV.x + 
+    vec2 flip = aUV;
+    if (flags == 2) {
+        //FlipY
+        flip.y = uCharsetData.y - aUV.y;
+    }
+    vTexCoord = vec2(flip.x + 
                      mod(aCharset2.x, uCharsetData.z) * uCharsetData.x,
-                     aUV.y + floor(aCharset2.x / uCharsetData.z) * uCharsetData.y);
+                     flip.y + floor(aCharset2.x / uCharsetData.z) * uCharsetData.y);
+    
 }

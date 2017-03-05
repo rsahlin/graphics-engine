@@ -4,6 +4,8 @@ import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
 import com.nucleus.io.ExternalReference;
 
 /**
@@ -45,8 +47,12 @@ public class MapFactory {
      */
     public static Map createMap(ExternalReference externalRef) throws FileNotFoundException {
         Gson gson = new Gson();
-        Map map = gson.fromJson(new InputStreamReader(externalRef.getAsStream()),
-                Map.class);
-        return map;
+        try {
+            Map map = gson.fromJson(new InputStreamReader(externalRef.getAsStream()),
+                    Map.class);
+            return map;
+        } catch (JsonSyntaxException e) {
+            throw new RuntimeException("Error parsing file:" + externalRef.getSource(), e);
+        }
     }
 }

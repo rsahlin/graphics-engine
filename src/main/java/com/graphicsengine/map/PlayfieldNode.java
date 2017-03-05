@@ -52,6 +52,11 @@ public class PlayfieldNode extends Node {
      */
     transient private int[] mapData;
 
+    /**
+     * 
+     */
+    transient private int[] flags;
+    
     public PlayfieldNode() {
     }
 
@@ -110,7 +115,7 @@ public class PlayfieldNode extends Node {
                 id.copyArray(mapData,
                         mapSize[Axis.WIDTH.index],
                         mapSize[Axis.HEIGHT.index], 0, 0);
-                playfield.copyCharmap(mapper, getMapData(), 0, 0, getMapData().length);
+                playfield.copyCharmap(mapper, getMapData(), getFlags(), 0, 0, getMapData().length);
             } else {
                 if (data.getMap() != null && data.getMapSize() != null) {
                     playfield.copyCharmap(mapper, data);
@@ -149,6 +154,14 @@ public class PlayfieldNode extends Node {
         return mapData;
     }
 
+    /**
+     * Returns a reference to the flag data, do NOT modify these values
+     * @return
+     */
+    public int[] getFlags() {
+        return flags;
+    }
+    
     /**
      * Returns the map offset if set, or null
      * The map offset controls where the first char in the map is.
