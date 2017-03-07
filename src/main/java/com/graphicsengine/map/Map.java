@@ -15,7 +15,7 @@ import com.nucleus.vecmath.Axis;
  */
 public class Map extends BaseReference {
 
-    public static final int FLIP_X = 1;
+    public static final int FLIP_X = 4;
     public static final int FLIP_Y = 2;
 
     /**

@@ -35,9 +35,15 @@ void main() {
     vec4 pos = uMVMatrix * vec4(aPosition, 1.0) + (uMVMatrix * vec4(aCharset.x, aCharset.y,aCharset.z, 0.0));
     gl_Position = uProjectionMatrix * vec4(floor((uScreenSize * vec2(pos)) + 0.5) / uScreenSize, pos.z, pos.w);
     vec2 flip = aUV;
-    if (flags == 2) {
+    if ((flags - 4) >= 0) {
+        //FlipX
+        flip.x = uCharsetData.x - aUV.x;
+        flags -= 4;
+    }
+    if ((flags - 2) >= 0) {
         //FlipY
         flip.y = uCharsetData.y - aUV.y;
+        flags -= 2;
     }
     vTexCoord = vec2(flip.x + 
                      mod(aCharset2.x, uCharsetData.z) * uCharsetData.x,
