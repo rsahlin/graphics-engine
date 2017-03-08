@@ -19,8 +19,6 @@ import com.nucleus.texturing.TextureType;
 import com.nucleus.texturing.TiledTexture2D;
 import com.nucleus.texturing.UVAtlas;
 import com.nucleus.texturing.UVTexture2D;
-import com.nucleus.texturing.Untextured;
-import com.nucleus.texturing.Untextured.Shading;
 import com.nucleus.vecmath.Rectangle;
 import com.nucleus.vecmath.Transform;
 
@@ -81,7 +79,7 @@ public class SpriteMesh extends Mesh implements Consumer {
             Rectangle rectangle) {
         super.createMesh(program, texture, material);
         createBuffers(program, count);
-        buildMesh(program, count, rectangle);
+        buildMesh(program, count, rectangle, 0);
         setAttributeUpdater(this);
     }
 
@@ -128,25 +126,13 @@ public class SpriteMesh extends Mesh implements Consumer {
      * @param program The shader program to use with the mesh
      * @param spriteCount Number of sprites to build, this is NOT the vertex count.
      * @param rectangle The rectangle defining each char, all chars will be the same
+     * @param z
      */
-    protected void buildMesh(ShaderProgram program, int spriteCount, Rectangle rectangle) {
+    protected void buildMesh(ShaderProgram program, int spriteCount, Rectangle rectangle, float z) {
         int vertexStride = program.getVertexStride();
         Texture2D texture = getTexture(Texture2D.TEXTURE_0);
-        float[] quadPositions = buildQuadPosBuffer(texture, rectangle, vertexStride);
+        float[] quadPositions = texture.createQuadArray(rectangle, vertexStride, z);
         MeshBuilder.buildQuadMeshIndexed(this, program, spriteCount, quadPositions);
-    }
-
-    float[] buildQuadPosBuffer(Texture2D texture, Rectangle rectangle, int vertexStride) {
-        if (texture.textureType == TextureType.TiledTexture2D) {
-            return MeshBuilder.createQuadPositionsUVIndexed(rectangle, vertexStride, 0,
-                    (TiledTexture2D) texture);
-        } else if (texture.textureType == TextureType.Untextured) {
-            if (((Untextured) texture).getShading() == Shading.parametric) {
-                return MeshBuilder.createQuadPositionsUVIndexed(rectangle, vertexStride, 0,
-                        new float[] { -1, 1, 1, 1, 1, -1, -1, -1 });
-            }
-        }
-        return MeshBuilder.createQuadPositionsIndexed(rectangle, vertexStride, 0);
     }
 
     /**
@@ -163,7 +149,7 @@ public class SpriteMesh extends Mesh implements Consumer {
     public void buildQuad(int index, ShaderProgram program, Rectangle rectangle) {
         int vertexStride = program.getVertexStride();
         Texture2D texture = getTexture(Texture2D.TEXTURE_0);
-        float[] quadPositions = buildQuadPosBuffer(texture, rectangle, vertexStride);
+        float[] quadPositions = texture.createQuadArray(rectangle, vertexStride, 0);
         MeshBuilder.buildQuads(this, program, 1, index, quadPositions);
     }
 
