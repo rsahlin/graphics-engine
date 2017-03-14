@@ -4,11 +4,9 @@ import java.io.IOException;
 
 import com.graphicsengine.io.GraphicsEngineResourcesData;
 import com.graphicsengine.map.PlayfieldNode;
-import com.graphicsengine.spritemesh.SpriteMesh;
-import com.graphicsengine.spritemesh.SpriteMeshNode;
-import com.nucleus.actor.ComponentNode;
 import com.nucleus.camera.ViewFrustum;
 import com.nucleus.component.ComponentException;
+import com.nucleus.component.ComponentNode;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshFactory;
 import com.nucleus.io.ResourcesData;
@@ -46,14 +44,6 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
             created = source.copy();
             internalCreateNode(renderer, source, created, meshFactory, gResources);
             ((PlayfieldNode) created).createMap(gResources);
-            break;
-        case spriteMeshNode:
-            // This will set the actor resolver
-            created = source.copy();
-            internalCreateNode(renderer, source, created, meshFactory, gResources);
-            // Instead of casting - should the Mesh be attribute consumer?
-            ((SpriteMeshNode) created).createSprites(renderer,
-                    (SpriteMesh) created.getMeshes().get(0), gResources);
             break;
         case spriteComponentNode:
             created = source.copy();

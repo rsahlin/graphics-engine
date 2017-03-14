@@ -6,7 +6,6 @@ import com.graphicsengine.io.GraphicsEngineResourcesData;
 import com.graphicsengine.scene.QuadParentNode;
 import com.graphicsengine.scene.SharedMeshQuad;
 import com.nucleus.assets.AssetManager;
-import com.nucleus.component.Component;
 import com.nucleus.geometry.Material;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.io.ExternalReference;
@@ -14,7 +13,6 @@ import com.nucleus.renderer.BufferObjectsFactory;
 import com.nucleus.renderer.Configuration;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.shader.ShaderProgram;
-import com.nucleus.system.System;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TiledTexture2D;
 import com.nucleus.texturing.UVTexture2D;
@@ -31,26 +29,6 @@ import com.nucleus.vecmath.Rectangle;
 public class SpriteMeshFactory {
 
     private final static String INVALID_TYPE = "Invalid type: ";
-
-    /**
-     * This method is deprecated use Component - System instead {@linkplain System} {@linkplain Component}
-     * Creates a SpriteMesh - same as calling
-     * {@link #createSpriteMesh(NucleusRenderer, GraphicsEngineResourcesData, String, int, Rectangle)}
-     * 
-     * @param renderer
-     * @param node The node that the mesh shall be created for
-     * @param program The shader program to use with the mesh
-     * @param scene
-     * @return The created sprite mesh
-     * @throws IOException If there is an error fetching texture resource
-     */
-    @Deprecated
-    public static SpriteMesh create(NucleusRenderer renderer, SpriteMeshNode node,
-            GraphicsEngineResourcesData resources)
-            throws IOException {
-        return createSpriteMesh(renderer, node.getTextureRef(), node.getMaterial(), node.getCount(),
-                node.getSpriteRectangle());
-    }
 
     /**
      * This will create an old school sprite mesh, where each sprite has a frame, the sprite can be rotated in x axis

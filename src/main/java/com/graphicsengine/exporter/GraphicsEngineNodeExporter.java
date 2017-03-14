@@ -5,7 +5,6 @@ import com.graphicsengine.map.Map;
 import com.graphicsengine.map.MapFactory;
 import com.graphicsengine.map.PlayfieldNode;
 import com.graphicsengine.scene.GraphicsEngineNodeType;
-import com.graphicsengine.spritemesh.SpriteMeshNode;
 import com.nucleus.exporter.NucleusNodeExporter;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
@@ -24,9 +23,6 @@ public class GraphicsEngineNodeExporter extends NucleusNodeExporter {
         switch (type) {
         case playfieldNode:
             exportDataReferences((PlayfieldNode) source, (GraphicsEngineRootNode) rootNode);
-            return source.copy();
-        case spriteMeshNode:
-            exportDataReferences((SpriteMeshNode) source, (GraphicsEngineRootNode) rootNode);
             return source.copy();
         case quadNode:
             // exportDataReferences((QuadParentNode) source, (GraphicsEngineRootNode) rootNode);
@@ -49,20 +45,6 @@ public class GraphicsEngineNodeExporter extends NucleusNodeExporter {
         // sceneData.addResource(resource);
         Map map = MapFactory.createMap(playfieldNode);
         sceneData.addResource(map);
-    }
-
-    /**
-     * Collects the data needed for the spritecontroller and store in resources.
-     * This shall only export the references - not the node itself
-     * 
-     * @param tiledSpriteController
-     * @param sceneData
-     */
-    private void exportDataReferences(SpriteMeshNode tiledSpriteController,
-            GraphicsEngineRootNode sceneData) {
-        exportMeshes(tiledSpriteController.getMeshes(), sceneData);
-        SpriteMeshNode resource = tiledSpriteController.copy();
-        // sceneData.addResource(resource);
     }
 
     @Override
