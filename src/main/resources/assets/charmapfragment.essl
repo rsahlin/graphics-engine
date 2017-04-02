@@ -19,6 +19,8 @@
 precision mediump float;
 
 uniform sampler2D texture;      //The texture sampler
+uniform vec3 ambient;
+uniform vec3 diffuse;
 varying vec2 vTexCoord;
 
 void main()

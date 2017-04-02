@@ -11,6 +11,7 @@ import com.nucleus.shader.ShaderVariable;
 import com.nucleus.shader.ShaderVariable.VariableType;
 import com.nucleus.shader.VariableMapping;
 import com.nucleus.texturing.Texture2D;
+import com.nucleus.texturing.TextureType;
 import com.nucleus.texturing.TiledTexture2D;
 import com.nucleus.vecmath.Matrix;
 
@@ -42,10 +43,12 @@ public class PlayfieldProgram extends ShaderProgram {
         uProjectionMatrix(1, ShaderVariable.VariableType.UNIFORM, null),
         uCharsetData(2, ShaderVariable.VariableType.UNIFORM, null),
         uScreenSize(3, ShaderVariable.VariableType.UNIFORM, null),
-        aPosition(4, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.VERTICES),
-        aUV(5, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.VERTICES),
-        aCharset(6, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
-        aCharset2(7, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES);
+        uAmbient(4, ShaderVariable.VariableType.UNIFORM, null),
+        uDiffuse(5, ShaderVariable.VariableType.UNIFORM, null),
+        aPosition(6, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.VERTICES),
+        aUV(7, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.VERTICES),
+        aCharset(8, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
+        aCharset2(9, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES);
 
         private final int index;
         private final VariableType type;
@@ -116,13 +119,15 @@ public class PlayfieldProgram extends ShaderProgram {
         float[] uniforms = mesh.getUniforms();
         setScreenSize(uniforms, shaderVariables[VARIABLES.uScreenSize.index]);
         Texture2D texture = mesh.getTexture(Texture2D.TEXTURE_0);
-        if (texture instanceof TiledTexture2D) {
+        if (texture.getTextureType() == TextureType.TiledTexture2D) {
             setTextureUniforms((TiledTexture2D) texture, uniforms,
                     shaderVariables[VARIABLES.uCharsetData.index],
                     UNIFORM_TEX_OFFSET);
         } else {
             System.err.println(INVALID_TEXTURE_TYPE + texture);
         }
+        setAmbient(uniforms, shaderVariables[VARIABLES.uAmbient.index], mesh.getMaterial());
+
     }
 
     @Override
