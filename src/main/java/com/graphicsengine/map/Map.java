@@ -43,6 +43,8 @@ public class Map extends BaseReference {
         @SerializedName(COLOR)
         private float[] color;
 
+        private transient int sizePerChar;
+        
         /**
          * Creates a new color for map
          * 
@@ -56,11 +58,57 @@ public class Map extends BaseReference {
             if (format == null || (format != DataType.VEC3 && format != DataType.VEC4)) {
                 throw new IllegalArgumentException("Invalid format " + format);
             }
-            int size = width * height * (format.getSize() / 4);
-            if (mode == Mode.VERTEX) {
-                size = size * 4;
+            sizePerChar = getSizePerChar();
+            color = new float[sizePerChar * width * height];
+        }
+
+        /**
+         * Size in floats for each char
+         * 
+         * @return
+         */
+        public int getSizePerChar() {
+            int size = format.getSize() / 4;
+            switch (mode) {
+            case CHAR:
+                return size;
+            case VERTEX:
+                return size * 4;
+            default:
+                throw new IllegalArgumentException("Invalid mode:" + mode);
             }
-            color = new float[size];
+
+        }
+
+        /**
+         * Returns the offset into map color data for the specified map index
+         * 
+         * @param mapIndex Corresponding map index into map color data, same as {@link #getSizePerChar()}} * mapIndex
+         * @return
+         */
+        public int getOffset(int mapIndex) {
+            return mapIndex * sizePerChar;
+        }
+
+        /**
+         * Returns number of floats to next vertex, either 0 or depending on format.
+         * 
+         * @return Number of floats to step between ambient material values in a char.
+         */
+        public int getVertexStride() {
+            if (mode == Mode.CHAR) {
+                return 0;
+            }
+            return format.getSize() / 4;
+        }
+
+        /**
+         * Returns a reference to color values.
+         * 
+         * @return
+         */
+        public float[] getColor() {
+            return color;
         }
 
     }
@@ -90,6 +138,9 @@ public class Map extends BaseReference {
 
     @SerializedName(ARRAYINPUT)
     private ArrayInputData arrayInput;
+
+    @SerializedName(AMBIENT)
+    private MapColor ambient;
 
     /**
      * Creates a new empty playfield
@@ -142,6 +193,15 @@ public class Map extends BaseReference {
             mapData = new int[mapSize[Axis.WIDTH.index] * mapSize[Axis.HEIGHT.index]];
             System.arraycopy(source.getMapData(), 0, mapData, 0, mapData.length);
         }
+    }
+
+    /**
+     * Returns the ambient material color for each char or per vertex, or null if not set.
+     * 
+     * @return Ambient material properties, or null if not set.
+     */
+    public MapColor getAmbient() {
+        return ambient;
     }
 
     /**
