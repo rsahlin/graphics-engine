@@ -22,6 +22,8 @@ uniform mat4 uMVMatrix;
 uniform mat4 uProjectionMatrix;
 uniform vec3 uCharsetData; //tex width, tex height, frames per line
 uniform vec2 uScreenSize; //Width and  height of screen
+uniform vec4 uAmbientLight;
+uniform vec4 uDiffuseLight;
 
 attribute vec3 aPosition;
 attribute vec2 aUV;
@@ -29,6 +31,7 @@ attribute vec3 aCharset; //char x, char y, z (not used)
 attribute vec2 aCharset2;//frame
 
 varying vec2 vTexCoord;
+varying vec4 vAmbientLight;
 
 void main() {
     int flags = int(aCharset2.y);
@@ -48,5 +51,6 @@ void main() {
     vTexCoord = vec2(flip.x + 
                      mod(aCharset2.x, uCharsetData.z) * uCharsetData.x,
                      flip.y + floor(aCharset2.x / uCharsetData.z) * uCharsetData.y);
+    vAmbientLight = uAmbientLight;
     
 }

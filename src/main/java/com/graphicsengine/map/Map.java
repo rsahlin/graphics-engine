@@ -3,6 +3,7 @@ package com.graphicsengine.map;
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.dataflow.ArrayInputData;
 import com.nucleus.io.BaseReference;
+import com.nucleus.types.DataType;
 import com.nucleus.vecmath.Axis;
 
 /**
@@ -15,24 +16,79 @@ import com.nucleus.vecmath.Axis;
  */
 public class Map extends BaseReference {
 
+    public static final String MODE = "mode";
+    public static final String FORMAT = "format";
+    public static final String COLOR = "color";
+
+    /**
+     * Char or vertex based info
+     *
+     */
+    public enum Mode {
+        CHAR(), VERTEX();
+    }
+
+    /**
+     * Color info for map, can be either per vertex or per char.
+     *
+     */
+    public class MapColor {
+        @SerializedName(MODE)
+        private Mode mode;
+        /**
+         * VEC3 or VEC4
+         */
+        @SerializedName(FORMAT)
+        private DataType format;
+        @SerializedName(COLOR)
+        private float[] color;
+
+        /**
+         * Creates a new color for map
+         * 
+         * @param width
+         * @param height
+         * @param mode
+         * @param format VEC3 or VEC4
+         * @throws IllegalArgumentException if format is not VEC3 or VEC4
+         */
+        public MapColor(int width, int height, Mode mode, DataType format) {
+            if (format == null || (format != DataType.VEC3 && format != DataType.VEC4)) {
+                throw new IllegalArgumentException("Invalid format " + format);
+            }
+            int size = width * height * (format.getSize() / 4);
+            if (mode == Mode.VERTEX) {
+                size = size * 4;
+            }
+            color = new float[size];
+        }
+
+    }
+
+    public static final String MAPSIZE = "mapSize";
+    public static final String MAPDATA = "mapData";
+    public static final String FLAGS = "flags";
+    public static final String AMBIENT = "ambient";
+    public static final String ARRAYINPUT = "arrayInput";
+
     public static final int FLIP_X = 4;
     public static final int FLIP_Y = 2;
 
     /**
      * The size of the map, usually 2 values.
      */
-    @SerializedName("mapSize")
+    @SerializedName(MAPSIZE)
     private int[] mapSize;
     /**
      * The map data
      */
-    @SerializedName("mapData")
+    @SerializedName(MAPDATA)
     private int[] mapData;
 
-    @SerializedName("flags")
+    @SerializedName(FLAGS)
     private int[] flags;
 
-    @SerializedName("arrayInput")
+    @SerializedName(ARRAYINPUT)
     private ArrayInputData arrayInput;
 
     /**

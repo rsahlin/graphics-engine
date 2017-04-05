@@ -23,28 +23,31 @@ import com.nucleus.vecmath.Rectangle;
  */
 public class PlayfieldNode extends Node {
 
+    public static final String MAPREF = "mapRef";
+    public static final String OFFSET = "offset";
+
     /**
      * Reference to map data
      */
-    @SerializedName("mapRef")
+    @SerializedName(MAPREF)
     private ExternalReference mapRef;
     /**
      * The size of the map in this controller
      */
-    @SerializedName("mapSize")
+    @SerializedName(Map.MAPSIZE)
     private int[] mapSize = new int[2];
 
     /**
      * X and Y offset for map, this controls where the first char of the map is.
      */
-    @SerializedName("offset")
+    @SerializedName(OFFSET)
     private float[] offset;
 
     /**
      * The rectangle defining the chars, all chars will have same size
      * 4 values = x1,y1 + width and height
      */
-    @SerializedName("rect")
+    @SerializedName(Rectangle.RECT)
     private Rectangle rectangle;
 
     /**
@@ -56,7 +59,7 @@ public class PlayfieldNode extends Node {
      * 
      */
     transient private int[] flags;
-    
+
     public PlayfieldNode() {
     }
 
@@ -86,7 +89,7 @@ public class PlayfieldNode extends Node {
         setMapOffset(source.offset);
 
     }
-    
+
     /**
      * Sets the map in this node, creating the map storage if needed, and updates the mesh to contain
      * the charset.
@@ -156,12 +159,13 @@ public class PlayfieldNode extends Node {
 
     /**
      * Returns a reference to the flag data, do NOT modify these values
+     * 
      * @return
      */
     public int[] getFlags() {
         return flags;
     }
-    
+
     /**
      * Returns the map offset if set, or null
      * The map offset controls where the first char in the map is.

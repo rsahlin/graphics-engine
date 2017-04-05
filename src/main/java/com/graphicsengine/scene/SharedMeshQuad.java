@@ -26,7 +26,7 @@ public class SharedMeshQuad extends Node {
      * The rectangle defining the sprites, all sprites will have same size
      * 4 values = x1,y1 + width and height
      */
-    @SerializedName("rect")
+    @SerializedName(Rectangle.RECT)
     private Rectangle rectangle;
 
     public SharedMeshQuad() {

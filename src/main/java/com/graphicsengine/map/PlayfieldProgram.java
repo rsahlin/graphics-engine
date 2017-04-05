@@ -31,11 +31,6 @@ public class PlayfieldProgram extends ShaderProgram {
     private final static int UNIFORM_TEX_OFFSET = 0;
 
     /**
-     * Number of float data per vertex
-     */
-    private final static int ATTRIBUTES_PER_VERTEX = 8;
-
-    /**
      * The shader names used, the variable names used in shader sources MUST be defined here.
      */
     public enum VARIABLES implements VariableMapping {
@@ -43,8 +38,8 @@ public class PlayfieldProgram extends ShaderProgram {
         uProjectionMatrix(1, ShaderVariable.VariableType.UNIFORM, null),
         uCharsetData(2, ShaderVariable.VariableType.UNIFORM, null),
         uScreenSize(3, ShaderVariable.VariableType.UNIFORM, null),
-        uAmbient(4, ShaderVariable.VariableType.UNIFORM, null),
-        uDiffuse(5, ShaderVariable.VariableType.UNIFORM, null),
+        uAmbientLight(4, ShaderVariable.VariableType.UNIFORM, null),
+        uDiffuseLight(5, ShaderVariable.VariableType.UNIFORM, null),
         aPosition(6, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.VERTICES),
         aUV(7, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.VERTICES),
         aCharset(8, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
@@ -126,8 +121,7 @@ public class PlayfieldProgram extends ShaderProgram {
         } else {
             System.err.println(INVALID_TEXTURE_TYPE + texture);
         }
-        setAmbient(uniforms, shaderVariables[VARIABLES.uAmbient.index], mesh.getMaterial());
-
+        setAmbient(uniforms, shaderVariables[VARIABLES.uAmbientLight.index], globalLight.getAmbient());
     }
 
     @Override
