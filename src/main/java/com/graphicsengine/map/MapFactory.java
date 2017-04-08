@@ -4,9 +4,10 @@ import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
+import com.graphicsengine.map.Map.Mode;
 import com.nucleus.io.ExternalReference;
+import com.nucleus.types.DataType;
 
 /**
  * Factory method for {@link Map}
@@ -29,14 +30,17 @@ public class MapFactory {
     }
 
     /**
-     * Creates a new empty map with the specified size
+     * Creates a new empty map with the specified size.
      * 
      * @param width
      * @param height
-     * @return
+     * @param ambientMode Storage mode for ambient material
+     * @param ambientFormat Datatype for ambient material VEC3 or VEC4
+     * @throws IllegalArgumentException If ambient is null or ambientFormat is not VEC3 or VEC4
+     * @return The created map
      */
-    public static Map createMap(int width, int height) {
-        return new Map(width, height);
+    public static Map createMap(int width, int height, Mode ambientMode, DataType ambientFormat) {
+        return new Map(width, height, ambientMode, ambientFormat);
     }
 
     /**

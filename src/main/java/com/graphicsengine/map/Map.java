@@ -42,8 +42,6 @@ public class Map extends BaseReference {
         private DataType format;
         @SerializedName(COLOR)
         private float[] color;
-
-        private transient int sizePerChar;
         
         /**
          * Creates a new color for map
@@ -52,18 +50,79 @@ public class Map extends BaseReference {
          * @param height
          * @param mode
          * @param format VEC3 or VEC4
-         * @throws IllegalArgumentException if format is not VEC3 or VEC4
+         * @throws IllegalArgumentException if format is not VEC3 or VEC4, or mode or format is null.
          */
         public MapColor(int width, int height, Mode mode, DataType format) {
-            if (format == null || (format != DataType.VEC3 && format != DataType.VEC4)) {
-                throw new IllegalArgumentException("Invalid format " + format);
+            if (mode == null || format == null || (format != DataType.VEC3 && format != DataType.VEC4)) {
+                throw new IllegalArgumentException("Invalid mode or format: " + mode + ", " + format);
             }
-            sizePerChar = getSizePerChar();
+            this.format = format;
+            this.mode = mode;
+            int sizePerChar = getSizePerChar();
             color = new float[sizePerChar * width * height];
         }
 
         /**
-         * Size in floats for each char
+         * Returns the colormode, this defines if the color information is per char or per vertex.
+         * 
+         * @return
+         */
+        public Mode getMode() {
+            return mode;
+        }
+
+        /**
+         * Returns the datatype for each color value, this defines how many values each color is stored with.
+         * Either VEC3 or VEC4
+         * 
+         * @return
+         */
+        public DataType getFormat() {
+            return format;
+        }
+
+        /**
+         * Fills the colormap with the specified fillcolor, if format is VEC3 then 3 values are copied.
+         * If format is VEC4 then 4 values are copied.
+         * 
+         * @param fillColor
+         */
+        public void fill(float[] fillColor) {
+            switch (format) {
+            case VEC3:
+                fillVEC3(fillColor);
+                break;
+            case VEC4:
+                fillVEC4(fillColor);
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid format: " + format);
+            }
+        }
+
+        private void fillVEC3(float[] fillColor) {
+            int index = 0;
+            int size = color.length;
+            while (index < size) {
+                color[index++] = fillColor[0];
+                color[index++] = fillColor[1];
+                color[index++] = fillColor[2];
+            }
+        }
+
+        private void fillVEC4(float[] fillColor) {
+            int index = 0;
+            int size = color.length;
+            while (index < size) {
+                color[index++] = fillColor[0];
+                color[index++] = fillColor[1];
+                color[index++] = fillColor[2];
+                color[index++] = fillColor[3];
+            }
+        }
+
+        /**
+         * Size in floats for each char, result depends on {@link #getMode()} and {@link #getFormat()}
          * 
          * @return
          */
@@ -78,16 +137,6 @@ public class Map extends BaseReference {
                 throw new IllegalArgumentException("Invalid mode:" + mode);
             }
 
-        }
-
-        /**
-         * Returns the offset into map color data for the specified map index
-         * 
-         * @param mapIndex Corresponding map index into map color data, same as {@link #getSizePerChar()}} * mapIndex
-         * @return
-         */
-        public int getOffset(int mapIndex) {
-            return mapIndex * sizePerChar;
         }
 
         /**
@@ -143,19 +192,24 @@ public class Map extends BaseReference {
     private MapColor ambient;
 
     /**
-     * Creates a new empty playfield
+     * Creates a new empty playfield, with the specified width and height.
+     * Storage for ambient material is created
      * 
      * @param width
      * @param height
+     * @param ambientMode Storage mode for ambient material
+     * @param ambientFormat Datatype for ambient material VEC3 or VEC4
+     * @throws IllegalArgumentException If ambient is null or ambientFormat is not VEC3 or VEC4
      */
-    Map(int width, int height) {
-        createArrays(width, height);
+    Map(int width, int height, Mode ambientMode, DataType ambientFormat) {
+        createArrays(width, height, ambientMode, ambientFormat);
     }
 
-    private void createArrays(int width, int height) {
+    private void createArrays(int width, int height, Mode ambientMode, DataType ambientFormat) {
         mapSize = new int[] { width, height };
         mapData = new int[width * height];
         flags = new int[width * height];
+        ambient = new MapColor(width, height, ambientMode, ambientFormat);
     }
 
     /**
@@ -171,18 +225,6 @@ public class Map extends BaseReference {
     }
 
     /**
-     * Creates a new map for the mpadata, inizializing all arrays.
-     * 
-     * @param width
-     * @param height
-     * @param mapData
-     */
-    public Map(int width, int height, int[] mapData) {
-        createArrays(width, height);
-        this.mapData = mapData;
-    }
-
-    /**
      * Creates the mapdata in this class from the source, this will copy map size and the data in the map.
      * 
      * @param source
@@ -193,6 +235,20 @@ public class Map extends BaseReference {
             mapData = new int[mapSize[Axis.WIDTH.index] * mapSize[Axis.HEIGHT.index]];
             System.arraycopy(source.getMapData(), 0, mapData, 0, mapData.length);
         }
+    }
+
+    /**
+     * Creats ambient lightmap for the map, map must be initialized with size
+     * 
+     * @param mode
+     * @param format
+     * @throws IllegalArgumentException If map does not have size
+     */
+    public void createAmbient(Mode mode, DataType format) {
+        if (mapSize == null || mapSize[0] <= 0 || mapSize[1] <= 0) {
+            throw new IllegalArgumentException("Map does not have valid size");
+        }
+        ambient = new MapColor(mapSize[0], mapSize[1], mode, format);
     }
 
     /**

@@ -43,7 +43,9 @@ public class PlayfieldProgram extends ShaderProgram {
         aPosition(6, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.VERTICES),
         aUV(7, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.VERTICES),
         aCharset(8, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
-        aCharset2(9, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES);
+        aCharset2(9, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
+        // TODO - how to decide when ambient material is static and can go in VERTICES buffer?
+        aMaterialAmbient(10, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES);
 
         private final int index;
         private final VariableType type;
@@ -139,7 +141,11 @@ public class PlayfieldProgram extends ShaderProgram {
         case FRAME:
             v = shaderVariables[VARIABLES.aCharset2.index];
             break;
+        case COLOR_AMBIENT:
+            v = shaderVariables[VARIABLES.aMaterialAmbient.index];
+            break;
         default:
+            break;
         }
         if (v != null) {
             return v.getOffset();

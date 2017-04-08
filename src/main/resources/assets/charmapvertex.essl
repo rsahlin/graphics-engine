@@ -29,6 +29,7 @@ attribute vec3 aPosition;
 attribute vec2 aUV;
 attribute vec3 aCharset; //char x, char y, z (not used)
 attribute vec2 aCharset2;//frame
+attribute vec4 aMaterialAmbient;
 
 varying vec2 vTexCoord;
 varying vec4 vAmbientLight;
@@ -51,6 +52,5 @@ void main() {
     vTexCoord = vec2(flip.x + 
                      mod(aCharset2.x, uCharsetData.z) * uCharsetData.x,
                      flip.y + floor(aCharset2.x / uCharsetData.z) * uCharsetData.y);
-    vAmbientLight = uAmbientLight;
-    
+    vAmbientLight = uAmbientLight * aMaterialAmbient;
 }

@@ -159,10 +159,11 @@ public class PlayfieldMesh extends SpriteMesh {
     public void copyCharmap(PropertyMapper mapper, int[] map, int[] flags, MapColor ambient, int sourceOffset,
             int destOffset, int count) {
         int ambientStride = ambient.getVertexStride();
+        int sizePerChar = ambient.getSizePerChar();
         float[] color = ambient.getColor();
         for (int i = 0; i < count; i++) {
             setChar(mapper, destOffset, map[sourceOffset], flags[sourceOffset]);
-            setAmbient(mapper, destOffset, color, ambient.getOffset(destOffset), ambientStride);
+            setAmbient(mapper, destOffset, color, destOffset * sizePerChar, ambientStride);
             destOffset++;
             sourceOffset++;
         }
