@@ -38,14 +38,14 @@ public class PlayfieldProgram extends ShaderProgram {
         uProjectionMatrix(1, ShaderVariable.VariableType.UNIFORM, null),
         uCharsetData(2, ShaderVariable.VariableType.UNIFORM, null),
         uScreenSize(3, ShaderVariable.VariableType.UNIFORM, null),
+        // TODO - how to decide when ambient material is dynamic and should go in ATTRIBUTES buffer?
         uAmbientLight(4, ShaderVariable.VariableType.UNIFORM, null),
         uDiffuseLight(5, ShaderVariable.VariableType.UNIFORM, null),
         aPosition(6, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.VERTICES),
         aUV(7, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.VERTICES),
-        aCharset(8, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
-        aCharset2(9, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
-        // TODO - how to decide when ambient material is static and can go in VERTICES buffer?
-        aMaterialAmbient(10, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES);
+        aMaterialAmbient(8, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
+        aCharset(9, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
+        aCharset2(10, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES);
 
         private final int index;
         private final VariableType type;
@@ -107,6 +107,7 @@ public class PlayfieldProgram extends ShaderProgram {
         System.arraycopy(projectionMatrix, 0, mesh.getUniforms(),
                 shaderVariables[VARIABLES.uProjectionMatrix.index].getOffset(),
                 Matrix.MATRIX_ELEMENTS);
+        setAmbient(mesh.getUniforms(), shaderVariables[VARIABLES.uAmbientLight.index], globalLight.getAmbient());
         bindUniforms(gles, uniforms, mesh.getUniforms());
     }
 
@@ -123,7 +124,6 @@ public class PlayfieldProgram extends ShaderProgram {
         } else {
             System.err.println(INVALID_TEXTURE_TYPE + texture);
         }
-        setAmbient(uniforms, shaderVariables[VARIABLES.uAmbientLight.index], globalLight.getAmbient());
     }
 
     @Override
