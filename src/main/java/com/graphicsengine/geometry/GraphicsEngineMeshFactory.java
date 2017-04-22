@@ -6,7 +6,6 @@ import com.graphicsengine.io.GraphicsEngineResourcesData;
 import com.graphicsengine.map.PlayfieldMeshFactory;
 import com.graphicsengine.map.PlayfieldNode;
 import com.graphicsengine.scene.QuadParentNode;
-import com.graphicsengine.scene.SharedMeshQuad;
 import com.graphicsengine.spritemesh.SpriteMeshFactory;
 import com.nucleus.component.ComponentNode;
 import com.nucleus.geometry.Mesh;
@@ -27,9 +26,6 @@ public class GraphicsEngineMeshFactory implements MeshFactory {
         }
         if (parent instanceof QuadParentNode) {
             return SpriteMeshFactory.create(renderer, (QuadParentNode) parent, (GraphicsEngineResourcesData) resources);
-        }
-        if (parent instanceof SharedMeshQuad) {
-            return SpriteMeshFactory.create(renderer, (SharedMeshQuad) parent, (GraphicsEngineResourcesData) resources);
         }
         if (parent instanceof ComponentNode) {
             /**

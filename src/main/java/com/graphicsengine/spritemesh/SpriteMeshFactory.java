@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import com.graphicsengine.io.GraphicsEngineResourcesData;
 import com.graphicsengine.scene.QuadParentNode;
-import com.graphicsengine.scene.SharedMeshQuad;
 import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.Material;
 import com.nucleus.geometry.Mesh;
@@ -70,11 +69,6 @@ public class SpriteMeshFactory {
         }
 
         return mesh;
-    }
-
-    public static Mesh create(NucleusRenderer renderer, SharedMeshQuad node, GraphicsEngineResourcesData resources)
-            throws IOException {
-        return null;
     }
 
     /**

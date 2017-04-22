@@ -3,6 +3,7 @@ package com.graphicsengine.scene;
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.spritemesh.SpriteMesh;
 import com.nucleus.scene.Node;
+import com.nucleus.texturing.Texture2D;
 import com.nucleus.vecmath.Rectangle;
 
 /**
@@ -34,7 +35,8 @@ public class SharedMeshQuad extends Node {
 
     public void onCreated(SpriteMesh mesh, int index) {
         this.childIndex = index;
-        mesh.buildQuad(index, mesh.getMaterial().getProgram(), rectangle);
+        mesh.buildQuad(index, mesh.getMaterial().getProgram(),
+                rectangle != null ? rectangle : mesh.getTexture(Texture2D.TEXTURE_0).calculateWindowRectangle());
         if (transform == null) {
             mesh.setScale(index, 1, 1);
         } else {
