@@ -19,6 +19,7 @@ import com.nucleus.texturing.TextureType;
 import com.nucleus.texturing.TiledTexture2D;
 import com.nucleus.texturing.UVAtlas;
 import com.nucleus.texturing.UVTexture2D;
+import com.nucleus.vecmath.AxisAngle;
 import com.nucleus.vecmath.Rectangle;
 import com.nucleus.vecmath.Transform;
 
@@ -256,6 +257,12 @@ public class SpriteMesh extends Mesh implements Consumer {
         int offset = index * mapper.attributesPerVertex * ShaderProgram.VERTICES_PER_SPRITE;
         float[] scale = transform.getScale();
         float[] pos = transform.getTranslate();
+        float[] axisAngle = null;
+        float angle = 0;
+        if (transform.getAxisAngle() != null) {
+            axisAngle = transform.getAxisAngle().getValues();
+            angle = axisAngle[AxisAngle.ANGLE];
+        }
         for (int i = 0; i < ShaderProgram.VERTICES_PER_SPRITE; i++) {
             attributeData[offset + mapper.scaleOffset] = scale[0];
             attributeData[offset + mapper.scaleOffset + 1] = scale[1];
@@ -263,6 +270,12 @@ public class SpriteMesh extends Mesh implements Consumer {
             attributeData[offset + mapper.translateOffset] = pos[0];
             attributeData[offset + mapper.translateOffset + 1] = pos[1];
             attributeData[offset + mapper.translateOffset + 2] = pos[2];
+            if (axisAngle != null) {
+                attributeData[offset + mapper.rotateOffset] = axisAngle[AxisAngle.X] * angle;
+                attributeData[offset + mapper.rotateOffset + 1] = axisAngle[AxisAngle.Y] * angle;
+                attributeData[offset + mapper.rotateOffset + 2] = axisAngle[AxisAngle.Z] * angle;
+            }
+
             offset += mapper.attributesPerVertex;
         }
 
