@@ -5,11 +5,14 @@ import java.io.FileNotFoundException;
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.dataflow.ArrayInputData;
 import com.graphicsengine.io.GraphicsEngineResourcesData;
+import com.nucleus.SimpleLogger;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.io.ExternalReference;
+import com.nucleus.mmi.MMIPointerEvent;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.NodeException;
 import com.nucleus.vecmath.Axis;
+import com.nucleus.vecmath.Matrix;
 import com.nucleus.vecmath.Rectangle;
 
 /**
@@ -227,4 +230,30 @@ public class PlayfieldNode extends Node {
     private void createMap(int[] mapSize) {
         mapData = new int[mapSize[Axis.WIDTH.index] * mapSize[Axis.HEIGHT.index]];
     }
+
+    @Override
+    protected boolean checkNode(MMIPointerEvent event) {
+        switch (event.getAction()) {
+        case ACTIVE:
+            float[] inverse = new float[16];
+            if (Matrix.invertM(inverse, 0, getModelMatrix(), 0)) {
+                SimpleLogger.d(getClass(), "Pointer input, got inverse matrix");
+                float[] vec2 = new float[2];
+                Matrix.transformVec2(inverse, 0, event.getPointerData().getCurrentPosition(), vec2, 1);
+                SimpleLogger.d(getClass(), "Vec2 " + vec2[0] + ", " + vec2[1]);
+            } else {
+                SimpleLogger.d(getClass(), "Could not invert matrix!!!!!!!!!!!!!!!!");
+            }
+            break;
+        case INACTIVE:
+            break;
+        case MOVE:
+            break;
+        case ZOOM:
+            break;
+        }
+        SimpleLogger.d(getClass(), "checkNode()");
+        return checkChildren(event);
+    }
+
 }
