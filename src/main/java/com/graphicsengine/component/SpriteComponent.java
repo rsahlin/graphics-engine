@@ -5,7 +5,6 @@ import java.io.IOException;
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.spritemesh.SpriteMesh;
 import com.graphicsengine.spritemesh.SpriteMeshFactory;
-import com.graphicsengine.system.SpriteSystem;
 import com.nucleus.component.Component;
 import com.nucleus.component.ComponentException;
 import com.nucleus.component.ComponentNode;
@@ -28,7 +27,9 @@ import com.nucleus.vecmath.Vector2D;
  * The old school sprite component, this is a collection of a number of (similar) sprite objects
  * that have the data in a shared buffer.
  * The component can be seen as a container for the data needed to process the sprites - but not the behavior itself.
- * This class is used by the {@linkplain SpriteSystem} to process behavior, the System is where the logic is.
+ * This class is used by implementations of {@link System} to process behavior, the System is where the logic is and
+ * this class can be
+ * used as a container for the data.
  * 
  * This component will hold data for the sprite properties, such as position, movement, frame - this data is held in the
  * attribute buffer that can be fetched using {@link #getAttributeData()} and must match the data used by the shader
@@ -324,6 +325,17 @@ public class SpriteComponent extends Component implements Consumer {
         int offset = index * spritedataSize;
         floatData[offset + SpriteData.ROTATE.index] = rotation;
         spriteMesh.setRotation(index, rotation);
+    }
+
+    public void setSprite(int index, float x, float y, int frame, float rotate) {
+        int offset = index * spritedataSize;
+        floatData[offset + SpriteData.TRANSLATE_X.index] = x;
+        floatData[offset + SpriteData.TRANSLATE_Y.index] = y;
+        floatData[offset + SpriteData.MOVE_VECTOR_X.index] = 0;
+        floatData[offset + SpriteData.MOVE_VECTOR_Y.index] = 0;
+        floatData[offset + SpriteData.ELASTICITY.index] = 1f;
+        floatData[offset + SpriteData.FRAME.index] = frame;
+        floatData[offset + SpriteData.ROTATE_SPEED.index] = rotate;
     }
 
     @Override

@@ -2,7 +2,6 @@ package com.graphicsengine.scene;
 
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.spritemesh.SpriteMesh;
-import com.nucleus.bounds.Bounds;
 import com.nucleus.scene.Node;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.vecmath.Rectangle;
@@ -39,12 +38,7 @@ public class SharedMeshQuad extends Node {
         Rectangle quadRect = rectangle != null ? rectangle
                 : mesh.getTexture(Texture2D.TEXTURE_0).calculateWindowRectangle();
         mesh.buildQuad(index, mesh.getMaterial().getProgram(), quadRect);
-        // TODO Move this to Node class
-        Bounds bounds = getBounds();
-        if (bounds != null && bounds.getBounds() == null) {
-            // Need to create bounds from rectangle.
-            bounds.setBounds(quadRect);
-        }
+        initBounds(quadRect);
         if (transform == null) {
             mesh.setScale(index, 1, 1);
         } else {
@@ -100,4 +94,5 @@ public class SharedMeshQuad extends Node {
     private void setQuadRectangle(Rectangle rectangle) {
         this.rectangle = new Rectangle(rectangle);
     }
+
 }

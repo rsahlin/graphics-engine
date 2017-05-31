@@ -108,9 +108,10 @@ public class PlayfieldMesh extends SpriteMesh {
      * @param mapSize width and height of map, in characters
      * @param charSize width and height of each char
      * @param offset Start position of the upper left char, ie the upper left char will have this position.
+     * @return Rectangle covering the map.
      * @throws IllegalArgumentException If the size of the map does not mach number of chars in this class
      */
-    public void setupCharmap(int[] mapSize, float[] charSize, float[] offset) {
+    public Rectangle setupCharmap(int[] mapSize, float[] charSize, float[] offset) {
         if (mapSize[Axis.WIDTH.index] * mapSize[Axis.HEIGHT.index] != charmap.length) {
             throw new IllegalArgumentException("Size of map does not match number of chars in mesh");
         }
@@ -119,8 +120,9 @@ public class PlayfieldMesh extends SpriteMesh {
         int index = 0;
         float currentX = offset[0];
         float currentY = offset[1];
+        float startY = currentY;
         for (int y = 0; y < mapSize[1]; y++) {
-            currentY = offset[1];
+            currentY = startY;
             for (int x = 0; x < mapSize[0]; x++) {
                 attributeData[index + mapper.translateOffset] = currentX;
                 attributeData[index + mapper.translateOffset + 1] = currentY;
@@ -138,8 +140,11 @@ public class PlayfieldMesh extends SpriteMesh {
             }
             currentX = offset[0];
             // TODO handle Y axis going other direction?
-            offset[1] -= charSize[Axis.HEIGHT.index];
+            startY -= charSize[Axis.HEIGHT.index];
         }
+        //Return rectangle covering the map
+        return new Rectangle(offset[0] - (charSize[0] / 2), offset[1] + (charSize[1] / 2), charSize[0] * mapSize[0],
+                charSize[1] * mapSize[1]);
     }
 
     /**

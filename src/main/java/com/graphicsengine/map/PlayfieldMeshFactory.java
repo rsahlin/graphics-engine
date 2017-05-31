@@ -43,8 +43,8 @@ public class PlayfieldMeshFactory {
                     -(node.getMapSize()[0] >>> 1) * node.getCharRectangle().getValues()[Rectangle.WIDTH],
                     (node.getMapSize()[1] >>> 1) * node.getCharRectangle().getValues()[Rectangle.HEIGHT] };
         }
-        playfieldMesh.setupCharmap(node.getMapSize(), node.getCharRectangle().getSize(), offset);
-
+        Rectangle bounds = playfieldMesh.setupCharmap(node.getMapSize(), node.getCharRectangle().getSize(), offset);
+        node.initBounds(bounds);
         if (Configuration.getInstance().isUseVBO()) {
             BufferObjectsFactory.getInstance().createVBOs(renderer, playfieldMesh);
         }

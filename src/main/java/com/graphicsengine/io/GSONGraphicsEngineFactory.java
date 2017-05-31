@@ -13,7 +13,6 @@ import com.graphicsengine.io.gson.ComponentDeserializer;
 import com.graphicsengine.io.gson.NodeDeserializer;
 import com.graphicsengine.scene.GraphicsEngineNodeFactory;
 import com.graphicsengine.scene.GraphicsEngineNodeType;
-import com.graphicsengine.system.SpriteSystem;
 import com.nucleus.common.Type;
 import com.nucleus.common.TypeResolver;
 import com.nucleus.component.Component;
