@@ -109,7 +109,7 @@ public class PlayfieldMesh extends SpriteMesh {
      * @param charSize width and height of each char
      * @param offset Start position of the upper left char, ie the upper left char will have this position.
      * @return Rectangle covering the map.
-     * @throws IllegalArgumentException If the size of the map does not mach number of chars in this class
+     * @throws IllegalArgumentException If the size of the map does not match number of chars in this class
      */
     public Rectangle setupCharmap(int[] mapSize, float[] charSize, float[] offset) {
         if (mapSize[Axis.WIDTH.index] * mapSize[Axis.HEIGHT.index] != charmap.length) {
