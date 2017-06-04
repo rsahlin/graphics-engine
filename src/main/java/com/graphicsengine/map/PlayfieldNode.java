@@ -230,7 +230,8 @@ public class PlayfieldNode extends Node {
 
     /*
      * @Override
-     * protected boolean checkNode(MMIPointerEvent event) {
+     * protected boolean onPointerEvent(MMIPointerEvent event) {
+     * if (isClicked(event.getPointerData().getCurrentPosition())) {
      * switch (event.getAction()) {
      * case ACTIVE:
      * float[] inverse = new float[16];
@@ -250,7 +251,7 @@ public class PlayfieldNode extends Node {
      * case ZOOM:
      * break;
      * }
-     * SimpleLogger.d(getClass(), "checkNode()");
+     * }
      * return checkChildren(event);
      * }
      */
