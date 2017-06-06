@@ -15,6 +15,7 @@ import com.nucleus.scene.DefaultNodeFactory;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.NodeException;
 import com.nucleus.scene.NodeFactory;
+import com.nucleus.scene.RootNode;
 
 /**
  * Implementation of {@link NodeFactory}.
@@ -28,13 +29,14 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
     private static final String NOT_IMPLEMENTED = "Not implemented: ";
 
     @Override
-    public Node create(NucleusRenderer renderer, MeshFactory meshFactory, ResourcesData resources, Node source)
+    public Node create(NucleusRenderer renderer, MeshFactory meshFactory, ResourcesData resources, Node source,
+            RootNode root)
             throws NodeException {
         GraphicsEngineNodeType type = null;
         try {
             type = GraphicsEngineNodeType.valueOf(source.getType());
         } catch (IllegalArgumentException e) {
-            return super.create(renderer, meshFactory, resources, source);
+            return super.create(renderer, meshFactory, resources, source, root);
         }
         GraphicsEngineResourcesData gResources = (GraphicsEngineResourcesData) resources;
         Node created = null;
@@ -64,6 +66,7 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
         default:
             throw new IllegalArgumentException(NOT_IMPLEMENTED + type);
         }
+        created.setRootNode(root);
         return created;
     }
 
@@ -109,18 +112,6 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
     protected void internalCreateComponents(NucleusRenderer renderer, ComponentNode node, MeshFactory meshFactory,
             GraphicsEngineResourcesData resources) throws ComponentException {
         node.createComponents(renderer, resources);
-    }
-
-    protected void createChildNodes(NucleusRenderer renderer, Node node, MeshFactory meshFactory,
-            GraphicsEngineResourcesData resources) throws NodeException {
-        // Recursively create children
-        for (Node nd : node.getChildren()) {
-            Node child = create(renderer, meshFactory, resources, nd);
-            if (child != null) {
-                node.addChild(child);
-            }
-        }
-
     }
 
     /**
