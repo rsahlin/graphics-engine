@@ -9,6 +9,7 @@ import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.io.ExternalReference;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.NodeException;
+import com.nucleus.scene.RootNode;
 import com.nucleus.vecmath.Axis;
 import com.nucleus.vecmath.Rectangle;
 
@@ -64,14 +65,15 @@ public class PlayfieldNode extends Node {
     }
 
     @Override
-    public PlayfieldNode createInstance() {
+    public PlayfieldNode createInstance(RootNode root) {
         PlayfieldNode copy = new PlayfieldNode();
+        copy.setRootNode(root);
         return copy;
     }
 
     @Override
-    public PlayfieldNode copy() {
-        PlayfieldNode copy = createInstance();
+    public PlayfieldNode copy(RootNode root) {
+        PlayfieldNode copy = createInstance(root);
         copy.set(this);
         return copy;
     }

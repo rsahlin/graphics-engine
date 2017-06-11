@@ -3,6 +3,7 @@ package com.graphicsengine.scene;
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.spritemesh.SpriteMesh;
 import com.nucleus.scene.Node;
+import com.nucleus.scene.RootNode;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.vecmath.Rectangle;
 
@@ -57,14 +58,15 @@ public class SharedMeshQuad extends Node {
     }
 
     @Override
-    public SharedMeshQuad createInstance() {
+    public SharedMeshQuad createInstance(RootNode root) {
         SharedMeshQuad copy = new SharedMeshQuad();
+        copy.setRootNode(root);
         return copy;
     }
 
     @Override
-    public Node copy() {
-        SharedMeshQuad copy = createInstance();
+    public Node copy(RootNode root) {
+        SharedMeshQuad copy = createInstance(root);
         copy.set(this);
         return copy;
 

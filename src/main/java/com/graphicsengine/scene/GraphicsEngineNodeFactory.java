@@ -43,30 +43,29 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
 
         switch (type) {
         case playfieldNode:
-            created = source.copy();
+            created = source.copy(root);
             internalCreateNode(renderer, source, created, meshFactory, gResources);
             ((PlayfieldNode) created).createMap(gResources);
             break;
         case spriteComponentNode:
-            created = source.copy();
+            created = source.copy(root);
             internalCreateNode(renderer, source, created, meshFactory, gResources);
             break;
         case sharedMeshNode:
-            created = source.copy();
+            created = source.copy(root);
             internalCreateNode(renderer, source, created, meshFactory, gResources);
             break;
         case quadNode:
-            created = source.copy();
+            created = source.copy(root);
             internalCreateNode(renderer, source, created, meshFactory, gResources);
             break;
         case element:
-            created = source.copy();
+            created = source.copy(root);
             internalCreateNode(renderer, source, created, meshFactory, gResources);
             break;
         default:
             throw new IllegalArgumentException(NOT_IMPLEMENTED + type);
         }
-        created.setRootNode(root);
         return created;
     }
 

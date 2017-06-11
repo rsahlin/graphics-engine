@@ -6,6 +6,7 @@ import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.spritemesh.SpriteMesh;
 import com.nucleus.component.Component;
 import com.nucleus.scene.Node;
+import com.nucleus.scene.RootNode;
 
 /**
  * Node containing Quad elements, the intended usage is to group as many quad objects as possible under one node
@@ -30,14 +31,15 @@ public class QuadParentNode extends Node {
     }
 
     @Override
-    public QuadParentNode createInstance() {
+    public QuadParentNode createInstance(RootNode root) {
         QuadParentNode copy = new QuadParentNode();
+        copy.setRootNode(root);
         return copy;
     }
 
     @Override
-    public Node copy() {
-        QuadParentNode copy = createInstance();
+    public Node copy(RootNode root) {
+        QuadParentNode copy = createInstance(root);
         copy.set(this);
         return copy;
     }
