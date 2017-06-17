@@ -17,17 +17,6 @@ import com.nucleus.types.DataType;
  *
  */
 public class MapFactory {
-    /**
-     * Creates a new map from the controller source
-     * This map will contain the data from the source, the id will be the mapReference from the source.
-     * Use this when exporting
-     * 
-     * @param source
-     * @return
-     */
-    public static Map createMap(PlayfieldNode source) {
-        return new Map(source);
-    }
 
     /**
      * Creates a new empty map with the specified size.

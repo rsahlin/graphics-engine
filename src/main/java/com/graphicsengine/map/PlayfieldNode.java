@@ -3,14 +3,15 @@ package com.graphicsengine.map;
 import java.io.FileNotFoundException;
 
 import com.google.gson.annotations.SerializedName;
-import com.graphicsengine.dataflow.ArrayInputData;
 import com.graphicsengine.io.GraphicsEngineResourcesData;
+import com.nucleus.SimpleLogger;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.io.ExternalReference;
+import com.nucleus.mmi.ClickListener;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.NodeException;
 import com.nucleus.scene.RootNode;
-import com.nucleus.vecmath.Axis;
+import com.nucleus.vecmath.Matrix;
 import com.nucleus.vecmath.Rectangle;
 
 /**
@@ -22,10 +23,13 @@ import com.nucleus.vecmath.Rectangle;
  * @author Richard Sahlin
  *
  */
-public class PlayfieldNode extends Node {
-
+public class PlayfieldNode extends Node implements ClickListener {
     public static final String MAPREF = "mapRef";
-    public static final String OFFSET = "offset";
+    public static final String ANCHOR = "anchor";
+
+    public enum Anchor {
+        CENTER_XY();
+    }
 
     /**
      * Reference to map data
@@ -39,10 +43,11 @@ public class PlayfieldNode extends Node {
     private int[] mapSize = new int[2];
 
     /**
-     * X and Y offset for map, this controls where the first char of the map is.
+     * X and Y anchor for map, this controls where the first char of the map is.
+     * This is used when constructing the mesh
      */
-    @SerializedName(OFFSET)
-    private float[] offset;
+    @SerializedName(ANCHOR)
+    private Anchor anchor;
 
     /**
      * The rectangle defining the chars, all chars will have same size
@@ -52,14 +57,9 @@ public class PlayfieldNode extends Node {
     private Rectangle rectangle;
 
     /**
-     * The map data used by this controller.
+     * The map used by this controller.
      */
-    transient private int[] mapData;
-
-    /**
-     * 
-     */
-    transient private int[] flags;
+    transient private Map map;
 
     public PlayfieldNode() {
     }
@@ -88,7 +88,7 @@ public class PlayfieldNode extends Node {
         mapRef = source.mapRef;
         setMapSize(source.mapSize);
         setCharRectangle(source.rectangle);
-        setMapOffset(source.offset);
+        setMeshAnchor(source.anchor);
 
     }
 
@@ -102,29 +102,10 @@ public class PlayfieldNode extends Node {
     public void createMap(GraphicsEngineResourcesData resources) throws NodeException {
         PropertyMapper mapper = new PropertyMapper(getMeshes().get(0).getMaterial().getProgram());
         try {
-            Map data = MapFactory.createMap(mapRef);
-            createMap(getMapSize());
-            ArrayInputData id = data.getArrayInput();
+            map = MapFactory.createMap(mapRef);
             PlayfieldMesh playfield = (PlayfieldMesh) getMeshes().get(0);
-            if (data.getExternalReference() != null) {
-                try {
-                    Map loaded = MapFactory.createMap(data.getExternalReference());
-                    playfield.copyCharmap(mapper, loaded);
-                } catch (FileNotFoundException e) {
-                    throw new NodeException("Could not load playfield " + data.getExternalReference().getSource());
-                }
-            } else if (id != null) {
-                if (mapData == null) {
-                    mapData = new int[mapSize[Axis.WIDTH.index] * mapSize[Axis.HEIGHT.index]];
-                }
-                id.copyArray(mapData,
-                        mapSize[Axis.WIDTH.index],
-                        mapSize[Axis.HEIGHT.index], 0, 0);
-                playfield.copyCharmap(mapper, getMapData(), getFlags(), 0, 0, getMapData().length);
-            } else {
-                if (data.getMap() != null && data.getMapSize() != null) {
-                    playfield.copyCharmap(mapper, data);
-                }
+            if (map.getMap() != null && map.getMapSize() != null) {
+                playfield.copyCharmap(mapper, map);
             }
         } catch (FileNotFoundException e) {
             throw new NodeException(e);
@@ -155,27 +136,37 @@ public class PlayfieldNode extends Node {
      * 
      * @return
      */
-    public int[] getMapData() {
-        return mapData;
+    public Map getMap() {
+        return map;
     }
 
     /**
-     * Returns a reference to the flag data, do NOT modify these values
-     * 
-     * @return
-     */
-    public int[] getFlags() {
-        return flags;
-    }
-
-    /**
-     * Returns the map offset if set, or null
+     * Returns the map anchor, or null
      * The map offset controls where the first char in the map is.
      * 
      * @return
      */
-    public float[] getMapOffset() {
-        return offset;
+    public Anchor getMeshAnchor() {
+        return anchor;
+    }
+
+    /**
+     * Returns the anchor value, this is the position of the first character based on the anchor, size of map and size
+     * of each char.
+     * 
+     * @return Position of upper left char
+     */
+    public float[] getAnchorOffset() {
+        Anchor a = anchor == null ? Anchor.CENTER_XY : anchor;
+        switch (a) {
+        case CENTER_XY:
+            return new float[] {
+                    -(getMapSize()[0] >>> 1) * getCharRectangle().getValues()[Rectangle.WIDTH],
+                    (getMapSize()[1] >>> 1) * getCharRectangle().getValues()[Rectangle.HEIGHT] };
+        default:
+            throw new IllegalArgumentException("Not implemented for anchor: " + a);
+        }
+
     }
 
     /**
@@ -198,17 +189,12 @@ public class PlayfieldNode extends Node {
     }
 
     /**
-     * Sets the map offset to that of the offset, values are copied.
+     * Sets the map offset, this controls how the mesh is created from chars
      * 
-     * @param offset Offset values, or null to remove.
+     * @param anchor new anchor value
      */
-    private void setMapOffset(float[] offset) {
-        if (offset == null) {
-            this.offset = null;
-            return;
-        }
-        this.offset = new float[offset.length];
-        System.arraycopy(offset, 0, this.offset, 0, offset.length);
+    private void setMeshAnchor(Anchor anchor) {
+        this.anchor = anchor;
     }
 
     /**
@@ -221,13 +207,53 @@ public class PlayfieldNode extends Node {
 
     }
 
+    @Override
+    public boolean onClick(float[] position) {
+        float[] inverse = new float[16];
+        if (Matrix.invertM(inverse, 0, getModelMatrix(), 0)) {
+            SimpleLogger.d(getClass(), "Pointer input, got inverse matrix");
+            float[] vec2 = new float[2];
+            Matrix.transformVec2(inverse, 0, position, vec2, 1);
+            int[] mapPos = getMapPos(vec2);
+            if (mapPos != null) {
+                map.logMapPosition(mapPos[0], mapPos[1]);
+            }
+            SimpleLogger.d(getClass(), "Vec2 " + vec2[0] + ", " + vec2[1]);
+        } else {
+            SimpleLogger.d(getClass(), "Could not invert matrix!!!!!!!!!!!!!!!!");
+        }
+        return false;
+    }
+
     /**
-     * Creates the map storage for this node, this map may be larger than the map displayed by the mesh.
+     * Returns the map x and y position for the specified (normalized) screen position.
      * 
-     * @param mapSize
+     * @param position
+     * @return Map x and y position for the specified screen position.
+     * null if position is outside map, or model matrix can not be inversed
+     * 
      */
-    private void createMap(int[] mapSize) {
-        mapData = new int[mapSize[Axis.WIDTH.index] * mapSize[Axis.HEIGHT.index]];
+    private int[] getMapPos(float[] position) {
+        float[] inverse = new float[16];
+        if (Matrix.invertM(inverse, 0, getModelMatrix(), 0)) {
+            float[] vec2 = new float[2];
+            Matrix.transformVec2(inverse, 0, position, vec2, 1);
+            float[] offset = getAnchorOffset();
+            float deltaX = position[0] - offset[0];
+            // Y axis going up
+            float deltaY = offset[1] - position[1];
+            float[] charSize = rectangle.getSize();
+            int x = (int) (deltaX / charSize[0]);
+            int y = (int) (deltaY / charSize[1]);
+            if ((x < 0) || (x > mapSize[0]) || (y < 0) || (y > mapSize[1])) {
+                SimpleLogger.d(getClass(), "Delta:" + deltaX + ", " + deltaY);
+                return null;
+            }
+            return new int[] { x, y };
+        } else {
+            SimpleLogger.d(getClass(), "Could not invert matrix!!!!!!!!!!!!!!!!");
+        }
+        return null;
     }
 
     /*

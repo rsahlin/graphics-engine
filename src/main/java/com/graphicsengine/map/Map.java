@@ -1,7 +1,7 @@
 package com.graphicsengine.map;
 
 import com.google.gson.annotations.SerializedName;
-import com.graphicsengine.dataflow.ArrayInputData;
+import com.nucleus.SimpleLogger;
 import com.nucleus.io.BaseReference;
 import com.nucleus.types.DataType;
 import com.nucleus.vecmath.Axis;
@@ -185,9 +185,6 @@ public class Map extends BaseReference {
     @SerializedName(FLAGS)
     private int[] flags;
 
-    @SerializedName(ARRAYINPUT)
-    private ArrayInputData arrayInput;
-
     @SerializedName(AMBIENT)
     private MapColor ambient;
 
@@ -210,31 +207,6 @@ public class Map extends BaseReference {
         mapData = new int[width * height];
         flags = new int[width * height];
         ambient = new MapColor(width, height, ambientMode, ambientFormat);
-    }
-
-    /**
-     * Creates a new playfield from the controller source
-     * This playfield will contain the mapdata from the source, the id will be the mapReference from the source.
-     * This is used when exporting
-     * 
-     * @param source
-     */
-    Map(PlayfieldNode source) {
-        mapSize = new int[2];
-        createMap(source);
-    }
-
-    /**
-     * Creates the mapdata in this class from the source, this will copy map size and the data in the map.
-     * 
-     * @param source
-     */
-    void createMap(PlayfieldNode source) {
-        setSize(source.getMapSize());
-        if (source.getMapData() != null) {
-            mapData = new int[mapSize[Axis.WIDTH.index] * mapSize[Axis.HEIGHT.index]];
-            System.arraycopy(source.getMapData(), 0, mapData, 0, mapData.length);
-        }
     }
 
     /**
@@ -293,15 +265,6 @@ public class Map extends BaseReference {
      */
     public int[] getFlags() {
         return flags;
-    }
-
-    /**
-     * Returns the array input if set
-     * 
-     * @return Array input data or null
-     */
-    public ArrayInputData getArrayInput() {
-        return arrayInput;
     }
 
     /**
@@ -364,6 +327,32 @@ public class Map extends BaseReference {
      */
     public boolean isFlag(int index, int flag) {
         return ((flags[index] & flag) == flag) ? true : false;
+    }
+
+    /**
+     * Prints debug message for the map position
+     * 
+     * @param x
+     * @param y
+     */
+    public void logMapPosition(int x, int y) {
+        int index = y * mapSize[1] + x;
+        if (index >= mapData.length) {
+            SimpleLogger.d(getClass(), "Outside map for pos: " + x + ", " + y);
+        }
+        String ambientStr = "none";
+        if (ambient != null) {
+            switch (ambient.getMode()) {
+            case CHAR:
+                ambientStr = Float.toString(ambient.getColor()[index]);
+                break;
+            case VERTEX:
+                ambientStr = "per vertex";
+            }
+        }
+        SimpleLogger.d(getClass(),
+                "Position: " + x + ", " + y + " char:" + mapData[index] + ", flags:" + flags[index] + ", ambient:" +
+                ambientStr);
     }
 
 }

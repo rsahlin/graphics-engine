@@ -37,12 +37,7 @@ public class PlayfieldMeshFactory {
         Texture2D texture = AssetManager.getInstance().getTexture(renderer, node.getTextureRef());
         PlayfieldMesh playfieldMesh = new PlayfieldMesh();
         playfieldMesh.createMesh(program, texture, node.getMaterial(), node.getMapSize(), node.getCharRectangle());
-        float[] offset = node.getMapOffset();
-        if (offset == null) {
-            offset = new float[] {
-                    -(node.getMapSize()[0] >>> 1) * node.getCharRectangle().getValues()[Rectangle.WIDTH],
-                    (node.getMapSize()[1] >>> 1) * node.getCharRectangle().getValues()[Rectangle.HEIGHT] };
-        }
+        float[] offset = node.getAnchorOffset();
         Rectangle bounds = playfieldMesh.setupCharmap(node.getMapSize(), node.getCharRectangle().getSize(), offset);
         node.initBounds(bounds);
         if (Configuration.getInstance().isUseVBO()) {
