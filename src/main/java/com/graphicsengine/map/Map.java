@@ -336,7 +336,7 @@ public class Map extends BaseReference {
      * @param y
      */
     public void logMapPosition(int x, int y) {
-        int index = y * mapSize[1] + x;
+        int index = y * mapSize[0] + x;
         if (index >= mapData.length) {
             SimpleLogger.d(getClass(), "Outside map for pos: " + x + ", " + y);
         }

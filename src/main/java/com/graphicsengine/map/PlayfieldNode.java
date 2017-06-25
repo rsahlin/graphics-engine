@@ -211,14 +211,12 @@ public class PlayfieldNode extends Node implements ClickListener {
     public boolean onClick(float[] position) {
         float[] inverse = new float[16];
         if (Matrix.invertM(inverse, 0, getModelMatrix(), 0)) {
-            SimpleLogger.d(getClass(), "Pointer input, got inverse matrix");
             float[] vec2 = new float[2];
             Matrix.transformVec2(inverse, 0, position, vec2, 1);
             int[] mapPos = getMapPos(vec2);
             if (mapPos != null) {
                 map.logMapPosition(mapPos[0], mapPos[1]);
             }
-            SimpleLogger.d(getClass(), "Vec2 " + vec2[0] + ", " + vec2[1]);
         } else {
             SimpleLogger.d(getClass(), "Could not invert matrix!!!!!!!!!!!!!!!!");
         }

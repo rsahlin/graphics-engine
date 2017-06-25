@@ -26,17 +26,9 @@ public class PlayfieldMesh extends SpriteMesh {
      * playfield character data, one value for each char - this is the source map that can be used for collision etc.
      * This MUST be in sync with {@link #attributeData}
      */
-    transient int[] charmap;
+    private transient Map map;
 
-    /**
-     * flags for the chars
-     */
-    transient int[] flags;
-
-    /**
-     * The width and height of the charmap
-     */
-    final transient int[] size = new int[2];
+    private transient int[] playfieldSize = new int[2];
 
     /**
      * Creates a new instance of an empty playfield mesh.
@@ -69,32 +61,21 @@ public class PlayfieldMesh extends SpriteMesh {
     }
 
     /**
-     * Initializes the data in this class for the specified number of chars
-     * This will not create the Mesh
-     * Internal method
-     * 
-     * @param charCount
-     */
-    private void init(int charCount) {
-        charmap = new int[charCount];
-        flags = new int[charCount];
-    }
-
-    /**
      * Creates the mesh for this charmap, each char has the specified width and height, z position.
      * Texture UV is set using 1 / framesX and 1/ framesY
      * 
      * @param program
      * @param texture If tiling should be used this must be instance of {@link TiledTexture2D}
      * @param material
-     * @param mapSize Number of chars to support in the mesh
+     * @param playfieldSize Number of chars to support in the mesh
      * @param rectangle The rectangle defining a char, all chars will have same size.
      */
-    public void createMesh(PlayfieldProgram program, Texture2D texture, Material material, int[] mapSize,
+    public void createMesh(PlayfieldProgram program, Texture2D texture, Material material, int[] playfieldSize,
             Rectangle rectangle) {
-        int count = mapSize[0] * mapSize[1];
+        int count = playfieldSize[0] * playfieldSize[1];
+        this.playfieldSize[Axis.WIDTH.index] = playfieldSize[Axis.WIDTH.index];
+        this.playfieldSize[Axis.HEIGHT.index] = playfieldSize[Axis.HEIGHT.index];
         super.createMesh(program, texture, material, count, rectangle);
-        init(count);
     }
 
     /**
@@ -112,11 +93,12 @@ public class PlayfieldMesh extends SpriteMesh {
      * @throws IllegalArgumentException If the size of the map does not match number of chars in this class
      */
     public Rectangle setupCharmap(int[] mapSize, float[] charSize, float[] offset) {
-        if (mapSize[Axis.WIDTH.index] * mapSize[Axis.HEIGHT.index] != charmap.length) {
+        if (mapSize[Axis.WIDTH.index] * mapSize[Axis.HEIGHT.index] != playfieldSize[Axis.WIDTH.index]
+                * playfieldSize[Axis.HEIGHT.index]) {
             throw new IllegalArgumentException("Size of map does not match number of chars in mesh");
         }
-        size[Axis.WIDTH.index] = mapSize[Axis.WIDTH.index];
-        size[Axis.HEIGHT.index] = mapSize[Axis.HEIGHT.index];
+        playfieldSize[Axis.WIDTH.index] = mapSize[Axis.WIDTH.index];
+        playfieldSize[Axis.HEIGHT.index] = mapSize[Axis.HEIGHT.index];
         int index = 0;
         float currentX = offset[0];
         float currentY = offset[1];
@@ -206,20 +188,21 @@ public class PlayfieldMesh extends SpriteMesh {
         if (source == null || source.getMapSize() == null) {
             return;
         }
+        this.map = source;
         int[] sourceSize = source.getMapSize();
 
-        int height = Math.min(size[Axis.HEIGHT.index], sourceSize[Axis.HEIGHT.index]);
-        int width = Math.min(size[Axis.WIDTH.index], sourceSize[Axis.WIDTH.index]);
+        int height = Math.min(playfieldSize[Axis.HEIGHT.index], sourceSize[Axis.HEIGHT.index]);
+        int width = Math.min(playfieldSize[Axis.WIDTH.index], sourceSize[Axis.WIDTH.index]);
         MapColor ambient = source.getAmbient();
         if (ambient != null) {
             for (int y = 0; y < height; y++) {
                 copyCharmap(mapper, source.getMap(), source.getFlags(), ambient,
-                        y * sourceSize[Axis.WIDTH.index], y * size[Axis.WIDTH.index], width);
+                        y * sourceSize[Axis.WIDTH.index], y * playfieldSize[Axis.WIDTH.index], width);
             }
         } else {
             for (int y = 0; y < height; y++) {
                 copyCharmap(mapper, source.getMap(), source.getFlags(),
-                        y * sourceSize[Axis.WIDTH.index], y * size[Axis.WIDTH.index], width);
+                        y * sourceSize[Axis.WIDTH.index], y * playfieldSize[Axis.WIDTH.index], width);
             }
 
         }
@@ -268,7 +251,7 @@ public class PlayfieldMesh extends SpriteMesh {
      * @param flags Flags for the char
      */
     private void setChar(PropertyMapper mapper, int pos, int chr, int flags) {
-        charmap[pos] = chr;
+        map.getMap()[pos] = chr;
         int destIndex = pos * mapper.attributesPerVertex * ShaderProgram.VERTICES_PER_SPRITE
                 + mapper.frameOffset;
         attributeData[destIndex] = chr;
@@ -310,19 +293,11 @@ public class PlayfieldMesh extends SpriteMesh {
         getVerticeBuffer(BufferIndex.ATTRIBUTES).setDirty(true);
     }
 
-    /**
-     * Returns the playfield map, this contains one int for each char position.
-     * Can be used for collision
-     * 
-     * @return
-     */
-    public int[] getPlayfield() {
-        return charmap;
-    }
-
     @Override
     public void destroy() {
         attributeData = null;
+        map = null;
+        playfieldSize = null;
     }
 
 }
