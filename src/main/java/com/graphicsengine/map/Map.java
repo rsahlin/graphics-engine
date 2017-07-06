@@ -1,6 +1,13 @@
 package com.graphicsengine.map;
 
-import com.google.gson.annotations.SerializedName;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+
 import com.nucleus.SimpleLogger;
 import com.nucleus.io.BaseReference;
 import com.nucleus.types.DataType;
@@ -8,40 +15,64 @@ import com.nucleus.vecmath.Axis;
 
 /**
  * The map for a playfield, this class holds the char data
- * This class can be serialized using GSON
  * The Map itself does not contain the charmap - that and other data is contained in the {@linkplain Playfield}
  * 
  * @author Richard Sahlin
  *
  */
-public class Map extends BaseReference {
+public class Map extends BaseReference implements Serializable {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 8961728842536352805L;
     public static final String MODE = "mode";
     public static final String FORMAT = "format";
     public static final String COLOR = "color";
+
+    private final static byte VERSION_1 = 1;
 
     /**
      * Char or vertex based info
      *
      */
     public enum Mode {
-        CHAR(), VERTEX();
+        CHAR(1), VERTEX(2);
+
+        public final int value;
+
+        private Mode(int value) {
+            this.value = value;
+        }
+
+        public static Mode valueOf(int value) {
+            for (Mode mode : values()) {
+                if (mode.value == value) {
+                    return mode;
+                }
+            }
+            return null;
+        }
     }
 
     /**
      * Color info for map, can be either per vertex or per char.
      *
      */
-    public class MapColor {
-        @SerializedName(MODE)
+    public class MapColor implements Serializable {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = -7662510905955399450L;
+
+        private int length;
         private Mode mode;
         /**
          * VEC3 or VEC4
          */
-        @SerializedName(FORMAT)
         private DataType format;
-        @SerializedName(COLOR)
-        private float[] color;
+        private FloatBuffer color;
         
         /**
          * Creates a new color for map
@@ -59,7 +90,14 @@ public class Map extends BaseReference {
             this.format = format;
             this.mode = mode;
             int sizePerChar = getSizePerChar();
-            color = new float[sizePerChar * width * height];
+            length = width * height * sizePerChar;
+            createBuffer();
+        }
+
+        private void createBuffer() {
+            color = ByteBuffer.allocateDirect(length * 4).order(ByteOrder.nativeOrder())
+                    .asFloatBuffer();
+            SimpleLogger.d(getClass(), "Created ambient buffer with " + length + " floats");
         }
 
         /**
@@ -101,23 +139,20 @@ public class Map extends BaseReference {
         }
 
         private void fillVEC3(float[] fillColor) {
+            color.position(0);
             int index = 0;
-            int size = color.length;
-            while (index < size) {
-                color[index++] = fillColor[0];
-                color[index++] = fillColor[1];
-                color[index++] = fillColor[2];
+            while (index < length) {
+                color.put(fillColor);
+                index += 3;
             }
         }
 
         private void fillVEC4(float[] fillColor) {
+            color.position(0);
             int index = 0;
-            int size = color.length;
-            while (index < size) {
-                color[index++] = fillColor[0];
-                color[index++] = fillColor[1];
-                color[index++] = fillColor[2];
-                color[index++] = fillColor[3];
+            while (index < length) {
+                color.put(fillColor);
+                index += 4;
             }
         }
 
@@ -136,7 +171,6 @@ public class Map extends BaseReference {
             default:
                 throw new IllegalArgumentException("Invalid mode:" + mode);
             }
-
         }
 
         /**
@@ -156,8 +190,32 @@ public class Map extends BaseReference {
          * 
          * @return
          */
-        public float[] getColor() {
+        public FloatBuffer getColor() {
             return color;
+        }
+
+        private void writeObject(ObjectOutputStream out) throws IOException {
+            SimpleLogger.d(getClass(), "writeObject()");
+            out.writeByte(VERSION_1);
+            out.writeInt(length);
+            out.writeByte(mode != null ? mode.value : -1);
+            out.writeByte(format != null ? format.getType() : -1);
+            float[] data = new float[length];
+            color.position(0);
+            color.get(data);
+            out.writeObject(data);
+        }
+
+        private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+            SimpleLogger.d(getClass(), "readObject()");
+            byte version = in.readByte();
+            length = in.readInt();
+            mode = Mode.valueOf(in.readByte());
+            format = DataType.valueOf(in.readByte());
+            createBuffer();
+            float[] data = (float[]) in.readObject();
+            color.position(0);
+            color.put(data);
         }
 
     }
@@ -174,18 +232,14 @@ public class Map extends BaseReference {
     /**
      * The size of the map, usually 2 values.
      */
-    @SerializedName(MAPSIZE)
     private int[] mapSize;
     /**
      * The map data
      */
-    @SerializedName(MAPDATA)
-    private int[] mapData;
+    private IntBuffer mapBuffer;
 
-    @SerializedName(FLAGS)
-    private int[] flags;
+    private ByteBuffer flags;
 
-    @SerializedName(AMBIENT)
     private MapColor ambient;
 
     /**
@@ -199,14 +253,26 @@ public class Map extends BaseReference {
      * @throws IllegalArgumentException If ambient is null or ambientFormat is not VEC3 or VEC4
      */
     Map(int width, int height, Mode ambientMode, DataType ambientFormat) {
-        createArrays(width, height, ambientMode, ambientFormat);
+        mapSize = new int[] { width, height };
+        createBuffers(width, height, ambientMode, ambientFormat);
     }
 
-    private void createArrays(int width, int height, Mode ambientMode, DataType ambientFormat) {
-        mapSize = new int[] { width, height };
-        mapData = new int[width * height];
-        flags = new int[width * height];
+    private void createBuffers(int width, int height, Mode ambientMode, DataType ambientFormat) {
+        createBuffers(width, height);
         ambient = new MapColor(width, height, ambientMode, ambientFormat);
+    }
+
+    /**
+     * Creates map and flag buffers
+     * 
+     * @param width
+     * @param height
+     */
+    private void createBuffers(int width, int height) {
+        mapBuffer = ByteBuffer.allocateDirect(width * height * 4)
+                .order(ByteOrder.nativeOrder()).asIntBuffer();
+        flags = ByteBuffer.allocateDirect(width * height)
+                .order(ByteOrder.nativeOrder());
     }
 
     /**
@@ -254,8 +320,8 @@ public class Map extends BaseReference {
      * 
      * @return Array with map data, or null if not set
      */
-    public int[] getMap() {
-        return mapData;
+    public IntBuffer getMap() {
+        return mapBuffer;
     }
 
     /**
@@ -263,18 +329,20 @@ public class Map extends BaseReference {
      * 
      * @return
      */
-    public int[] getFlags() {
+    public ByteBuffer getFlags() {
         return flags;
     }
 
     /**
-     * Fills all of the map with the specified value
+     * Fills all of the map with the specified value.
+     * NOTE - This is a very slow operation
      * 
      * @param value
      */
     public void fill(int value) {
-        for (int i = 0; i < mapData.length; i++) {
-            mapData[i] = value;
+        int length = mapSize[0] * mapSize[1];
+        for (int i = 0; i < length; i++) {
+            mapBuffer.put(i, value);
         }
     }
 
@@ -285,7 +353,8 @@ public class Map extends BaseReference {
      * @param flip
      */
     public void setFlipX(int index, boolean flip) {
-        flags[index] = flags[index] | ((flip) ? FLIP_X : 0);
+        byte flag = (byte) (flags.get(index) | ((flip) ? FLIP_X : 0));
+        flags.put(index, flag);
     }
 
     /**
@@ -295,7 +364,8 @@ public class Map extends BaseReference {
      * @param flip
      */
     public void setFlipY(int index, boolean flip) {
-        flags[index] = flags[index] | ((flip) ? FLIP_Y : 0);
+        byte flag = (byte) (flags.get(index) | ((flip) ? FLIP_Y : 0));
+        flags.put(index, flag);
     }
 
     /**
@@ -305,7 +375,7 @@ public class Map extends BaseReference {
      * @return
      */
     public boolean getFlipX(int index) {
-        return ((flags[index] & FLIP_X) == FLIP_X) ? true : false;
+        return ((flags.get(index) & FLIP_X) == FLIP_X) ? true : false;
     }
 
     /**
@@ -315,7 +385,7 @@ public class Map extends BaseReference {
      * @return
      */
     public boolean getFlipY(int index) {
-        return ((flags[index] & FLIP_Y) == FLIP_Y) ? true : false;
+        return ((flags.get(index) & FLIP_Y) == FLIP_Y) ? true : false;
     }
 
     /**
@@ -326,8 +396,47 @@ public class Map extends BaseReference {
      * @return
      */
     public boolean isFlag(int index, int flag) {
-        return ((flags[index] & flag) == flag) ? true : false;
+        return ((flags.get(index) & flag) == flag) ? true : false;
     }
+
+    /**
+     * Returns the length of the map, width * height
+     * 
+     * @return
+     */
+    public int getLength() {
+        return mapSize != null ? mapSize[0] * mapSize[1] : 0;
+    }
+
+    /**
+     * Returns the height of the map
+     * 
+     * @return
+     */
+    public int getHeight() {
+        return mapSize != null ? mapSize[1] : 0;
+    }
+
+    /**
+     * Returns the width of the map
+     * 
+     * @return
+     */
+    public int getWidth() {
+        return mapSize != null ? mapSize[0] : 0;
+    }
+
+    /**
+     * Copies data from the source to the mapbuffer, this will copy map char data from the source into this map.
+     * 
+     * @param src
+     * @param offset
+     * @param length
+     */
+    public void setMap(int[] src, int offset, int length) {
+        mapBuffer.put(src, offset, length);
+    }
+    
 
     /**
      * Prints debug message for the map position
@@ -337,22 +446,55 @@ public class Map extends BaseReference {
      */
     public void logMapPosition(int x, int y) {
         int index = y * mapSize[0] + x;
-        if (index >= mapData.length) {
+        if (index >= getLength()) {
             SimpleLogger.d(getClass(), "Outside map for pos: " + x + ", " + y);
         }
         String ambientStr = "none";
         if (ambient != null) {
             switch (ambient.getMode()) {
             case CHAR:
-                ambientStr = Float.toString(ambient.getColor()[index]);
+                ambientStr = Float.toString(ambient.getColor().get(index));
                 break;
             case VERTEX:
                 ambientStr = "per vertex";
             }
         }
         SimpleLogger.d(getClass(),
-                "Position: " + x + ", " + y + " char:" + mapData[index] + ", flags:" + flags[index] + ", ambient:" +
+                "Position: " + x + ", " + y + " char:" + mapBuffer.get(index) + ", flags:" + flags.get(index)
+                        + ", ambient:"
+                        +
                 ambientStr);
+    }
+
+
+    private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+        SimpleLogger.d(getClass(), "writeObject()");
+        out.writeByte(VERSION_1);
+        out.writeInt(mapSize[0]);
+        out.writeInt(mapSize[1]);
+        int[] mapData = new int[mapSize[0] * mapSize[1]];
+        mapBuffer.position(0);
+        mapBuffer.get(mapData);
+        out.writeObject(mapData);
+        byte[] flagData = new byte[mapSize[0] * mapSize[1]];
+        flags.position(0);
+        flags.get(flagData);
+        out.writeObject(flagData);
+        out.writeObject(ambient);
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+        SimpleLogger.d(getClass(), "readObject()");
+        byte version = in.readByte();
+        mapSize = new int[] { in.readInt(), in.readInt() };
+        createBuffers(mapSize[0], mapSize[1]);
+        int[] mapData = (int[]) in.readObject();
+        mapBuffer.position(0);
+        mapBuffer.put(mapData);
+        byte[] flagData = (byte[]) in.readObject();
+        flags.position(0);
+        flags.put(flagData);
+        ambient = (MapColor) in.readObject();
     }
 
 }

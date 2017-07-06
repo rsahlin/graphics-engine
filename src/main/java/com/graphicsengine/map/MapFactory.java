@@ -1,12 +1,11 @@
 package com.graphicsengine.map;
 
-import java.io.FileNotFoundException;
-import java.io.InputStreamReader;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import com.graphicsengine.map.Map.Mode;
 import com.nucleus.io.ExternalReference;
+import com.nucleus.profiling.FrameSampler;
 import com.nucleus.types.DataType;
 
 /**
@@ -38,14 +37,17 @@ public class MapFactory {
      * @param externalRef
      * @return
      */
-    public static Map createMap(ExternalReference externalRef) throws FileNotFoundException {
-        Gson gson = new Gson();
+    public static Map createMap(ExternalReference externalRef) throws IOException, ClassNotFoundException {
+        ObjectInputStream in = new ObjectInputStream(externalRef.getAsStream());
         try {
-            Map map = gson.fromJson(new InputStreamReader(externalRef.getAsStream()),
-                    Map.class);
+            long start = System.currentTimeMillis();
+            Map map = (Map) in.readObject();
+            FrameSampler.getInstance().logTag(FrameSampler.LOAD_MAP, start, System.currentTimeMillis());
             return map;
-        } catch (JsonSyntaxException e) {
-            throw new RuntimeException("Error parsing file:" + externalRef.getSource(), e);
+        } finally {
+            if (in != null) {
+                in.close();
+            }
         }
     }
 }

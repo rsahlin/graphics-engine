@@ -1,5 +1,9 @@
 package com.graphicsengine.map;
 
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+
 import com.graphicsengine.map.Map.MapColor;
 import com.graphicsengine.spritemesh.SpriteMesh;
 import com.nucleus.geometry.Material;
@@ -143,13 +147,14 @@ public class PlayfieldMesh extends SpriteMesh {
      * @param count Number of chars to copy
      * @throws ArrayIndexOutOfBoundsException If source or destination does not contain enough data.
      */
-    public void copyCharmap(PropertyMapper mapper, int[] map, int[] flags, MapColor ambient, int sourceOffset,
+    public void copyCharmap(PropertyMapper mapper, IntBuffer map, ByteBuffer flags, MapColor ambient, int sourceOffset,
             int destOffset, int count) {
         int ambientStride = ambient.getVertexStride();
         int sizePerChar = ambient.getSizePerChar();
-        float[] color = ambient.getColor();
+        FloatBuffer color = ambient.getColor();
+        color.position(0);
         for (int i = 0; i < count; i++) {
-            setChar(mapper, destOffset, map[sourceOffset], flags[sourceOffset]);
+            setChar(mapper, destOffset, map.get(sourceOffset), flags.get(sourceOffset));
             setAmbient(mapper, destOffset, color, destOffset * sizePerChar, ambientStride);
             destOffset++;
             sourceOffset++;
@@ -169,10 +174,10 @@ public class PlayfieldMesh extends SpriteMesh {
      * @param count Number of chars to copy
      * @throws ArrayIndexOutOfBoundsException If source or destination does not contain enough data.
      */
-    public void copyCharmap(PropertyMapper mapper, int[] map, int[] flags, int sourceOffset,
+    public void copyCharmap(PropertyMapper mapper, IntBuffer map, ByteBuffer flags, int sourceOffset,
             int destOffset, int count) {
         for (int i = 0; i < count; i++) {
-            setChar(mapper, destOffset++, map[sourceOffset], flags[sourceOffset]);
+            setChar(mapper, destOffset++, map.get(sourceOffset), flags.getInt(sourceOffset));
             sourceOffset++;
         }
     }
@@ -251,7 +256,7 @@ public class PlayfieldMesh extends SpriteMesh {
      * @param flags Flags for the char
      */
     private void setChar(PropertyMapper mapper, int pos, int chr, int flags) {
-        map.getMap()[pos] = chr;
+        map.getMap().put(pos, chr);
         int destIndex = pos * mapper.attributesPerVertex * ShaderProgram.VERTICES_PER_SPRITE
                 + mapper.frameOffset;
         attributeData[destIndex] = chr;
@@ -279,14 +284,11 @@ public class PlayfieldMesh extends SpriteMesh {
      * @param index Index into ambient array where material should be read
      * @param stride Ambient stride to get to values for next ambient, either 0 or size of ambient data.
      */
-    private void setAmbient(PropertyMapper mapper, int pos, float[] ambient, int index, int stride) {
+    private void setAmbient(PropertyMapper mapper, int pos, FloatBuffer ambient, int index, int stride) {
         int destIndex = pos * mapper.attributesPerVertex * ShaderProgram.VERTICES_PER_SPRITE
                 + mapper.colorAmbientOffset;
         for (int i = 0; i < VertexBuffer.INDEXED_QUAD_VERTICES; i++) {
-            attributeData[destIndex] = ambient[index + 0];
-            attributeData[destIndex + 1] = ambient[index + 1];
-            attributeData[destIndex + 2] = ambient[index + 2];
-            attributeData[destIndex + 3] = ambient[index + 3];
+            ambient.get(attributeData, destIndex, 4);
             destIndex += mapper.attributesPerVertex;
             index += stride;
         }

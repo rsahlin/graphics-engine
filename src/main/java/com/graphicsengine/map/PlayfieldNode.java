@@ -1,6 +1,6 @@
 package com.graphicsengine.map;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.io.GraphicsEngineResourcesData;
@@ -107,7 +107,7 @@ public class PlayfieldNode extends Node implements ClickListener {
             if (map.getMap() != null && map.getMapSize() != null) {
                 playfield.copyCharmap(mapper, map);
             }
-        } catch (FileNotFoundException e) {
+        } catch (IOException | ClassNotFoundException e) {
             throw new NodeException(e);
         }
 
