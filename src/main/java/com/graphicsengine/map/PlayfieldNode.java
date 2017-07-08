@@ -3,7 +3,6 @@ package com.graphicsengine.map;
 import java.io.IOException;
 
 import com.google.gson.annotations.SerializedName;
-import com.graphicsengine.io.GraphicsEngineResourcesData;
 import com.nucleus.SimpleLogger;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.io.ExternalReference;
@@ -99,10 +98,9 @@ public class PlayfieldNode extends Node implements ClickListener, MMIEventListen
      * Sets the map in this node, creating the map storage if needed, and updates the mesh to contain
      * the charset.
      * 
-     * @param resources The scene resources
      * @throws NodeException If referenced map can not be loaded.
      */
-    public void createMap(GraphicsEngineResourcesData resources) throws NodeException {
+    public void createMap() throws NodeException {
         try {
             map = MapFactory.createMap(mapRef);
             PlayfieldMesh playfield = (PlayfieldMesh) getMesh(MeshType.MAIN);

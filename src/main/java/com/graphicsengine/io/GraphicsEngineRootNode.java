@@ -1,7 +1,5 @@
 package com.graphicsengine.io;
 
-import com.google.gson.annotations.SerializedName;
-import com.graphicsengine.map.Map;
 import com.nucleus.scene.RootNode;
 
 /**
@@ -12,23 +10,6 @@ import com.nucleus.scene.RootNode;
  *
  */
 public class GraphicsEngineRootNode extends RootNode {
-
-    @SerializedName("resources")
-    private GraphicsEngineResourcesData resources = new GraphicsEngineResourcesData();
-
-    @Override
-    public GraphicsEngineResourcesData getResources() {
-        return resources;
-    }
-
-    /**
-     * Adds map to the resources.
-     * 
-     * @param map
-     */
-    public void addResource(Map map) {
-        getResources().addMap(map);
-    }
 
     @Override
     public RootNode createInstance() {

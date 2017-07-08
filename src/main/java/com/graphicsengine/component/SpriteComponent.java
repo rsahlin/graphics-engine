@@ -12,7 +12,6 @@ import com.nucleus.geometry.AttributeUpdater;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.geometry.VertexBuffer;
-import com.nucleus.io.ResourcesData;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node.MeshType;
 import com.nucleus.shader.ShaderProgram;
@@ -146,7 +145,7 @@ public class SpriteComponent extends Component implements Consumer {
     }
 
     @Override
-    public void create(NucleusRenderer renderer, ResourcesData resources, ComponentNode parent)
+    public void create(NucleusRenderer renderer, ComponentNode parent)
             throws ComponentException {
         try {
             spriteMesh = SpriteMeshFactory.createSpriteMesh(renderer, parent.getTextureRef(), parent.getMaterial(),

@@ -2,14 +2,12 @@ package com.graphicsengine.scene;
 
 import java.io.IOException;
 
-import com.graphicsengine.io.GraphicsEngineResourcesData;
 import com.graphicsengine.map.PlayfieldNode;
 import com.nucleus.camera.ViewFrustum;
 import com.nucleus.component.ComponentException;
 import com.nucleus.component.ComponentNode;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshFactory;
-import com.nucleus.io.ResourcesData;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.DefaultNodeFactory;
 import com.nucleus.scene.Node;
@@ -30,39 +28,38 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
     private static final String NOT_IMPLEMENTED = "Not implemented: ";
 
     @Override
-    public Node create(NucleusRenderer renderer, MeshFactory meshFactory, ResourcesData resources, Node source,
+    public Node create(NucleusRenderer renderer, MeshFactory meshFactory, Node source,
             RootNode root)
             throws NodeException {
         GraphicsEngineNodeType type = null;
         try {
             type = GraphicsEngineNodeType.valueOf(source.getType());
         } catch (IllegalArgumentException e) {
-            return super.create(renderer, meshFactory, resources, source, root);
+            return super.create(renderer, meshFactory, source, root);
         }
-        GraphicsEngineResourcesData gResources = (GraphicsEngineResourcesData) resources;
         Node created = null;
 
         switch (type) {
         case playfieldNode:
             created = source.copy(root);
-            internalCreateNode(renderer, source, created, meshFactory, gResources);
-            ((PlayfieldNode) created).createMap(gResources);
+            internalCreateNode(renderer, source, created, meshFactory);
+            ((PlayfieldNode) created).createMap();
             break;
         case spriteComponentNode:
             created = source.copy(root);
-            internalCreateNode(renderer, source, created, meshFactory, gResources);
+            internalCreateNode(renderer, source, created, meshFactory);
             break;
         case sharedMeshNode:
             created = source.copy(root);
-            internalCreateNode(renderer, source, created, meshFactory, gResources);
+            internalCreateNode(renderer, source, created, meshFactory);
             break;
         case quadNode:
             created = source.copy(root);
-            internalCreateNode(renderer, source, created, meshFactory, gResources);
+            internalCreateNode(renderer, source, created, meshFactory);
             break;
         case element:
             created = source.copy(root);
-            internalCreateNode(renderer, source, created, meshFactory, gResources);
+            internalCreateNode(renderer, source, created, meshFactory);
             break;
         default:
             throw new IllegalArgumentException(NOT_IMPLEMENTED + type);
@@ -77,11 +74,10 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
      * @param source
      * @param node
      * @param meshFactory
-     * @param resources The resources in the scene
      * @throws NodeException If there is an error creating the node
      */
-    protected void internalCreateNode(NucleusRenderer renderer, Node source, Node node, MeshFactory meshFactory,
-            GraphicsEngineResourcesData resources) throws NodeException {
+    protected void internalCreateNode(NucleusRenderer renderer, Node source, Node node, MeshFactory meshFactory)
+            throws NodeException {
         try {
             node.create();
             // Copy properties from source node into the created node.
@@ -92,7 +88,7 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
                 node.addMesh(mesh, MeshType.MAIN);
             }
             if (node instanceof ComponentNode) {
-                internalCreateComponents(renderer, (ComponentNode) node, meshFactory, resources);
+                internalCreateComponents(renderer, (ComponentNode) node, meshFactory);
             }
         } catch (IOException | ComponentException e) {
             throw new NodeException(e);
@@ -106,12 +102,11 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
      * @param renderer
      * @param node
      * @param meshFactory
-     * @param resources
      * @throws ComponentException
      */
-    protected void internalCreateComponents(NucleusRenderer renderer, ComponentNode node, MeshFactory meshFactory,
-            GraphicsEngineResourcesData resources) throws ComponentException {
-        node.createComponents(renderer, resources);
+    protected void internalCreateComponents(NucleusRenderer renderer, ComponentNode node, MeshFactory meshFactory)
+            throws ComponentException {
+        node.createComponents(renderer);
     }
 
     /**
