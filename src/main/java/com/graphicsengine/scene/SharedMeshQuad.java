@@ -34,6 +34,13 @@ public class SharedMeshQuad extends Node {
     public SharedMeshQuad() {
     }
 
+    /**
+     * Called when the parent node is created - remember that shared mesh quad does not
+     * use it's own mesh
+     * 
+     * @param mesh The source mesh
+     * @param index
+     */
     public void onCreated(SpriteMesh mesh, int index) {
         this.childIndex = index;
         Rectangle quadRect = rectangle != null ? rectangle

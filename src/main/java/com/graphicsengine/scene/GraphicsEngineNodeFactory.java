@@ -13,6 +13,7 @@ import com.nucleus.io.ResourcesData;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.DefaultNodeFactory;
 import com.nucleus.scene.Node;
+import com.nucleus.scene.Node.MeshType;
 import com.nucleus.scene.NodeException;
 import com.nucleus.scene.NodeFactory;
 import com.nucleus.scene.RootNode;
@@ -85,10 +86,10 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
             node.create();
             // Copy properties from source node into the created node.
             node.setProperties(source);
-            Mesh mesh = meshFactory.createMesh(renderer, node, resources);
+            Mesh mesh = meshFactory.createMesh(renderer, node);
             node.copyTransform(source);
             if (mesh != null) {
-                node.addMesh(mesh);
+                node.addMesh(mesh, MeshType.MAIN);
             }
             if (node instanceof ComponentNode) {
                 internalCreateComponents(renderer, (ComponentNode) node, meshFactory, resources);

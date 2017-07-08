@@ -14,6 +14,7 @@ import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.geometry.VertexBuffer;
 import com.nucleus.io.ResourcesData;
 import com.nucleus.renderer.NucleusRenderer;
+import com.nucleus.scene.Node.MeshType;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.shader.VariableMapping;
 import com.nucleus.texturing.Texture2D;
@@ -165,7 +166,7 @@ public class SpriteComponent extends Component implements Consumer {
         }
         mapper = spriteMesh.getMapper();
         attributeData = spriteMesh.getAttributeData();
-        parent.addMesh(spriteMesh);
+        parent.addMesh(spriteMesh, MeshType.MAIN);
         createBuffers();
     }
 

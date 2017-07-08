@@ -2,7 +2,6 @@ package com.graphicsengine.geometry;
 
 import java.io.IOException;
 
-import com.graphicsengine.io.GraphicsEngineResourcesData;
 import com.graphicsengine.map.PlayfieldMeshFactory;
 import com.graphicsengine.map.PlayfieldNode;
 import com.graphicsengine.scene.QuadParentNode;
@@ -10,22 +9,20 @@ import com.graphicsengine.spritemesh.SpriteMeshFactory;
 import com.nucleus.component.ComponentNode;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshFactory;
-import com.nucleus.io.ResourcesData;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node;
 
 public class GraphicsEngineMeshFactory implements MeshFactory {
 
     @Override
-    public Mesh createMesh(NucleusRenderer renderer, Node parent, ResourcesData resources)
+    public Mesh createMesh(NucleusRenderer renderer, Node parent)
             throws IOException {
 
         if (parent instanceof PlayfieldNode) {
-            return PlayfieldMeshFactory.create(renderer, (PlayfieldNode) parent,
-                    (GraphicsEngineResourcesData) resources);
+            return PlayfieldMeshFactory.create(renderer, (PlayfieldNode) parent);
         }
         if (parent instanceof QuadParentNode) {
-            return SpriteMeshFactory.create(renderer, (QuadParentNode) parent, (GraphicsEngineResourcesData) resources);
+            return SpriteMeshFactory.create(renderer, (QuadParentNode) parent);
         }
         if (parent instanceof ComponentNode) {
             /**

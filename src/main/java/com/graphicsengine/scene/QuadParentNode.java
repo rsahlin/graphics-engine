@@ -78,7 +78,7 @@ public class QuadParentNode extends Node {
     public void onCreated() {
         super.onCreated();
         // Setup all children in this node
-        SpriteMesh mesh = (SpriteMesh) getMeshes().get(0);
+        SpriteMesh mesh = (SpriteMesh) getMesh(MeshType.MAIN);
         for (Node n : getChildren()) {
             if (n instanceof SharedMeshQuad) {
                 // This is a special case since the mesh belongs to this node.

@@ -8,6 +8,8 @@ import com.nucleus.SimpleLogger;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.io.ExternalReference;
 import com.nucleus.mmi.ClickListener;
+import com.nucleus.mmi.MMIEventListener;
+import com.nucleus.mmi.MMIPointerEvent;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.NodeException;
 import com.nucleus.scene.RootNode;
@@ -23,7 +25,8 @@ import com.nucleus.vecmath.Rectangle;
  * @author Richard Sahlin
  *
  */
-public class PlayfieldNode extends Node implements ClickListener {
+public class PlayfieldNode extends Node implements ClickListener, MMIEventListener {
+
     public static final String MAPREF = "mapRef";
     public static final String ANCHOR = "anchor";
 
@@ -100,10 +103,10 @@ public class PlayfieldNode extends Node implements ClickListener {
      * @throws NodeException If referenced map can not be loaded.
      */
     public void createMap(GraphicsEngineResourcesData resources) throws NodeException {
-        PropertyMapper mapper = new PropertyMapper(getMeshes().get(0).getMaterial().getProgram());
         try {
             map = MapFactory.createMap(mapRef);
-            PlayfieldMesh playfield = (PlayfieldMesh) getMeshes().get(0);
+            PlayfieldMesh playfield = (PlayfieldMesh) getMesh(MeshType.MAIN);
+            PropertyMapper mapper = playfield.getMapper();
             if (map.getMap() != null && map.getMapSize() != null) {
                 playfield.copyCharmap(mapper, map);
             }
@@ -254,31 +257,16 @@ public class PlayfieldNode extends Node implements ClickListener {
         return null;
     }
 
-    /*
-     * @Override
-     * protected boolean onPointerEvent(MMIPointerEvent event) {
-     * if (isClicked(event.getPointerData().getCurrentPosition())) {
-     * switch (event.getAction()) {
-     * case ACTIVE:
-     * float[] inverse = new float[16];
-     * if (Matrix.invertM(inverse, 0, getModelMatrix(), 0)) {
-     * SimpleLogger.d(getClass(), "Pointer input, got inverse matrix");
-     * float[] vec2 = new float[2];
-     * Matrix.transformVec2(inverse, 0, event.getPointerData().getCurrentPosition(), vec2, 1);
-     * SimpleLogger.d(getClass(), "Vec2 " + vec2[0] + ", " + vec2[1]);
-     * } else {
-     * SimpleLogger.d(getClass(), "Could not invert matrix!!!!!!!!!!!!!!!!");
-     * }
-     * break;
-     * case INACTIVE:
-     * break;
-     * case MOVE:
-     * break;
-     * case ZOOM:
-     * break;
-     * }
-     * }
-     * return checkChildren(event);
-     * }
-     */
+    @Override
+    public void onInputEvent(MMIPointerEvent event) {
+        switch (event.getAction()) {
+        case MOVE:
+
+        case ZOOM:
+        case ACTIVE:
+        case INACTIVE:
+
+        }
+    }
+
 }

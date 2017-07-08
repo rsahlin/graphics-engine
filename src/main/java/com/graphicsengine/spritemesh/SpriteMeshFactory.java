@@ -2,7 +2,6 @@ package com.graphicsengine.spritemesh;
 
 import java.io.IOException;
 
-import com.graphicsengine.io.GraphicsEngineResourcesData;
 import com.graphicsengine.scene.QuadParentNode;
 import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.Material;
@@ -56,7 +55,7 @@ public class SpriteMeshFactory {
 
     }
 
-    public static Mesh create(NucleusRenderer renderer, QuadParentNode node, GraphicsEngineResourcesData resources)
+    public static Mesh create(NucleusRenderer renderer, QuadParentNode node)
             throws IOException {
 
         Texture2D texture = AssetManager.getInstance().getTexture(renderer, node.getTextureRef());
