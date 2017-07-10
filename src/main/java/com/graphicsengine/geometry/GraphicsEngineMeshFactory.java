@@ -15,7 +15,7 @@ import com.nucleus.scene.Node;
 public class GraphicsEngineMeshFactory implements MeshFactory {
 
     @Override
-    public Mesh createMesh(NucleusRenderer renderer, Node parent)
+    public Mesh createMesh(NucleusRenderer renderer, Node parent, Node.MeshType type)
             throws IOException {
 
         if (parent instanceof PlayfieldNode) {

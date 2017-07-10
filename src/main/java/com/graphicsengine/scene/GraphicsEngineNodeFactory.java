@@ -82,7 +82,7 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
             node.create();
             // Copy properties from source node into the created node.
             node.setProperties(source);
-            Mesh mesh = meshFactory.createMesh(renderer, node);
+            Mesh mesh = meshFactory.createMesh(renderer, node, Node.MeshType.MAIN);
             node.copyTransform(source);
             if (mesh != null) {
                 node.addMesh(mesh, MeshType.MAIN);

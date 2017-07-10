@@ -21,7 +21,7 @@ public class UntexturedSpriteProgram extends TiledSpriteProgram {
     public UntexturedSpriteProgram(Untextured.Shading shading) {
         super();
         vertexShaderName = PROGRAM_DIRECTORY + shading.name() + SPRITE + VERTEX + SHADER_SOURCE_SUFFIX;
-        fragmentShaderName = PROGRAM_DIRECTORY + shading.name() + SPRITE + FRAGMENT + SHADER_SOURCE_SUFFIX;
+        fragmentShaderName = PROGRAM_DIRECTORY + shading.name() + FRAGMENT + SHADER_SOURCE_SUFFIX;
     }
 
     @Override

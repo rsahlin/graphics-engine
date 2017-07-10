@@ -5,6 +5,7 @@ import com.graphicsengine.spritemesh.SpriteMesh;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
 import com.nucleus.texturing.Texture2D;
+import com.nucleus.texturing.TextureType;
 import com.nucleus.vecmath.Rectangle;
 
 /**
@@ -37,12 +38,17 @@ public class SharedMeshQuad extends Node {
     /**
      * Called when the parent node is created - remember that shared mesh quad does not
      * use it's own mesh
+     * TODO Need to provide size and color from scene definition.
      * 
      * @param mesh The source mesh
      * @param index
      */
     public void onCreated(SpriteMesh mesh, int index) {
         this.childIndex = index;
+        if (rectangle == null && mesh.getTexture(Texture2D.TEXTURE_0).getTextureType() == TextureType.Untextured) {
+            // Must have size
+            throw new IllegalArgumentException("Node does not define RECT and texture is untextured");
+        }
         Rectangle quadRect = rectangle != null ? rectangle
                 : mesh.getTexture(Texture2D.TEXTURE_0).calculateWindowRectangle();
         mesh.buildQuad(index, mesh.getMaterial().getProgram(), quadRect);
@@ -53,6 +59,9 @@ public class SharedMeshQuad extends Node {
             mesh.setTransform(index, transform);
         }
         mesh.setFrame(index, frame);
+        if (mesh.getTexture(Texture2D.TEXTURE_0).textureType == TextureType.Untextured) {
+            mesh.setColor(index, mesh.getMaterial().getAmbient());
+        }
     }
 
     /**

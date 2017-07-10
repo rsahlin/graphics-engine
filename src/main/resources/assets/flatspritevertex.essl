@@ -32,6 +32,9 @@ varying vec4 color;
 
 mat2 calculateTransformMatrix();
 
+/**
+ * Used for objects that are transformed, scaled and rotated - with the translate, rotation and scale being defined from attribute data
+ */
 void main() {
     vec4 pos = uMVMatrix * (vec4(aTranslate.x, aTranslate.y, aTranslate.z, 1.0) + vec4(calculateTransformMatrix() * vec2(aPosition), aPosition.z, 0.0));
     gl_Position = uProjectionMatrix * pos;
