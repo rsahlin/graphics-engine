@@ -8,6 +8,7 @@ import com.graphicsengine.scene.QuadParentNode;
 import com.graphicsengine.spritemesh.SpriteMeshFactory;
 import com.nucleus.assets.AssetManager;
 import com.nucleus.component.ComponentNode;
+import com.nucleus.geometry.Material;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshFactory;
 import com.nucleus.io.ExternalReference;
@@ -46,10 +47,14 @@ public class GraphicsEngineMeshFactory implements MeshFactory {
     }
 
     @Override
-    public Mesh createMesh(NucleusRenderer renderer, ShaderProgram program, Mesh mesh, ExternalReference textureRef)
+    public Mesh createMesh(NucleusRenderer renderer, ShaderProgram program, Material material,
+            ExternalReference textureRef,
+            int vertexCount, int indiceCount)
             throws IOException {
 
         Texture2D texture = AssetManager.getInstance().getTexture(renderer, textureRef);
+        Mesh mesh = new Mesh();
+        mesh.createMesh(program, texture, material, vertexCount, indiceCount);
         if (Configuration.getInstance().isUseVBO()) {
             BufferObjectsFactory.getInstance().createVBOs(renderer, mesh);
         }

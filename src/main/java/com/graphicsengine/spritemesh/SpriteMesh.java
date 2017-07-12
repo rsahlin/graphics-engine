@@ -3,9 +3,6 @@ package com.graphicsengine.spritemesh;
 import static com.nucleus.geometry.VertexBuffer.QUAD_INDICES;
 
 import com.nucleus.geometry.AttributeUpdater.Consumer;
-import com.nucleus.geometry.ElementBuffer;
-import com.nucleus.geometry.ElementBuffer.Mode;
-import com.nucleus.geometry.ElementBuffer.Type;
 import com.nucleus.geometry.ElementBuilder;
 import com.nucleus.geometry.Material;
 import com.nucleus.geometry.Mesh;
@@ -78,8 +75,8 @@ public class SpriteMesh extends Mesh implements Consumer {
      */
     public void createMesh(ShaderProgram program, Texture2D texture, Material material, int count,
             Rectangle rectangle) {
-        super.createMesh(program, texture, material);
-        createBuffers(program, count);
+        super.createMesh(program, texture, material, count * VertexBuffer.INDEXED_QUAD_VERTICES, count * QUAD_INDICES);
+        setMode(Mode.TRIANGLES);
         buildMesh(program, count, rectangle, 0);
         setAttributeUpdater(this);
     }
@@ -96,23 +93,10 @@ public class SpriteMesh extends Mesh implements Consumer {
      * @param count
      */
     public void createMesh(ShaderProgram program, Texture2D texture, Material material, int count) {
-        super.createMesh(program, texture, material);
-        createBuffers(program, count);
+        super.createMesh(program, texture, material, count * VertexBuffer.INDEXED_QUAD_VERTICES, count * QUAD_INDICES);
+        setMode(Mode.TRIANGLES);
         ElementBuilder.buildQuadBuffer(indices, indices.getCount() / QUAD_INDICES, 0);
         setAttributeUpdater(this);
-    }
-
-    /**
-     * Creates the buffers, vertex and indexbuffers as needed. Attribute and uniform storage.
-     * If texture is {@link TiledTexture2D} then vertice and index storage will be createde for 1 sprite.
-     * 
-     * @param program
-     * @param spriteCount
-     */
-    private void createBuffers(ShaderProgram program, int spriteCount) {
-        attributes = program.createAttributeBuffers(this, spriteCount * VertexBuffer.INDEXED_QUAD_VERTICES);
-        indices = new ElementBuffer(Mode.TRIANGLES, spriteCount * QUAD_INDICES, Type.SHORT);
-        program.setupUniforms(this);
     }
 
     /**
