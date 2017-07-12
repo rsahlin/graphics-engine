@@ -76,14 +76,14 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
      * @param meshFactory
      * @throws NodeException If there is an error creating the node
      */
-    protected void internalCreateNode(NucleusRenderer renderer, Node source, Node node, MeshFactory meshFactory)
+    private void internalCreateNode(NucleusRenderer renderer, Node source, Node node, MeshFactory meshFactory)
             throws NodeException {
         try {
             node.create();
             // Copy properties from source node into the created node.
             node.setProperties(source);
-            Mesh mesh = meshFactory.createMesh(renderer, node, Node.MeshType.MAIN);
             node.copyTransform(source);
+            Mesh mesh = meshFactory.createMesh(renderer, node);
             if (mesh != null) {
                 node.addMesh(mesh, MeshType.MAIN);
             }
