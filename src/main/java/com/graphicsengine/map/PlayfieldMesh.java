@@ -1,14 +1,19 @@
 package com.graphicsengine.map;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import com.graphicsengine.map.Map.MapColor;
 import com.graphicsengine.spritemesh.SpriteMesh;
+import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.Material;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.VertexBuffer;
+import com.nucleus.renderer.BufferObjectsFactory;
+import com.nucleus.renderer.Configuration;
+import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TiledTexture2D;
@@ -33,6 +38,59 @@ public class PlayfieldMesh extends SpriteMesh {
     private transient Map map;
 
     private transient int[] playfieldSize = new int[2];
+
+    public static class Builder {
+
+        private NucleusRenderer renderer;
+        private PlayfieldNode parent;
+
+        /**
+         * Creates a new builder
+         * 
+         * @param renderer
+         * @throws IllegalArgumentException If renderer is null
+         */
+        public Builder(NucleusRenderer renderer) {
+            if (renderer == null) {
+                throw new IllegalArgumentException("Renderer may not be null");
+            }
+            this.renderer = renderer;
+        }
+
+        protected void validate() {
+            if (parent == null) {
+                throw new IllegalArgumentException("Parent has not been set");
+            }
+        }
+
+        /**
+         * Factory method for creating the playfield mesh, after this call the playfield can be rendered, it must
+         * be filled with map data.
+         * The arguments for creating the mesh are taken from the parent node.
+         * 
+         * @param The parent node that holds the arguments for creating the mesh.
+         * @return The mesh that can be rendered to produce a playfield
+         */
+        public PlayfieldMesh create(PlayfieldNode parent) throws IOException {
+            if (parent == null) {
+                throw new IllegalArgumentException("Parent may not be null");
+            }
+            PlayfieldProgram program = new PlayfieldProgram();
+            renderer.createProgram(program);
+            Texture2D texture = AssetManager.getInstance().getTexture(renderer, parent.getTextureRef());
+            PlayfieldMesh playfieldMesh = new PlayfieldMesh();
+            playfieldMesh.createMesh(program, texture, parent.getMaterial(), parent.getMapSize(),
+                    parent.getCharRectangle());
+            float[] offset = parent.getAnchorOffset();
+            Rectangle bounds = playfieldMesh.setupCharmap(parent.getMapSize(), parent.getCharRectangle().getSize(),
+                    offset);
+            parent.initBounds(bounds);
+            if (Configuration.getInstance().isUseVBO()) {
+                BufferObjectsFactory.getInstance().createVBOs(renderer, playfieldMesh);
+            }
+            return playfieldMesh;
+        }
+    }
 
     /**
      * Creates a new instance of an empty playfield mesh.

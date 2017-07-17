@@ -2,10 +2,10 @@ package com.graphicsengine.geometry;
 
 import java.io.IOException;
 
-import com.graphicsengine.map.PlayfieldMeshFactory;
+import com.graphicsengine.map.PlayfieldMesh;
 import com.graphicsengine.map.PlayfieldNode;
 import com.graphicsengine.scene.QuadParentNode;
-import com.graphicsengine.spritemesh.SpriteMeshFactory;
+import com.graphicsengine.spritemesh.SpriteMesh;
 import com.nucleus.assets.AssetManager;
 import com.nucleus.component.ComponentNode;
 import com.nucleus.geometry.Material;
@@ -21,15 +21,27 @@ import com.nucleus.texturing.Texture2D;
 
 public class GraphicsEngineMeshFactory implements MeshFactory {
 
+    PlayfieldMesh.Builder playfieldBuilder;
+    SpriteMesh.Builder spriteMeshBuilder;
+
+    public GraphicsEngineMeshFactory(NucleusRenderer renderer) {
+        if (renderer == null) {
+            throw new IllegalArgumentException("Renderer may not be null");
+        }
+        playfieldBuilder = new PlayfieldMesh.Builder(renderer);
+        spriteMeshBuilder = new SpriteMesh.Builder(renderer);
+    }
+
+
     @Override
     public Mesh createMesh(NucleusRenderer renderer, Node parent)
             throws IOException {
 
         if (parent instanceof PlayfieldNode) {
-            return PlayfieldMeshFactory.create(renderer, (PlayfieldNode) parent);
+            return playfieldBuilder.create((PlayfieldNode) parent);
         }
         if (parent instanceof QuadParentNode) {
-            return SpriteMeshFactory.create(renderer, (QuadParentNode) parent);
+            return spriteMeshBuilder.create((QuadParentNode) parent);
         }
         if (parent instanceof ComponentNode) {
             /**

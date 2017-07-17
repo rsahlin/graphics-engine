@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.spritemesh.SpriteMesh;
-import com.graphicsengine.spritemesh.SpriteMeshFactory;
 import com.nucleus.component.Component;
 import com.nucleus.component.ComponentException;
 import com.nucleus.component.ComponentNode;
@@ -148,8 +147,9 @@ public class SpriteComponent extends Component implements Consumer {
     public void create(NucleusRenderer renderer, ComponentNode parent)
             throws ComponentException {
         try {
-            spriteMesh = SpriteMeshFactory.createSpriteMesh(renderer, parent.getTextureRef(), parent.getMaterial(),
-                    count, rectangle);
+            SpriteMesh.Builder spriteBuilder = new SpriteMesh.Builder(renderer);
+            spriteMesh = spriteBuilder.setTextureRef(parent.getTextureRef()).setMaterial(parent.getMaterial())
+                    .setCount(count).setRectangle(rectangle).create();
             this.textureType = spriteMesh.getTexture(Texture2D.TEXTURE_0).getTextureType();
             switch (textureType) {
             case TiledTexture2D:

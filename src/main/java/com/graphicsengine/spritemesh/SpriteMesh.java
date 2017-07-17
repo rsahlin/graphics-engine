@@ -2,12 +2,20 @@ package com.graphicsengine.spritemesh;
 
 import static com.nucleus.geometry.VertexBuffer.QUAD_INDICES;
 
+import java.io.IOException;
+
+import com.graphicsengine.scene.QuadParentNode;
+import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.ElementBuilder;
 import com.nucleus.geometry.Material;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.VertexBuffer;
+import com.nucleus.io.ExternalReference;
+import com.nucleus.renderer.BufferObjectsFactory;
+import com.nucleus.renderer.Configuration;
+import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.shader.ShaderVariable;
 import com.nucleus.shader.VariableMapping;
@@ -16,6 +24,7 @@ import com.nucleus.texturing.TextureType;
 import com.nucleus.texturing.TiledTexture2D;
 import com.nucleus.texturing.UVAtlas;
 import com.nucleus.texturing.UVTexture2D;
+import com.nucleus.texturing.Untextured;
 import com.nucleus.vecmath.AxisAngle;
 import com.nucleus.vecmath.Rectangle;
 import com.nucleus.vecmath.Transform;
@@ -42,6 +51,142 @@ public class SpriteMesh extends Mesh implements Consumer {
      * Storage for 4 UV components
      */
     private transient float[] frames = new float[2 * 4];
+
+    public static class Builder {
+
+        private final static String INVALID_TYPE = "Invalid type: ";
+
+        private NucleusRenderer renderer;
+        private ExternalReference textureRef;
+        private Material material;
+        private int count;
+        private Rectangle spriteRect;
+        /**
+         * Creates a new SpriteMesh builder
+         * 
+         * @param renderer
+         * @throws IllegalArgumentException If renderer is null
+         */
+        public Builder(NucleusRenderer renderer) {
+            if (renderer == null) {
+                throw new IllegalArgumentException("Renderer may not be null");
+            }
+            this.renderer = renderer;
+        }
+
+        private void validate() {
+            if (textureRef == null || material == null || count <= 0 || spriteRect == null) {
+                throw new IllegalArgumentException("Missing arguments to create mesh:" + textureRef + ", " + material
+                        + ", " + count + ", " + spriteRect);
+            }
+        }
+
+        /**
+         * Sets the texture reference
+         * 
+         * @param textureRef
+         * @return
+         */
+        public Builder setTextureRef(ExternalReference textureRef) {
+            this.textureRef = textureRef;
+            return this;
+        }
+
+        /**
+         * Sets the material for the mesh
+         * 
+         * @param material
+         * @return
+         */
+        public Builder setMaterial(Material material) {
+            this.material = material;
+            return this;
+        }
+
+        /**
+         * Sets the number of sprites (quads) that the mesh shall support
+         * 
+         * @param spriteCount Number of sprites (quads) to support
+         * @return
+         */
+        public Builder setCount(int spriteCount) {
+            this.count = spriteCount;
+            return this;
+        }
+
+        /**
+         * Sets the rectangle defining each of the sprites
+         * 
+         * @param rectangle
+         * @return
+         */
+        public Builder setRectangle(Rectangle rectangle) {
+            this.spriteRect = rectangle;
+            return this;
+        }
+
+        /**
+         * This will create an old school sprite mesh, where each sprite has a frame, the sprite can be rotated in x
+         * axis
+         * and positioned in x and y.
+         * 
+         * @return The created mesh using the parameters set in this builder
+         * @throws IllegalArgumentException If the needed arguments has not been set.
+         */
+        public SpriteMesh create() throws IOException {
+            validate();
+            Texture2D texture = AssetManager.getInstance().getTexture(renderer, textureRef);
+            ShaderProgram program = createProgram(texture);
+            SpriteMesh mesh = new SpriteMesh();
+            renderer.createProgram(program);
+            mesh.createMesh(program, texture, material, count, spriteRect);
+            if (Configuration.getInstance().isUseVBO()) {
+                BufferObjectsFactory.getInstance().createVBOs(renderer, mesh);
+            }
+            return mesh;
+        }
+
+        /**
+         * This will create an old school sprite mesh, where each sprite has a frame, the sprite can be rotated in x
+         * axis and positioned in x and y.
+         * Arguments are taken from the parent node.
+         * 
+         * @param parent The parent node where arguments are read from
+         * @return The created sprite mesh
+         */
+        public SpriteMesh create(QuadParentNode parent) throws IOException {
+            Texture2D texture = AssetManager.getInstance().getTexture(renderer, parent.getTextureRef());
+            ShaderProgram program = createProgram(texture);
+            SpriteMesh mesh = new SpriteMesh();
+            renderer.createProgram(program);
+            mesh.createMesh(program, texture, parent.getMaterial(), parent.getMaxQuads());
+            if (Configuration.getInstance().isUseVBO()) {
+                BufferObjectsFactory.getInstance().createVBOs(renderer, mesh);
+            }
+            return mesh;
+        }
+
+        /**
+         * Creates the shader program to use with the specified texture.
+         * 
+         * @param texture {@link TiledTexture2D} or {@link UVTexture2D}
+         * @return The shader program for the specified texture.
+         */
+        public ShaderProgram createProgram(Texture2D texture) {
+            switch (texture.textureType) {
+            case TiledTexture2D:
+                return new TiledSpriteProgram();
+            case UVTexture2D:
+                return new UVSpriteProgram();
+            case Untextured:
+                return new UntexturedSpriteProgram(((Untextured) texture).getShading());
+            default:
+                throw new IllegalArgumentException(INVALID_TYPE + texture.textureType);
+            }
+
+        }
+
+    }
 
     /**
      * Creates a new instance, mesh will NOT be created.

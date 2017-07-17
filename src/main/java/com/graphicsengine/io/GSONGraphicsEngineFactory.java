@@ -115,8 +115,13 @@ public class GSONGraphicsEngineFactory extends GSONSceneFactory {
         return new GraphicsEngineNodeFactory();
     }
 
-    public static MeshFactory getMeshFactory() {
-        return new GraphicsEngineMeshFactory();
+    /**
+     * Utility method to get the default mesh factory
+     * 
+     * @return
+     */
+    public static MeshFactory getMeshFactory(NucleusRenderer renderer) {
+        return new GraphicsEngineMeshFactory(renderer);
     }
 
     @Override
