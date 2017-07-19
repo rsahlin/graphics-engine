@@ -136,11 +136,12 @@ public class SpriteMesh extends Mesh implements Consumer {
         public SpriteMesh create() throws IOException {
             validate();
             Texture2D texture = AssetManager.getInstance().getTexture(renderer, textureRef);
-            // TOD should use AssetManager to create program.
-            ShaderProgram program = createProgram(texture);
+            if (material.getProgram() == null) {
+                ShaderProgram program = createProgram(texture);
+                program = AssetManager.getInstance().getProgram(renderer, program);
+                material.setProgram(program);
+            }
             SpriteMesh mesh = new SpriteMesh();
-            renderer.createProgram(program);
-            material.setProgram(program);
             mesh.createMesh(texture, material, count, spriteRect);
             if (Configuration.getInstance().isUseVBO()) {
                 BufferObjectsFactory.getInstance().createVBOs(renderer, mesh);
@@ -158,10 +159,13 @@ public class SpriteMesh extends Mesh implements Consumer {
          */
         public SpriteMesh create(QuadParentNode parent) throws IOException {
             Texture2D texture = AssetManager.getInstance().getTexture(renderer, parent.getTextureRef());
-            ShaderProgram program = createProgram(texture);
+            if (parent.getMaterial().getProgram() == null) {
+                ShaderProgram program = createProgram(texture);
+                program = AssetManager.getInstance().getProgram(renderer, program);
+                parent.getMaterial().setProgram(program);
+
+            }
             SpriteMesh mesh = new SpriteMesh();
-            renderer.createProgram(program);
-            parent.getMaterial().setProgram(program);
             mesh.createMesh(texture, parent.getMaterial(), parent.getMaxQuads());
             if (Configuration.getInstance().isUseVBO()) {
                 BufferObjectsFactory.getInstance().createVBOs(renderer, mesh);

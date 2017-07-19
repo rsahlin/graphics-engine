@@ -75,10 +75,11 @@ public class PlayfieldMesh extends SpriteMesh {
             if (parent == null) {
                 throw new IllegalArgumentException("Parent may not be null");
             }
-            // TODO Should use assetmanager to fetch program.
-            PlayfieldProgram program = new PlayfieldProgram();
-            renderer.createProgram(program);
-            parent.getMaterial().setProgram(program);
+            if (parent.getMaterial().getProgram() == null) {
+                PlayfieldProgram program = new PlayfieldProgram();
+                program = (PlayfieldProgram) AssetManager.getInstance().getProgram(renderer, program);
+                parent.getMaterial().setProgram(program);
+            }
             Texture2D texture = AssetManager.getInstance().getTexture(renderer, parent.getTextureRef());
             PlayfieldMesh playfieldMesh = new PlayfieldMesh();
             playfieldMesh.createMesh(texture, parent.getMaterial(), parent.getMapSize(),

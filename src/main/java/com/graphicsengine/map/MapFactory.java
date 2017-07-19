@@ -33,6 +33,7 @@ public class MapFactory {
 
     /**
      * Load a map from an external reference
+     * TODO - should the maps be stored like textures?
      * 
      * @param externalRef
      * @return
