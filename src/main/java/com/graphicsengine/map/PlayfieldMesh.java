@@ -75,11 +75,13 @@ public class PlayfieldMesh extends SpriteMesh {
             if (parent == null) {
                 throw new IllegalArgumentException("Parent may not be null");
             }
+            // TODO Should use assetmanager to fetch program.
             PlayfieldProgram program = new PlayfieldProgram();
             renderer.createProgram(program);
+            parent.getMaterial().setProgram(program);
             Texture2D texture = AssetManager.getInstance().getTexture(renderer, parent.getTextureRef());
             PlayfieldMesh playfieldMesh = new PlayfieldMesh();
-            playfieldMesh.createMesh(program, texture, parent.getMaterial(), parent.getMapSize(),
+            playfieldMesh.createMesh(texture, parent.getMaterial(), parent.getMapSize(),
                     parent.getCharRectangle());
             float[] offset = parent.getAnchorOffset();
             Rectangle bounds = playfieldMesh.setupCharmap(parent.getMapSize(), parent.getCharRectangle().getSize(),
@@ -126,18 +128,17 @@ public class PlayfieldMesh extends SpriteMesh {
      * Creates the mesh for this charmap, each char has the specified width and height, z position.
      * Texture UV is set using 1 / framesX and 1/ framesY
      * 
-     * @param program
      * @param texture If tiling should be used this must be instance of {@link TiledTexture2D}
      * @param material
      * @param playfieldSize Number of chars to support in the mesh
      * @param rectangle The rectangle defining a char, all chars will have same size.
      */
-    public void createMesh(PlayfieldProgram program, Texture2D texture, Material material, int[] playfieldSize,
+    public void createMesh(Texture2D texture, Material material, int[] playfieldSize,
             Rectangle rectangle) {
         int count = playfieldSize[0] * playfieldSize[1];
         this.playfieldSize[Axis.WIDTH.index] = playfieldSize[Axis.WIDTH.index];
         this.playfieldSize[Axis.HEIGHT.index] = playfieldSize[Axis.HEIGHT.index];
-        super.createMesh(program, texture, material, count, rectangle);
+        super.createMesh(texture, material, count, rectangle);
     }
 
     /**

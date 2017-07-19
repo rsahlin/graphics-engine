@@ -136,10 +136,12 @@ public class SpriteMesh extends Mesh implements Consumer {
         public SpriteMesh create() throws IOException {
             validate();
             Texture2D texture = AssetManager.getInstance().getTexture(renderer, textureRef);
+            // TOD should use AssetManager to create program.
             ShaderProgram program = createProgram(texture);
             SpriteMesh mesh = new SpriteMesh();
             renderer.createProgram(program);
-            mesh.createMesh(program, texture, material, count, spriteRect);
+            material.setProgram(program);
+            mesh.createMesh(texture, material, count, spriteRect);
             if (Configuration.getInstance().isUseVBO()) {
                 BufferObjectsFactory.getInstance().createVBOs(renderer, mesh);
             }
@@ -147,7 +149,7 @@ public class SpriteMesh extends Mesh implements Consumer {
         }
 
         /**
-         * This will create an old school sprite mesh, where each sprite has a frame, the sprite can be rotated in x
+         * This will create an old school sprite mesh, where each sprite has a frame, the sprite can be rotated in z
          * axis and positioned in x and y.
          * Arguments are taken from the parent node.
          * 
@@ -159,7 +161,8 @@ public class SpriteMesh extends Mesh implements Consumer {
             ShaderProgram program = createProgram(texture);
             SpriteMesh mesh = new SpriteMesh();
             renderer.createProgram(program);
-            mesh.createMesh(program, texture, parent.getMaterial(), parent.getMaxQuads());
+            parent.getMaterial().setProgram(program);
+            mesh.createMesh(texture, parent.getMaterial(), parent.getMaxQuads());
             if (Configuration.getInstance().isUseVBO()) {
                 BufferObjectsFactory.getInstance().createVBOs(renderer, mesh);
             }
@@ -212,17 +215,16 @@ public class SpriteMesh extends Mesh implements Consumer {
      * Note that this class will be set as AttributeUpdater in the mesh in order for the sprites to be displayed
      * properly.
      * 
-     * @param program
      * @param texture The texture to use for sprites, must be {@link TiledTexture2D} otherwise tiling will not work.
      * @param material The material for the mesh
      * @param count Number of sprites to support
      * @param Rectangle The rectangle defining the quad for each sprite
      */
-    public void createMesh(ShaderProgram program, Texture2D texture, Material material, int count,
+    public void createMesh(Texture2D texture, Material material, int count,
             Rectangle rectangle) {
-        super.createMesh(program, texture, material, count * VertexBuffer.INDEXED_QUAD_VERTICES, count * QUAD_INDICES);
+        super.createMesh(texture, material, count * VertexBuffer.INDEXED_QUAD_VERTICES, count * QUAD_INDICES);
         setMode(Mode.TRIANGLES);
-        buildMesh(program, count, rectangle, 0);
+        buildMesh(material.getProgram(), count, rectangle, 0);
         setAttributeUpdater(this);
     }
 
@@ -232,13 +234,12 @@ public class SpriteMesh extends Mesh implements Consumer {
      * {@link #buildQuad(int, ShaderProgram, Rectangle)for each sprite/quad that shall be rendered.
      * or {@link #buildMesh(ShaderProgram, int, float[])}
      * 
-     * @param program
      * @param texture
      * @param material
      * @param count
      */
-    public void createMesh(ShaderProgram program, Texture2D texture, Material material, int count) {
-        super.createMesh(program, texture, material, count * VertexBuffer.INDEXED_QUAD_VERTICES, count * QUAD_INDICES);
+    public void createMesh(Texture2D texture, Material material, int count) {
+        super.createMesh(texture, material, count * VertexBuffer.INDEXED_QUAD_VERTICES, count * QUAD_INDICES);
         setMode(Mode.TRIANGLES);
         ElementBuilder.buildQuadBuffer(indices, indices.getCount() / QUAD_INDICES, 0);
         setAttributeUpdater(this);

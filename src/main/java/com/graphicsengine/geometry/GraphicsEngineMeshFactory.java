@@ -16,7 +16,6 @@ import com.nucleus.renderer.BufferObjectsFactory;
 import com.nucleus.renderer.Configuration;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node;
-import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.Texture2D;
 
 public class GraphicsEngineMeshFactory implements MeshFactory {
@@ -59,14 +58,13 @@ public class GraphicsEngineMeshFactory implements MeshFactory {
     }
 
     @Override
-    public Mesh createMesh(NucleusRenderer renderer, ShaderProgram program, Material material,
-            ExternalReference textureRef,
-            int vertexCount, int indiceCount)
+    public Mesh createMesh(NucleusRenderer renderer, Material material, ExternalReference textureRef, int vertexCount,
+            int indiceCount)
             throws IOException {
 
         Texture2D texture = AssetManager.getInstance().getTexture(renderer, textureRef);
         Mesh mesh = new Mesh();
-        mesh.createMesh(program, texture, material, vertexCount, indiceCount);
+        mesh.createMesh(texture, material, vertexCount, indiceCount);
         if (Configuration.getInstance().isUseVBO()) {
             BufferObjectsFactory.getInstance().createVBOs(renderer, mesh);
         }
