@@ -6,9 +6,11 @@ import com.google.gson.annotations.SerializedName;
 import com.nucleus.SimpleLogger;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.io.ExternalReference;
-import com.nucleus.mmi.ClickListener;
 import com.nucleus.mmi.MMIEventListener;
 import com.nucleus.mmi.MMIPointerEvent;
+import com.nucleus.mmi.ObjectInputListener;
+import com.nucleus.mmi.PointerData;
+import com.nucleus.mmi.PointerMotionData;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.NodeException;
 import com.nucleus.scene.RootNode;
@@ -24,7 +26,7 @@ import com.nucleus.vecmath.Rectangle;
  * @author Richard Sahlin
  *
  */
-public class PlayfieldNode extends Node implements ClickListener, MMIEventListener {
+public class PlayfieldNode extends Node implements ObjectInputListener, MMIEventListener {
 
     public static final String MAPREF = "mapRef";
     public static final String ANCHOR = "anchor";
@@ -209,8 +211,9 @@ public class PlayfieldNode extends Node implements ClickListener, MMIEventListen
     }
 
     @Override
-    public boolean onClick(float[] position) {
+    public boolean onClick(PointerData click) {
         float[] inverse = new float[16];
+        float[] position = click.position;
         if (Matrix.invertM(inverse, 0, getModelMatrix(), 0)) {
             float[] vec2 = new float[2];
             Matrix.transformVec2(inverse, 0, position, vec2, 1);
@@ -265,6 +268,12 @@ public class PlayfieldNode extends Node implements ClickListener, MMIEventListen
         case INACTIVE:
 
         }
+    }
+
+    @Override
+    public boolean onDrag(PointerMotionData drag) {
+        SimpleLogger.d(getClass(), "onDrag()");
+        return true;
     }
 
 }

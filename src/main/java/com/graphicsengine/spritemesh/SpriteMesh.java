@@ -307,8 +307,8 @@ public class SpriteMesh extends Mesh implements Consumer {
     }
 
     @Override
-    public void destroy() {
-        super.destroy();
+    public void destroy(NucleusRenderer renderer) {
+        super.destroy(renderer);
         attributeData = null;
     }
 

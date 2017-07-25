@@ -356,7 +356,8 @@ public class PlayfieldMesh extends SpriteMesh {
     }
 
     @Override
-    public void destroy() {
+    public void destroy(NucleusRenderer renderer) {
+        super.destroy(renderer);
         attributeData = null;
         map = null;
         playfieldSize = null;
