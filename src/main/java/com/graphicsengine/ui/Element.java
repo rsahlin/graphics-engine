@@ -10,7 +10,8 @@ import com.graphicsengine.scene.SharedMeshQuad;
  */
 public class Element extends SharedMeshQuad {
 
-    public Element() {
+    protected Element() {
+        super();
     }
 
 }

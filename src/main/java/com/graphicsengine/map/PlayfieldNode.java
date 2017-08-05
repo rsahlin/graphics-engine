@@ -65,19 +65,18 @@ public class PlayfieldNode extends Node implements ObjectInputListener, MMIEvent
      */
     transient private Map map;
 
-    public PlayfieldNode() {
+    protected PlayfieldNode() {
+        super();
     }
+
+    private PlayfieldNode(RootNode root) {
+        super(root);
+    }
+
 
     @Override
     public PlayfieldNode createInstance(RootNode root) {
-        PlayfieldNode copy = new PlayfieldNode();
-        copy.setRootNode(root);
-        return copy;
-    }
-
-    @Override
-    public PlayfieldNode copy(RootNode root) {
-        PlayfieldNode copy = createInstance(root);
+        PlayfieldNode copy = new PlayfieldNode(root);
         copy.set(this);
         return copy;
     }

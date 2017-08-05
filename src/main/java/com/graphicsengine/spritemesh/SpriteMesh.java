@@ -11,6 +11,7 @@ import com.nucleus.geometry.ElementBuilder;
 import com.nucleus.geometry.Material;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshBuilder;
+import com.nucleus.geometry.RectangleShapeBuilder;
 import com.nucleus.geometry.VertexBuffer;
 import com.nucleus.io.ExternalReference;
 import com.nucleus.renderer.BufferObjectsFactory;
@@ -224,10 +225,9 @@ public class SpriteMesh extends Mesh implements Consumer {
      * @param count Number of sprites to support
      * @param Rectangle The rectangle defining the quad for each sprite
      */
-    public void createMesh(Texture2D texture, Material material, int count,
-            Rectangle rectangle) {
-        super.createMesh(texture, material, count * VertexBuffer.INDEXED_QUAD_VERTICES, count * QUAD_INDICES);
-        setMode(Mode.TRIANGLES);
+    public void createMesh(Texture2D texture, Material material, int count, Rectangle rectangle) {
+        super.createMesh(texture, material, count * RectangleShapeBuilder.QUAD_VERTICES, count * QUAD_INDICES,
+                Mode.TRIANGLES);
         buildMesh(material.getProgram(), count, rectangle, 0);
         setAttributeUpdater(this);
     }
@@ -243,8 +243,8 @@ public class SpriteMesh extends Mesh implements Consumer {
      * @param count
      */
     public void createMesh(Texture2D texture, Material material, int count) {
-        super.createMesh(texture, material, count * VertexBuffer.INDEXED_QUAD_VERTICES, count * QUAD_INDICES);
-        setMode(Mode.TRIANGLES);
+        super.createMesh(texture, material, count * RectangleShapeBuilder.QUAD_VERTICES, count * QUAD_INDICES,
+                Mode.TRIANGLES);
         ElementBuilder.buildQuadBuffer(indices, indices.getCount() / QUAD_INDICES, 0);
         setAttributeUpdater(this);
     }

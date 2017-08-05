@@ -8,9 +8,11 @@ import java.nio.IntBuffer;
 import com.graphicsengine.map.Map.MapColor;
 import com.graphicsengine.spritemesh.SpriteMesh;
 import com.nucleus.assets.AssetManager;
+import com.nucleus.bounds.Bounds;
+import com.nucleus.bounds.RectangularBounds;
 import com.nucleus.geometry.Material;
 import com.nucleus.geometry.Mesh;
-import com.nucleus.geometry.VertexBuffer;
+import com.nucleus.geometry.RectangleShapeBuilder;
 import com.nucleus.renderer.BufferObjectsFactory;
 import com.nucleus.renderer.Configuration;
 import com.nucleus.renderer.NucleusRenderer;
@@ -39,27 +41,75 @@ public class PlayfieldMesh extends SpriteMesh {
 
     private transient int[] playfieldSize = new int[2];
 
-    public static class Builder {
+    public static class Builder extends Mesh.Builder {
 
-        private NucleusRenderer renderer;
-        private PlayfieldNode parent;
+        protected int[] mapSize;
+        protected Rectangle charRectangle;
+        /**
+         * Map offset, upper left char will be offset by this amount.
+         */
+        protected float[] offset;
 
         /**
-         * Creates a new builder
+         * Sets the size, width and height, of the map
          * 
-         * @param renderer
-         * @throws IllegalArgumentException If renderer is null
+         * @param width
+         * @param height
+         * @return
          */
-        public Builder(NucleusRenderer renderer) {
-            if (renderer == null) {
-                throw new IllegalArgumentException("Renderer may not be null");
-            }
-            this.renderer = renderer;
+        public Builder setMapSize(int width, int height) {
+            mapSize = new int[] { width, height };
+            return this;
         }
 
+        /**
+         * Sets the size, width and height, of the map
+         * This will set the mode, vertice and element count in #{@link Builder}
+         * 
+         * @param mapSize width and height of map
+         * @param charRect size of each char
+         * @return
+         */
+        public Builder setMap(int[] mapSize, Rectangle charRect) {
+            this.mapSize = new int[] { mapSize[0], mapSize[1] };
+            this.charRectangle = charRect;
+            setElementMode(Mode.TRIANGLES, mapSize[0] * mapSize[1] * RectangleShapeBuilder.QUAD_VERTICES,
+                    RectangleShapeBuilder.QUAD_ELEMENTS);
+            return this;
+        }
+
+        /**
+         * Sets the x and y offset of the starting position for the chars in the map.
+         * 
+         * @param x
+         * @param y
+         * @return
+         */
+        public Builder setOffset(float x, float y) {
+            this.offset = new float[] { x, y };
+            return this;
+        }
+
+        /**
+         * Sets the x and y offset of the starting position for the chars in the map.
+         * 
+         * @param offset
+         * @return
+         */
+        public Builder setOffset(float[] offset) {
+            this.offset = new float[] { offset[0], offset[1] };
+            return this;
+        }
+
+        public Builder(NucleusRenderer renderer) {
+            super(renderer);
+        }
+
+        @Override
         protected void validate() {
-            if (parent == null) {
-                throw new IllegalArgumentException("Parent has not been set");
+            super.validate();
+            if (mapSize == null || charRectangle == null) {
+                throw new IllegalArgumentException("Null argument: " + mapSize + ", " + charRectangle);
             }
         }
 
@@ -68,30 +118,33 @@ public class PlayfieldMesh extends SpriteMesh {
          * be filled with map data.
          * The arguments for creating the mesh are taken from the parent node.
          * 
-         * @param The parent node that holds the arguments for creating the mesh.
          * @return The mesh that can be rendered to produce a playfield
          */
-        public PlayfieldMesh create(PlayfieldNode parent) throws IOException {
-            if (parent == null) {
-                throw new IllegalArgumentException("Parent may not be null");
-            }
-            if (parent.getMaterial().getProgram() == null) {
+        @Override
+        public PlayfieldMesh create() throws IOException {
+            validate();
+            if (material.getProgram() == null) {
                 PlayfieldProgram program = new PlayfieldProgram();
                 program = (PlayfieldProgram) AssetManager.getInstance().getProgram(renderer, program);
-                parent.getMaterial().setProgram(program);
+                material.setProgram(program);
             }
-            Texture2D texture = AssetManager.getInstance().getTexture(renderer, parent.getTextureRef());
             PlayfieldMesh playfieldMesh = new PlayfieldMesh();
-            playfieldMesh.createMesh(texture, parent.getMaterial(), parent.getMapSize(),
-                    parent.getCharRectangle());
-            float[] offset = parent.getAnchorOffset();
-            Rectangle bounds = playfieldMesh.setupCharmap(parent.getMapSize(), parent.getCharRectangle().getSize(),
-                    offset);
-            parent.initBounds(bounds);
+            playfieldMesh.createMesh(texture, material, mapSize, charRectangle);
+            playfieldMesh.setupCharmap(mapSize, charRectangle.getSize(), offset);
             if (Configuration.getInstance().isUseVBO()) {
                 BufferObjectsFactory.getInstance().createVBOs(renderer, playfieldMesh);
             }
             return playfieldMesh;
+        }
+
+        @Override
+        public Bounds createBounds() {
+            // Return rectangle covering the map
+            float[] charSize = charRectangle.getSize();
+            Rectangle rect = new Rectangle(offset[0] - (charSize[0] / 2), offset[1] + (charSize[1] / 2),
+                    charSize[0] * mapSize[0],
+                    charSize[1] * mapSize[1]);
+            return new RectangularBounds(rect);
         }
     }
 
@@ -153,10 +206,9 @@ public class PlayfieldMesh extends SpriteMesh {
      * @param mapSize width and height of map, in characters
      * @param charSize width and height of each char
      * @param offset Start position of the upper left char, ie the upper left char will have this position.
-     * @return Rectangle covering the map.
      * @throws IllegalArgumentException If the size of the map does not match number of chars in this class
      */
-    public Rectangle setupCharmap(int[] mapSize, float[] charSize, float[] offset) {
+    public void setupCharmap(int[] mapSize, float[] charSize, float[] offset) {
         if (mapSize[Axis.WIDTH.index] * mapSize[Axis.HEIGHT.index] != playfieldSize[Axis.WIDTH.index]
                 * playfieldSize[Axis.HEIGHT.index]) {
             throw new IllegalArgumentException("Size of map does not match number of chars in mesh");
@@ -188,9 +240,6 @@ public class PlayfieldMesh extends SpriteMesh {
             // TODO handle Y axis going other direction?
             startY -= charSize[Axis.HEIGHT.index];
         }
-        //Return rectangle covering the map
-        return new Rectangle(offset[0] - (charSize[0] / 2), offset[1] + (charSize[1] / 2), charSize[0] * mapSize[0],
-                charSize[1] * mapSize[1]);
     }
 
     /**
@@ -347,7 +396,7 @@ public class PlayfieldMesh extends SpriteMesh {
     private void setAmbient(PropertyMapper mapper, int pos, FloatBuffer ambient, int index, int stride) {
         int destIndex = pos * mapper.attributesPerVertex * ShaderProgram.VERTICES_PER_SPRITE
                 + mapper.colorAmbientOffset;
-        for (int i = 0; i < VertexBuffer.INDEXED_QUAD_VERTICES; i++) {
+        for (int i = 0; i < RectangleShapeBuilder.QUAD_VERTICES; i++) {
             ambient.get(attributeData, destIndex, 4);
             destIndex += mapper.attributesPerVertex;
             index += stride;

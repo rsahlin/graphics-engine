@@ -26,20 +26,17 @@ public class QuadParentNode extends Node {
 
     transient private ArrayList<SharedMeshQuad> quadChildren = new ArrayList<>();
 
-    public QuadParentNode() {
-        super();
+    protected QuadParentNode() {
     }
 
-    @Override
-    public QuadParentNode createInstance(RootNode root) {
-        QuadParentNode copy = new QuadParentNode();
-        copy.setRootNode(root);
-        return copy;
+    private QuadParentNode(RootNode root) {
+        super(root);
     }
 
+
     @Override
-    public Node copy(RootNode root) {
-        QuadParentNode copy = createInstance(root);
+    public Node createInstance(RootNode root) {
+        QuadParentNode copy = new QuadParentNode(root);
         copy.set(this);
         return copy;
     }

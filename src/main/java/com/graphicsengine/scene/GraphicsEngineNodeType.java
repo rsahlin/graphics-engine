@@ -2,8 +2,9 @@ package com.graphicsengine.scene;
 
 import com.graphicsengine.map.PlayfieldNode;
 import com.graphicsengine.ui.Element;
-import com.nucleus.common.Key;
+import com.nucleus.common.Type;
 import com.nucleus.component.ComponentNode;
+import com.nucleus.scene.Node;
 
 /**
  * The different type of nodes that are defined and handled by the Graphics Engine
@@ -11,7 +12,7 @@ import com.nucleus.component.ComponentNode;
  * @author Richard Sahlin
  *
  */
-public enum GraphicsEngineNodeType implements Key {
+public enum GraphicsEngineNodeType implements Type<Node> {
 
     playfieldNode(PlayfieldNode.class),
     sharedMeshNode(SharedMeshQuad.class),
@@ -33,12 +34,13 @@ public enum GraphicsEngineNodeType implements Key {
      * 
      * @return
      */
+    @Override
     public Class<?> getTypeClass() {
         return theClass;
     }
 
     @Override
-    public String getKey() {
+    public String getName() {
         return name();
     }
 

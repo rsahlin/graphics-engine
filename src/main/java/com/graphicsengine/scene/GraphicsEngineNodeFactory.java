@@ -1,17 +1,13 @@
 package com.graphicsengine.scene;
 
-import java.io.IOException;
-
 import com.graphicsengine.map.PlayfieldNode;
 import com.nucleus.camera.ViewFrustum;
 import com.nucleus.component.ComponentException;
 import com.nucleus.component.ComponentNode;
-import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshFactory;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.DefaultNodeFactory;
 import com.nucleus.scene.Node;
-import com.nucleus.scene.Node.MeshType;
 import com.nucleus.scene.NodeException;
 import com.nucleus.scene.NodeFactory;
 import com.nucleus.scene.RootNode;
@@ -29,37 +25,25 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
 
     @Override
     public Node create(NucleusRenderer renderer, MeshFactory meshFactory, Node source,
-            RootNode root)
-            throws NodeException {
+            RootNode root) throws NodeException {
+        if (source.getType() == null) {
+            throw new NodeException("Type not set in source node - was it created programatically?");
+        }
         GraphicsEngineNodeType type = null;
         try {
             type = GraphicsEngineNodeType.valueOf(source.getType());
         } catch (IllegalArgumentException e) {
             return super.create(renderer, meshFactory, source, root);
         }
-        Node created = null;
-
+        Node created = internalCreateNode(renderer, root, source, meshFactory);
         switch (type) {
         case playfieldNode:
-            created = source.copy(root);
-            internalCreateNode(renderer, source, created, meshFactory);
             ((PlayfieldNode) created).createMap();
             break;
         case spriteComponentNode:
-            created = source.copy(root);
-            internalCreateNode(renderer, source, created, meshFactory);
-            break;
         case sharedMeshNode:
-            created = source.copy(root);
-            internalCreateNode(renderer, source, created, meshFactory);
-            break;
         case quadNode:
-            created = source.copy(root);
-            internalCreateNode(renderer, source, created, meshFactory);
-            break;
         case element:
-            created = source.copy(root);
-            internalCreateNode(renderer, source, created, meshFactory);
             break;
         default:
             throw new IllegalArgumentException(NOT_IMPLEMENTED + type);
@@ -67,30 +51,16 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
         return created;
     }
 
-    /**
-     * Internal method to create node
-     * 
-     * @param renderer
-     * @param source
-     * @param node
-     * @param meshFactory
-     * @throws NodeException If there is an error creating the node
-     */
-    private void internalCreateNode(NucleusRenderer renderer, Node source, Node node, MeshFactory meshFactory)
+    @Override
+    protected Node internalCreateNode(NucleusRenderer renderer, RootNode root, Node source, MeshFactory meshFactory)
             throws NodeException {
+        Node node = super.internalCreateNode(renderer, root, source, meshFactory);
         try {
-            node.create();
-            // Copy properties from source node into the created node.
-            node.setProperties(source);
-            node.copyTransform(source);
-            Mesh mesh = meshFactory.createMesh(renderer, node);
-            if (mesh != null) {
-                node.addMesh(mesh, MeshType.MAIN);
-            }
             if (node instanceof ComponentNode) {
                 internalCreateComponents(renderer, (ComponentNode) node, meshFactory);
             }
-        } catch (IOException | ComponentException e) {
+            return node;
+        } catch (ComponentException e) {
             throw new NodeException(e);
         }
     }

@@ -6,19 +6,15 @@ import com.graphicsengine.map.PlayfieldMesh;
 import com.graphicsengine.map.PlayfieldNode;
 import com.graphicsengine.scene.QuadParentNode;
 import com.graphicsengine.spritemesh.SpriteMesh;
-import com.nucleus.assets.AssetManager;
+import com.nucleus.bounds.Bounds;
 import com.nucleus.component.ComponentNode;
-import com.nucleus.geometry.Material;
+import com.nucleus.geometry.DefaultMeshFactory;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshFactory;
-import com.nucleus.io.ExternalReference;
-import com.nucleus.renderer.BufferObjectsFactory;
-import com.nucleus.renderer.Configuration;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node;
-import com.nucleus.texturing.Texture2D;
 
-public class GraphicsEngineMeshFactory implements MeshFactory {
+public class GraphicsEngineMeshFactory extends DefaultMeshFactory implements MeshFactory {
 
     PlayfieldMesh.Builder playfieldBuilder;
     SpriteMesh.Builder spriteMeshBuilder;
@@ -37,7 +33,16 @@ public class GraphicsEngineMeshFactory implements MeshFactory {
             throws IOException {
 
         if (parent instanceof PlayfieldNode) {
-            return playfieldBuilder.create((PlayfieldNode) parent);
+            PlayfieldNode playfield = (PlayfieldNode) parent;
+            PlayfieldMesh.Builder mbuilder = new PlayfieldMesh.Builder(renderer);
+            mbuilder.setMap(playfield.getMapSize(), playfield.getCharRectangle());
+            mbuilder.setOffset(playfield.getAnchorOffset());
+            mbuilder.setTexture(playfield.getTextureRef());
+            mbuilder.setMaterial(playfield.getMaterial());
+            PlayfieldMesh pmesh = mbuilder.create();
+            Bounds bounds = mbuilder.createBounds();
+            parent.initBounds(bounds);
+            return pmesh;
         }
         if (parent instanceof QuadParentNode) {
             return spriteMeshBuilder.create((QuadParentNode) parent);
@@ -57,18 +62,5 @@ public class GraphicsEngineMeshFactory implements MeshFactory {
         throw new IllegalArgumentException("Not implemented support for " + parent.getClass().getName());
     }
 
-    @Override
-    public Mesh createMesh(NucleusRenderer renderer, Material material, ExternalReference textureRef, int vertexCount,
-            int indiceCount)
-            throws IOException {
-
-        Texture2D texture = AssetManager.getInstance().getTexture(renderer, textureRef);
-        Mesh mesh = new Mesh();
-        mesh.createMesh(texture, material, vertexCount, indiceCount);
-        if (Configuration.getInstance().isUseVBO()) {
-            BufferObjectsFactory.getInstance().createVBOs(renderer, mesh);
-        }
-        return mesh;
-    }
 
 }

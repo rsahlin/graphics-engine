@@ -32,7 +32,11 @@ public class SharedMeshQuad extends Node {
     @SerializedName(Rectangle.RECT)
     private Rectangle rectangle;
 
-    public SharedMeshQuad() {
+    protected SharedMeshQuad() {
+    }
+
+    private SharedMeshQuad(RootNode root) {
+        super(root);
     }
 
     /**
@@ -73,16 +77,10 @@ public class SharedMeshQuad extends Node {
         this.childIndex = index;
     }
 
-    @Override
-    public SharedMeshQuad createInstance(RootNode root) {
-        SharedMeshQuad copy = new SharedMeshQuad();
-        copy.setRootNode(root);
-        return copy;
-    }
 
     @Override
-    public Node copy(RootNode root) {
-        SharedMeshQuad copy = createInstance(root);
+    public Node createInstance(RootNode root) {
+        SharedMeshQuad copy = new SharedMeshQuad(root);
         copy.set(this);
         return copy;
 
