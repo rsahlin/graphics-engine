@@ -147,9 +147,13 @@ public class SpriteComponent extends Component implements Consumer {
     public void create(NucleusRenderer renderer, ComponentNode parent)
             throws ComponentException {
         try {
-            SpriteMesh.Builder spriteBuilder = new SpriteMesh.Builder(renderer);
-            spriteMesh = spriteBuilder.setTextureRef(parent.getTextureRef()).setMaterial(parent.getMaterial())
-                    .setCount(count).setRectangle(rectangle).create();
+            SpriteMesh.Builder<SpriteMesh> spriteBuilder = new SpriteMesh.Builder<>(renderer);
+            spriteBuilder.setTexture(parent.getTextureRef());
+            spriteBuilder.setMaterial(parent.getMaterial());
+            spriteBuilder.setSpriteCount(count);
+            spriteBuilder.setRectangle(rectangle);
+            // TODO - Fix generics so that cast is not needed
+            spriteMesh = (SpriteMesh) spriteBuilder.create();
             this.textureType = spriteMesh.getTexture(Texture2D.TEXTURE_0).getTextureType();
             switch (textureType) {
             case TiledTexture2D:

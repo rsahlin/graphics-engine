@@ -4,7 +4,6 @@ import static com.nucleus.geometry.VertexBuffer.QUAD_INDICES;
 
 import java.io.IOException;
 
-import com.graphicsengine.scene.QuadParentNode;
 import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.ElementBuilder;
@@ -13,7 +12,6 @@ import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.RectangleShapeBuilder;
 import com.nucleus.geometry.VertexBuffer;
-import com.nucleus.io.ExternalReference;
 import com.nucleus.renderer.BufferObjectsFactory;
 import com.nucleus.renderer.Configuration;
 import com.nucleus.renderer.NucleusRenderer;
@@ -52,15 +50,13 @@ public class SpriteMesh extends Mesh implements Consumer {
      * Storage for 4 UV components
      */
     private transient float[] frames = new float[2 * 4];
+    private transient Builder<SpriteMesh> builder;
 
-    public static class Builder {
+    public static class Builder<T> extends Mesh.Builder<Mesh> {
 
         private final static String INVALID_TYPE = "Invalid type: ";
 
-        private NucleusRenderer renderer;
-        private ExternalReference textureRef;
-        private Material material;
-        private int count;
+        private int spriteCount;
         private Rectangle spriteRect;
         /**
          * Creates a new SpriteMesh builder
@@ -69,39 +65,7 @@ public class SpriteMesh extends Mesh implements Consumer {
          * @throws IllegalArgumentException If renderer is null
          */
         public Builder(NucleusRenderer renderer) {
-            if (renderer == null) {
-                throw new IllegalArgumentException("Renderer may not be null");
-            }
-            this.renderer = renderer;
-        }
-
-        private void validate() {
-            if (textureRef == null || material == null || count <= 0 || spriteRect == null) {
-                throw new IllegalArgumentException("Missing arguments to create mesh:" + textureRef + ", " + material
-                        + ", " + count + ", " + spriteRect);
-            }
-        }
-
-        /**
-         * Sets the texture reference
-         * 
-         * @param textureRef
-         * @return
-         */
-        public Builder setTextureRef(ExternalReference textureRef) {
-            this.textureRef = textureRef;
-            return this;
-        }
-
-        /**
-         * Sets the material for the mesh
-         * 
-         * @param material
-         * @return
-         */
-        public Builder setMaterial(Material material) {
-            this.material = material;
-            return this;
+            super(renderer);
         }
 
         /**
@@ -110,8 +74,10 @@ public class SpriteMesh extends Mesh implements Consumer {
          * @param spriteCount Number of sprites (quads) to support
          * @return
          */
-        public Builder setCount(int spriteCount) {
-            this.count = spriteCount;
+        public Builder<T> setSpriteCount(int spriteCount) {
+            this.spriteCount = spriteCount;
+            setElementMode(Mode.TRIANGLES, spriteCount * RectangleShapeBuilder.QUAD_VERTICES,
+                    spriteCount * RectangleShapeBuilder.QUAD_ELEMENTS);
             return this;
         }
 
@@ -121,33 +87,9 @@ public class SpriteMesh extends Mesh implements Consumer {
          * @param rectangle
          * @return
          */
-        public Builder setRectangle(Rectangle rectangle) {
+        public Builder<T> setRectangle(Rectangle rectangle) {
             this.spriteRect = rectangle;
             return this;
-        }
-
-        /**
-         * This will create an old school sprite mesh, where each sprite has a frame, the sprite can be rotated in x
-         * axis
-         * and positioned in x and y.
-         * 
-         * @return The created mesh using the parameters set in this builder
-         * @throws IllegalArgumentException If the needed arguments has not been set.
-         */
-        public SpriteMesh create() throws IOException {
-            validate();
-            Texture2D texture = AssetManager.getInstance().getTexture(renderer, textureRef);
-            if (material.getProgram() == null) {
-                ShaderProgram program = createProgram(texture);
-                program = AssetManager.getInstance().getProgram(renderer, program);
-                material.setProgram(program);
-            }
-            SpriteMesh mesh = new SpriteMesh();
-            mesh.createMesh(texture, material, count, spriteRect);
-            if (Configuration.getInstance().isUseVBO()) {
-                BufferObjectsFactory.getInstance().createVBOs(renderer, mesh);
-            }
-            return mesh;
         }
 
         /**
@@ -158,16 +100,21 @@ public class SpriteMesh extends Mesh implements Consumer {
          * @param parent The parent node where arguments are read from
          * @return The created sprite mesh
          */
-        public SpriteMesh create(QuadParentNode parent) throws IOException {
-            Texture2D texture = AssetManager.getInstance().getTexture(renderer, parent.getTextureRef());
-            if (parent.getMaterial().getProgram() == null) {
+        @Override
+        public SpriteMesh create() throws IOException {
+            validate();
+            if (material.getProgram() == null) {
                 ShaderProgram program = createProgram(texture);
                 program = AssetManager.getInstance().getProgram(renderer, program);
-                parent.getMaterial().setProgram(program);
+                material.setProgram(program);
 
             }
             SpriteMesh mesh = new SpriteMesh();
-            mesh.createMesh(texture, parent.getMaterial(), parent.getMaxQuads());
+            if (spriteRect != null) {
+                mesh.createMesh(texture, material, spriteCount, spriteRect);
+            } else {
+                mesh.createMesh(texture, material, spriteCount);
+            }
             if (Configuration.getInstance().isUseVBO()) {
                 BufferObjectsFactory.getInstance().createVBOs(renderer, mesh);
             }

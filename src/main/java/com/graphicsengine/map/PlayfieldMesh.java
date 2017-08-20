@@ -40,8 +40,9 @@ public class PlayfieldMesh extends SpriteMesh {
     private transient Map map;
 
     private transient int[] playfieldSize = new int[2];
+    private transient Builder<PlayfieldMesh> builder;
 
-    public static class Builder extends Mesh.Builder {
+    public static class Builder<T> extends Mesh.Builder<T> {
 
         protected int[] mapSize;
         protected Rectangle charRectangle;
@@ -57,7 +58,7 @@ public class PlayfieldMesh extends SpriteMesh {
          * @param height
          * @return
          */
-        public Builder setMapSize(int width, int height) {
+        public Builder<T> setMapSize(int width, int height) {
             mapSize = new int[] { width, height };
             return this;
         }
@@ -70,7 +71,7 @@ public class PlayfieldMesh extends SpriteMesh {
          * @param charRect size of each char
          * @return
          */
-        public Builder setMap(int[] mapSize, Rectangle charRect) {
+        public Builder<T> setMap(int[] mapSize, Rectangle charRect) {
             this.mapSize = new int[] { mapSize[0], mapSize[1] };
             this.charRectangle = charRect;
             setElementMode(Mode.TRIANGLES, mapSize[0] * mapSize[1] * RectangleShapeBuilder.QUAD_VERTICES,
@@ -85,7 +86,7 @@ public class PlayfieldMesh extends SpriteMesh {
          * @param y
          * @return
          */
-        public Builder setOffset(float x, float y) {
+        public Builder<T> setOffset(float x, float y) {
             this.offset = new float[] { x, y };
             return this;
         }
@@ -96,7 +97,7 @@ public class PlayfieldMesh extends SpriteMesh {
          * @param offset
          * @return
          */
-        public Builder setOffset(float[] offset) {
+        public Builder<T> setOffset(float[] offset) {
             this.offset = new float[] { offset[0], offset[1] };
             return this;
         }
@@ -121,7 +122,7 @@ public class PlayfieldMesh extends SpriteMesh {
          * @return The mesh that can be rendered to produce a playfield
          */
         @Override
-        public PlayfieldMesh create() throws IOException {
+        public T create() throws IOException {
             validate();
             if (material.getProgram() == null) {
                 PlayfieldProgram program = new PlayfieldProgram();
@@ -134,7 +135,7 @@ public class PlayfieldMesh extends SpriteMesh {
             if (Configuration.getInstance().isUseVBO()) {
                 BufferObjectsFactory.getInstance().createVBOs(renderer, playfieldMesh);
             }
-            return playfieldMesh;
+            return (T) playfieldMesh;
         }
 
         @Override
