@@ -12,8 +12,6 @@ import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.RectangleShapeBuilder;
 import com.nucleus.geometry.VertexBuffer;
-import com.nucleus.renderer.BufferObjectsFactory;
-import com.nucleus.renderer.Configuration;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.shader.ShaderVariable;
@@ -50,14 +48,12 @@ public class SpriteMesh extends Mesh implements Consumer {
      * Storage for 4 UV components
      */
     private transient float[] frames = new float[2 * 4];
-    private transient Builder<SpriteMesh> builder;
 
-    public static class Builder<T> extends Mesh.Builder<Mesh> {
+    public static class Builder extends Mesh.Builder<SpriteMesh> {
 
         private final static String INVALID_TYPE = "Invalid type: ";
 
         private int spriteCount;
-        private Rectangle spriteRect;
         /**
          * Creates a new SpriteMesh builder
          * 
@@ -74,21 +70,10 @@ public class SpriteMesh extends Mesh implements Consumer {
          * @param spriteCount Number of sprites (quads) to support
          * @return
          */
-        public Builder<T> setSpriteCount(int spriteCount) {
+        public Builder setSpriteCount(int spriteCount) {
             this.spriteCount = spriteCount;
             setElementMode(Mode.TRIANGLES, spriteCount * RectangleShapeBuilder.QUAD_VERTICES,
                     spriteCount * RectangleShapeBuilder.QUAD_ELEMENTS);
-            return this;
-        }
-
-        /**
-         * Sets the rectangle defining each of the sprites
-         * 
-         * @param rectangle
-         * @return
-         */
-        public Builder<T> setRectangle(Rectangle rectangle) {
-            this.spriteRect = rectangle;
             return this;
         }
 
@@ -101,24 +86,26 @@ public class SpriteMesh extends Mesh implements Consumer {
          * @return The created sprite mesh
          */
         @Override
-        public SpriteMesh create() throws IOException {
-            validate();
+        public Mesh create() throws IOException {
             if (material.getProgram() == null) {
                 ShaderProgram program = createProgram(texture);
                 program = AssetManager.getInstance().getProgram(renderer, program);
                 material.setProgram(program);
 
             }
-            SpriteMesh mesh = new SpriteMesh();
-            if (spriteRect != null) {
-                mesh.createMesh(texture, material, spriteCount, spriteRect);
-            } else {
-                mesh.createMesh(texture, material, spriteCount);
-            }
-            if (Configuration.getInstance().isUseVBO()) {
-                BufferObjectsFactory.getInstance().createVBOs(renderer, mesh);
-            }
-            return mesh;
+            return super.create();
+            /**
+             * SpriteMesh mesh = new SpriteMesh();
+             * mesh.createMesh(texture, material, vertexCount, indiceCount, mode);
+             * if (Configuration.getInstance().isUseVBO()) {
+             * BufferObjectsFactory.getInstance().createVBOs(renderer, mesh);
+             * }
+             */
+        }
+
+        @Override
+        protected Mesh createMesh() {
+            return new SpriteMesh();
         }
 
         /**
@@ -172,10 +159,9 @@ public class SpriteMesh extends Mesh implements Consumer {
      * @param count Number of sprites to support
      * @param Rectangle The rectangle defining the quad for each sprite
      */
-    public void createMesh(Texture2D texture, Material material, int count, Rectangle rectangle) {
-        super.createMesh(texture, material, count * RectangleShapeBuilder.QUAD_VERTICES, count * QUAD_INDICES,
-                Mode.TRIANGLES);
-        buildMesh(material.getProgram(), count, rectangle, 0);
+    @Override
+    public void createMesh(Texture2D texture, Material material, int vertexCount, int indiceCount, Mode mode) {
+        super.createMesh(texture, material, vertexCount, indiceCount, mode);
         setAttributeUpdater(this);
     }
 

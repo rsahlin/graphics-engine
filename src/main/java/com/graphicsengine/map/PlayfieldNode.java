@@ -125,6 +125,16 @@ public class PlayfieldNode extends Node implements ObjectInputListener, MMIEvent
     }
 
     /**
+     * Returns the number of chars in the map - this is the same as width * height
+     * 
+     * @return
+     */
+    public int getCharCount() {
+        return mapSize[0] * mapSize[1];
+
+    }
+
+    /**
      * Returns a reference to the rectangle defining each char
      * 
      * @return

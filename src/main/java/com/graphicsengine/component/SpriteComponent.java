@@ -10,6 +10,7 @@ import com.nucleus.component.ComponentNode;
 import com.nucleus.geometry.AttributeUpdater;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
+import com.nucleus.geometry.RectangleShapeBuilder;
 import com.nucleus.geometry.VertexBuffer;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node.MeshType;
@@ -147,11 +148,13 @@ public class SpriteComponent extends Component implements Consumer {
     public void create(NucleusRenderer renderer, ComponentNode parent)
             throws ComponentException {
         try {
-            SpriteMesh.Builder<SpriteMesh> spriteBuilder = new SpriteMesh.Builder<>(renderer);
+            SpriteMesh.Builder spriteBuilder = new SpriteMesh.Builder(renderer);
             spriteBuilder.setTexture(parent.getTextureRef());
             spriteBuilder.setMaterial(parent.getMaterial());
             spriteBuilder.setSpriteCount(count);
-            spriteBuilder.setRectangle(rectangle);
+            RectangleShapeBuilder shapeBuilder = new RectangleShapeBuilder(
+                    new RectangleShapeBuilder.Configuration(rectangle, 0f, count, 0));
+            spriteBuilder.setShapeBuilder(shapeBuilder);
             // TODO - Fix generics so that cast is not needed
             spriteMesh = (SpriteMesh) spriteBuilder.create();
             this.textureType = spriteMesh.getTexture(Texture2D.TEXTURE_0).getTextureType();

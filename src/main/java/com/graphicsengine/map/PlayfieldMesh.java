@@ -10,15 +10,12 @@ import com.graphicsengine.spritemesh.SpriteMesh;
 import com.nucleus.assets.AssetManager;
 import com.nucleus.bounds.Bounds;
 import com.nucleus.bounds.RectangularBounds;
-import com.nucleus.geometry.Material;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.RectangleShapeBuilder;
-import com.nucleus.renderer.BufferObjectsFactory;
-import com.nucleus.renderer.Configuration;
+import com.nucleus.geometry.RectangleShapeBuilder.Configuration;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.Texture2D;
-import com.nucleus.texturing.TiledTexture2D;
 import com.nucleus.vecmath.Axis;
 import com.nucleus.vecmath.Rectangle;
 
@@ -40,9 +37,8 @@ public class PlayfieldMesh extends SpriteMesh {
     private transient Map map;
 
     private transient int[] playfieldSize = new int[2];
-    private transient Builder<PlayfieldMesh> builder;
 
-    public static class Builder<T> extends Mesh.Builder<T> {
+    public static class Builder extends Mesh.Builder<PlayfieldMesh> {
 
         protected int[] mapSize;
         protected Rectangle charRectangle;
@@ -58,7 +54,7 @@ public class PlayfieldMesh extends SpriteMesh {
          * @param height
          * @return
          */
-        public Builder<T> setMapSize(int width, int height) {
+        public Builder setMapSize(int width, int height) {
             mapSize = new int[] { width, height };
             return this;
         }
@@ -71,11 +67,12 @@ public class PlayfieldMesh extends SpriteMesh {
          * @param charRect size of each char
          * @return
          */
-        public Builder<T> setMap(int[] mapSize, Rectangle charRect) {
+        public Builder setMap(int[] mapSize, Rectangle charRect) {
             this.mapSize = new int[] { mapSize[0], mapSize[1] };
             this.charRectangle = charRect;
-            setElementMode(Mode.TRIANGLES, mapSize[0] * mapSize[1] * RectangleShapeBuilder.QUAD_VERTICES,
-                    RectangleShapeBuilder.QUAD_ELEMENTS);
+            int charCount = mapSize[0] * mapSize[1];
+            setElementMode(Mode.TRIANGLES, charCount * RectangleShapeBuilder.QUAD_VERTICES,
+                    charCount * RectangleShapeBuilder.QUAD_ELEMENTS);
             return this;
         }
 
@@ -86,7 +83,7 @@ public class PlayfieldMesh extends SpriteMesh {
          * @param y
          * @return
          */
-        public Builder<T> setOffset(float x, float y) {
+        public Builder setOffset(float x, float y) {
             this.offset = new float[] { x, y };
             return this;
         }
@@ -97,7 +94,7 @@ public class PlayfieldMesh extends SpriteMesh {
          * @param offset
          * @return
          */
-        public Builder<T> setOffset(float[] offset) {
+        public Builder setOffset(float[] offset) {
             this.offset = new float[] { offset[0], offset[1] };
             return this;
         }
@@ -122,20 +119,24 @@ public class PlayfieldMesh extends SpriteMesh {
          * @return The mesh that can be rendered to produce a playfield
          */
         @Override
-        public T create() throws IOException {
-            validate();
+        public Mesh create() throws IOException {
             if (material.getProgram() == null) {
                 PlayfieldProgram program = new PlayfieldProgram();
                 program = (PlayfieldProgram) AssetManager.getInstance().getProgram(renderer, program);
                 material.setProgram(program);
             }
-            PlayfieldMesh playfieldMesh = new PlayfieldMesh();
-            playfieldMesh.createMesh(texture, material, mapSize, charRectangle);
-            playfieldMesh.setupCharmap(mapSize, charRectangle.getSize(), offset);
-            if (Configuration.getInstance().isUseVBO()) {
-                BufferObjectsFactory.getInstance().createVBOs(renderer, playfieldMesh);
-            }
-            return (T) playfieldMesh;
+            Configuration configuration = new Configuration(charRectangle, 1f, mapSize[0] * mapSize[1], 0);
+            RectangleShapeBuilder shapeBuilder = new RectangleShapeBuilder(configuration);
+            setShapeBuilder(shapeBuilder);
+            PlayfieldMesh mesh = (PlayfieldMesh) super.create();
+            mesh.playfieldSize = mapSize;
+            mesh.setupCharmap(charRectangle.getSize(), offset);
+            return mesh;
+        }
+
+        @Override
+        protected Mesh createMesh() {
+            return new PlayfieldMesh();
         }
 
         @Override
@@ -180,23 +181,6 @@ public class PlayfieldMesh extends SpriteMesh {
     }
 
     /**
-     * Creates the mesh for this charmap, each char has the specified width and height, z position.
-     * Texture UV is set using 1 / framesX and 1/ framesY
-     * 
-     * @param texture If tiling should be used this must be instance of {@link TiledTexture2D}
-     * @param material
-     * @param playfieldSize Number of chars to support in the mesh
-     * @param rectangle The rectangle defining a char, all chars will have same size.
-     */
-    public void createMesh(Texture2D texture, Material material, int[] playfieldSize,
-            Rectangle rectangle) {
-        int count = playfieldSize[0] * playfieldSize[1];
-        this.playfieldSize[Axis.WIDTH.index] = playfieldSize[Axis.WIDTH.index];
-        this.playfieldSize[Axis.HEIGHT.index] = playfieldSize[Axis.HEIGHT.index];
-        super.createMesh(texture, material, count, rectangle);
-    }
-
-    /**
      * Creates and positions the characters using width and height number of chars, starting at xpos, ypos
      * This will set the position for each character, the map can be moved by translating
      * the node it is attached to.
@@ -204,25 +188,22 @@ public class PlayfieldMesh extends SpriteMesh {
      * The chars will be laid out sequentially across the x axis (row based)
      * Before rendering the attributes in the mesh must be updated with attribute data from this class.
      * 
-     * @param mapSize width and height of map, in characters
      * @param charSize width and height of each char
      * @param offset Start position of the upper left char, ie the upper left char will have this position.
      * @throws IllegalArgumentException If the size of the map does not match number of chars in this class
      */
-    public void setupCharmap(int[] mapSize, float[] charSize, float[] offset) {
-        if (mapSize[Axis.WIDTH.index] * mapSize[Axis.HEIGHT.index] != playfieldSize[Axis.WIDTH.index]
-                * playfieldSize[Axis.HEIGHT.index]) {
-            throw new IllegalArgumentException("Size of map does not match number of chars in mesh");
+    public void setupCharmap(float[] charSize, float[] offset) {
+        if (playfieldSize == null || playfieldSize[0] == 0 || playfieldSize[1] == 0) {
+            throw new IllegalArgumentException(
+                    "Invalid map size " + (playfieldSize != null ? playfieldSize[0] + playfieldSize[1] : "null"));
         }
-        playfieldSize[Axis.WIDTH.index] = mapSize[Axis.WIDTH.index];
-        playfieldSize[Axis.HEIGHT.index] = mapSize[Axis.HEIGHT.index];
         int index = 0;
         float currentX = offset[0];
         float currentY = offset[1];
         float startY = currentY;
-        for (int y = 0; y < mapSize[1]; y++) {
+        for (int y = 0; y < playfieldSize[1]; y++) {
             currentY = startY;
-            for (int x = 0; x < mapSize[0]; x++) {
+            for (int x = 0; x < playfieldSize[0]; x++) {
                 attributeData[index + mapper.translateOffset] = currentX;
                 attributeData[index + mapper.translateOffset + 1] = currentY;
                 index += mapper.attributesPerVertex;
