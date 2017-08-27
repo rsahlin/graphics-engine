@@ -183,27 +183,6 @@ public class SpriteMesh extends Mesh implements Consumer {
     }
 
     /**
-     * Builds a mesh with data that can be rendered using a tiled sprite renderer, this will draw a number of
-     * sprites using one drawcall.
-     * With this call all quads will have the same size
-     * This call will build the quads using index buffer, texture UV will be set according to the texture reference.
-     * Either as tiled or uvatlas
-     * Vertex buffer will have storage for XYZ + UV.
-     * Note that element data must have been created, and initialized, for spriteCount
-     * 
-     * @param program The shader program to use with the mesh
-     * @param spriteCount Number of sprites to build, this is NOT the vertex count.
-     * @param rectangle The rectangle defining each char, all chars will be the same
-     * @param z
-     */
-    protected void buildMesh(ShaderProgram program, int spriteCount, Rectangle rectangle, float z) {
-        int vertexStride = program.getVertexStride();
-        Texture2D texture = getTexture(Texture2D.TEXTURE_0);
-        float[] quadPositions = texture.createQuadArray(rectangle, vertexStride, z);
-        MeshBuilder.buildQuadMeshIndexed(this, program, spriteCount, quadPositions);
-    }
-
-    /**
      * Builds one quad at the specified index, use this call to create the quads to be drawn individually.
      * Before using this call the indexed buffer (indices) must be built in the mesh, ie this method will only
      * set the vertex positions and UV for this quad
@@ -217,7 +196,7 @@ public class SpriteMesh extends Mesh implements Consumer {
     public void buildQuad(int index, ShaderProgram program, Rectangle rectangle) {
         int vertexStride = program.getVertexStride();
         Texture2D texture = getTexture(Texture2D.TEXTURE_0);
-        float[] quadPositions = texture.createQuadArray(rectangle, vertexStride, 0);
+        float[] quadPositions = RectangleShapeBuilder.createQuadArray(rectangle, texture, vertexStride, 0);
         MeshBuilder.buildQuads(this, program, 1, index, quadPositions);
     }
 
