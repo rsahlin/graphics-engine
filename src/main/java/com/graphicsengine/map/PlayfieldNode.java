@@ -71,6 +71,10 @@ public class PlayfieldNode extends Node implements ObjectInputListener, MMIEvent
 
     private PlayfieldNode(RootNode root) {
         super(root);
+        /**
+         * Todo create objectinput detector and use composition instead of inheritance
+         */
+        setObjectInputListener(this);
     }
 
 
