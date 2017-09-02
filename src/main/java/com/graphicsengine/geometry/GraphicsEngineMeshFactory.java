@@ -15,6 +15,11 @@ import com.nucleus.geometry.RectangleShapeBuilder;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node;
 
+/**
+ * Mesh factory for graphics-engine meshes
+ * This is the main entrypoint for creating graphics-engine meshes
+ *
+ */
 public class GraphicsEngineMeshFactory extends DefaultMeshFactory implements MeshFactory {
 
     PlayfieldMesh.Builder playfieldBuilder;
