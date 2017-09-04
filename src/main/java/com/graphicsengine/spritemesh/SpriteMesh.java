@@ -39,8 +39,9 @@ import com.nucleus.vecmath.Transform;
 public class SpriteMesh extends Mesh implements Consumer {
 
     /**
-     * Contains attribute data for all sprites - this is the array that sprites will write into.
-     * This data must be mapped into the mesh for changes to take place.
+     * Contains attribute data for all sprites - this is a copy of the attribute buffer, since this will double-buffer
+     * the attribute buffer there is no need for syncronization while writing into this buffer.
+     * This data must be mapped into the mesh attribute buffer for changes to take place.
      */
     protected transient float[] attributeData;
 

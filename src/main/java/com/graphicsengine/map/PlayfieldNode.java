@@ -48,7 +48,7 @@ public class PlayfieldNode extends Node implements ObjectInputListener, MMIEvent
 
     /**
      * X and Y anchor for map, this controls where the first char of the map is.
-     * This is used when constructing the mesh
+     * This is used when building the mesh
      */
     @SerializedName(ANCHOR)
     private Anchor anchor;
