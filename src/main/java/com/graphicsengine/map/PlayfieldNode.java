@@ -11,6 +11,7 @@ import com.nucleus.mmi.MMIPointerEvent;
 import com.nucleus.mmi.ObjectInputListener;
 import com.nucleus.mmi.PointerData;
 import com.nucleus.mmi.PointerMotionData;
+import com.nucleus.scene.LineDrawerNode;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.NodeException;
 import com.nucleus.scene.RootNode;
@@ -26,7 +27,47 @@ import com.nucleus.vecmath.Rectangle;
  * @author Richard Sahlin
  *
  */
-public class PlayfieldNode extends Node implements ObjectInputListener, MMIEventListener {
+public class PlayfieldNode extends Node implements MMIEventListener {
+
+    public class PlayfieldNodeObjectInputListener implements ObjectInputListener {
+
+        float[] rectangle = new float[4];
+        float[] rgba = new float[] { 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1 };
+
+        @Override
+        public boolean onClick(PointerData click) {
+            float[] inverse = new float[16];
+            float[] position = click.position;
+            if (Matrix.invertM(inverse, 0, getModelMatrix(), 0)) {
+                float[] vec2 = new float[2];
+                Matrix.transformVec2(inverse, 0, position, vec2, 1);
+                int[] mapPos = getMapPos(vec2);
+                if (mapPos != null) {
+                    map.logMapPosition(mapPos[0], mapPos[1]);
+                }
+            } else {
+                SimpleLogger.d(getClass(), "Could not invert matrix!!!!!!!!!!!!!!!!");
+            }
+            return false;
+        }
+
+        @Override
+        public boolean onDrag(PointerMotionData drag) {
+            SimpleLogger.d(getClass(), "onDrag()");
+            float[] down = drag.getFirstPosition();
+            float[] current = drag.getCurrentPosition();
+            rectangle[0] = down[0];
+            rectangle[1] = down[1];
+            rectangle[2] = current[0] - down[0];
+            rectangle[3] = down[1] - current[1];
+            LineDrawerNode lines = (LineDrawerNode) getRootNode().getScene().getNodeById("lines");
+            if (lines != null) {
+                lines.setRectangle(0, rectangle, 0f, rgba);
+            }
+            return true;
+        }
+
+    }
 
     public static final String MAPREF = "mapRef";
     public static final String ANCHOR = "anchor";
@@ -71,10 +112,7 @@ public class PlayfieldNode extends Node implements ObjectInputListener, MMIEvent
 
     private PlayfieldNode(RootNode root) {
         super(root);
-        /**
-         * Todo create objectinput detector and use composition instead of inheritance
-         */
-        setObjectInputListener(this);
+        setObjectInputListener(new PlayfieldNodeObjectInputListener());
     }
 
 
@@ -223,22 +261,6 @@ public class PlayfieldNode extends Node implements ObjectInputListener, MMIEvent
 
     }
 
-    @Override
-    public boolean onClick(PointerData click) {
-        float[] inverse = new float[16];
-        float[] position = click.position;
-        if (Matrix.invertM(inverse, 0, getModelMatrix(), 0)) {
-            float[] vec2 = new float[2];
-            Matrix.transformVec2(inverse, 0, position, vec2, 1);
-            int[] mapPos = getMapPos(vec2);
-            if (mapPos != null) {
-                map.logMapPosition(mapPos[0], mapPos[1]);
-            }
-        } else {
-            SimpleLogger.d(getClass(), "Could not invert matrix!!!!!!!!!!!!!!!!");
-        }
-        return false;
-    }
 
     /**
      * Returns the map x and y position for the specified (normalized) screen position.
@@ -283,10 +305,5 @@ public class PlayfieldNode extends Node implements ObjectInputListener, MMIEvent
         }
     }
 
-    @Override
-    public boolean onDrag(PointerMotionData drag) {
-        SimpleLogger.d(getClass(), "onDrag()");
-        return true;
-    }
 
 }

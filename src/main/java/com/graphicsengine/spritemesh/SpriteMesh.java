@@ -184,6 +184,7 @@ public class SpriteMesh extends Mesh implements Consumer {
     }
 
     /**
+     * This method should be moved to RectangleShapeBuilder
      * Builds one quad at the specified index, use this call to create the quads to be drawn individually.
      * Before using this call the indexed buffer (indices) must be built in the mesh, ie this method will only
      * set the vertex positions and UV for this quad
@@ -194,10 +195,12 @@ public class SpriteMesh extends Mesh implements Consumer {
      * @param program
      * @param rectangle The rectangle defining the sprite
      */
+    @Deprecated
     public void buildQuad(int index, ShaderProgram program, Rectangle rectangle) {
         int vertexStride = program.getVertexStride();
+        float[] quadPositions = new float[vertexStride * 4];
         Texture2D texture = getTexture(Texture2D.TEXTURE_0);
-        float[] quadPositions = RectangleShapeBuilder.createQuadArray(rectangle, texture, vertexStride, 0);
+        RectangleShapeBuilder.createQuadArray(rectangle, texture, vertexStride, 0, quadPositions);
         MeshBuilder.buildQuads(this, program, 1, index, quadPositions);
     }
 

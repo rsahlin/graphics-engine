@@ -5,6 +5,7 @@ import java.io.IOException;
 import com.graphicsengine.map.PlayfieldMesh;
 import com.graphicsengine.map.PlayfieldNode;
 import com.graphicsengine.scene.QuadParentNode;
+import com.graphicsengine.scene.SharedMeshQuad;
 import com.graphicsengine.spritemesh.SpriteMesh;
 import com.nucleus.bounds.Bounds;
 import com.nucleus.component.ComponentNode;
@@ -69,13 +70,11 @@ public class GraphicsEngineMeshFactory extends DefaultMeshFactory implements Mes
              */
             return null;
         }
-        if (parent instanceof Node) {
-            /**
-             * If Node then don't create mesh
-             */
+        if (parent instanceof SharedMeshQuad) {
+            // This is child to quad parent node, do not create mesh
             return null;
         }
-        throw new IllegalArgumentException("Not implemented support for " + parent.getClass().getName());
+        return super.createMesh(renderer, parent);
     }
 
 
