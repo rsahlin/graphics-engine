@@ -13,6 +13,7 @@ import com.nucleus.geometry.DefaultMeshFactory;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshFactory;
 import com.nucleus.geometry.RectangleShapeBuilder;
+import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node;
 
@@ -36,8 +37,7 @@ public class GraphicsEngineMeshFactory extends DefaultMeshFactory implements Mes
 
 
     @Override
-    public Mesh createMesh(NucleusRenderer renderer, Node parent)
-            throws IOException {
+    public Mesh createMesh(NucleusRenderer renderer, Node parent) throws IOException, GLException {
 
         if (parent instanceof PlayfieldNode) {
             PlayfieldNode playfield = (PlayfieldNode) parent;

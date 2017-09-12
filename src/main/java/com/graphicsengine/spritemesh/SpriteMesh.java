@@ -12,6 +12,7 @@ import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.RectangleShapeBuilder;
 import com.nucleus.geometry.VertexBuffer;
+import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.shader.ShaderVariable;
@@ -78,16 +79,8 @@ public class SpriteMesh extends Mesh implements Consumer {
             return this;
         }
 
-        /**
-         * This will create an old school sprite mesh, where each sprite has a frame, the sprite can be rotated in z
-         * axis and positioned in x and y.
-         * Arguments are taken from the parent node.
-         * 
-         * @param parent The parent node where arguments are read from
-         * @return The created sprite mesh
-         */
         @Override
-        public Mesh create() throws IOException {
+        public Mesh create() throws IOException, GLException {
             if (material.getProgram() == null) {
                 ShaderProgram program = createProgram(texture);
                 program = AssetManager.getInstance().getProgram(renderer, program);

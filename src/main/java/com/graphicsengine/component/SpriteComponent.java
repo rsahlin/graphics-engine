@@ -12,6 +12,7 @@ import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.geometry.RectangleShapeBuilder;
 import com.nucleus.geometry.VertexBuffer;
+import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node.MeshType;
 import com.nucleus.shader.ShaderProgram;
@@ -167,7 +168,7 @@ public class SpriteComponent extends Component implements Consumer {
             default:
                 break;
             }
-        } catch (IOException e) {
+        } catch (IOException | GLException e) {
             throw new ComponentException("Could not create component: " + e.getMessage());
         }
         mapper = spriteMesh.getMapper();

@@ -13,6 +13,7 @@ import com.nucleus.bounds.RectangularBounds;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.RectangleShapeBuilder;
 import com.nucleus.geometry.RectangleShapeBuilder.Configuration;
+import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.Texture2D;
@@ -111,15 +112,8 @@ public class PlayfieldMesh extends SpriteMesh {
             }
         }
 
-        /**
-         * Factory method for creating the playfield mesh, after this call the playfield can be rendered, it must
-         * be filled with map data.
-         * The arguments for creating the mesh are taken from the parent node.
-         * 
-         * @return The mesh that can be rendered to produce a playfield
-         */
         @Override
-        public Mesh create() throws IOException {
+        public Mesh create() throws IOException, GLException {
             if (material.getProgram() == null) {
                 PlayfieldProgram program = new PlayfieldProgram();
                 program = (PlayfieldProgram) AssetManager.getInstance().getProgram(renderer, program);
