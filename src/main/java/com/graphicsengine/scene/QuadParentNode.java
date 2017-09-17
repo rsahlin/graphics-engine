@@ -26,11 +26,15 @@ public class QuadParentNode extends Node {
 
     transient private ArrayList<SharedMeshQuad> quadChildren = new ArrayList<>();
 
+    /**
+     * Used by GSON and {@link #createInstance(RootNode)} method - do NOT call directly
+     */
+    @Deprecated
     protected QuadParentNode() {
     }
 
     private QuadParentNode(RootNode root) {
-        super(root);
+        super(root, GraphicsEngineNodeType.quadNode);
     }
 
 

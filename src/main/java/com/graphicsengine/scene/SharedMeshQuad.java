@@ -32,11 +32,15 @@ public class SharedMeshQuad extends Node {
     @SerializedName(Rectangle.RECT)
     private Rectangle rectangle;
 
+    /**
+     * Used by GSON and {@link #createInstance(RootNode)} method - do NOT call directly
+     */
+    @Deprecated
     protected SharedMeshQuad() {
     }
 
-    private SharedMeshQuad(RootNode root) {
-        super(root);
+    protected SharedMeshQuad(RootNode root) {
+        super(root, GraphicsEngineNodeType.sharedMeshNode);
     }
 
     /**

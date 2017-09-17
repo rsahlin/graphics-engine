@@ -1,17 +1,14 @@
 package com.graphicsengine.spritemesh;
 
-import static com.nucleus.geometry.VertexBuffer.QUAD_INDICES;
-
 import java.io.IOException;
 
 import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
-import com.nucleus.geometry.ElementBuilder;
 import com.nucleus.geometry.Material;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.RectangleShapeBuilder;
-import com.nucleus.geometry.VertexBuffer;
+import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.shader.ShaderProgram;
@@ -160,23 +157,6 @@ public class SpriteMesh extends Mesh implements Consumer {
     }
 
     /**
-     * Creates the buffers for the specified number of quads/sprites.
-     * This method does not build the mesh, that has to be done by calling:
-     * {@link #buildQuad(int, ShaderProgram, Rectangle)for each sprite/quad that shall be rendered.
-     * or {@link #buildMesh(ShaderProgram, int, float[])}
-     * 
-     * @param texture
-     * @param material
-     * @param count
-     */
-    public void createMesh(Texture2D texture, Material material, int count) {
-        super.createMesh(texture, material, count * RectangleShapeBuilder.QUAD_VERTICES, count * QUAD_INDICES,
-                Mode.TRIANGLES);
-        ElementBuilder.buildQuadBuffer(indices, indices.getCount() / QUAD_INDICES, 0);
-        setAttributeUpdater(this);
-    }
-
-    /**
      * This method should be moved to RectangleShapeBuilder
      * Builds one quad at the specified index, use this call to create the quads to be drawn individually.
      * Before using this call the indexed buffer (indices) must be built in the mesh, ie this method will only
@@ -202,7 +182,7 @@ public class SpriteMesh extends Mesh implements Consumer {
         if (attributeData == null) {
             throw new IllegalArgumentException(Consumer.BUFFER_NOT_BOUND);
         }
-        VertexBuffer positions = getVerticeBuffer(BufferIndex.ATTRIBUTES);
+        AttributeBuffer positions = getVerticeBuffer(BufferIndex.ATTRIBUTES);
         positions.setArray(attributeData, 0, 0, attributeData.length);
         positions.setDirty(true);
     }
@@ -234,7 +214,7 @@ public class SpriteMesh extends Mesh implements Consumer {
     }
 
     @Override
-    public void bindAttributeBuffer(VertexBuffer buffer) {
+    public void bindAttributeBuffer(AttributeBuffer buffer) {
         attributeData = new float[buffer.getBuffer().capacity()];
     }
 

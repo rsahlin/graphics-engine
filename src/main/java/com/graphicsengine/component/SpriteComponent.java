@@ -11,7 +11,7 @@ import com.nucleus.geometry.AttributeUpdater;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.geometry.RectangleShapeBuilder;
-import com.nucleus.geometry.VertexBuffer;
+import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node.MeshType;
@@ -352,6 +352,6 @@ public class SpriteComponent extends Component implements Consumer {
     }
 
     @Override
-    public void bindAttributeBuffer(VertexBuffer buffer) {
+    public void bindAttributeBuffer(AttributeBuffer buffer) {
     }
 }

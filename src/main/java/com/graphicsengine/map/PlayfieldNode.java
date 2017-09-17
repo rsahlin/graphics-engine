@@ -3,6 +3,7 @@ package com.graphicsengine.map;
 import java.io.IOException;
 
 import com.google.gson.annotations.SerializedName;
+import com.graphicsengine.scene.GraphicsEngineNodeType;
 import com.nucleus.SimpleLogger;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.io.ExternalReference;
@@ -60,7 +61,7 @@ public class PlayfieldNode extends Node implements MMIEventListener {
             rectangle[1] = down[1];
             rectangle[2] = current[0] - down[0];
             rectangle[3] = down[1] - current[1];
-            LineDrawerNode lines = (LineDrawerNode) getRootNode().getScene().getNodeById("lines");
+            LineDrawerNode lines = (LineDrawerNode) getRootNode().getNodeById("lines");
             if (lines != null) {
                 lines.setRectangle(0, rectangle, 0f, rgba);
             }
@@ -106,12 +107,16 @@ public class PlayfieldNode extends Node implements MMIEventListener {
      */
     transient private Map map;
 
+    /**
+     * Used by GSON and {@link #createInstance(RootNode)} method - do NOT call directly
+     */
+    @Deprecated
     protected PlayfieldNode() {
         super();
     }
 
     private PlayfieldNode(RootNode root) {
-        super(root);
+        super(root, GraphicsEngineNodeType.playfieldNode);
         setObjectInputListener(new PlayfieldNodeObjectInputListener());
     }
 
