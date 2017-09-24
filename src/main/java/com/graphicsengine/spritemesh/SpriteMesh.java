@@ -2,6 +2,7 @@ package com.graphicsengine.spritemesh;
 
 import java.io.IOException;
 
+import com.nucleus.SimpleLogger;
 import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.Material;

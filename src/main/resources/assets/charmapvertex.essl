@@ -34,6 +34,10 @@ attribute vec4 aMaterialAmbient;
 varying vec2 vTexCoord;
 varying vec4 vAmbientLight;
 
+precision mediump float;
+precision mediump int;
+
+
 void main() {
     int flags = int(aCharset2.y);
     vec4 pos = uMVMatrix * vec4(aPosition, 1.0) + (uMVMatrix * vec4(aCharset.x, aCharset.y,aCharset.z, 0.0));
