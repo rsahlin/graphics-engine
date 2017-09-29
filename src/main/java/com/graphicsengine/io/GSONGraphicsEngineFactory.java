@@ -59,7 +59,6 @@ public class GSONGraphicsEngineFactory extends GSONSceneFactory {
         }
     }
 
-    private NodeDeserializer nodeDeserializer = new NodeDeserializer();
     private ComponentDeserializer componentDeserializer = new ComponentDeserializer();
 
     /**
@@ -72,14 +71,17 @@ public class GSONGraphicsEngineFactory extends GSONSceneFactory {
      * @param meshFactory
      * @param types Implementation specific types that shall be registered to the {@linkplain TypeResolver}, may be null
      */
-    public GSONGraphicsEngineFactory(NucleusRenderer renderer, NodeFactory nodeFactory,
-            MeshFactory meshFactory, List<Type<?>> types) {
+    public GSONGraphicsEngineFactory(NucleusRenderer renderer, NodeFactory nodeFactory, MeshFactory meshFactory, List<Type<?>> types) {
         super(renderer, nodeFactory, meshFactory, Arrays.asList((Type<?>[]) GraphicsEngineClasses.values()));
         if (types != null) {
             TypeResolver.getInstance().registerTypes(types);
         }
     }
 
+    protected void createNodeDeserializer() {
+        nodeDeserializer = new NodeDeserializer();
+    }
+    
     @Override
     protected RootNode getSceneFromJson(Gson gson, Reader reader) {
         return gson.fromJson(reader, GraphicsEngineRootNode.class);
