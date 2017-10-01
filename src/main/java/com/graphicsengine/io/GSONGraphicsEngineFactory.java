@@ -81,26 +81,12 @@ public class GSONGraphicsEngineFactory extends GSONSceneFactory {
     protected void createNodeDeserializer() {
         nodeDeserializer = new NodeDeserializer();
     }
-    
-    @Override
-    protected RootNode getSceneFromJson(Gson gson, Reader reader) {
-        return gson.fromJson(reader, GraphicsEngineRootNode.class);
-    }
-
-    @Override
-    protected RootNode createSceneData() {
-        return new GraphicsEngineRootNode();
-    }
 
     @Override
     protected void createNodeExporter() {
         nodeExporter = new GraphicsEngineNodeExporter();
     }
 
-    @Override
-    protected RootNode createInstance() {
-        return new GraphicsEngineRootNode();
-    }
 
     @Override
     protected void registerNodeExporters() {
