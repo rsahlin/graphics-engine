@@ -119,7 +119,7 @@ public class PlayfieldMesh extends SpriteMesh {
                 program = (PlayfieldProgram) AssetManager.getInstance().getProgram(renderer, program);
                 material.setProgram(program);
             }
-            Configuration configuration = new Configuration(charRectangle, 1f, mapSize[0] * mapSize[1], 0);
+            Configuration configuration = new RectangleShapeBuilder.Configuration(charRectangle, RectangleShapeBuilder.DEFAULT_Z, mapSize[0] * mapSize[1], 0);
             RectangleShapeBuilder shapeBuilder = new RectangleShapeBuilder(configuration);
             setShapeBuilder(shapeBuilder);
             PlayfieldMesh mesh = (PlayfieldMesh) super.create();

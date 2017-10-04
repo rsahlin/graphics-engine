@@ -154,7 +154,7 @@ public class SpriteComponent extends Component implements Consumer {
             spriteBuilder.setMaterial(parent.getMaterial());
             spriteBuilder.setSpriteCount(count);
             RectangleShapeBuilder shapeBuilder = new RectangleShapeBuilder(
-                    new RectangleShapeBuilder.Configuration(rectangle, 0f, count, 0));
+                    new RectangleShapeBuilder.Configuration(rectangle, RectangleShapeBuilder.DEFAULT_Z, count, 0));
             spriteBuilder.setShapeBuilder(shapeBuilder);
             // TODO - Fix generics so that cast is not needed
             spriteMesh = (SpriteMesh) spriteBuilder.create();
