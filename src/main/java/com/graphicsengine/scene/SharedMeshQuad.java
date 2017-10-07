@@ -53,12 +53,14 @@ public class SharedMeshQuad extends Node {
      */
     public void onCreated(SpriteMesh mesh, int index) {
         this.childIndex = index;
-        if (rectangle == null && mesh.getTexture(Texture2D.TEXTURE_0).getTextureType() == TextureType.Untextured) {
+        Texture2D texture = mesh.getTexture(Texture2D.TEXTURE_0);
+        if (rectangle == null && (texture.getTextureType() == TextureType.Untextured || 
+                texture.getWidth() == 0 || texture.getHeight()== 0)) {
             // Must have size
-            throw new IllegalArgumentException("Node does not define RECT and texture is untextured");
+            throw new IllegalArgumentException("Node does not define RECT and texture is untextured or size is zero");
         }
         Rectangle quadRect = rectangle != null ? rectangle
-                : mesh.getTexture(Texture2D.TEXTURE_0).calculateWindowRectangle();
+                : texture.calculateWindowRectangle();
         mesh.buildQuad(index, mesh.getMaterial().getProgram(), quadRect);
         initBounds(quadRect);
         if (transform == null) {
