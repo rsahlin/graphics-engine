@@ -63,7 +63,8 @@ public class SpriteComponent extends Component implements Consumer {
         MOVE_VECTOR_Y(11),
         MOVE_VECTOR_Z(12),
         ELASTICITY(13),
-        ROTATE_SPEED(14);
+        ROTATE_SPEED(14),
+        RESISTANCE(15);
         public final int index;
 
         SpriteData(int index) {
