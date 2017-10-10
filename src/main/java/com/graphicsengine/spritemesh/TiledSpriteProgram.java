@@ -9,6 +9,7 @@ import com.nucleus.opengl.GLException;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.shader.ShaderVariable;
 import com.nucleus.shader.ShaderVariable.VariableType;
+import com.nucleus.shader.ShaderVariables;
 import com.nucleus.shader.VariableMapping;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TiledTexture2D;
@@ -32,72 +33,24 @@ public class TiledSpriteProgram extends ShaderProgram {
      */
     private final static int UNIFORM_TEX_OFFSET = 0;
 
-    /**
-     * The shader names used, the variable names used in shader sources MUST be defined here.
-     */
-    public enum VARIABLES implements VariableMapping {
-        uMVMatrix(0, ShaderVariable.VariableType.UNIFORM, null),
-        uProjectionMatrix(1, ShaderVariable.VariableType.UNIFORM, null),
-        uScreenSize(2, ShaderVariable.VariableType.UNIFORM, null),
-        uSpriteData(3, ShaderVariable.VariableType.UNIFORM, null),
-        aPosition(4, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.VERTICES),
-        aUV(5, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.VERTICES),
-        aTranslate(6, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
-        aRotate(7, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
-        /**
-         * Scale in z has no meaning, use only x and y
-         */
-        aScale(8, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
-        aColor(9, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
-        aFrameData(10, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES);
-        private final int index;
-        private final VariableType type;
-        private final BufferIndex bufferIndex;
-
-        /**
-         * @param index Index of the shader variable
-         * @param type Type of variable
-         * @param bufferIndex Index of buffer in mesh that holds the variable data
-         */
-        private VARIABLES(int index, VariableType type, BufferIndex bufferIndex) {
-            this.index = index;
-            this.type = type;
-            this.bufferIndex = bufferIndex;
-        }
-
-        @Override
-        public int getIndex() {
-            return index;
-        }
-
-        @Override
-        public VariableType getType() {
-            return type;
-        }
-
-        @Override
-        public BufferIndex getBufferIndex() {
-            return bufferIndex;
-        }
-    }
 
     protected final static String VERTEX_SHADER_NAME = "assets/tiledspritevertex.essl";
     protected final static String FRAGMENT_SHADER_NAME = "assets/tiledspritefragment.essl";
 
     TiledSpriteProgram() {
-        super(VARIABLES.values());
+        super(ShaderVariables.values());
         vertexShaderName = VERTEX_SHADER_NAME;
         fragmentShaderName = FRAGMENT_SHADER_NAME;
     }
 
     @Override
     public VariableMapping getVariableMapping(ShaderVariable variable) {
-        return VARIABLES.valueOf(getVariableName(variable));
+        return ShaderVariables.valueOf(getVariableName(variable));
     }
 
     @Override
     public int getVariableCount() {
-        return VARIABLES.values().length;
+        return ShaderVariables.values().length;
     }
 
     @Override
@@ -105,10 +58,10 @@ public class TiledSpriteProgram extends ShaderProgram {
             throws GLException {
         // Refresh the uniform matrix
         // TODO prefetch the offsets for the shader variables and store in array.
-        System.arraycopy(modelviewMatrix, 0, mesh.getUniforms(), shaderVariables[VARIABLES.uMVMatrix.index].getOffset(),
+        System.arraycopy(modelviewMatrix, 0, mesh.getUniforms(), shaderVariables[ShaderVariables.uMVMatrix.index].getOffset(),
                 Matrix.MATRIX_ELEMENTS);
         System.arraycopy(projectionMatrix, 0, mesh.getUniforms(),
-                shaderVariables[VARIABLES.uProjectionMatrix.index].getOffset(),
+                shaderVariables[ShaderVariables.uProjectionMatrix.index].getOffset(),
                 Matrix.MATRIX_ELEMENTS);
         bindUniforms(gles, uniforms, mesh.getUniforms());
     }
@@ -120,7 +73,7 @@ public class TiledSpriteProgram extends ShaderProgram {
         setScreenSize(mesh);
         Texture2D texture = mesh.getTexture(Texture2D.TEXTURE_0);
         if (texture instanceof TiledTexture2D) {
-            setTextureUniforms((TiledTexture2D) texture, uniforms, shaderVariables[VARIABLES.uSpriteData.index],
+            setTextureUniforms((TiledTexture2D) texture, uniforms, shaderVariables[ShaderVariables.uTextureData.index],
                     UNIFORM_TEX_OFFSET);
         } else {
             System.err.println(INVALID_TEXTURE_TYPE + texture);
@@ -131,7 +84,7 @@ public class TiledSpriteProgram extends ShaderProgram {
      * Sets the screensize in the uniforms
      */
     protected void setScreenSize(Mesh mesh) {
-        setScreenSize(mesh.getUniforms(), shaderVariables[VARIABLES.uScreenSize.index]);
+        setScreenSize(mesh.getUniforms(), shaderVariables[ShaderVariables.uScreenSize.index]);
     }
 
     @Override
@@ -139,19 +92,19 @@ public class TiledSpriteProgram extends ShaderProgram {
         ShaderVariable v = null;
         switch (property) {
         case TRANSLATE:
-            v = shaderVariables[TiledSpriteProgram.VARIABLES.aPosition.index];
+            v = shaderVariables[ShaderVariables.aTranslate.index];
             break;
         case ROTATE:
-            v = shaderVariables[TiledSpriteProgram.VARIABLES.aRotate.index];
+            v = shaderVariables[ShaderVariables.aRotate.index];
             break;
         case SCALE:
-            v = shaderVariables[TiledSpriteProgram.VARIABLES.aScale.index];
+            v = shaderVariables[ShaderVariables.aScale.index];
             break;
         case FRAME:
-            v = shaderVariables[TiledSpriteProgram.VARIABLES.aFrameData.index];
+            v = shaderVariables[ShaderVariables.aFrameData.index];
             break;
         case COLOR:
-            v = shaderVariables[TiledSpriteProgram.VARIABLES.aColor.index];
+            v = shaderVariables[ShaderVariables.aColor.index];
             break;
         default:
         }

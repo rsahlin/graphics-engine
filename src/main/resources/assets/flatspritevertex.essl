@@ -20,9 +20,8 @@
 //Put array declaration after name for GLSL compatibility
 uniform mat4 uMVMatrix;
 uniform mat4 uProjectionMatrix;
-uniform vec2 uScreenSize; //Screen width and height
 
-attribute vec3 aPosition;
+attribute vec3 aVertex; //vertex position
 attribute vec4 aTranslate; //sprite x, sprite y, sprite z 
 attribute vec4 aRotate;  
 attribute vec4 aScale;
@@ -36,7 +35,7 @@ mat2 calculateTransformMatrix();
  * Used for objects that are transformed, scaled and rotated - with the translate, rotation and scale being defined from attribute data
  */
 void main() {
-    vec4 pos = uMVMatrix * (vec4(aTranslate.x, aTranslate.y, aTranslate.z, 1.0) + vec4(calculateTransformMatrix() * vec2(aPosition), aPosition.z, 0.0));
+    vec4 pos = uMVMatrix * (vec4(aTranslate.x, aTranslate.y, aTranslate.z, 1.0) + vec4(calculateTransformMatrix() * vec2(aVertex), aVertex.z, 0.0));
     gl_Position = uProjectionMatrix * pos;
     color = aColor;
 }

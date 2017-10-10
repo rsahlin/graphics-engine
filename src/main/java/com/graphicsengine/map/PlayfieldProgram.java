@@ -9,6 +9,7 @@ import com.nucleus.opengl.GLException;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.shader.ShaderVariable;
 import com.nucleus.shader.ShaderVariable.VariableType;
+import com.nucleus.shader.ShaderVariables;
 import com.nucleus.shader.VariableMapping;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TextureType;
@@ -30,84 +31,35 @@ public class PlayfieldProgram extends ShaderProgram {
      */
     private final static int UNIFORM_TEX_OFFSET = 0;
 
-    /**
-     * The shader names used, the variable names used in shader sources MUST be defined here.
-     */
-    public enum VARIABLES implements VariableMapping {
-        uMVMatrix(0, ShaderVariable.VariableType.UNIFORM, null),
-        uProjectionMatrix(1, ShaderVariable.VariableType.UNIFORM, null),
-        uCharsetData(2, ShaderVariable.VariableType.UNIFORM, null),
-        uScreenSize(3, ShaderVariable.VariableType.UNIFORM, null),
-        // TODO - how to decide when ambient material is dynamic and should go in ATTRIBUTES buffer?
-        uAmbientLight(4, ShaderVariable.VariableType.UNIFORM, null),
-        uDiffuseLight(5, ShaderVariable.VariableType.UNIFORM, null),
-        aPosition(6, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.VERTICES),
-        aUV(7, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.VERTICES),
-        aMaterialAmbient(8, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
-        aCharset(9, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES),
-        aCharset2(10, ShaderVariable.VariableType.ATTRIBUTE, BufferIndex.ATTRIBUTES);
-
-        private final int index;
-        private final VariableType type;
-        private final BufferIndex bufferIndex;
-
-        /**
-         * @param index Index of the shader variable
-         * @param type Type of variable
-         * @param bufferIndex Index of buffer in mesh that holds the variable data
-         */
-        private VARIABLES(int index, VariableType type, BufferIndex bufferIndex) {
-            this.index = index;
-            this.type = type;
-            this.bufferIndex = bufferIndex;
-        }
-
-        @Override
-        public int getIndex() {
-            return index;
-        }
-
-        @Override
-        public VariableType getType() {
-            return type;
-        }
-
-        @Override
-        public BufferIndex getBufferIndex() {
-            return bufferIndex;
-        }
-
-    }
-
     private final static String VERTEX_SHADER_NAME = "assets/charmapvertex.essl";
     private final static String FRAGMENT_SHADER_NAME = "assets/charmapfragment.essl";
 
     PlayfieldProgram() {
-        super(VARIABLES.values());
+        super(ShaderVariables.values());
         vertexShaderName = VERTEX_SHADER_NAME;
         fragmentShaderName = FRAGMENT_SHADER_NAME;
     }
 
     @Override
     public VariableMapping getVariableMapping(ShaderVariable variable) {
-        return VARIABLES.valueOf(getVariableName(variable));
+        return ShaderVariables.valueOf(getVariableName(variable));
     }
 
     @Override
     public int getVariableCount() {
-        return VARIABLES.values().length;
+        return ShaderVariables.values().length;
     }
 
     @Override
     public void bindUniforms(GLES20Wrapper gles, float[] modelviewMatrix, float[] projectionMatrix, Mesh mesh)
             throws GLException {
         // Refresh the matrix
-        System.arraycopy(modelviewMatrix, 0, mesh.getUniforms(), shaderVariables[VARIABLES.uMVMatrix.index].getOffset(),
+        System.arraycopy(modelviewMatrix, 0, mesh.getUniforms(), shaderVariables[ShaderVariables.uMVMatrix.index].getOffset(),
                 Matrix.MATRIX_ELEMENTS);
         System.arraycopy(projectionMatrix, 0, mesh.getUniforms(),
-                shaderVariables[VARIABLES.uProjectionMatrix.index].getOffset(),
+                shaderVariables[ShaderVariables.uProjectionMatrix.index].getOffset(),
                 Matrix.MATRIX_ELEMENTS);
-        setAmbient(mesh.getUniforms(), shaderVariables[VARIABLES.uAmbientLight.index], globalLight.getAmbient());
+        setAmbient(mesh.getUniforms(), shaderVariables[ShaderVariables.uAmbientLight.index], globalLight.getAmbient());
         bindUniforms(gles, uniforms, mesh.getUniforms());
     }
 
@@ -115,11 +67,11 @@ public class PlayfieldProgram extends ShaderProgram {
     public void setupUniforms(Mesh mesh) {
         createUniformStorage(mesh, shaderVariables);
         float[] uniforms = mesh.getUniforms();
-        setScreenSize(uniforms, shaderVariables[VARIABLES.uScreenSize.index]);
+        setScreenSize(uniforms, shaderVariables[ShaderVariables.uScreenSize.index]);
         Texture2D texture = mesh.getTexture(Texture2D.TEXTURE_0);
         if (texture.getTextureType() == TextureType.TiledTexture2D) {
             setTextureUniforms((TiledTexture2D) texture, uniforms,
-                    shaderVariables[VARIABLES.uCharsetData.index],
+                    shaderVariables[ShaderVariables.uTextureData.index],
                     UNIFORM_TEX_OFFSET);
         } else {
             System.err.println(INVALID_TEXTURE_TYPE + texture);
@@ -136,13 +88,13 @@ public class PlayfieldProgram extends ShaderProgram {
         ShaderVariable v = null;
         switch (property) {
         case TRANSLATE:
-            v = shaderVariables[VARIABLES.aCharset.index];
+            v = shaderVariables[ShaderVariables.aTranslate.index];
             break;
         case FRAME:
-            v = shaderVariables[VARIABLES.aCharset2.index];
+            v = shaderVariables[ShaderVariables.aFrameData.index];
             break;
         case COLOR_AMBIENT:
-            v = shaderVariables[VARIABLES.aMaterialAmbient.index];
+            v = shaderVariables[ShaderVariables.aColor.index];
             break;
         default:
             break;

@@ -20,16 +20,16 @@
 //Put array declaration after name for GLSL compatibility
 uniform mat4 uMVMatrix;
 uniform mat4 uProjectionMatrix;
-uniform vec3 uCharsetData; //tex width, tex height, frames per line
+uniform vec3 uTextureData; //tex width, tex height, frames per line
 uniform vec2 uScreenSize; //Width and  height of screen
 uniform vec4 uAmbientLight;
 uniform vec4 uDiffuseLight;
 
-attribute vec3 aPosition;
-attribute vec2 aUV;
-attribute vec3 aCharset; //char x, char y, z (not used)
-attribute vec2 aCharset2;//frame
-attribute vec4 aMaterialAmbient;
+attribute vec3 aVertex; //vertex position
+attribute vec2 aTexCoord;
+attribute vec3 aTranslate; //char x, char y, z (not used)
+attribute vec2 aFrameData;//frame, flags
+attribute vec4 aColor;
 
 varying vec2 vTexCoord;
 varying vec4 vAmbientLight;
@@ -39,22 +39,22 @@ precision mediump int;
 
 
 void main() {
-    int flags = int(aCharset2.y);
-    vec4 pos = uMVMatrix * vec4(aPosition, 1.0) + (uMVMatrix * vec4(aCharset.x, aCharset.y,aCharset.z, 0.0));
+    int flags = int(aFrameData.y);
+    vec4 pos = uMVMatrix * vec4(aVertex, 1.0) + (uMVMatrix * vec4(aTranslate.x, aTranslate.y,aTranslate.z, 0.0));
     gl_Position = uProjectionMatrix * vec4(floor((uScreenSize * vec2(pos)) + 0.5) / uScreenSize, pos.z, pos.w);
-    vec2 flip = aUV;
+    vec2 flip = aTexCoord;
     if ((flags - 4) >= 0) {
         //FlipX
-        flip.x = uCharsetData.x - aUV.x;
+        flip.x = uTextureData.x - aTexCoord.x;
         flags -= 4;
     }
     if ((flags - 2) >= 0) {
         //FlipY
-        flip.y = uCharsetData.y - aUV.y;
+        flip.y = uTextureData.y - aTexCoord.y;
         flags -= 2;
     }
     vTexCoord = vec2(flip.x + 
-                     mod(aCharset2.x, uCharsetData.z) * uCharsetData.x,
-                     flip.y + floor(aCharset2.x / uCharsetData.z) * uCharsetData.y);
-    vAmbientLight = uAmbientLight * aMaterialAmbient;
+                     mod(aFrameData.x, uTextureData.z) * uTextureData.x,
+                     flip.y + floor(aFrameData.x / uTextureData.z) * uTextureData.y);
+    vAmbientLight = uAmbientLight * aColor;
 }

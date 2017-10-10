@@ -22,7 +22,7 @@ uniform mat4 uMVMatrix;
 uniform mat4 uProjectionMatrix;
 uniform vec2 uScreenSize; //Screen width and height
 
-attribute vec3 aPosition;
+attribute vec3 aVertex; //vertex position
 attribute vec3 aTranslate; //sprite x, sprite y, sprite z 
 attribute vec3 aRotate;  
 attribute vec2 aScale;  
@@ -32,7 +32,7 @@ varying vec2 vTexCoord;
 mat2 calculateTransformMatrix();
 
 void main() {
-    vec4 pos = uMVMatrix * (vec4(aTranslate.x, aTranslate.y, aTranslate.z, 1.0) + vec4(calculateTransformMatrix() * vec2(aPosition), aPosition.z, 0.0));
+    vec4 pos = uMVMatrix * (vec4(aTranslate.x, aTranslate.y, aTranslate.z, 1.0) + vec4(calculateTransformMatrix() * vec2(aVertex), aVertex.z, 0.0));
     gl_Position = uProjectionMatrix * vec4(floor((uScreenSize * vec2(pos)) + 0.5) / uScreenSize, pos.z, pos.w);
     vTexCoord = vec2(aFrameData.x, aFrameData.y);
 }

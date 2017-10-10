@@ -20,7 +20,6 @@
 //Put array declaration after name for GLSL compatibility
 uniform mat4 uMVMatrix;
 uniform mat4 uProjectionMatrix;
-uniform vec2 uScreenSize; //Screen width and height
 
 attribute vec3 aPosition;
 attribute vec2 aUV;
