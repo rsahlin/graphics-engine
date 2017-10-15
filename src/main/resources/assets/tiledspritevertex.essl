@@ -1,4 +1,4 @@
-/* Copyright 2015 Richard Sahlin
+/* Copyright 2017 Richard Sahlin
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,7 +12,7 @@
  */
 
  /**
- * Fragment shader for tiled sprite renderer
+ * Vertex shader for tiled sprite renderer
  * @author Richard Sahlin
  */
 #version 100

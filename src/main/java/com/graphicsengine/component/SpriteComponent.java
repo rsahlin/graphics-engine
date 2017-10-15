@@ -45,6 +45,11 @@ import com.nucleus.vecmath.Vector2D;
  */
 public class SpriteComponent extends Component implements Consumer {
 
+    public static final String COUNT = "count";
+    public static final String GRAVITY = "gravity";
+    
+    public static final float DEFAULT_GRAVITY = 5;
+    
     /**
      * This is the data defined for each sprite, some of these are the same as defined in the
      * {@linkplain AttributeUpdater} and should probably be put together instead of as separate defines.
@@ -91,8 +96,12 @@ public class SpriteComponent extends Component implements Consumer {
     /**
      * Number of sprites
      */
-    @SerializedName("count")
+    @SerializedName(COUNT)
     protected int count;
+    
+    @SerializedName(GRAVITY)
+    public float gravity = DEFAULT_GRAVITY;
+    
     /**
      * The sprites float data storage, this is the sprite properties such as position, movement and frame
      */
@@ -127,6 +136,7 @@ public class SpriteComponent extends Component implements Consumer {
     private void set(SpriteComponent source) {
         super.set(source);
         this.count = source.count;
+        this.gravity = source.gravity;
         if (source.rectangle != null) {
             this.rectangle = new Rectangle(source.rectangle);
         } else {

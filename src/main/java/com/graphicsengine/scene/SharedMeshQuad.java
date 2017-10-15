@@ -10,7 +10,7 @@ import com.nucleus.vecmath.Rectangle;
 
 /**
  * A Quad child that has to be appended to QuadNode in order to be rendered.
- * This node will share the mesh from the parent QuadNode.
+ * This node will share the mesh from the parent {@link QuadParentNode}
  * 
  * @author Richard Sahlin
  *

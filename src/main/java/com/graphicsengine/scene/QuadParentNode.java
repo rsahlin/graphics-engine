@@ -21,7 +21,9 @@ import com.nucleus.scene.RootNode;
  */
 public class QuadParentNode extends Node {
 
-    @SerializedName("maxQuads")
+    public static final String MAX_QUADS = "maxQuads";
+    
+    @SerializedName(MAX_QUADS)
     private int maxQuads;
 
     transient private ArrayList<SharedMeshQuad> quadChildren = new ArrayList<>();

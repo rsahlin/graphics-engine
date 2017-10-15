@@ -83,7 +83,6 @@ public class SpriteMesh extends Mesh implements Consumer {
                 ShaderProgram program = createProgram(texture);
                 program = AssetManager.getInstance().getProgram(renderer, program);
                 material.setProgram(program);
-
             }
             return super.create();
             /**
