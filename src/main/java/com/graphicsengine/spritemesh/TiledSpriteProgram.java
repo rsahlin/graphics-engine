@@ -1,17 +1,22 @@
 package com.graphicsengine.spritemesh;
 
 import com.nucleus.SimpleLogger;
+import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.AttributeUpdater.Property;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.Mesh.BufferIndex;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.GLException;
+import com.nucleus.renderer.NucleusRenderer;
+import com.nucleus.renderer.Pass;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.shader.ShaderVariable;
 import com.nucleus.shader.ShaderVariable.VariableType;
 import com.nucleus.shader.ShaderVariables;
+import com.nucleus.shader.ShadowPass1Program;
 import com.nucleus.shader.VariableMapping;
 import com.nucleus.texturing.Texture2D;
+import com.nucleus.texturing.Texture2D.Shading;
 import com.nucleus.texturing.TiledTexture2D;
 import com.nucleus.vecmath.Matrix;
 
@@ -39,20 +44,18 @@ public class TiledSpriteProgram extends ShaderProgram {
 
     TiledSpriteProgram() {
         super(ShaderVariables.values());
+    }
+
+    TiledSpriteProgram(VariableMapping[] mapping) {
+        super(mapping);
+    }
+    
+    @Override
+    protected void setShaderSource(Texture2D.Shading shading) {
         vertexShaderName = VERTEX_SHADER_NAME;
         fragmentShaderName = FRAGMENT_SHADER_NAME;
     }
-
-    @Override
-    public VariableMapping getVariableMapping(ShaderVariable variable) {
-        return ShaderVariables.valueOf(getVariableName(variable));
-    }
-
-    @Override
-    public int getVariableCount() {
-        return ShaderVariables.values().length;
-    }
-
+    
     @Override
     public void bindUniforms(GLES20Wrapper gles, float[] modelviewMatrix, float[] projectionMatrix, Mesh mesh)
             throws GLException {
@@ -88,33 +91,19 @@ public class TiledSpriteProgram extends ShaderProgram {
     }
 
     @Override
-    public int getPropertyOffset(Property property) {
-        ShaderVariable v = null;
-        switch (property) {
-        case TRANSLATE:
-            v = shaderVariables[ShaderVariables.aTranslate.index];
-            break;
-        case ROTATE:
-            v = shaderVariables[ShaderVariables.aRotate.index];
-            break;
-        case SCALE:
-            v = shaderVariables[ShaderVariables.aScale.index];
-            break;
-        case FRAME:
-            v = shaderVariables[ShaderVariables.aFrameData.index];
-            break;
-        case COLOR:
-            v = shaderVariables[ShaderVariables.aColor.index];
-            break;
-        default:
+    public ShaderProgram getProgram(NucleusRenderer renderer, Pass pass, Shading shading) {
+        switch (pass) {
+            case UNDEFINED:
+            case ALL:
+            case MAIN:
+                return this;
+            case SHADOW:
+                return AssetManager.getInstance().getProgram(renderer, new ShadowPass1Program());
+            case SHADOW2:
+                return AssetManager.getInstance().getProgram(renderer, new ShadowPass2Program());
+                default:
+            throw new IllegalArgumentException("Invalid pass " + pass);
         }
-        if (v != null) {
-            return v.getOffset();
-        } else {
-            SimpleLogger.d(getClass(), "No ShaderVariable for " + property);
-            
-        }
-        return -1;
     }
 
 }

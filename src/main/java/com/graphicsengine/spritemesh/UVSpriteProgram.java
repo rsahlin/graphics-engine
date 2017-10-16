@@ -1,6 +1,12 @@
 package com.graphicsengine.spritemesh;
 
+import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.Mesh;
+import com.nucleus.renderer.NucleusRenderer;
+import com.nucleus.renderer.Pass;
+import com.nucleus.shader.ShaderProgram;
+import com.nucleus.shader.ShadowPass1Program;
+import com.nucleus.texturing.Texture2D.Shading;
 
 /**
  * This class defines the mapping for the UV sprite vertex and fragment shaders.
@@ -25,5 +31,22 @@ public class UVSpriteProgram extends TiledSpriteProgram {
         createUniformStorage(mesh, shaderVariables);
         setScreenSize(mesh);
     }
+    
+    @Override
+    public ShaderProgram getProgram(NucleusRenderer renderer, Pass pass, Shading shading) {
+        switch (pass) {
+            case UNDEFINED:
+            case ALL:
+            case MAIN:
+                return this;
+            case SHADOW:
+                return AssetManager.getInstance().getProgram(renderer, new ShadowPass1Program());
+            case SHADOW2:
+                return this;
+                default:
+            throw new IllegalArgumentException("Invalid pass " + pass);
+        }
+    }
+    
 
 }

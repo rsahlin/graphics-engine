@@ -12,7 +12,7 @@
  */
 
  /**
- * Vertex shader for tiled sprite renderer
+ * Vertex shader for shadow pass of tiled sprite renderer
  * @author Richard Sahlin
  */
 #version 100
@@ -50,7 +50,7 @@ void main() {
  * @return Matrix with z axis rotation set from aRotate.z, scale from aScale.x + aScale.y
  */
 mat2 calculateTransformMatrix(){
-	
+    
     mat2 modelview = mat2(1);
 
     //Rotate
