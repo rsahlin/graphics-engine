@@ -1,19 +1,13 @@
 package com.graphicsengine.map;
 
-import com.nucleus.SimpleLogger;
-import com.nucleus.assets.AssetManager;
-import com.nucleus.geometry.AttributeUpdater.Property;
 import com.nucleus.geometry.Mesh;
-import com.nucleus.geometry.Mesh.BufferIndex;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.renderer.Pass;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.shader.ShaderVariable;
-import com.nucleus.shader.ShaderVariable.VariableType;
 import com.nucleus.shader.ShaderVariables;
-import com.nucleus.shader.ShadowPass1Program;
 import com.nucleus.shader.VariableMapping;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.Texture2D.Shading;
@@ -65,20 +59,6 @@ public class PlayfieldProgram extends ShaderProgram {
     @Override
     public void bindUniforms(GLES20Wrapper gles, float[] modelviewMatrix, float[] projectionMatrix, Mesh mesh)
             throws GLException {
-        // Refresh the matrix
-        System.arraycopy(modelviewMatrix, 0, mesh.getUniforms(), shaderVariables[ShaderVariables.uMVMatrix.index].getOffset(),
-                Matrix.MATRIX_ELEMENTS);
-        System.arraycopy(projectionMatrix, 0, mesh.getUniforms(),
-                shaderVariables[ShaderVariables.uProjectionMatrix.index].getOffset(),
-                Matrix.MATRIX_ELEMENTS);
-        setAmbient(mesh.getUniforms(), shaderVariables[ShaderVariables.uAmbientLight.index], globalLight.getAmbient());
-        bindUniforms(gles, uniforms, mesh.getUniforms());
-    }
-
-    @Override
-    public void setupUniforms(Mesh mesh) {
-        createUniformStorage(mesh, shaderVariables);
-        float[] uniforms = mesh.getUniforms();
         setScreenSize(uniforms, shaderVariables[ShaderVariables.uScreenSize.index]);
         Texture2D texture = mesh.getTexture(Texture2D.TEXTURE_0);
         if (texture.getTextureType() == TextureType.TiledTexture2D) {
@@ -88,7 +68,18 @@ public class PlayfieldProgram extends ShaderProgram {
         } else {
             System.err.println(INVALID_TEXTURE_TYPE + texture);
         }
+
+        // Refresh the matrix
+        System.arraycopy(modelviewMatrix, 0, uniforms,
+                shaderVariables[ShaderVariables.uMVMatrix.index].getOffset(),
+                Matrix.MATRIX_ELEMENTS);
+        System.arraycopy(projectionMatrix, 0, uniforms,
+                shaderVariables[ShaderVariables.uProjectionMatrix.index].getOffset(),
+                Matrix.MATRIX_ELEMENTS);
+        setAmbient(getUniforms(), shaderVariables[ShaderVariables.uAmbientLight.index], globalLight.getAmbient());
+        bindUniforms(gles, sourceUniforms, uniforms);
     }
+
 
     @Override
     public void createProgram(GLES20Wrapper gles) {

@@ -20,6 +20,7 @@
 //Put array declaration after name for GLSL compatibility
 uniform mat4 uMVMatrix;
 uniform mat4 uProjectionMatrix;
+uniform mat4 uLightMatrix; //light pov
 uniform vec3 uTextureData; //tex width, tex height, frames per line
 uniform vec2 uScreenSize; //Width and height of screen
 
@@ -31,6 +32,7 @@ attribute vec3 aScale;
 attribute vec2 aFrameData;//frame
 
 varying vec2 vTexCoord;
+varying vec4 vLightPos;
 
 precision mediump float;
 
@@ -39,11 +41,13 @@ mat2 calculateTransformMatrix();
 void main() {
     vec4 pos = uMVMatrix * (vec4(aTranslate.x, aTranslate.y, aTranslate.z, 1.0) + vec4(calculateTransformMatrix() * vec2(aVertex), aVertex.z, 0.0));
     gl_Position = uProjectionMatrix * vec4(floor((uScreenSize * vec2(pos) + 0.5)) / uScreenSize, pos.z, pos.w);
+    
+    vLightPos = uLightMatrix * pos;
+    
     float y = floor(aFrameData.x / uTextureData.z);
     vTexCoord = vec2(aTexCoord.x + 
                      mod(aFrameData.x, uTextureData.z) * uTextureData.x,
                      aTexCoord.y + y * uTextureData.y);
-                     
 }
 /**
  * Returns a matrix with z axis rotation set from attribute aRotate.z, x and y axis scale.

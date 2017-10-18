@@ -1,7 +1,6 @@
 package com.graphicsengine.spritemesh;
 
 import com.nucleus.assets.AssetManager;
-import com.nucleus.geometry.Mesh;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.renderer.Pass;
 import com.nucleus.shader.ShaderProgram;
@@ -24,12 +23,6 @@ public class UVSpriteProgram extends TiledSpriteProgram {
         super();
         vertexShaderName = VERTEX_SHADER_NAME;
         fragmentShaderName = FRAGMENT_SHADER_NAME;
-    }
-
-    @Override
-    public void setupUniforms(Mesh mesh) {
-        createUniformStorage(mesh, shaderVariables);
-        setScreenSize(mesh);
     }
     
     @Override

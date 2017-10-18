@@ -7,11 +7,11 @@ import com.graphicsengine.spritemesh.SpriteMesh;
 import com.nucleus.component.Component;
 import com.nucleus.component.ComponentException;
 import com.nucleus.component.ComponentNode;
+import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.AttributeUpdater;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.geometry.RectangleShapeBuilder;
-import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node.MeshType;
@@ -224,6 +224,15 @@ public class SpriteComponent extends Component implements Consumer {
      */
     public int getCount() {
         return count;
+    }
+
+    /**
+     * Returns the number of frames available in the texture
+     * 
+     * @return
+     */
+    public int getFrameCount() {
+        return spriteMesh.getTexture(Texture2D.TEXTURE_0).getFrameCount();
     }
 
     @Override

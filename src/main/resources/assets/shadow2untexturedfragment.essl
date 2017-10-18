@@ -12,22 +12,21 @@
  */
 
  /**
- * Fragment shader for shadow pass of tiled sprite renderer
+ * Fragment shader for shadow pass of untextured tiled sprite renderer
  * @author Richard Sahlin
  */
 #version 100
 precision mediump float;
 
-uniform sampler2D texture; //The texture sampler
 uniform sampler2D shadowTexture;
 
-varying vec2 vTexCoord;
 varying vec4 vLightPos;
+varying vec4 color;
 
 void main()
 {
     vec4 shadowMapPosition = vLightPos / vLightPos.w;
     float distanceFromLight = texture2D(shadowTexture, shadowMapPosition.st).r;
     float shadow = distanceFromLight > distanceFromLight ? 0.5 : 1.0 ;
-    gl_FragColor = texture2D(texture, vTexCoord) * shadow;
+    gl_FragColor = color * shadow;
 }
