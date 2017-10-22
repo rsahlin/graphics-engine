@@ -2,14 +2,13 @@ package com.graphicsengine.spritemesh;
 
 import java.io.IOException;
 
-import com.nucleus.SimpleLogger;
 import com.nucleus.assets.AssetManager;
+import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.Material;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.RectangleShapeBuilder;
-import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.shader.ShaderProgram;
