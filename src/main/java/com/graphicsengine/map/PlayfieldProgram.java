@@ -13,7 +13,6 @@ import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.Texture2D.Shading;
 import com.nucleus.texturing.TextureType;
 import com.nucleus.texturing.TiledTexture2D;
-import com.nucleus.vecmath.Matrix;
 
 /**
  * This class defines the mappings for the charset vertex and fragment shaders.
@@ -34,9 +33,7 @@ public class PlayfieldProgram extends ShaderProgram {
     private final static String FRAGMENT_SHADER_NAME = "assets/charmapfragment.essl";
 
     PlayfieldProgram() {
-        super(ShaderVariables.values());
-        vertexShaderName = VERTEX_SHADER_NAME;
-        fragmentShaderName = FRAGMENT_SHADER_NAME;
+        super(Texture2D.Shading.textured, ShaderVariables.values());
     }
 
     @Override
@@ -59,6 +56,7 @@ public class PlayfieldProgram extends ShaderProgram {
     @Override
     public void bindUniforms(GLES20Wrapper gles, float[] modelviewMatrix, float[] projectionMatrix, Mesh mesh)
             throws GLException {
+        super.bindUniforms(gles, modelviewMatrix, projectionMatrix, mesh);
         setScreenSize(uniforms, shaderVariables[ShaderVariables.uScreenSize.index]);
         Texture2D texture = mesh.getTexture(Texture2D.TEXTURE_0);
         if (texture.getTextureType() == TextureType.TiledTexture2D) {
@@ -68,16 +66,8 @@ public class PlayfieldProgram extends ShaderProgram {
         } else {
             System.err.println(INVALID_TEXTURE_TYPE + texture);
         }
-
-        // Refresh the matrix
-        System.arraycopy(modelviewMatrix, 0, uniforms,
-                shaderVariables[ShaderVariables.uMVMatrix.index].getOffset(),
-                Matrix.MATRIX_ELEMENTS);
-        System.arraycopy(projectionMatrix, 0, uniforms,
-                shaderVariables[ShaderVariables.uProjectionMatrix.index].getOffset(),
-                Matrix.MATRIX_ELEMENTS);
         setAmbient(getUniforms(), shaderVariables[ShaderVariables.uAmbientLight.index], globalLight.getAmbient());
-        bindUniforms(gles, sourceUniforms, uniforms);
+        setUniforms(gles, sourceUniforms);
     }
 
 

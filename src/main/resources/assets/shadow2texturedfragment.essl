@@ -18,8 +18,8 @@
 #version 100
 precision mediump float;
 
-uniform sampler2D texture; //The texture sampler
-uniform sampler2D shadowTexture;
+uniform sampler2D uTexture; //The texture sampler
+uniform sampler2D uShadowTexture;
 
 varying vec2 vTexCoord;
 varying vec4 vLightPos;
@@ -27,7 +27,7 @@ varying vec4 vLightPos;
 void main()
 {
     vec4 shadowMapPosition = vLightPos / vLightPos.w;
-    float distanceFromLight = texture2D(shadowTexture, shadowMapPosition.st).r;
+    float distanceFromLight = texture2D(uShadowTexture, shadowMapPosition.st).r;
     float shadow = distanceFromLight > distanceFromLight ? 0.5 : 1.0 ;
-    gl_FragColor = texture2D(texture, vTexCoord) * shadow;
+    gl_FragColor = texture2D(uTexture, vTexCoord) * shadow;
 }

@@ -14,7 +14,6 @@ import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.Texture2D.Shading;
 import com.nucleus.texturing.TextureType;
 import com.nucleus.texturing.TiledTexture2D;
-import com.nucleus.vecmath.Matrix;
 
 /**
  * This class defines the mappings for the tile sprite vertex and fragment shaders.
@@ -34,38 +33,31 @@ public class TiledSpriteProgram extends ShaderProgram {
      */
     private final static int UNIFORM_TEX_OFFSET = 0;
 
+    public TiledSpriteProgram(Texture2D.Shading shading, VariableMapping[] mapping) {
+        super(shading, mapping);
+    }
 
-    protected final static String VERTEX_SHADER_NAME = "assets/tiledspritevertex.essl";
-    protected final static String FRAGMENT_SHADER_NAME = "assets/tiledspritefragment.essl";
-
-    TiledSpriteProgram() {
-        super(ShaderVariables.values());
+    TiledSpriteProgram(Texture2D.Shading shading) {
+        super(shading, ShaderVariables.values());
     }
 
     TiledSpriteProgram(VariableMapping[] mapping) {
-        super(mapping);
+        super(Texture2D.Shading.textured, mapping);
     }
     
     @Override
     protected void setShaderSource(Texture2D.Shading shading) {
-        vertexShaderName = VERTEX_SHADER_NAME;
-        fragmentShaderName = FRAGMENT_SHADER_NAME;
+        vertexShaderName = PROGRAM_DIRECTORY + shading.name() + SPRITE + VERTEX + SHADER_SOURCE_SUFFIX;
+        fragmentShaderName = PROGRAM_DIRECTORY + shading.name() + SPRITE + FRAGMENT + SHADER_SOURCE_SUFFIX;
     }
     
     @Override
     public void bindUniforms(GLES20Wrapper gles, float[] modelviewMatrix, float[] projectionMatrix, Mesh mesh)
             throws GLException {
+        super.bindUniforms(gles, modelviewMatrix, projectionMatrix, mesh);
         setScreenSize(mesh);
         setTextureUniforms(mesh.getTexture(Texture2D.TEXTURE_0));
-        // Refresh the uniform matrix
-        // TODO prefetch the offsets for the shader variables and store in array.
-        System.arraycopy(modelviewMatrix, 0, uniforms,
-                shaderVariables[ShaderVariables.uMVMatrix.index].getOffset(),
-                Matrix.MATRIX_ELEMENTS);
-        System.arraycopy(projectionMatrix, 0, uniforms,
-                shaderVariables[ShaderVariables.uProjectionMatrix.index].getOffset(),
-                Matrix.MATRIX_ELEMENTS);
-        bindUniforms(gles, sourceUniforms, uniforms);
+        setUniforms(gles, sourceUniforms);
     }
 
     protected void setTextureUniforms(Texture2D texture) {
@@ -92,7 +84,7 @@ public class TiledSpriteProgram extends ShaderProgram {
             case SHADOW:
                 return AssetManager.getInstance().getProgram(renderer, new ShadowPass1Program());
             case SHADOW2:
-                return AssetManager.getInstance().getProgram(renderer, new ShadowPass2Program());
+                return AssetManager.getInstance().getProgram(renderer, new ShadowPass2Program(shading));
                 default:
             throw new IllegalArgumentException("Invalid pass " + pass);
         }

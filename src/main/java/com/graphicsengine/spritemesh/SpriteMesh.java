@@ -5,7 +5,6 @@ import java.io.IOException;
 import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
-import com.nucleus.geometry.Material;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.RectangleShapeBuilder;
@@ -107,11 +106,11 @@ public class SpriteMesh extends Mesh implements Consumer {
         public ShaderProgram createProgram(Texture2D texture) {
             switch (texture.textureType) {
             case TiledTexture2D:
-                return new TiledSpriteProgram();
+                    return new TiledSpriteProgram(Texture2D.Shading.textured);
             case UVTexture2D:
                 return new UVSpriteProgram();
             case Untextured:
-                return new UntexturedSpriteProgram(((Untextured) texture).getShading());
+                    return new TiledSpriteProgram(((Untextured) texture).getShading());
             default:
                 throw new IllegalArgumentException(INVALID_TYPE + texture.textureType);
             }
@@ -136,23 +135,6 @@ public class SpriteMesh extends Mesh implements Consumer {
      */
     protected SpriteMesh(Mesh source) {
         super(source);
-    }
-
-    /**
-     * Creates and builds the Mesh to be rendered, after this call all the quads in this mesh can be rendered
-     * by fetching the mesh and rendering it.
-     * Note that this class will be set as AttributeUpdater in the mesh in order for the sprites to be displayed
-     * properly.
-     * 
-     * @param texture The texture to use for sprites, must be {@link TiledTexture2D} otherwise tiling will not work.
-     * @param material The material for the mesh
-     * @param count Number of sprites to support
-     * @param Rectangle The rectangle defining the quad for each sprite
-     */
-    @Override
-    public void createMesh(Texture2D texture, Material material, int vertexCount, int indiceCount, Mode mode) {
-        super.createMesh(texture, material, vertexCount, indiceCount, mode);
-        setAttributeUpdater(this);
     }
 
     /**
@@ -214,7 +196,7 @@ public class SpriteMesh extends Mesh implements Consumer {
 
     @Override
     public void bindAttributeBuffer(AttributeBuffer buffer) {
-        attributeData = new float[buffer.getBuffer().capacity()];
+        attributeData = new float[buffer.getCapacity()];
     }
 
     /**

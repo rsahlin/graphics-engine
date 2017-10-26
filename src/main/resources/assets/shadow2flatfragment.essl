@@ -1,4 +1,4 @@
-/* Copyright 2015 Richard Sahlin
+/* Copyright 2017 Richard Sahlin
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,16 +12,22 @@
  */
 
  /**
- * Fragment shader for tiled sprite renderer
+ * Fragment shader for shadow pass of untextured tiled sprite renderer
  * @author Richard Sahlin
  */
 #version 100
 precision mediump float;
 
-uniform sampler2D texture;      //The texture sampler
-varying vec2 vTexCoord;
+uniform sampler2D uShadowTexture;
+
+varying vec4 vLightPos;
+varying vec4 color;
 
 void main()
 {
-	gl_FragColor = texture2D(texture, vTexCoord);
+    vec4 shadowMapPosition = vLightPos / vLightPos.w;
+    float distanceFromLight = texture2D(uShadowTexture, shadowMapPosition.st).r;
+//    float shadow = distanceFromLight < distanceFromLight ? 0.5 : 1.0 ;
+    float shadow = distanceFromLight;
+    gl_FragColor = color * shadow;
 }
