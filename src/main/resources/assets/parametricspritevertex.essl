@@ -21,11 +21,11 @@
 uniform mat4 uMVMatrix;
 uniform mat4 uProjectionMatrix;
 
-attribute vec3 aPosition;
-attribute vec2 aUV;
-attribute vec4 aTranslate; //sprite x, sprite y, sprite z 
-attribute vec4 aRotate;  
-attribute vec4 aScale;
+attribute vec3 aVertex; //vertex position
+attribute vec2 aTexCoord;
+attribute vec3 aTranslate; //sprite x, sprite y, sprite z
+attribute vec3 aRotate;
+attribute vec3 aScale;
 attribute vec4 aColor;
 attribute vec4 aFrameData;
 
@@ -36,10 +36,10 @@ varying vec4 data;
 mat2 calculateTransformMatrix();
 
 void main() {
-    vec4 pos = uMVMatrix * (vec4(aTranslate.x, aTranslate.y, aTranslate.z, 1.0) + vec4(calculateTransformMatrix() * vec2(aPosition), aPosition.z, 0.0));
+    vec4 pos = uMVMatrix * (vec4(aTranslate.x, aTranslate.y, aTranslate.z, 1.0) + vec4(calculateTransformMatrix() * vec2(aVertex), aVertex.z, 0.0));
     gl_Position = uProjectionMatrix * pos;
     color = aColor;
-    xy = aUV;
+    xy = aTexCoord;
     data = aFrameData;
 }
 /**

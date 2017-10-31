@@ -70,7 +70,7 @@ public class SharedMeshQuad extends Node {
         }
         mesh.setFrame(index, frame);
         if (mesh.getTexture(Texture2D.TEXTURE_0).textureType == TextureType.Untextured) {
-            mesh.setColor(index, mesh.getMaterial().getAmbient());
+            mesh.setColor(index, getMaterial() != null ? getMaterial().getAmbient() : mesh.getMaterial().getAmbient());
         }
     }
 
