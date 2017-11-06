@@ -27,7 +27,7 @@ void main()
 {
     vec4 shadowMapPosition = vLightPos / vLightPos.w;
     float distanceFromLight = texture2D(uShadowTexture, shadowMapPosition.st).r;
-//    float shadow = distanceFromLight < distanceFromLight ? 0.5 : 1.0 ;
-    float shadow = distanceFromLight;
+    float shadow = distanceFromLight < gl_FragCoord.z ? 0.5 : 1.0 ;
+    //float shadow = distanceFromLight;
     gl_FragColor = color * shadow;
 }

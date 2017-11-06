@@ -39,8 +39,8 @@ mat2 calculateTransformMatrix();
 
 void main() {
     vec4 pos = uMVMatrix * (vec4(aTranslate.x, aTranslate.y, aTranslate.z, 1.0) + vec4(calculateTransformMatrix() * vec2(aVertex), aVertex.z, 0.0));
-    gl_Position = uProjectionMatrix * vec4(floor((uScreenSize * vec2(pos) + 0.5)) / uScreenSize, pos.z, pos.w);
-    vLightPos = uLightMatrix * pos;
+    gl_Position = uProjectionMatrix * pos;
+    vLightPos = uLightMatrix * pos * vec4(0.599999,-1,-1,1) + vec4(0.5,0.5,1,0);
     color = aColor;
 }
 /**

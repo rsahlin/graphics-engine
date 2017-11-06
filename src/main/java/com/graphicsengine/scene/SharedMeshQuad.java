@@ -25,6 +25,7 @@ public class SharedMeshQuad extends Node {
      * The index of this shared mesh quad node with it's parent.
      */
     transient private int childIndex;
+    transient private SpriteMesh parentMesh;
     /**
      * The rectangle defining the sprites, all sprites will have same size
      * 4 values = x1,y1 + width and height
@@ -53,6 +54,7 @@ public class SharedMeshQuad extends Node {
      */
     public void onCreated(SpriteMesh mesh, int index) {
         this.childIndex = index;
+        this.parentMesh = mesh;
         Texture2D texture = mesh.getTexture(Texture2D.TEXTURE_0);
         if (rectangle == null && (texture.getTextureType() == TextureType.Untextured || 
                 texture.getWidth() == 0 || texture.getHeight()== 0)) {
@@ -115,6 +117,25 @@ public class SharedMeshQuad extends Node {
      */
     private void setQuadRectangle(Rectangle rectangle) {
         this.rectangle = new Rectangle(rectangle);
+    }
+
+    /**
+     * Sets the position of this sprite quad in the parent mesh, see {@link QuadParentNode}
+     * and {@link SpriteMesh}
+     * 
+     * @param position
+     */
+    public void setPosition(float[] position) {
+        parentMesh.setPosition(childIndex, position[0], position[1], position[2]);
+    }
+
+    /**
+     * Sets the frame number for this child.
+     * 
+     * @param frame
+     */
+    public void setFrame(int frame) {
+        parentMesh.setFrame(childIndex, frame);
     }
 
 }
