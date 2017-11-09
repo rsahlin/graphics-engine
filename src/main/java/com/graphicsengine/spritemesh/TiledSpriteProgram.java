@@ -82,7 +82,7 @@ public class TiledSpriteProgram extends ShaderProgram {
             case MAIN:
                 return this;
             case SHADOW:
-                return AssetManager.getInstance().getProgram(renderer, new ShadowPass1Program());
+                return AssetManager.getInstance().getProgram(renderer, new ShadowPass1Program(shading));
             case SHADOW2:
                 return AssetManager.getInstance().getProgram(renderer, new ShadowPass2Program(shading));
                 default:
