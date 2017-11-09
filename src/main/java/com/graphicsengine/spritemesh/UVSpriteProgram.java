@@ -1,6 +1,12 @@
 package com.graphicsengine.spritemesh;
 
-import com.nucleus.geometry.Mesh;
+import com.nucleus.assets.AssetManager;
+import com.nucleus.renderer.NucleusRenderer;
+import com.nucleus.renderer.Pass;
+import com.nucleus.shader.ShaderProgram;
+import com.nucleus.shader.ShadowPass1Program;
+import com.nucleus.texturing.Texture2D;
+import com.nucleus.texturing.Texture2D.Shading;
 
 /**
  * This class defines the mapping for the UV sprite vertex and fragment shaders.
@@ -12,18 +18,35 @@ import com.nucleus.geometry.Mesh;
  */
 public class UVSpriteProgram extends TiledSpriteProgram {
 
-    protected final static String VERTEX_SHADER_NAME = "assets/uvspritevertex.essl";
+    private static final String UV = "uv";
+    protected static final String VERTEX_SHADER_NAME = "assets/uvspritevertex.essl";
 
     public UVSpriteProgram() {
-        super();
-        vertexShaderName = VERTEX_SHADER_NAME;
-        fragmentShaderName = FRAGMENT_SHADER_NAME;
+        super(Texture2D.Shading.textured);
     }
 
     @Override
-    public void setupUniforms(Mesh mesh) {
-        createUniformStorage(mesh, shaderVariables);
-        setScreenSize(mesh);
+    protected void setShaderSource(Texture2D.Shading shading) {
+        super.setShaderSource(shading);
+        // Overwrite the vertex shader
+        vertexShaderName = PROGRAM_DIRECTORY + UV + SPRITE + VERTEX + SHADER_SOURCE_SUFFIX;
     }
+    
+    @Override
+    public ShaderProgram getProgram(NucleusRenderer renderer, Pass pass, Shading shading) {
+        switch (pass) {
+            case UNDEFINED:
+            case ALL:
+            case MAIN:
+                return this;
+            case SHADOW:
+                return AssetManager.getInstance().getProgram(renderer, new ShadowPass1Program(shading));
+            case SHADOW2:
+                return this;
+                default:
+            throw new IllegalArgumentException("Invalid pass " + pass);
+        }
+    }
+    
 
 }

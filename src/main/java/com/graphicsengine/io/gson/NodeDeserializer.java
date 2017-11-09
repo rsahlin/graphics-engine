@@ -22,7 +22,11 @@ public class NodeDeserializer extends NucleusNodeDeserializer implements JsonDes
         JsonObject obj = json.getAsJsonObject();
         GraphicsEngineNodeType t;
         try {
-            t = GraphicsEngineNodeType.valueOf(obj.get(NODETYPE_JSON_KEY).getAsString());
+            JsonElement element = obj.get(NODETYPE_JSON_KEY);
+            if (element == null) {
+                throw new IllegalArgumentException("Node does not contain:" + NODETYPE_JSON_KEY);
+            }
+            t = GraphicsEngineNodeType.valueOf(element.getAsString());
         } catch (IllegalArgumentException e) {
             //Try with super
             return super.deserialize(json, type, context);

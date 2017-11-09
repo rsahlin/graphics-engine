@@ -26,13 +26,6 @@ public class ComponentDeserializer extends NucleusDeserializer implements JsonDe
         JsonObject obj = json.getAsJsonObject();
         String typeName = obj.get(Component.TYPE).getAsString();
         Component c = (Component) gson.fromJson(json, TypeResolver.getInstance().getTypeClass(typeName));
-        ComponentHandler handler = ComponentHandler.getInstance();
-        try {
-            handler.registerComponent(c, (System) TypeResolver.getInstance().create(c.getSystem()));
-        } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
-            return null;
-        }
         return c;
     }
 

@@ -1,4 +1,4 @@
-/* Copyright 2015 Richard Sahlin
+/* Copyright 2017 Richard Sahlin
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,7 +12,7 @@
  */
 
  /**
- * Vertex shader for tiled sprite renderer
+ * Vertex shader for shadow pass of untextured tiled sprite renderer
  * @author Richard Sahlin
  */
 #version 100
@@ -20,25 +20,26 @@
 //Put array declaration after name for GLSL compatibility
 uniform mat4 uMVMatrix;
 uniform mat4 uProjectionMatrix;
+uniform mat4 uLightMatrix; //light pov
+uniform vec3 uTextureData; //tex width, tex height, frames per line
+uniform vec2 uScreenSize; //Width and height of screen
 
 attribute vec3 aVertex; //vertex position
-attribute vec2 aTexCoord;
 attribute vec3 aTranslate; //sprite x, sprite y, sprite z
 attribute vec3 aRotate;
 attribute vec3 aScale;
 attribute vec4 aColor;
-attribute vec4 aFrameData;
 
+varying vec4 vLightPos;
 varying vec4 color;
-varying vec2 xy;
-varying vec4 data;
+
+precision mediump float;
 
 mat3 calculateTransformMatrix(vec3 rotate, vec3 scale);
 
 void main() {
-    vec4 pos = uMVMatrix * (vec4(aTranslate.x, aTranslate.y, aTranslate.z, 1.0) + vec4(calculateTransformMatrix(aRotate, aScale) * aVertex, 0.0));
+    vec4 pos = uMVMatrix * (vec4(aTranslate.x, aTranslate.y, aTranslate.z, 1.0) + vec4(calculateTransformMatrix(aRotate, aScale) * vec3(aVertex), 0.0));
     gl_Position = uProjectionMatrix * pos;
+    vLightPos = uLightMatrix * pos * vec4(0.5,0.5,1,1) + vec4(0.5,0.5,0,0);
     color = aColor;
-    xy = aTexCoord;
-    data = aFrameData;
 }

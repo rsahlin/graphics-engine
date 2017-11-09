@@ -57,7 +57,7 @@ public class GraphicsEngineMeshFactory extends DefaultMeshFactory implements Mes
             mbuilder.setSpriteCount(quadParent.getMaxQuads());
             mbuilder.setTexture(parent.getTextureRef());
             mbuilder.setMaterial(quadParent.getMaterial());
-            RectangleShapeBuilder.Configuration config = new RectangleShapeBuilder.Configuration(
+            RectangleShapeBuilder.RectangleConfiguration config = new RectangleShapeBuilder.RectangleConfiguration(
                     quadParent.getMaxQuads(), 0);
             mbuilder.setShapeBuilder(new RectangleShapeBuilder(config));
             // TODO Fix generics so that cast is not needed

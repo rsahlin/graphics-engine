@@ -7,11 +7,11 @@ import com.graphicsengine.spritemesh.SpriteMesh;
 import com.nucleus.component.Component;
 import com.nucleus.component.ComponentException;
 import com.nucleus.component.ComponentNode;
+import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.AttributeUpdater;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.geometry.RectangleShapeBuilder;
-import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node.MeshType;
@@ -45,6 +45,11 @@ import com.nucleus.vecmath.Vector2D;
  */
 public class SpriteComponent extends Component implements Consumer {
 
+    public static final String COUNT = "count";
+    public static final String GRAVITY = "gravity";
+    
+    public static final float DEFAULT_GRAVITY = 5;
+    
     /**
      * This is the data defined for each sprite, some of these are the same as defined in the
      * {@linkplain AttributeUpdater} and should probably be put together instead of as separate defines.
@@ -63,7 +68,8 @@ public class SpriteComponent extends Component implements Consumer {
         MOVE_VECTOR_Y(11),
         MOVE_VECTOR_Z(12),
         ELASTICITY(13),
-        ROTATE_SPEED(14);
+        ROTATE_SPEED(14),
+        RESISTANCE(15);
         public final int index;
 
         SpriteData(int index) {
@@ -90,8 +96,12 @@ public class SpriteComponent extends Component implements Consumer {
     /**
      * Number of sprites
      */
-    @SerializedName("count")
+    @SerializedName(COUNT)
     protected int count;
+    
+    @SerializedName(GRAVITY)
+    public float gravity = DEFAULT_GRAVITY;
+    
     /**
      * The sprites float data storage, this is the sprite properties such as position, movement and frame
      */
@@ -126,6 +136,7 @@ public class SpriteComponent extends Component implements Consumer {
     private void set(SpriteComponent source) {
         super.set(source);
         this.count = source.count;
+        this.gravity = source.gravity;
         if (source.rectangle != null) {
             this.rectangle = new Rectangle(source.rectangle);
         } else {
@@ -154,7 +165,8 @@ public class SpriteComponent extends Component implements Consumer {
             spriteBuilder.setMaterial(parent.getMaterial());
             spriteBuilder.setSpriteCount(count);
             RectangleShapeBuilder shapeBuilder = new RectangleShapeBuilder(
-                    new RectangleShapeBuilder.Configuration(rectangle, 0f, count, 0));
+                    new RectangleShapeBuilder.RectangleConfiguration(rectangle, RectangleShapeBuilder.DEFAULT_Z, count,
+                            0));
             spriteBuilder.setShapeBuilder(shapeBuilder);
             // TODO - Fix generics so that cast is not needed
             spriteMesh = (SpriteMesh) spriteBuilder.create();
@@ -213,6 +225,15 @@ public class SpriteComponent extends Component implements Consumer {
      */
     public int getCount() {
         return count;
+    }
+
+    /**
+     * Returns the number of frames available in the texture
+     * 
+     * @return
+     */
+    public int getFrameCount() {
+        return spriteMesh.getTexture(Texture2D.TEXTURE_0).getFrameCount();
     }
 
     @Override

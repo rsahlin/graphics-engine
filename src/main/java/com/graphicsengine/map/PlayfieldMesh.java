@@ -12,7 +12,7 @@ import com.nucleus.bounds.Bounds;
 import com.nucleus.bounds.RectangularBounds;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.RectangleShapeBuilder;
-import com.nucleus.geometry.RectangleShapeBuilder.Configuration;
+import com.nucleus.geometry.RectangleShapeBuilder.RectangleConfiguration;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.shader.ShaderProgram;
@@ -119,7 +119,8 @@ public class PlayfieldMesh extends SpriteMesh {
                 program = (PlayfieldProgram) AssetManager.getInstance().getProgram(renderer, program);
                 material.setProgram(program);
             }
-            Configuration configuration = new Configuration(charRectangle, 1f, mapSize[0] * mapSize[1], 0);
+            RectangleConfiguration configuration = new RectangleShapeBuilder.RectangleConfiguration(charRectangle,
+                    RectangleShapeBuilder.DEFAULT_Z, mapSize[0] * mapSize[1], 0);
             RectangleShapeBuilder shapeBuilder = new RectangleShapeBuilder(configuration);
             setShapeBuilder(shapeBuilder);
             PlayfieldMesh mesh = (PlayfieldMesh) super.create();
