@@ -1,43 +1,46 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>com.super2k.graphicsengine</groupId>
-  <artifactId>graphics-engine</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <packaging>jar</packaging>
-
-  <name>graphics-engine</name>
-  <url>http://maven.apache.org</url>
-
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
-  <dependencies>
-    <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>4.12</version>
-        <scope>test</scope>
-    </dependency>
-    <dependency>
-    	<groupId>com.super2k.vecmath</groupId>
-    	<artifactId>vecmath</artifactId>
-    	<version>0.0.1-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-    	<groupId>com.super2k.graphics-by-opengl</groupId>
-    	<artifactId>graphics-by-opengl-j2se</artifactId>
-    	<version>0.0.1-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>com.super2k.graphics-by-opengl</groupId>
-      <artifactId>graphics-by-opengl-j2se</artifactId>
-      <type>test-jar</type>
-      <version>0.0.1-SNAPSHOT</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <properties>
+        <vecmath-version>0.0.1-SNAPSHOT</vecmath-version>
+        <graphics-by-gl-version>0.0.1-SNAPSHOT</graphics-by-gl-version>
+        <graphics-engine-version>0.0.1-SNAPSHOT</graphics-engine-version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+    <groupId>com.super2k.graphicsengine</groupId>
+    <artifactId>graphics-engine</artifactId>
+    <version>${graphics-engine-version}</version>
+    <packaging>jar</packaging>
+    <name>graphics-engine</name>
+    <url>http://maven.apache.org</url>
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.super2k.vecmath</groupId>
+            <artifactId>vecmath</artifactId>
+            <version>${vecmath-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.super2k.graphics-by-opengl</groupId>
+            <artifactId>graphics-by-opengl-j2se</artifactId>
+            <version>${graphics-by-gl-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.super2k.graphics-by-opengl</groupId>
+            <artifactId>graphics-by-opengl-j2se</artifactId>
+            <type>test-jar</type>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    <build>
         <sourceDirectory>src/main/java</sourceDirectory>
         <testSourceDirectory>src/test/java</testSourceDirectory>
         <pluginManagement>
@@ -69,5 +72,5 @@
                 </plugin>
             </plugins>
         </pluginManagement>
-  </build>
+    </build>
 </project>
