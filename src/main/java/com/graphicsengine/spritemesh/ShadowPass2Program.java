@@ -9,7 +9,6 @@ import com.nucleus.opengl.GLESWrapper.GLES20;
 import com.nucleus.opengl.GLException;
 import com.nucleus.opengl.GLUtils;
 import com.nucleus.shader.ShaderVariables;
-import com.nucleus.shader.ShadowPass1Program;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TextureFactory;
 import com.nucleus.texturing.TextureParameter;
@@ -46,18 +45,18 @@ public class ShadowPass2Program extends TiledSpriteProgram {
     }
 
     @Override
-    public void bindUniforms(GLES20Wrapper gles, float[] modelviewMatrix, float[] projectionMatrix, Mesh mesh)
+    public void bindUniforms(GLES20Wrapper gles, float[][] matrices, Mesh mesh)
             throws GLException {
         setScreenSize(mesh);
         setTextureUniforms(mesh.getTexture(Texture2D.TEXTURE_0));
         // Refresh the uniform matrix using light matrix
-        System.arraycopy(modelviewMatrix, 0, getUniforms(),
+        System.arraycopy(matrices[0], 0, getUniforms(),
                 shaderVariables[ShaderVariables.uMVMatrix.index].getOffset(),
                 Matrix.MATRIX_ELEMENTS);
-        System.arraycopy(projectionMatrix, 0, getUniforms(),
+        System.arraycopy(matrices[1], 0, getUniforms(),
                 shaderVariables[ShaderVariables.uProjectionMatrix.index].getOffset(),
                 Matrix.MATRIX_ELEMENTS);
-        System.arraycopy(ShadowPass1Program.getLightMatrix(), 0, getUniforms(),
+        System.arraycopy(matrices[2], 0, getUniforms(),
                 shaderVariables[ShaderVariables.uLightMatrix.index].getOffset(),
                 Matrix.MATRIX_ELEMENTS);
         setUniforms(gles, sourceUniforms);

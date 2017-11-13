@@ -52,9 +52,9 @@ public class TiledSpriteProgram extends ShaderProgram {
     }
     
     @Override
-    public void bindUniforms(GLES20Wrapper gles, float[] modelviewMatrix, float[] projectionMatrix, Mesh mesh)
+    public void bindUniforms(GLES20Wrapper gles, float[][] matrices, Mesh mesh)
             throws GLException {
-        super.bindUniforms(gles, modelviewMatrix, projectionMatrix, mesh);
+        super.bindUniforms(gles, matrices, mesh);
         setScreenSize(mesh);
         setTextureUniforms(mesh.getTexture(Texture2D.TEXTURE_0));
         setUniforms(gles, sourceUniforms);

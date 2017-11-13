@@ -54,9 +54,9 @@ public class PlayfieldProgram extends ShaderProgram {
     }
 
     @Override
-    public void bindUniforms(GLES20Wrapper gles, float[] modelviewMatrix, float[] projectionMatrix, Mesh mesh)
+    public void bindUniforms(GLES20Wrapper gles, float[][] matrices, Mesh mesh)
             throws GLException {
-        super.bindUniforms(gles, modelviewMatrix, projectionMatrix, mesh);
+        super.bindUniforms(gles, matrices, mesh);
         setScreenSize(uniforms, shaderVariables[ShaderVariables.uScreenSize.index]);
         Texture2D texture = mesh.getTexture(Texture2D.TEXTURE_0);
         if (texture.getTextureType() == TextureType.TiledTexture2D) {
