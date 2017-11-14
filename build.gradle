@@ -8,6 +8,19 @@ tasks.withType(JavaCompile) {
 }
 
 apply plugin: 'java'
+
+repositories {
+    mavenLocal()
+    jcenter()
+}
+dependencies {
+    compile 'com.google.code.gson:gson:2.5'
+    compile 'com.super2k.vecmath:vecmath:0.0.1-SNAPSHOT'
+    compile 'com.super2k.graphics-by-opengl:graphics-by-opengl-j2se:0.0.1-SNAPSHOT'
+    testCompile 'junit:junit:4.12'
+    testCompile 'com.super2k.graphics-by-opengl:graphics-by-opengl-j2se:0.0.1-SNAPSHOT'
+}
+
 apply plugin: 'maven-publish'
 
 publishing {
@@ -19,19 +32,7 @@ publishing {
 }
 
 task sourcesAndClasses(type: Jar) {
-   from sourceSets.main.output
-   from sourceSets.main.allJava
+    from sourceSets.main.output
+    from sourceSets.main.allJava
 }
 
-
-repositories {
-    mavenLocal()
-    jcenter() 
-}
-dependencies {
-    compile 'com.google.code.gson:gson:2.5'
-    compile 'com.super2k.vecmath:vecmath:0.0.1-SNAPSHOT'
-    compile 'com.super2k.graphics-by-opengl:graphics-by-opengl-j2se:0.0.1-SNAPSHOT'
-    testCompile 'junit:junit:4.12'  
-    testCompile 'com.super2k.graphics-by-opengl:graphics-by-opengl-j2se:0.0.1-SNAPSHOT'
-}
