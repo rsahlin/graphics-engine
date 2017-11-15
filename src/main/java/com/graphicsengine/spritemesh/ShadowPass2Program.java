@@ -8,6 +8,7 @@ import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.GLESWrapper.GLES20;
 import com.nucleus.opengl.GLException;
 import com.nucleus.opengl.GLUtils;
+import com.nucleus.renderer.Pass;
 import com.nucleus.shader.ShaderVariables;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TextureFactory;
@@ -30,8 +31,8 @@ public class ShadowPass2Program extends TiledSpriteProgram {
     protected static final String VERTEX_NAME = "shadow2";
     protected static final String FRAGMENT_NAME = "shadow2";
 
-    public ShadowPass2Program(Texture2D.Shading shading) {
-        super(shading, ShaderVariables.values());
+    public ShadowPass2Program(Pass pass, String category, Texture2D.Shading shading) {
+        super(pass, category, shading);
         shadow = TextureFactory.createTexture(TextureType.Texture2D);
         ExternalReference ref = new ExternalReference(ExternalReference.ID_LOOKUP + "DEPTHshadow");
         shadow.setExternalReference(ref);
@@ -40,8 +41,8 @@ public class ShadowPass2Program extends TiledSpriteProgram {
 
     @Override
     protected void setShaderSource(Texture2D.Shading shading) {
-        vertexShaderName = PROGRAM_DIRECTORY + VERTEX_NAME + shading.name() + VERTEX + SHADER_SOURCE_SUFFIX;
-        fragmentShaderName = PROGRAM_DIRECTORY + FRAGMENT_NAME + shading.name() + FRAGMENT + SHADER_SOURCE_SUFFIX;
+        vertexShaderName = PROGRAM_DIRECTORY + VERTEX_NAME + shading.name() + VERTEX_TYPE + SHADER_SOURCE_SUFFIX;
+        fragmentShaderName = PROGRAM_DIRECTORY + FRAGMENT_NAME + shading.name() + FRAGMENT_TYPE + SHADER_SOURCE_SUFFIX;
     }
 
     @Override

@@ -9,7 +9,6 @@ import com.nucleus.renderer.Pass;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.shader.ShaderVariables;
 import com.nucleus.shader.ShadowPass1Program;
-import com.nucleus.shader.VariableMapping;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.Texture2D.Shading;
 import com.nucleus.texturing.TextureType;
@@ -33,22 +32,18 @@ public class TiledSpriteProgram extends ShaderProgram {
      */
     private final static int UNIFORM_TEX_OFFSET = 0;
 
-    public TiledSpriteProgram(Texture2D.Shading shading, VariableMapping[] mapping) {
-        super(shading, mapping);
-    }
-
     TiledSpriteProgram(Texture2D.Shading shading) {
-        super(shading, ShaderVariables.values());
-    }
-
-    TiledSpriteProgram(VariableMapping[] mapping) {
-        super(Texture2D.Shading.textured, mapping);
+        super(null, null, shading, ShaderVariables.values());
     }
     
+    protected TiledSpriteProgram(Pass pass, String category, Texture2D.Shading shading) {
+        super(pass, null, shading, ShaderVariables.values());
+    }
+
     @Override
     protected void setShaderSource(Texture2D.Shading shading) {
-        vertexShaderName = PROGRAM_DIRECTORY + shading.name() + SPRITE + VERTEX + SHADER_SOURCE_SUFFIX;
-        fragmentShaderName = PROGRAM_DIRECTORY + shading.name() + SPRITE + FRAGMENT + SHADER_SOURCE_SUFFIX;
+        vertexShaderName = PROGRAM_DIRECTORY + shading.name() + SPRITE + VERTEX_TYPE + SHADER_SOURCE_SUFFIX;
+        fragmentShaderName = PROGRAM_DIRECTORY + shading.name() + SPRITE + FRAGMENT_TYPE + SHADER_SOURCE_SUFFIX;
     }
     
     @Override
@@ -82,9 +77,9 @@ public class TiledSpriteProgram extends ShaderProgram {
             case MAIN:
                 return this;
             case SHADOW:
-                return AssetManager.getInstance().getProgram(renderer, new ShadowPass1Program(shading));
+                return AssetManager.getInstance().getProgram(renderer, new ShadowPass1Program(pass, null, shading));
             case SHADOW2:
-                return AssetManager.getInstance().getProgram(renderer, new ShadowPass2Program(shading));
+                return AssetManager.getInstance().getProgram(renderer, new ShadowPass2Program(pass, null, shading));
                 default:
             throw new IllegalArgumentException("Invalid pass " + pass);
         }

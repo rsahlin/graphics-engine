@@ -29,7 +29,7 @@ public class UVSpriteProgram extends TiledSpriteProgram {
     protected void setShaderSource(Texture2D.Shading shading) {
         super.setShaderSource(shading);
         // Overwrite the vertex shader
-        vertexShaderName = PROGRAM_DIRECTORY + UV + SPRITE + VERTEX + SHADER_SOURCE_SUFFIX;
+        vertexShaderName = PROGRAM_DIRECTORY + UV + SPRITE + VERTEX_TYPE + SHADER_SOURCE_SUFFIX;
     }
     
     @Override
@@ -40,7 +40,7 @@ public class UVSpriteProgram extends TiledSpriteProgram {
             case MAIN:
                 return this;
             case SHADOW:
-                return AssetManager.getInstance().getProgram(renderer, new ShadowPass1Program(shading));
+                return AssetManager.getInstance().getProgram(renderer, new ShadowPass1Program(pass, null, shading));
             case SHADOW2:
                 return this;
                 default:

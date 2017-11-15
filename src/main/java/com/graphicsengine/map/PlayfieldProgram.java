@@ -33,7 +33,7 @@ public class PlayfieldProgram extends ShaderProgram {
     private final static String FRAGMENT_SHADER_NAME = "assets/charmapfragment.essl";
 
     PlayfieldProgram() {
-        super(Texture2D.Shading.textured, ShaderVariables.values());
+        super(null, null, Texture2D.Shading.textured, ShaderVariables.values());
     }
 
     @Override
