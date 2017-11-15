@@ -40,6 +40,7 @@ mat3 calculateTransformMatrix(vec3 rotate, vec3 scale);
 void main() {
     vec4 pos = uMVMatrix * (vec4(aTranslate.x, aTranslate.y, aTranslate.z, 1.0) + vec4(calculateTransformMatrix(aRotate, aScale) * vec3(aVertex), 0.0));
     gl_Position = uProjectionMatrix * pos;
-    vLightPos = uLightMatrix * pos * vec4(0.5,0.5,1,1) + vec4(0.5,0.5,0,0);
+//    vLightPos = uLightMatrix * pos * vec4(0.5,0.5,1,1) + vec4(0.5,0.5,0,0);
+    vLightPos = uLightMatrix * pos;
     color = aColor;
 }
