@@ -40,7 +40,7 @@ public class UVSpriteProgram extends TiledSpriteProgram {
             case MAIN:
                 return this;
             case SHADOW1:
-                return AssetManager.getInstance().getProgram(renderer, new ShadowPass1Program(shading, null));
+                return AssetManager.getInstance().getProgram(renderer, new ShadowPass1Program(shading, CATEGORY));
             case SHADOW2:
                 return this;
                 default:

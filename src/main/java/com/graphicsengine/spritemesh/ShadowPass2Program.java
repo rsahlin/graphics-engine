@@ -41,9 +41,9 @@ public class ShadowPass2Program extends TiledSpriteProgram {
 
     @Override
     protected void setShaderSource() {
-        vertexShaderName = PROGRAM_DIRECTORY + VERTEX_NAME + sourceName.getShading().name() + VERTEX_TYPE
+        vertexShaderName = PROGRAM_DIRECTORY + VERTEX_NAME + function.getShading().name() + VERTEX_TYPE
                 + SHADER_SOURCE_SUFFIX;
-        fragmentShaderName = PROGRAM_DIRECTORY + FRAGMENT_NAME + sourceName.getShading().name() + FRAGMENT_TYPE
+        fragmentShaderName = PROGRAM_DIRECTORY + FRAGMENT_NAME + function.getShading().name() + FRAGMENT_TYPE
                 + SHADER_SOURCE_SUFFIX;
     }
 

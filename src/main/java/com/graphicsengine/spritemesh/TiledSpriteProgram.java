@@ -25,7 +25,7 @@ import com.nucleus.texturing.TiledTexture2D;
  */
 public class TiledSpriteProgram extends ShaderProgram {
 
-    public static final String SPRITE = "sprite";
+    public static final String CATEGORY = "sprite";
     /**
      * Offset into uniform variable data where texture UV are.
      */
@@ -41,9 +41,9 @@ public class TiledSpriteProgram extends ShaderProgram {
 
     @Override
     protected void setShaderSource() {
-        vertexShaderName = PROGRAM_DIRECTORY + sourceName.getShading().name() + SPRITE + VERTEX_TYPE
+        vertexShaderName = PROGRAM_DIRECTORY + function.getShading().name() + CATEGORY + VERTEX_TYPE
                 + SHADER_SOURCE_SUFFIX;
-        fragmentShaderName = PROGRAM_DIRECTORY + sourceName.getShading().name() + SPRITE + FRAGMENT_TYPE
+        fragmentShaderName = PROGRAM_DIRECTORY + function.getShading().name() + CATEGORY + FRAGMENT_TYPE
                 + SHADER_SOURCE_SUFFIX;
     }
     
@@ -78,7 +78,7 @@ public class TiledSpriteProgram extends ShaderProgram {
             case MAIN:
                 return this;
             case SHADOW1:
-                return AssetManager.getInstance().getProgram(renderer, new ShadowPass1Program(shading, null));
+                return AssetManager.getInstance().getProgram(renderer, new ShadowPass1Program(shading, CATEGORY));
             case SHADOW2:
                 return AssetManager.getInstance().getProgram(renderer, new ShadowPass2Program(pass, null, shading));
                 default:
