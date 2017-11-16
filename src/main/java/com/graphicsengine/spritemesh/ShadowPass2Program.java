@@ -32,7 +32,7 @@ public class ShadowPass2Program extends TiledSpriteProgram {
     protected static final String FRAGMENT_NAME = "shadow2";
 
     public ShadowPass2Program(Pass pass, String category, Texture2D.Shading shading) {
-        super(pass, category, shading);
+        super(pass, shading, category);
         shadow = TextureFactory.createTexture(TextureType.Texture2D);
         ExternalReference ref = new ExternalReference(ExternalReference.ID_LOOKUP + "DEPTHshadow");
         shadow.setExternalReference(ref);
@@ -40,9 +40,11 @@ public class ShadowPass2Program extends TiledSpriteProgram {
     }
 
     @Override
-    protected void setShaderSource(Texture2D.Shading shading) {
-        vertexShaderName = PROGRAM_DIRECTORY + VERTEX_NAME + shading.name() + VERTEX_TYPE + SHADER_SOURCE_SUFFIX;
-        fragmentShaderName = PROGRAM_DIRECTORY + FRAGMENT_NAME + shading.name() + FRAGMENT_TYPE + SHADER_SOURCE_SUFFIX;
+    protected void setShaderSource() {
+        vertexShaderName = PROGRAM_DIRECTORY + VERTEX_NAME + sourceName.getShading().name() + VERTEX_TYPE
+                + SHADER_SOURCE_SUFFIX;
+        fragmentShaderName = PROGRAM_DIRECTORY + FRAGMENT_NAME + sourceName.getShading().name() + FRAGMENT_TYPE
+                + SHADER_SOURCE_SUFFIX;
     }
 
     @Override

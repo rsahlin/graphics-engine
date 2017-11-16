@@ -18,20 +18,20 @@ import com.nucleus.texturing.Texture2D.Shading;
  */
 public class UVSpriteProgram extends TiledSpriteProgram {
 
-    private static final String UV = "uv";
+    private static final String CATEGORY = "uvsprite";
     protected static final String VERTEX_SHADER_NAME = "assets/uvspritevertex.essl";
 
     public UVSpriteProgram() {
         super(Texture2D.Shading.textured);
     }
-
-    @Override
-    protected void setShaderSource(Texture2D.Shading shading) {
-        super.setShaderSource(shading);
-        // Overwrite the vertex shader
-        vertexShaderName = PROGRAM_DIRECTORY + UV + SPRITE + VERTEX_TYPE + SHADER_SOURCE_SUFFIX;
-    }
     
+    @Override
+    protected void setShaderSource() {
+        super.setShaderSource();
+        // Overwrite the vertex shader
+        vertexShaderName = PROGRAM_DIRECTORY + CATEGORY + VERTEX_TYPE + SHADER_SOURCE_SUFFIX;
+    }
+
     @Override
     public ShaderProgram getProgram(NucleusRenderer renderer, Pass pass, Shading shading) {
         switch (pass) {
@@ -39,8 +39,8 @@ public class UVSpriteProgram extends TiledSpriteProgram {
             case ALL:
             case MAIN:
                 return this;
-            case SHADOW:
-                return AssetManager.getInstance().getProgram(renderer, new ShadowPass1Program(pass, null, shading));
+            case SHADOW1:
+                return AssetManager.getInstance().getProgram(renderer, new ShadowPass1Program(shading, null));
             case SHADOW2:
                 return this;
                 default:

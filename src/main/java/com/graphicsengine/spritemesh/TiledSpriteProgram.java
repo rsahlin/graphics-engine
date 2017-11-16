@@ -26,24 +26,25 @@ import com.nucleus.texturing.TiledTexture2D;
 public class TiledSpriteProgram extends ShaderProgram {
 
     public static final String SPRITE = "sprite";
-    private final static String INVALID_TEXTURE_TYPE = "Invalid texture type: ";
     /**
      * Offset into uniform variable data where texture UV are.
      */
     private final static int UNIFORM_TEX_OFFSET = 0;
 
     TiledSpriteProgram(Texture2D.Shading shading) {
-        super(null, null, shading, ShaderVariables.values());
+        super(null, shading, null, ShaderVariables.values());
     }
     
-    protected TiledSpriteProgram(Pass pass, String category, Texture2D.Shading shading) {
-        super(pass, null, shading, ShaderVariables.values());
+    protected TiledSpriteProgram(Pass pass, Texture2D.Shading shading, String category) {
+        super(pass, shading, category, ShaderVariables.values());
     }
 
     @Override
-    protected void setShaderSource(Texture2D.Shading shading) {
-        vertexShaderName = PROGRAM_DIRECTORY + shading.name() + SPRITE + VERTEX_TYPE + SHADER_SOURCE_SUFFIX;
-        fragmentShaderName = PROGRAM_DIRECTORY + shading.name() + SPRITE + FRAGMENT_TYPE + SHADER_SOURCE_SUFFIX;
+    protected void setShaderSource() {
+        vertexShaderName = PROGRAM_DIRECTORY + sourceName.getShading().name() + SPRITE + VERTEX_TYPE
+                + SHADER_SOURCE_SUFFIX;
+        fragmentShaderName = PROGRAM_DIRECTORY + sourceName.getShading().name() + SPRITE + FRAGMENT_TYPE
+                + SHADER_SOURCE_SUFFIX;
     }
     
     @Override
@@ -76,8 +77,8 @@ public class TiledSpriteProgram extends ShaderProgram {
             case ALL:
             case MAIN:
                 return this;
-            case SHADOW:
-                return AssetManager.getInstance().getProgram(renderer, new ShadowPass1Program(pass, null, shading));
+            case SHADOW1:
+                return AssetManager.getInstance().getProgram(renderer, new ShadowPass1Program(shading, null));
             case SHADOW2:
                 return AssetManager.getInstance().getProgram(renderer, new ShadowPass2Program(pass, null, shading));
                 default:
