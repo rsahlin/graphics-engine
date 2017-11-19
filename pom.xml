@@ -6,15 +6,14 @@
         <graphics-by-gl-version>0.0.1-SNAPSHOT</graphics-by-gl-version>
         <graphics-engine-version>0.0.1-SNAPSHOT</graphics-engine-version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
     </properties>
     <groupId>com.super2k.graphicsengine</groupId>
     <artifactId>graphics-engine</artifactId>
     <version>${graphics-engine-version}</version>
     <packaging>jar</packaging>
     <name>graphics-engine</name>
-    <url>http://maven.apache.org</url>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
