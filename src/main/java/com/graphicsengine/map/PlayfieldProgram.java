@@ -2,7 +2,6 @@ package com.graphicsengine.map;
 
 import com.nucleus.geometry.Mesh;
 import com.nucleus.opengl.GLES20Wrapper;
-import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.renderer.Pass;
 import com.nucleus.shader.ShaderProgram;
@@ -54,9 +53,7 @@ public class PlayfieldProgram extends ShaderProgram {
     }
 
     @Override
-    public void bindUniforms(GLES20Wrapper gles, float[][] matrices, Mesh mesh)
-            throws GLException {
-        super.bindUniforms(gles, matrices, mesh);
+    public void setUniformData(float[] uniforms, Mesh mesh) {
         setScreenSize(uniforms, shaderVariables[ShaderVariables.uScreenSize.index]);
         Texture2D texture = mesh.getTexture(Texture2D.TEXTURE_0);
         if (texture.getTextureType() == TextureType.TiledTexture2D) {
@@ -67,7 +64,6 @@ public class PlayfieldProgram extends ShaderProgram {
             System.err.println(INVALID_TEXTURE_TYPE + texture);
         }
         setAmbient(getUniforms(), shaderVariables[ShaderVariables.uAmbientLight.index], globalLight.getAmbient());
-        setUniforms(gles, sourceUniforms);
     }
 
 

@@ -10,6 +10,7 @@ import com.nucleus.opengl.GLException;
 import com.nucleus.opengl.GLUtils;
 import com.nucleus.renderer.Pass;
 import com.nucleus.shader.ShaderVariables;
+import com.nucleus.shader.VariableMapping;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TextureFactory;
 import com.nucleus.texturing.TextureParameter;
@@ -48,10 +49,13 @@ public class ShadowPass2Program extends TiledSpriteProgram {
     }
 
     @Override
-    public void bindUniforms(GLES20Wrapper gles, float[][] matrices, Mesh mesh)
-            throws GLException {
-        setScreenSize(mesh);
-        setTextureUniforms(mesh.getTexture(Texture2D.TEXTURE_0));
+    public void setUniformData(float[] uniforms, Mesh mesh) {
+        setScreenSize(uniforms, shaderVariables[ShaderVariables.uScreenSize.index]);
+        setTextureUniforms(uniforms, mesh.getTexture(Texture2D.TEXTURE_0));
+    }
+
+    @Override
+    public void setUniformMatrices(float[] uniforms, float[][] matrices, Mesh mesh) {
         // Refresh the uniform matrix using light matrix
         System.arraycopy(matrices[0], 0, getUniforms(),
                 shaderVariables[ShaderVariables.uMVMatrix.index].getOffset(),
@@ -62,8 +66,10 @@ public class ShadowPass2Program extends TiledSpriteProgram {
         System.arraycopy(matrices[2], 0, getUniforms(),
                 shaderVariables[ShaderVariables.uLightMatrix.index].getOffset(),
                 Matrix.MATRIX_ELEMENTS);
-        setUniforms(gles, sourceUniforms);
+    }
 
+    @Override
+    public void setUniforms(GLES20Wrapper gles, float[] uniforms, VariableMapping[] uniformMapping) throws GLException {
         int textureID = shadow.getName();
         if (textureID == Constants.NO_VALUE) {
             AssetManager.getInstance().getIdReference(shadow);
@@ -74,7 +80,7 @@ public class ShadowPass2Program extends TiledSpriteProgram {
             gles.glBindTexture(GLES20.GL_TEXTURE_2D, textureID);
             GLUtils.handleError(gles, "glBindTexture()");
         }
-
+        super.setUniforms(gles, uniforms, uniformMapping);
     }
 
 }

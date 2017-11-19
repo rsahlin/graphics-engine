@@ -2,8 +2,6 @@ package com.graphicsengine.spritemesh;
 
 import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.Mesh;
-import com.nucleus.opengl.GLES20Wrapper;
-import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.renderer.Pass;
 import com.nucleus.shader.ShaderProgram;
@@ -46,28 +44,18 @@ public class TiledSpriteProgram extends ShaderProgram {
         fragmentShaderName = PROGRAM_DIRECTORY + function.getShading().name() + CATEGORY + FRAGMENT_TYPE
                 + SHADER_SOURCE_SUFFIX;
     }
-    
+
     @Override
-    public void bindUniforms(GLES20Wrapper gles, float[][] matrices, Mesh mesh)
-            throws GLException {
-        super.bindUniforms(gles, matrices, mesh);
-        setScreenSize(mesh);
-        setTextureUniforms(mesh.getTexture(Texture2D.TEXTURE_0));
-        setUniforms(gles, sourceUniforms);
+    public void setUniformData(float[] uniforms, Mesh mesh) {
+        setScreenSize(uniforms, shaderVariables[ShaderVariables.uScreenSize.index]);
+        setTextureUniforms(uniforms, mesh.getTexture(Texture2D.TEXTURE_0));
     }
 
-    protected void setTextureUniforms(Texture2D texture) {
+    protected void setTextureUniforms(float[] uniforms, Texture2D texture) {
         if (texture.getTextureType() == TextureType.TiledTexture2D) {
             setTextureUniforms((TiledTexture2D) texture, uniforms, shaderVariables[ShaderVariables.uTextureData.index],
                     UNIFORM_TEX_OFFSET);
         }
-    }
-
-    /**
-     * Sets the screensize in the uniforms
-     */
-    protected void setScreenSize(Mesh mesh) {
-        setScreenSize(getUniforms(), shaderVariables[ShaderVariables.uScreenSize.index]);
     }
 
     @Override
@@ -78,7 +66,7 @@ public class TiledSpriteProgram extends ShaderProgram {
             case MAIN:
                 return this;
             case SHADOW1:
-                return AssetManager.getInstance().getProgram(renderer, new ShadowPass1Program(shading, CATEGORY));
+                return AssetManager.getInstance().getProgram(renderer, new ShadowPass1Program(this, shading, CATEGORY));
             case SHADOW2:
                 return AssetManager.getInstance().getProgram(renderer, new ShadowPass2Program(pass, null, shading));
                 default:
