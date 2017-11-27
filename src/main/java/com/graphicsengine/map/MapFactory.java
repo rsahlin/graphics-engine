@@ -43,7 +43,7 @@ public class MapFactory {
         try {
             long start = System.currentTimeMillis();
             Map map = (Map) in.readObject();
-            FrameSampler.getInstance().logTag(FrameSampler.LOAD_MAP, start, System.currentTimeMillis());
+            FrameSampler.getInstance().logTag(FrameSampler.Samples.LOAD_MAP, start, System.currentTimeMillis());
             return map;
         } finally {
             if (in != null) {
