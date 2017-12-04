@@ -41,14 +41,6 @@ public class ShadowPass2Program extends TiledSpriteProgram {
     }
 
     @Override
-    protected void setShaderSource() {
-        vertexShaderName = PROGRAM_DIRECTORY + VERTEX_NAME + function.getShading().name() + VERTEX_TYPE
-                + SHADER_SOURCE_SUFFIX;
-        fragmentShaderName = PROGRAM_DIRECTORY + FRAGMENT_NAME + function.getShading().name() + FRAGMENT_TYPE
-                + SHADER_SOURCE_SUFFIX;
-    }
-
-    @Override
     public void setUniformData(float[] uniforms, Mesh mesh) {
         setScreenSize(uniforms, shaderVariables[ShaderVariables.uScreenSize.index]);
         setTextureUniforms(uniforms, mesh.getTexture(Texture2D.TEXTURE_0));

@@ -30,19 +30,11 @@ public class TiledSpriteProgram extends ShaderProgram {
     private final static int UNIFORM_TEX_OFFSET = 0;
 
     TiledSpriteProgram(Texture2D.Shading shading) {
-        super(null, shading, null, ShaderVariables.values());
-    }
-    
-    protected TiledSpriteProgram(Pass pass, Texture2D.Shading shading, String category) {
-        super(pass, shading, category, ShaderVariables.values());
+        super(null, shading, CATEGORY, ShaderVariables.values());
     }
 
-    @Override
-    protected void setShaderSource() {
-        vertexShaderName = PROGRAM_DIRECTORY + function.getShading().name() + CATEGORY + VERTEX_TYPE
-                + SHADER_SOURCE_SUFFIX;
-        fragmentShaderName = PROGRAM_DIRECTORY + function.getShading().name() + CATEGORY + FRAGMENT_TYPE
-                + SHADER_SOURCE_SUFFIX;
+    protected TiledSpriteProgram(Pass pass, Texture2D.Shading shading, String category) {
+        super(pass, shading, category, ShaderVariables.values());
     }
 
     @Override
@@ -69,8 +61,8 @@ public class TiledSpriteProgram extends ShaderProgram {
                 return AssetManager.getInstance().getProgram(renderer, new ShadowPass1Program(this, shading, CATEGORY));
             case SHADOW2:
                 return AssetManager.getInstance().getProgram(renderer, new ShadowPass2Program(pass, null, shading));
-                default:
-            throw new IllegalArgumentException("Invalid pass " + pass);
+            default:
+                throw new IllegalArgumentException("Invalid pass " + pass);
         }
     }
 

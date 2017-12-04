@@ -24,11 +24,13 @@ public class UVSpriteProgram extends TiledSpriteProgram {
     public UVSpriteProgram() {
         super(Texture2D.Shading.textured);
     }
-    
+
+    /**
+     * Sets the name of the vertex/fragment shaders - shall be called before the program is created.
+     */
     @Override
-    protected void setShaderSource() {
-        super.setShaderSource();
-        // Overwrite the vertex shader
+    protected void createShaderSource() {
+        super.createShaderSource();
         vertexShaderName = PROGRAM_DIRECTORY + CATEGORY + VERTEX_TYPE + SHADER_SOURCE_SUFFIX;
     }
 
@@ -43,10 +45,9 @@ public class UVSpriteProgram extends TiledSpriteProgram {
                 return AssetManager.getInstance().getProgram(renderer, new ShadowPass1Program(this, shading, CATEGORY));
             case SHADOW2:
                 return this;
-                default:
-            throw new IllegalArgumentException("Invalid pass " + pass);
+            default:
+                throw new IllegalArgumentException("Invalid pass " + pass);
         }
     }
-    
 
 }

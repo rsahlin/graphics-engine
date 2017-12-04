@@ -21,6 +21,7 @@ import com.nucleus.texturing.TiledTexture2D;
  */
 public class PlayfieldProgram extends ShaderProgram {
 
+    public static final String CATEGORY = "charmap";
     private final static String INVALID_TEXTURE_TYPE = "Invalid texture type: ";
 
     /**
@@ -28,20 +29,10 @@ public class PlayfieldProgram extends ShaderProgram {
      */
     private final static int UNIFORM_TEX_OFFSET = 0;
 
-    private final static String VERTEX_SHADER_NAME = "assets/charmapvertex.essl";
-    private final static String FRAGMENT_SHADER_NAME = "assets/charmapfragment.essl";
-
     PlayfieldProgram() {
-        super(null, Texture2D.Shading.textured, null, ShaderVariables.values());
+        super(null, null, CATEGORY, ShaderVariables.values());
     }
 
-    @Override
-    protected void setShaderSource() {
-        vertexShaderName = VERTEX_SHADER_NAME;
-        fragmentShaderName = FRAGMENT_SHADER_NAME;
-    }
-    
-    
     @Override
     public VariableMapping getVariableMapping(ShaderVariable variable) {
         return ShaderVariables.valueOf(getVariableName(variable));
@@ -66,7 +57,6 @@ public class PlayfieldProgram extends ShaderProgram {
         setAmbient(getUniforms(), shaderVariables[ShaderVariables.uAmbientLight.index], globalLight.getAmbient());
     }
 
-
     @Override
     public void createProgram(GLES20Wrapper gles) {
         super.createProgram(gles);
@@ -79,8 +69,8 @@ public class PlayfieldProgram extends ShaderProgram {
             case ALL:
             case MAIN:
                 return this;
-                default:
-            throw new IllegalArgumentException("Invalid pass " + pass);
+            default:
+                throw new IllegalArgumentException("Invalid pass " + pass);
         }
     }
 }
