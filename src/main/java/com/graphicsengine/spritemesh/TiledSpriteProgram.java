@@ -23,7 +23,7 @@ import com.nucleus.texturing.TiledTexture2D;
  */
 public class TiledSpriteProgram extends ShaderProgram {
 
-    public static final String CATEGORY = "sprite";
+    protected static final String CATEGORY = "sprite";
     /**
      * Offset into uniform variable data where texture UV are.
      */
@@ -35,6 +35,15 @@ public class TiledSpriteProgram extends ShaderProgram {
 
     protected TiledSpriteProgram(Pass pass, Texture2D.Shading shading, String category) {
         super(pass, shading, category, ShaderVariables.values());
+    }
+
+    @Override
+    protected String getFragmentShaderSource() {
+        if (function.getPass() != null) {
+            return super.getFragmentShaderSource();
+        }
+        // Hardcoded fragment shader used by sublcass as well
+        return function.getShadingString() + CATEGORY;
     }
 
     @Override

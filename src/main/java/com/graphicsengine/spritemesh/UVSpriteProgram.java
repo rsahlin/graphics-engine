@@ -18,20 +18,11 @@ import com.nucleus.texturing.Texture2D.Shading;
  */
 public class UVSpriteProgram extends TiledSpriteProgram {
 
-    private static final String CATEGORY = "uvsprite";
+    protected static final String CATEGORY = "uvsprite";
     protected static final String VERTEX_SHADER_NAME = "assets/uvspritevertex.essl";
 
     public UVSpriteProgram() {
-        super(Texture2D.Shading.textured);
-    }
-
-    /**
-     * Sets the name of the vertex/fragment shaders - shall be called before the program is created.
-     */
-    @Override
-    protected void createShaderSource() {
-        super.createShaderSource();
-        vertexShaderName = PROGRAM_DIRECTORY + CATEGORY + VERTEX_TYPE + SHADER_SOURCE_SUFFIX;
+        super(null, Texture2D.Shading.textured, CATEGORY);
     }
 
     @Override
