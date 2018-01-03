@@ -1,3 +1,4 @@
+#version 300 es
 /* Copyright 2017 Richard Sahlin
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +16,6 @@
  * Vertex shader for shadow pass of untextured tiled sprite renderer
  * @author Richard Sahlin
  */
-#version 100
 
 //Put array declaration after name for GLSL compatibility
 uniform mat4 uMVMatrix;
@@ -24,14 +24,14 @@ uniform mat4 uLightMatrix; //light pov
 uniform vec3 uTextureData; //tex width, tex height, frames per line
 uniform vec2 uScreenSize; //Width and height of screen
 
-attribute vec3 aVertex; //vertex position
-attribute vec3 aTranslate; //sprite x, sprite y, sprite z
-attribute vec3 aRotate;
-attribute vec3 aScale;
-attribute vec4 aColor;
+in vec3 aVertex; //vertex position
+in vec3 aTranslate; //sprite x, sprite y, sprite z
+in vec3 aRotate;
+in vec3 aScale;
+in vec4 aColor;
 
-varying vec4 vLightPos;
-varying vec4 color;
+out vec4 vLightPos;
+out vec4 color;
 
 precision mediump float;
 

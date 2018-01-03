@@ -26,12 +26,6 @@ public class ShadowPass2Program extends TiledSpriteProgram {
 
     Texture2D shadow;
 
-    /**
-     * Name of this shader - TODO where should this be defined?
-     */
-    protected static final String VERTEX_NAME = "shadow2";
-    protected static final String FRAGMENT_NAME = "shadow2";
-
     public ShadowPass2Program(Pass pass, String category, Texture2D.Shading shading) {
         super(pass, shading, category);
         shadow = TextureFactory.createTexture(TextureType.Texture2D);
