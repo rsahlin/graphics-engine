@@ -5,16 +5,14 @@ import com.nucleus.common.Constants;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.io.ExternalReference;
 import com.nucleus.opengl.GLES20Wrapper;
-import com.nucleus.opengl.GLESWrapper.GLES20;
 import com.nucleus.opengl.GLException;
-import com.nucleus.opengl.GLUtils;
 import com.nucleus.renderer.Pass;
 import com.nucleus.shader.ShaderVariables;
-import com.nucleus.shader.VariableMapping;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TextureFactory;
 import com.nucleus.texturing.TextureParameter;
 import com.nucleus.texturing.TextureType;
+import com.nucleus.texturing.TextureUtils;
 import com.nucleus.vecmath.Matrix;
 
 /**
@@ -35,12 +33,6 @@ public class ShadowPass2Program extends TiledSpriteProgram {
     }
 
     @Override
-    public void setUniformData(float[] uniforms, Mesh mesh) {
-        setScreenSize(uniforms, shaderVariables[ShaderVariables.uScreenSize.index]);
-        setTextureUniforms(uniforms, mesh.getTexture(Texture2D.TEXTURE_0));
-    }
-
-    @Override
     public void setUniformMatrices(float[] uniforms, float[][] matrices, Mesh mesh) {
         // Refresh the uniform matrix using light matrix
         System.arraycopy(matrices[0], 0, getUniforms(),
@@ -55,18 +47,19 @@ public class ShadowPass2Program extends TiledSpriteProgram {
     }
 
     @Override
-    public void setUniforms(GLES20Wrapper gles, float[] uniforms, VariableMapping[] uniformMapping) throws GLException {
+    public void prepareTextures(GLES20Wrapper gles, Mesh mesh) throws GLException {
         int textureID = shadow.getName();
         if (textureID == Constants.NO_VALUE) {
             AssetManager.getInstance().getIdReference(shadow);
             textureID = shadow.getName();
-            gles.glBindTexture(GLES20.GL_TEXTURE_2D, textureID);
-            gles.uploadTexParameters(shadow.getTexParams());
-        } else {
-            gles.glBindTexture(GLES20.GL_TEXTURE_2D, textureID);
-            GLUtils.handleError(gles, "glBindTexture()");
         }
-        super.setUniforms(gles, uniforms, uniformMapping);
+        int unit = samplers[shaderVariables[ShaderVariables.uShadowTexture.index].getOffset()];
+        TextureUtils.prepareTexture(gles, shadow, unit);
+        Texture2D texture = mesh.getTexture(Texture2D.TEXTURE_0);
+        if (texture != null && texture.textureType != TextureType.Untextured) {
+            TextureUtils.prepareTexture(gles, texture,
+                    samplers[shaderVariables[ShaderVariables.uTexture.index].getOffset()]);
+        }
     }
 
 }
