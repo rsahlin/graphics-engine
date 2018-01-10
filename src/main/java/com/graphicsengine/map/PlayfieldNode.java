@@ -120,7 +120,6 @@ public class PlayfieldNode extends Node implements MMIEventListener {
         setObjectInputListener(new PlayfieldNodeObjectInputListener());
     }
 
-
     @Override
     public PlayfieldNode createInstance(RootNode root) {
         PlayfieldNode copy = new PlayfieldNode(root);
@@ -218,12 +217,12 @@ public class PlayfieldNode extends Node implements MMIEventListener {
     public float[] getAnchorOffset() {
         Anchor a = anchor == null ? Anchor.CENTER_XY : anchor;
         switch (a) {
-        case CENTER_XY:
-            return new float[] {
-                    -(getMapSize()[0] >>> 1) * getCharRectangle().getValues()[Rectangle.WIDTH],
-                    (getMapSize()[1] >>> 1) * getCharRectangle().getValues()[Rectangle.HEIGHT] };
-        default:
-            throw new IllegalArgumentException("Not implemented for anchor: " + a);
+            case CENTER_XY:
+                return new float[] {
+                        -(getMapSize()[0] >>> 1) * getCharRectangle().getValues()[Rectangle.WIDTH],
+                        (getMapSize()[1] >>> 1) * getCharRectangle().getValues()[Rectangle.HEIGHT] };
+            default:
+                throw new IllegalArgumentException("Not implemented for anchor: " + a);
         }
 
     }
@@ -266,7 +265,6 @@ public class PlayfieldNode extends Node implements MMIEventListener {
 
     }
 
-
     /**
      * Returns the map x and y position for the specified (normalized) screen position.
      * 
@@ -301,14 +299,13 @@ public class PlayfieldNode extends Node implements MMIEventListener {
     @Override
     public void onInputEvent(MMIPointerEvent event) {
         switch (event.getAction()) {
-        case MOVE:
+            case MOVE:
 
-        case ZOOM:
-        case ACTIVE:
-        case INACTIVE:
+            case ZOOM:
+            case ACTIVE:
+            case INACTIVE:
 
         }
     }
-
 
 }
