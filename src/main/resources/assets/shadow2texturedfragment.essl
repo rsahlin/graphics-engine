@@ -24,10 +24,10 @@ uniform sampler2DShadow uShadowTexture;
 in vec2 vTexCoord;
 in vec4 vLightPos;
 
-out vec4 gl_FragColor;
+out vec4 fragColor;
 
 void main()
 {
-    float shadow = texture(uShadowTexture, vec3(vLightPos.xy,gl_FragCoord.z));
-    gl_FragColor = texture(uTexture, vTexCoord) * vec4(shadow,shadow,shadow,1.0);
+    float shadow = texture(uShadowTexture, vec3(vLightPos.xyz));
+    fragColor = texture(uTexture, vTexCoord) * vec4(shadow,shadow,shadow,1.0);
 }
