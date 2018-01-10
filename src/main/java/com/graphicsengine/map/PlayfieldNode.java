@@ -7,8 +7,6 @@ import com.graphicsengine.scene.GraphicsEngineNodeType;
 import com.nucleus.SimpleLogger;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.io.ExternalReference;
-import com.nucleus.mmi.MMIEventListener;
-import com.nucleus.mmi.MMIPointerEvent;
 import com.nucleus.mmi.ObjectInputListener;
 import com.nucleus.mmi.PointerData;
 import com.nucleus.mmi.PointerMotionData;
@@ -28,7 +26,7 @@ import com.nucleus.vecmath.Rectangle;
  * @author Richard Sahlin
  *
  */
-public class PlayfieldNode extends Node implements MMIEventListener {
+public class PlayfieldNode extends Node {
 
     public class PlayfieldNodeObjectInputListener implements ObjectInputListener {
 
@@ -36,9 +34,9 @@ public class PlayfieldNode extends Node implements MMIEventListener {
         float[] rgba = new float[] { 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1 };
 
         @Override
-        public boolean onClick(PointerData click) {
+        public boolean onInputEvent(PointerData event) {
             float[] inverse = new float[16];
-            float[] position = click.position;
+            float[] position = event.position;
             if (Matrix.invertM(inverse, 0, getModelMatrix(), 0)) {
                 float[] vec2 = new float[2];
                 Matrix.transformVec2(inverse, 0, position, vec2, 1);
@@ -294,18 +292,6 @@ public class PlayfieldNode extends Node implements MMIEventListener {
             SimpleLogger.d(getClass(), "Could not invert matrix!!!!!!!!!!!!!!!!");
         }
         return null;
-    }
-
-    @Override
-    public void onInputEvent(MMIPointerEvent event) {
-        switch (event.getAction()) {
-            case MOVE:
-
-            case ZOOM:
-            case ACTIVE:
-            case INACTIVE:
-
-        }
     }
 
 }
