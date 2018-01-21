@@ -52,6 +52,7 @@ public class SpriteMesh extends Mesh implements Consumer {
         private final static String INVALID_TYPE = "Invalid type: ";
 
         private int spriteCount;
+
         /**
          * Creates a new SpriteMesh builder
          * 
@@ -105,14 +106,14 @@ public class SpriteMesh extends Mesh implements Consumer {
          */
         public ShaderProgram createProgram(Texture2D texture) {
             switch (texture.textureType) {
-            case TiledTexture2D:
+                case TiledTexture2D:
                     return new TiledSpriteProgram(Texture2D.Shading.textured);
-            case UVTexture2D:
-                return new UVSpriteProgram();
-            case Untextured:
+                case UVTexture2D:
+                    return new UVSpriteProgram();
+                case Untextured:
                     return new TiledSpriteProgram(((Untextured) texture).getShading());
-            default:
-                throw new IllegalArgumentException(INVALID_TYPE + texture.textureType);
+                default:
+                    throw new IllegalArgumentException(INVALID_TYPE + texture.textureType);
             }
 
         }
@@ -166,14 +167,6 @@ public class SpriteMesh extends Mesh implements Consumer {
         AttributeBuffer positions = getVerticeBuffer(BufferIndex.ATTRIBUTES);
         positions.setArray(attributeData, 0, 0, attributeData.length);
         positions.setDirty(true);
-    }
-
-    @Override
-    public float[] getAttributeData() {
-        if (attributeData == null) {
-            throw new IllegalArgumentException(Consumer.BUFFER_NOT_BOUND);
-        }
-        return attributeData;
     }
 
     @Override

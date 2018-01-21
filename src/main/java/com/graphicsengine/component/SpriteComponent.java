@@ -32,10 +32,6 @@ import com.nucleus.vecmath.Vector2D;
  * this class can be
  * used as a container for the data.
  * 
- * This component will hold data for the sprite properties, such as position, movement, frame - this data is held in the
- * attribute buffer that can be fetched using {@link #getAttributeData()} and must match the data used by the shader
- * program.
- * 
  * The class can be serialized using gson
  * 
  * TODO Shall this class have a reference to {@linkplain SpriteMesh} or just reference the attribute data (as is now)
@@ -47,9 +43,9 @@ public class SpriteComponent extends Component implements Consumer {
 
     public static final String COUNT = "count";
     public static final String GRAVITY = "gravity";
-    
+
     public static final float DEFAULT_GRAVITY = 5;
-    
+
     /**
      * This is the data defined for each sprite, some of these are the same as defined in the
      * {@linkplain AttributeUpdater} and should probably be put together instead of as separate defines.
@@ -61,6 +57,7 @@ public class SpriteComponent extends Component implements Consumer {
         TRANSLATE(0),
         TRANSLATE_X(0),
         TRANSLATE_Y(1),
+        TRANSLATE_Z(2),
         ROTATE(3),
         SCALE(6),
         FRAME(9),
@@ -98,18 +95,14 @@ public class SpriteComponent extends Component implements Consumer {
      */
     @SerializedName(COUNT)
     protected int count;
-    
+
     @SerializedName(GRAVITY)
     public float gravity = DEFAULT_GRAVITY;
-    
+
     /**
      * The sprites float data storage, this is the sprite properties such as position, movement and frame
      */
     transient public float[] floatData;
-    /**
-     * This is a reference to the spritemesh attribute data.
-     */
-    transient private float[] attributeData;
     // TODO move into floatdata
     transient public Vector2D[] moveVector;
     // TODO move to renderable component
@@ -172,19 +165,18 @@ public class SpriteComponent extends Component implements Consumer {
             spriteMesh = (SpriteMesh) spriteBuilder.create();
             this.textureType = spriteMesh.getTexture(Texture2D.TEXTURE_0).getTextureType();
             switch (textureType) {
-            case TiledTexture2D:
-                break;
-            case UVTexture2D:
-                uvAtlas = ((UVTexture2D) spriteMesh.getTexture(Texture2D.TEXTURE_0)).getUVAtlas();
-                break;
-            default:
-                break;
+                case TiledTexture2D:
+                    break;
+                case UVTexture2D:
+                    uvAtlas = ((UVTexture2D) spriteMesh.getTexture(Texture2D.TEXTURE_0)).getUVAtlas();
+                    break;
+                default:
+                    break;
             }
         } catch (IOException | GLException e) {
             throw new ComponentException("Could not create component: " + e.getMessage());
         }
         mapper = spriteMesh.getMapper();
-        attributeData = spriteMesh.getAttributeData();
         parent.addMesh(spriteMesh, MeshType.MAIN);
         createBuffers();
     }
@@ -234,11 +226,6 @@ public class SpriteComponent extends Component implements Consumer {
      */
     public int getFrameCount() {
         return spriteMesh.getTexture(Texture2D.TEXTURE_0).getFrameCount();
-    }
-
-    @Override
-    public float[] getAttributeData() {
-        return attributeData;
     }
 
     /**
