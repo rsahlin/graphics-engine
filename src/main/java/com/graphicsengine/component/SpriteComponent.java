@@ -11,11 +11,13 @@ import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.AttributeUpdater;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
+import com.nucleus.geometry.Mesh.BufferIndex;
 import com.nucleus.geometry.RectangleShapeBuilder;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node.MeshType;
 import com.nucleus.shader.ShaderProgram;
+import com.nucleus.shader.ShaderVariables;
 import com.nucleus.shader.VariableMapping;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TextureType;
@@ -56,38 +58,17 @@ public class SpriteComponent extends Component implements Consumer {
      * Data that is held in the sprite component and used to update the attributes in the mesh, this data
      * is copied to each vertice in the quad.
      * 
-     *
+     * This shall match the shader variables used, normally in {@link ShaderVariables}
      */
-    public enum MeshData {
+    public enum SpriteData {
         TRANSLATE(0),
         TRANSLATE_X(0),
         TRANSLATE_Y(1),
         TRANSLATE_Z(2),
         ROTATE(3),
         SCALE(6),
+        // COLOR(9),
         FRAME(9);
-        public final int index;
-
-        MeshData(int index) {
-            this.index = index;
-        }
-
-    }
-
-    /**
-     * This is the data defined for each sprite, some of these are the same as defined in the
-     * {@linkplain AttributeUpdater} and should probably be put together instead of as separate defines.
-     * 
-     * @author Richard Sahlin
-     *
-     */
-    public enum SpriteData {
-        MOVE_VECTOR_X(10),
-        MOVE_VECTOR_Y(11),
-        MOVE_VECTOR_Z(12),
-        ELASTICITY(13),
-        ROTATE_SPEED(14),
-        RESISTANCE(15);
         public final int index;
 
         SpriteData(int index) {
@@ -101,6 +82,38 @@ public class SpriteComponent extends Component implements Consumer {
          */
         public static int getSize() {
             SpriteData[] values = values();
+            return values[values.length - 1].index + 1;
+        }
+
+    }
+
+    /**
+     * This is the data defined for each sprite, some of these are the same as defined in the
+     * {@linkplain AttributeUpdater} and should probably be put together instead of as separate defines.
+     * 
+     * @author Richard Sahlin
+     *
+     */
+    public enum EntityData {
+        MOVE_VECTOR_X(16),
+        MOVE_VECTOR_Y(17),
+        MOVE_VECTOR_Z(18),
+        ELASTICITY(19),
+        ROTATE_SPEED(20),
+        RESISTANCE(21);
+        public final int index;
+
+        EntityData(int index) {
+            this.index = index;
+        }
+
+        /**
+         * Returns the size in floats of the data store for each sprite
+         * 
+         * @return The size in float for each sprite datastore.
+         */
+        public static int getSize() {
+            EntityData[] values = values();
             return values[values.length - 1].index + 1;
         }
     }
@@ -123,24 +136,29 @@ public class SpriteComponent extends Component implements Consumer {
 
     /**
      * The sprites common float data storage, this is the sprite visible (mesh) properties such as position, scale and
-     * frame.
+     * frame, plus entity data needed to process the logic.
      * This is what is generally needed in order to put sprite on screen.
      * In order to render a mesh with sprites this data is copied one -> four in the mesh.
      */
-    transient public float[] meshData;
+    transient public float[] spriteData;
 
     /**
      * Data related to a sprite entity - this is used by the System to
-     * process behavior.
+     * process behavior and to update the mesh.
      */
     transient public float[] floatData;
     // TODO move into floatdata
     transient public Vector2D[] moveVector;
-    // TODO move to renderable component
-    transient protected PropertyMapper mapper;
+    /**
+     * This is the destination mesh attribute buffer
+     */
+    protected transient AttributeBuffer attributeBuffer;
+    /**
+     * TEMP BUFFER
+     */
+    protected transient float[] attributeData;
 
-    transient public float[] entityData;
-
+    protected transient PropertyMapper mapper;
     /**
      * This is the mesh that holds all sprite objects, it is drawn using one drawcall.
      */
@@ -148,7 +166,7 @@ public class SpriteComponent extends Component implements Consumer {
     transient protected TextureType textureType;
     transient protected UVAtlas uvAtlas;
     transient protected float[] uvFrame = new float[ShaderProgram.VERTICES_PER_SPRITE * 2];
-    transient protected int spritedataSize = SpriteData.getSize();
+    transient protected int spritedataSize;
 
     @Override
     public Component createInstance() {
@@ -178,8 +196,8 @@ public class SpriteComponent extends Component implements Consumer {
      * @param system
      */
     private void createBuffers(com.nucleus.system.System system) {
-        this.meshData = new float[spritedataSize * count];
-        this.entityData = new float[system.getEntityDataSize() * count];
+        spritedataSize = EntityData.getSize() + system.getEntityDataSize();
+        this.spriteData = new float[spritedataSize * count];
     }
 
     @Override
@@ -196,6 +214,9 @@ public class SpriteComponent extends Component implements Consumer {
             spriteBuilder.setShapeBuilder(shapeBuilder);
             // TODO - Fix generics so that cast is not needed
             spriteMesh = (SpriteMesh) spriteBuilder.create();
+            mapper = spriteMesh.getMapper();
+            spriteMesh.setAttributeUpdater(this);
+            bindAttributeBuffer(spriteMesh.getVerticeBuffer(BufferIndex.ATTRIBUTES.index));
             this.textureType = spriteMesh.getTexture(Texture2D.TEXTURE_0).getTextureType();
             switch (textureType) {
                 case TiledTexture2D:
@@ -267,7 +288,7 @@ public class SpriteComponent extends Component implements Consumer {
      * @return
      */
     public float[] getSpriteData() {
-        return meshData;
+        return spriteData;
     }
 
     /**
@@ -279,8 +300,8 @@ public class SpriteComponent extends Component implements Consumer {
      */
     public void getMoveVector(int sprite, Vector2D result) {
         int index = sprite * spritedataSize;
-        result.vector[Vector2D.X] = meshData[index + SpriteData.MOVE_VECTOR_X.index];
-        result.vector[Vector2D.Y] = meshData[index + SpriteData.MOVE_VECTOR_Y.index];
+        result.vector[Vector2D.X] = spriteData[index + EntityData.MOVE_VECTOR_X.index];
+        result.vector[Vector2D.Y] = spriteData[index + EntityData.MOVE_VECTOR_Y.index];
     }
 
     /**
@@ -307,10 +328,11 @@ public class SpriteComponent extends Component implements Consumer {
      */
     public void setPosition(int index, float x, float y, float z) {
         int offset = index * spritedataSize;
-        meshData[offset++ + MeshData.TRANSLATE.index] = x;
-        meshData[offset++ + MeshData.TRANSLATE.index] = y;
-        meshData[offset++ + MeshData.TRANSLATE.index] = z;
-        spriteMesh.setPosition(index, x, y, z);
+        spriteData[offset++ + SpriteData.TRANSLATE.index] = x;
+        spriteData[offset++ + SpriteData.TRANSLATE.index] = y;
+        spriteData[offset++ + SpriteData.TRANSLATE.index] = z;
+        spriteMesh.setAttribute3(index, mapper.translateOffset, spriteData,
+                index * spritedataSize + SpriteData.TRANSLATE.index);
     }
 
     /**
@@ -322,8 +344,9 @@ public class SpriteComponent extends Component implements Consumer {
      */
     public void setFrame(int index, int frame) {
         int offset = index * spritedataSize;
-        meshData[offset + MeshData.FRAME.index] = frame;
-        spriteMesh.setFrame(index, frame);
+        spriteData[offset + SpriteData.FRAME.index] = frame;
+        spriteMesh.setAttribute1(index, mapper.frameOffset, spriteData,
+                index * spritedataSize + SpriteData.FRAME.index);
     }
 
     /**
@@ -334,7 +357,7 @@ public class SpriteComponent extends Component implements Consumer {
      * @param attribute
      */
     public void setAttribute4(int index, VariableMapping mapping, float[] attribute) {
-        spriteMesh.setAttribute4(index, mapping, attribute);
+        // spriteMesh.setAttribute4(index, mapping, attribute);
     }
 
     /**
@@ -345,22 +368,21 @@ public class SpriteComponent extends Component implements Consumer {
      * @param rgba Array with at least 4 float values, index 0 is RED, 1 is GREEN, 2 is BLUE, 3 is ALPHA
      */
     public void setColor(int index, float[] rgba) {
-        spriteMesh.setColor(index, rgba);
+        // spriteMesh.setColor(index, rgba);
     }
 
     public void setRotateSpeed(int index, float speed) {
         int offset = index * spritedataSize;
-        meshData[offset + SpriteData.ROTATE_SPEED.index] = speed;
+        spriteData[offset + EntityData.ROTATE_SPEED.index] = speed;
     }
 
     public void setElasticity(int index, float elasticity) {
         int offset = index * spritedataSize;
-        meshData[offset + SpriteData.ELASTICITY.index] = elasticity;
+        spriteData[offset + EntityData.ELASTICITY.index] = elasticity;
     }
 
     /**
-     * Sets the scale in x and y axis, this calls {@linkplain SpriteMesh#setScale(int, float, float)} to update
-     * the attribute data
+     * Sets the scale in x and y axis
      * 
      * @param index The sprite number
      * @param x X axis scale
@@ -368,9 +390,10 @@ public class SpriteComponent extends Component implements Consumer {
      */
     public void setScale(int index, float x, float y) {
         int offset = index * spritedataSize;
-        meshData[offset++ + MeshData.SCALE.index] = x;
-        meshData[offset + MeshData.SCALE.index] = y;
-        spriteMesh.setScale(index, x, y);
+        spriteData[offset++ + SpriteData.SCALE.index] = x;
+        spriteData[offset + SpriteData.SCALE.index] = y;
+        spriteMesh.setAttribute2(index, mapper.scaleOffset, spriteData,
+                index * spritedataSize + SpriteData.SCALE.index);
     }
 
     /**
@@ -382,27 +405,37 @@ public class SpriteComponent extends Component implements Consumer {
      */
     public void setRotation(int index, float rotation) {
         int offset = index * spritedataSize;
-        meshData[offset + MeshData.ROTATE.index] = rotation;
-        spriteMesh.setRotation(index, rotation);
+        spriteData[offset + SpriteData.ROTATE.index] = rotation;
+        spriteMesh.setAttribute1(index, mapper.rotateOffset + 2, spriteData,
+                index * spritedataSize + SpriteData.ROTATE.index);
     }
 
     public void setSprite(int index, float x, float y, int frame, float rotate) {
         int offset = index * spritedataSize;
-        meshData[offset + MeshData.TRANSLATE_X.index] = x;
-        meshData[offset + MeshData.TRANSLATE_Y.index] = y;
-        meshData[offset + MeshData.FRAME.index] = frame;
-        meshData[offset + SpriteData.MOVE_VECTOR_X.index] = 0;
-        meshData[offset + SpriteData.MOVE_VECTOR_Y.index] = 0;
-        meshData[offset + SpriteData.ELASTICITY.index] = 1f;
-        meshData[offset + SpriteData.ROTATE_SPEED.index] = rotate;
-    }
-
-    @Override
-    public void updateAttributeData() {
-        // TODO Auto-generated method stub
+        spriteData[offset + SpriteData.TRANSLATE_X.index] = x;
+        spriteData[offset + SpriteData.TRANSLATE_Y.index] = y;
+        spriteData[offset + SpriteData.FRAME.index] = frame;
+        spriteData[offset + EntityData.MOVE_VECTOR_X.index] = 0;
+        spriteData[offset + EntityData.MOVE_VECTOR_Y.index] = 0;
+        spriteData[offset + EntityData.ELASTICITY.index] = 1f;
+        spriteData[offset + EntityData.ROTATE_SPEED.index] = rotate;
     }
 
     @Override
     public void bindAttributeBuffer(AttributeBuffer buffer) {
+        attributeBuffer = spriteMesh.getVerticeBuffer(BufferIndex.ATTRIBUTES.index);
+        attributeData = new float[attributeBuffer.getCapacity()];
+    }
+
+    @Override
+    public void updateAttributeData() {
+        if (attributeData == null) {
+            throw new IllegalArgumentException(Consumer.BUFFER_NOT_BOUND);
+        }
+        int sourceIndex = 0;
+        for (int i = 0; i < count; i++) {
+            spriteMesh.setData(i, 0, spriteData, sourceIndex, SpriteData.getSize());
+            sourceIndex += spritedataSize;
+        }
     }
 }

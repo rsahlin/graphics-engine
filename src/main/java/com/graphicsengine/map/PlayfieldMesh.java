@@ -15,7 +15,6 @@ import com.nucleus.geometry.RectangleShapeBuilder;
 import com.nucleus.geometry.RectangleShapeBuilder.RectangleConfiguration;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
-import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.vecmath.Axis;
 import com.nucleus.vecmath.Rectangle;
@@ -192,28 +191,16 @@ public class PlayfieldMesh extends SpriteMesh {
             throw new IllegalArgumentException(
                     "Invalid map size " + (playfieldSize != null ? playfieldSize[0] + playfieldSize[1] : "null"));
         }
-        int index = 0;
-        float currentX = offset[0];
-        float currentY = offset[1];
-        float startY = currentY;
+        int charNumber = 0;
+        float[] position = new float[] { offset[0], offset[1], 0 };
+        float startY = offset[1];
         for (int y = 0; y < playfieldSize[1]; y++) {
-            currentY = startY;
+            position[1] = startY;
             for (int x = 0; x < playfieldSize[0]; x++) {
-                attributeData[index + mapper.translateOffset] = currentX;
-                attributeData[index + mapper.translateOffset + 1] = currentY;
-                index += mapper.attributesPerVertex;
-                attributeData[index + mapper.translateOffset] = currentX;
-                attributeData[index + mapper.translateOffset + 1] = currentY;
-                index += mapper.attributesPerVertex;
-                attributeData[index + mapper.translateOffset] = currentX;
-                attributeData[index + mapper.translateOffset + 1] = currentY;
-                index += mapper.attributesPerVertex;
-                attributeData[index + mapper.translateOffset] = currentX;
-                attributeData[index + mapper.translateOffset + 1] = currentY;
-                index += mapper.attributesPerVertex;
-                currentX += charSize[Axis.WIDTH.index];
+                setAttribute3(charNumber++, mapper.translateOffset, position, 0);
+                position[0] += charSize[Axis.WIDTH.index];
             }
-            currentX = offset[0];
+            position[0] = offset[0];
             // TODO handle Y axis going other direction?
             startY -= charSize[Axis.HEIGHT.index];
         }
@@ -343,21 +330,7 @@ public class PlayfieldMesh extends SpriteMesh {
      */
     private void setChar(PropertyMapper mapper, int pos, int chr, int flags) {
         map.getMap().put(pos, chr);
-        int destIndex = pos * mapper.attributesPerVertex * ShaderProgram.VERTICES_PER_SPRITE
-                + mapper.frameOffset;
-        attributeData[destIndex] = chr;
-        attributeData[destIndex + 1] = flags;
-        destIndex += mapper.attributesPerVertex;
-        attributeData[destIndex] = chr;
-        attributeData[destIndex + 1] = flags;
-        destIndex += mapper.attributesPerVertex;
-        attributeData[destIndex] = chr;
-        attributeData[destIndex + 1] = flags;
-        destIndex += mapper.attributesPerVertex;
-        attributeData[destIndex] = chr;
-        attributeData[destIndex + 1] = flags;
-        destIndex += mapper.attributesPerVertex;
-        getVerticeBuffer(BufferIndex.ATTRIBUTES).setDirty(true);
+        setAttribute2(pos, mapper.frameOffset, new float[] { chr, flags }, 0);
     }
 
     /**
@@ -371,20 +344,15 @@ public class PlayfieldMesh extends SpriteMesh {
      * @param stride Ambient stride to get to values for next ambient, either 0 or size of ambient data.
      */
     private void setAmbient(PropertyMapper mapper, int pos, FloatBuffer ambient, int index, int stride) {
-        int destIndex = pos * mapper.attributesPerVertex * ShaderProgram.VERTICES_PER_SPRITE
-                + mapper.colorAmbientOffset;
-        for (int i = 0; i < RectangleShapeBuilder.QUAD_VERTICES; i++) {
-            ambient.get(attributeData, destIndex, 4);
-            destIndex += mapper.attributesPerVertex;
-            index += stride;
-        }
-        getVerticeBuffer(BufferIndex.ATTRIBUTES).setDirty(true);
+        float[] color = new float[4];
+        ambient.position(index);
+        ambient.get(color);
+        setAttribute4(pos, mapper.colorAmbientOffset, color, 0);
     }
 
     @Override
     public void destroy(NucleusRenderer renderer) {
         super.destroy(renderer);
-        attributeData = null;
         map = null;
         playfieldSize = null;
     }

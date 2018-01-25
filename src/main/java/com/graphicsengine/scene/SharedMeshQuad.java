@@ -2,6 +2,7 @@ package com.graphicsengine.scene;
 
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.spritemesh.SpriteMesh;
+import com.nucleus.SimpleLogger;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
 import com.nucleus.texturing.Texture2D;
@@ -56,8 +57,8 @@ public class SharedMeshQuad extends Node {
         this.childIndex = index;
         this.parentMesh = mesh;
         Texture2D texture = mesh.getTexture(Texture2D.TEXTURE_0);
-        if (rectangle == null && (texture.getTextureType() == TextureType.Untextured || 
-                texture.getWidth() == 0 || texture.getHeight()== 0)) {
+        if (rectangle == null && (texture.getTextureType() == TextureType.Untextured ||
+                texture.getWidth() == 0 || texture.getHeight() == 0)) {
             // Must have size
             throw new IllegalArgumentException("Node does not define RECT and texture is untextured or size is zero");
         }
@@ -66,14 +67,17 @@ public class SharedMeshQuad extends Node {
         mesh.buildQuad(index, mesh.getMaterial().getProgram(), quadRect);
         initBounds(quadRect);
         if (transform == null) {
-            mesh.setScale(index, 1, 1);
+            SimpleLogger.d(getClass(), "---------------------------------MUST FIX----------------------------------");
+            // mesh.setScale(index, 1, 1);
         } else {
-            mesh.setTransform(index, transform);
+            SimpleLogger.d(getClass(), "---------------------------------MUST FIX----------------------------------");
+            // mesh.setTransform(index, transform);
         }
-        mesh.setFrame(index, frame);
-        if (mesh.getTexture(Texture2D.TEXTURE_0).textureType == TextureType.Untextured) {
-            mesh.setColor(index, getMaterial() != null ? getMaterial().getAmbient() : mesh.getMaterial().getAmbient());
-        }
+        SimpleLogger.d(getClass(), "---------------------------------MUST FIX----------------------------------");
+        // mesh.setFrame(index, frame);
+        // if (mesh.getTexture(Texture2D.TEXTURE_0).textureType == TextureType.Untextured) {
+        // mesh.setColor(index, getMaterial() != null ? getMaterial().getAmbient() : mesh.getMaterial().getAmbient());
+        // }
     }
 
     /**
@@ -84,7 +88,6 @@ public class SharedMeshQuad extends Node {
     public void setChildIndex(int index) {
         this.childIndex = index;
     }
-
 
     @Override
     public Node createInstance(RootNode root) {
@@ -120,22 +123,13 @@ public class SharedMeshQuad extends Node {
     }
 
     /**
-     * Sets the position of this sprite quad in the parent mesh, see {@link QuadParentNode}
-     * and {@link SpriteMesh}
-     * 
-     * @param position
-     */
-    public void setPosition(float[] position) {
-        parentMesh.setPosition(childIndex, position[0], position[1], position[2]);
-    }
-
-    /**
      * Sets the frame number for this child.
      * 
      * @param frame
      */
     public void setFrame(int frame) {
-        parentMesh.setFrame(childIndex, frame);
+        SimpleLogger.d(getClass(), "---------------------------------MUST FIX----------------------------------");
+        // parentMesh.setFrame(childIndex, frame);
     }
 
 }
