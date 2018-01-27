@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.spritemesh.SpriteMesh;
+import com.nucleus.SimpleLogger;
 import com.nucleus.component.Component;
 import com.nucleus.component.ComponentException;
 import com.nucleus.component.ComponentNode;
@@ -18,7 +19,6 @@ import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node.MeshType;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.shader.ShaderVariables;
-import com.nucleus.shader.VariableMapping;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TextureType;
 import com.nucleus.texturing.UVAtlas;
@@ -59,6 +59,7 @@ public class SpriteComponent extends Component implements Consumer {
      * is copied to each vertice in the quad.
      * 
      * This shall match the shader variables used, normally in {@link ShaderVariables}
+     * TODO Perhaps remove this and use the values in the PropertyMapper instead?
      */
     public enum SpriteData {
         TRANSLATE(0),
@@ -318,8 +319,7 @@ public class SpriteComponent extends Component implements Consumer {
     }
 
     /**
-     * Sets the x, y and z position, this calls {@linkplain SpriteMesh#setPosition(int, float, float, float)} to update
-     * the attribute data
+     * Sets the x, y and z position
      * 
      * @param index The sprite number
      * @param x X position
@@ -331,13 +331,10 @@ public class SpriteComponent extends Component implements Consumer {
         spriteData[offset++ + SpriteData.TRANSLATE.index] = x;
         spriteData[offset++ + SpriteData.TRANSLATE.index] = y;
         spriteData[offset++ + SpriteData.TRANSLATE.index] = z;
-        spriteMesh.setAttribute3(index, mapper.translateOffset, spriteData,
-                index * spritedataSize + SpriteData.TRANSLATE.index);
     }
 
     /**
-     * Sets the frame number of the sprite index, this calls {@linkplain SpriteMesh#setFrame(int, int)} to update
-     * the attribute data
+     * Sets the frame number of the sprite index
      * 
      * @param index Index to the sprite object to set the frame on
      * @param frame Sprite frame number to set
@@ -345,30 +342,16 @@ public class SpriteComponent extends Component implements Consumer {
     public void setFrame(int index, int frame) {
         int offset = index * spritedataSize;
         spriteData[offset + SpriteData.FRAME.index] = frame;
-        spriteMesh.setAttribute1(index, mapper.frameOffset, spriteData,
-                index * spritedataSize + SpriteData.FRAME.index);
     }
 
     /**
-     * Sets attribute data for the specified sprite
-     * 
-     * @param index Index to the sprite to set attribute
-     * @param mapping The variable to set
-     * @param attribute
-     */
-    public void setAttribute4(int index, VariableMapping mapping, float[] attribute) {
-        // spriteMesh.setAttribute4(index, mapping, attribute);
-    }
-
-    /**
-     * Sets the color of the sprite, this calls {@linkplain SpriteMesh#setColor(int, float[])} to update the attribute
-     * data
+     * Sets the color of the sprite
      * 
      * @param index
      * @param rgba Array with at least 4 float values, index 0 is RED, 1 is GREEN, 2 is BLUE, 3 is ALPHA
      */
     public void setColor(int index, float[] rgba) {
-        // spriteMesh.setColor(index, rgba);
+        SimpleLogger.d(getClass(), "Not implemented!!!!!!!!!");
     }
 
     public void setRotateSpeed(int index, float speed) {
@@ -392,24 +375,28 @@ public class SpriteComponent extends Component implements Consumer {
         int offset = index * spritedataSize;
         spriteData[offset++ + SpriteData.SCALE.index] = x;
         spriteData[offset + SpriteData.SCALE.index] = y;
-        spriteMesh.setAttribute2(index, mapper.scaleOffset, spriteData,
-                index * spritedataSize + SpriteData.SCALE.index);
     }
 
     /**
-     * Sets the rotation, this calls {@linkplain SpriteMesh#setRotation(int, float)} to update
-     * the attribute data
+     * Sets the z axis rotation
      * 
      * @param index The sprite number
      * @param rotation
      */
-    public void setRotation(int index, float rotation) {
+    public void setRotationZ(int index, float rotation) {
         int offset = index * spritedataSize;
-        spriteData[offset + SpriteData.ROTATE.index] = rotation;
-        spriteMesh.setAttribute1(index, mapper.rotateOffset + 2, spriteData,
-                index * spritedataSize + SpriteData.ROTATE.index);
+        spriteData[offset + SpriteData.ROTATE.index + 2] = rotation;
     }
 
+    /**
+     * TODO - Implement method in SpriteMesh that copies all data for one sprite.
+     * 
+     * @param index
+     * @param x
+     * @param y
+     * @param frame
+     * @param rotate
+     */
     public void setSprite(int index, float x, float y, int frame, float rotate) {
         int offset = index * spritedataSize;
         spriteData[offset + SpriteData.TRANSLATE_X.index] = x;
@@ -423,7 +410,7 @@ public class SpriteComponent extends Component implements Consumer {
 
     @Override
     public void bindAttributeBuffer(AttributeBuffer buffer) {
-        attributeBuffer = spriteMesh.getVerticeBuffer(BufferIndex.ATTRIBUTES.index);
+        attributeBuffer = buffer;
         attributeData = new float[attributeBuffer.getCapacity()];
     }
 

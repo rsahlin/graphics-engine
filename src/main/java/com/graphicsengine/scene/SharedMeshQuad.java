@@ -1,8 +1,10 @@
 package com.graphicsengine.scene;
 
 import com.google.gson.annotations.SerializedName;
+import com.graphicsengine.component.SpriteComponent;
 import com.graphicsengine.spritemesh.SpriteMesh;
 import com.nucleus.SimpleLogger;
+import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
 import com.nucleus.texturing.Texture2D;
@@ -12,6 +14,8 @@ import com.nucleus.vecmath.Rectangle;
 /**
  * A Quad child that has to be appended to QuadNode in order to be rendered.
  * This node will share the mesh from the parent {@link QuadParentNode}
+ * This is for objects that are mostly static, for instance UI elements, and objects that need touch events.
+ * If a large number of objects with shared behavior are needed use {@link SpriteComponent} instead.
  * 
  * @author Richard Sahlin
  *
@@ -27,6 +31,7 @@ public class SharedMeshQuad extends Node {
      */
     transient private int childIndex;
     transient private SpriteMesh parentMesh;
+    transient private PropertyMapper mapper;
     /**
      * The rectangle defining the sprites, all sprites will have same size
      * 4 values = x1,y1 + width and height
@@ -56,6 +61,7 @@ public class SharedMeshQuad extends Node {
     public void onCreated(SpriteMesh mesh, int index) {
         this.childIndex = index;
         this.parentMesh = mesh;
+        this.mapper = mesh.getMapper();
         Texture2D texture = mesh.getTexture(Texture2D.TEXTURE_0);
         if (rectangle == null && (texture.getTextureType() == TextureType.Untextured ||
                 texture.getWidth() == 0 || texture.getHeight() == 0)) {
@@ -128,8 +134,7 @@ public class SharedMeshQuad extends Node {
      * @param frame
      */
     public void setFrame(int frame) {
-        SimpleLogger.d(getClass(), "---------------------------------MUST FIX----------------------------------");
-        // parentMesh.setFrame(childIndex, frame);
+        // parentMesh.setAttribute1(childIndex, mapper.frameOffset, , sourceIndex);
     }
 
 }

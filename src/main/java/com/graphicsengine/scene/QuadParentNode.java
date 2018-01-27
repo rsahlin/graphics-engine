@@ -3,8 +3,12 @@ package com.graphicsengine.scene;
 import java.util.ArrayList;
 
 import com.google.gson.annotations.SerializedName;
+import com.graphicsengine.component.SpriteComponent;
 import com.graphicsengine.spritemesh.SpriteMesh;
+import com.nucleus.SimpleLogger;
 import com.nucleus.component.Component;
+import com.nucleus.geometry.AttributeBuffer;
+import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
 
@@ -13,16 +17,16 @@ import com.nucleus.scene.RootNode;
  * and use the mesh in the parent node to render the objects.
  * This means that they need to share the mesh in this node.
  * Use this node for simple objects that does not need to have special behavior. Use component node for that,
- * see {@linkplain Component}
+ * see {@linkplain Component} or {@link SpriteComponent}
  * This class can be serialized using GSON
  * 
  * @author Richard Sahlin
  *
  */
-public class QuadParentNode extends Node {
+public class QuadParentNode extends Node implements Consumer {
 
     public static final String MAX_QUADS = "maxQuads";
-    
+
     @SerializedName(MAX_QUADS)
     private int maxQuads;
 
@@ -38,7 +42,6 @@ public class QuadParentNode extends Node {
     private QuadParentNode(RootNode root) {
         super(root, GraphicsEngineNodeType.quadNode);
     }
-
 
     @Override
     public Node createInstance(RootNode root) {
@@ -89,6 +92,18 @@ public class QuadParentNode extends Node {
                 ((SharedMeshQuad) n).onCreated(mesh, index);
             }
         }
+        mesh.setAttributeUpdater(this);
+    }
+
+    @Override
+    public void updateAttributeData() {
+        SimpleLogger.d(getClass(), "update");
+    }
+
+    @Override
+    public void bindAttributeBuffer(AttributeBuffer buffer) {
+        // TODO Auto-generated method stub
+
     }
 
 }
