@@ -2,8 +2,11 @@ package com.graphicsengine.scene;
 
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.component.SpriteComponent;
+import com.nucleus.geometry.Mesh;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
+import com.nucleus.texturing.Texture2D;
+import com.nucleus.texturing.TextureType;
 import com.nucleus.vecmath.Rectangle;
 
 /**
@@ -62,9 +65,11 @@ public class SharedMeshQuad extends Node {
             parent.getExpander().setData(index, transform);
             parent.getExpander().setFrame(index, frame);
         }
-        // if (mesh.getTexture(Texture2D.TEXTURE_0).textureType == TextureType.Untextured) {
-        // mesh.setColor(index, getMaterial() != null ? getMaterial().getAmbient() : mesh.getMaterial().getAmbient());
-        // }
+        Mesh mesh = parent.getMesh(MeshType.MAIN);
+        if (mesh.getTexture(Texture2D.TEXTURE_0).textureType == TextureType.Untextured) {
+            parent.getExpander().setColor(index,
+                    getMaterial() != null ? getMaterial().getAmbient() : mesh.getMaterial().getAmbient());
+        }
     }
 
     /**
@@ -107,15 +112,6 @@ public class SharedMeshQuad extends Node {
      */
     private void setQuadRectangle(Rectangle rectangle) {
         this.rectangle = new Rectangle(rectangle);
-    }
-
-    /**
-     * Sets the frame number for this child.
-     * 
-     * @param frame
-     */
-    public void setFrame(int frame) {
-        // parentMesh.setAttribute1(childIndex, mapper.frameOffset, , sourceIndex);
     }
 
 }
