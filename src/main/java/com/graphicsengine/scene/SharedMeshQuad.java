@@ -1,8 +1,8 @@
 package com.graphicsengine.scene;
 
 import com.google.gson.annotations.SerializedName;
-import com.graphicsengine.spritemesh.SpriteMesh;
-import com.nucleus.SimpleLogger;
+import com.graphicsengine.component.SpriteComponent;
+import com.nucleus.geometry.Mesh;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
 import com.nucleus.texturing.Texture2D;
@@ -12,6 +12,8 @@ import com.nucleus.vecmath.Rectangle;
 /**
  * A Quad child that has to be appended to QuadNode in order to be rendered.
  * This node will share the mesh from the parent {@link QuadParentNode}
+ * This is for objects that are mostly static, for instance UI elements, and objects that need touch events.
+ * If a large number of objects with shared behavior are needed use {@link SpriteComponent} instead.
  * 
  * @author Richard Sahlin
  *
@@ -26,7 +28,7 @@ public class SharedMeshQuad extends Node {
      * The index of this shared mesh quad node with it's parent.
      */
     transient private int childIndex;
-    transient private SpriteMesh parentMesh;
+    transient private QuadParentNode parent;
     /**
      * The rectangle defining the sprites, all sprites will have same size
      * 4 values = x1,y1 + width and height
@@ -50,34 +52,24 @@ public class SharedMeshQuad extends Node {
      * use it's own mesh
      * TODO Need to provide size and color from scene definition.
      * 
-     * @param mesh The source mesh
+     * @param Parent The parent node holding all quads
      * @param index
      */
-    public void onCreated(SpriteMesh mesh, int index) {
+    public void onCreated(QuadParentNode parent, int index) {
         this.childIndex = index;
-        this.parentMesh = mesh;
-        Texture2D texture = mesh.getTexture(Texture2D.TEXTURE_0);
-        if (rectangle == null && (texture.getTextureType() == TextureType.Untextured ||
-                texture.getWidth() == 0 || texture.getHeight() == 0)) {
-            // Must have size
-            throw new IllegalArgumentException("Node does not define RECT and texture is untextured or size is zero");
-        }
-        Rectangle quadRect = rectangle != null ? rectangle
-                : texture.calculateWindowRectangle();
-        mesh.buildQuad(index, mesh.getMaterial().getProgram(), quadRect);
-        initBounds(quadRect);
+        this.parent = parent;
+        initBounds(parent.buildQuad(index, rectangle));
         if (transform == null) {
-            SimpleLogger.d(getClass(), "---------------------------------MUST FIX----------------------------------");
-            // mesh.setScale(index, 1, 1);
+            parent.getExpander().setData(index, 0, 0, 0, 0, 1, 1, 1, frame);
         } else {
-            SimpleLogger.d(getClass(), "---------------------------------MUST FIX----------------------------------");
-            // mesh.setTransform(index, transform);
+            parent.getExpander().setData(index, transform);
+            parent.getExpander().setFrame(index, frame);
         }
-        SimpleLogger.d(getClass(), "---------------------------------MUST FIX----------------------------------");
-        // mesh.setFrame(index, frame);
-        // if (mesh.getTexture(Texture2D.TEXTURE_0).textureType == TextureType.Untextured) {
-        // mesh.setColor(index, getMaterial() != null ? getMaterial().getAmbient() : mesh.getMaterial().getAmbient());
-        // }
+        Mesh mesh = parent.getMesh(MeshType.MAIN);
+        if (mesh.getTexture(Texture2D.TEXTURE_0).textureType == TextureType.Untextured) {
+            parent.getExpander().setColor(index,
+                    getMaterial() != null ? getMaterial().getAmbient() : mesh.getMaterial().getAmbient());
+        }
     }
 
     /**
@@ -120,16 +112,6 @@ public class SharedMeshQuad extends Node {
      */
     private void setQuadRectangle(Rectangle rectangle) {
         this.rectangle = new Rectangle(rectangle);
-    }
-
-    /**
-     * Sets the frame number for this child.
-     * 
-     * @param frame
-     */
-    public void setFrame(int frame) {
-        SimpleLogger.d(getClass(), "---------------------------------MUST FIX----------------------------------");
-        // parentMesh.setFrame(childIndex, frame);
     }
 
 }

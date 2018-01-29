@@ -35,11 +35,6 @@ public class SpriteMesh extends Mesh {
      */
     // protected transient FloatBuffer attributeData;
 
-    /**
-     * Storage for 4 UV components
-     */
-    private transient float[] frames = new float[2 * 4];
-
     public static class Builder extends Mesh.Builder<SpriteMesh> {
 
         private final static String INVALID_TYPE = "Invalid type: ";
@@ -227,51 +222,6 @@ public class SpriteMesh extends Mesh {
         attributeBuffer.setArray(source, sourceIndex, index + offset, 2);
         index += mapper.attributesPerVertex;
         attributeBuffer.setArray(source, sourceIndex, index + offset, 2);
-        attributeBuffer.setDirty(true);
-    }
-
-    /**
-     * Copies 1 attribute value from the source array to the specified offset in sprite.
-     * This will update the mesh attributes, ie the data will be copied to 4 vertices.
-     * 
-     * @param sprite The sprite number
-     * @param offset Offset to attribute to set
-     * @param source The source array
-     * @param sourceIndex Index into source where data is copied from.
-     */
-    public void setAttribute1(int sprite, int offset, float[] source, int sourceIndex) {
-        int index = mapper.attributesPerVertex * 4 * sprite;
-        AttributeBuffer attributeBuffer = getVerticeBuffer(BufferIndex.ATTRIBUTES.index);
-        attributeBuffer.setArray(source, sourceIndex, index + offset, 1);
-        index += mapper.attributesPerVertex;
-        attributeBuffer.setArray(source, sourceIndex, index + offset, 1);
-        index += mapper.attributesPerVertex;
-        attributeBuffer.setArray(source, sourceIndex, index + offset, 1);
-        index += mapper.attributesPerVertex;
-        attributeBuffer.setArray(source, sourceIndex, index + offset, 1);
-        attributeBuffer.setDirty(true);
-    }
-
-    /**
-     * Copies data from the source array into the specified sprite. This will update the attributes, ie copying the
-     * data to 4 vertices.
-     * 
-     * @param sprite The sprite number
-     * @param offset Offset to attribute to set
-     * @param source Source data
-     * @param sourceIndex Index into source
-     * @param count Number of floats to copy
-     */
-    public void setData(int sprite, int offset, float[] source, int sourceIndex, int count) {
-        int index = mapper.attributesPerVertex * 4 * sprite;
-        AttributeBuffer attributeBuffer = getVerticeBuffer(BufferIndex.ATTRIBUTES.index);
-        attributeBuffer.setArray(source, sourceIndex, index + offset, count);
-        index += mapper.attributesPerVertex;
-        attributeBuffer.setArray(source, sourceIndex, index + offset, count);
-        index += mapper.attributesPerVertex;
-        attributeBuffer.setArray(source, sourceIndex, index + offset, count);
-        index += mapper.attributesPerVertex;
-        attributeBuffer.setArray(source, sourceIndex, index + offset, count);
         attributeBuffer.setDirty(true);
     }
 
