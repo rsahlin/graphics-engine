@@ -114,4 +114,13 @@ public class SharedMeshQuad extends Node {
         this.rectangle = new Rectangle(rectangle);
     }
 
+    /**
+     * Sets the frame number
+     * 
+     * @param frame
+     */
+    public void setFrame(int frame) {
+        parent.getExpander().setFrame(childIndex, frame);
+    }
+
 }
