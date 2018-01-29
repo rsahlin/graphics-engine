@@ -123,4 +123,12 @@ public class SharedMeshQuad extends Node {
         parent.getExpander().setFrame(childIndex, frame);
     }
 
+    /**
+     * Copies the transform so that the Quad is updated on screen.
+     * Call this after the transform in the Mesh has been changed.
+     */
+    public void updateTransform() {
+        parent.getExpander().setData(childIndex, transform);
+    }
+
 }
