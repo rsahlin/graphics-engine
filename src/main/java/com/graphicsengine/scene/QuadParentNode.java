@@ -5,12 +5,14 @@ import java.util.ArrayList;
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.component.SpriteComponent;
 import com.graphicsengine.spritemesh.SpriteMesh;
+import com.nucleus.component.CPUBuffer;
 import com.nucleus.component.Component;
+import com.nucleus.component.ComponentBuffer;
+import com.nucleus.component.QuadExpander;
 import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.geometry.Mesh.BufferIndex;
-import com.nucleus.geometry.QuadExpander;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
 import com.nucleus.texturing.Texture2D;
@@ -38,14 +40,7 @@ public class QuadParentNode extends Node implements Consumer {
     private int maxQuads;
 
     transient private ArrayList<SharedMeshQuad> quadChildren = new ArrayList<>();
-    /**
-     * The sprites common float data storage, this is the sprite visible (mesh) properties such as position, scale and
-     * frame, plus entity data needed to process the logic.
-     * This is what is generally needed in order to put sprite on screen.
-     * In order to render a mesh with sprites this data is copied one -> four in the mesh.
-     */
-    transient public float[] spriteData;
-    transient protected int spritedataSize;
+
     transient SpriteMesh spriteMesh;
     transient PropertyMapper mapper;
     transient QuadExpander quadExpander;
@@ -106,10 +101,8 @@ public class QuadParentNode extends Node implements Consumer {
      */
     private void createBuffers(SpriteMesh mesh) {
         mapper = mesh.getMapper();
-        spritedataSize = mapper.attributesPerVertex;
-        this.spriteData = new float[spritedataSize * maxQuads];
-        quadExpander = new QuadExpander(mesh.getTexture(Texture2D.TEXTURE_0), mapper, spriteData, spritedataSize,
-                maxQuads, 4);
+        ComponentBuffer spriteData = new CPUBuffer(maxQuads, mapper.attributesPerVertex);
+        quadExpander = new QuadExpander(mesh.getTexture(Texture2D.TEXTURE_0), mapper, spriteData, 4);
     }
 
     /**

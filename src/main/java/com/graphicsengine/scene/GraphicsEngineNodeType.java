@@ -17,6 +17,7 @@ public enum GraphicsEngineNodeType implements Type<Node> {
     playfieldNode(PlayfieldNode.class),
     sharedMeshNode(SharedMeshQuad.class),
     quadNode(QuadParentNode.class),
+    // TODO rename to componentNode - remember to update all json files.
     spriteComponentNode(ComponentNode.class),
     /**
      * UI base node
