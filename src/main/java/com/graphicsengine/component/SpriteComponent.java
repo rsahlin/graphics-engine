@@ -215,19 +215,6 @@ public class SpriteComponent extends Component implements Consumer {
     }
 
     /**
-     * Reads values for a sprite from the specified buffer.
-     * The destination must have room for {@link ComponentBuffer#getSizePerEntity()} number of values
-     * This is a conveniance method, it is the same as fetching the ComponentBuffer and call get()
-     * 
-     * @param sprite The sprite to get data for.
-     * @param bufferIndex Buffer to read from
-     */
-    public void get(int sprite, int bufferIndex, float[] destination) {
-        ComponentBuffer buffer = getBuffer(bufferIndex);
-        buffer.get(sprite, destination);
-    }
-
-    /**
      * Returns the propertymapper for the Mesh used by this component.
      * If {@link #create(NucleusRenderer, ComponentNode)} has not been called null is returned.
      * 
@@ -253,6 +240,21 @@ public class SpriteComponent extends Component implements Consumer {
     public void setSprite(int sprite, float[] data) {
         ComponentBuffer b = getBuffer(0);
         b.put(sprite, 0, data, 0, b.getSizePerEntity());
+    }
+
+    public void setTranslate(int sprite, float[] translate) {
+        ComponentBuffer b = getBuffer(0);
+        b.put(sprite, mapper.translateOffset, translate, 0, 3);
+    }
+
+    public void setScale(int sprite, float[] scale) {
+        ComponentBuffer b = getBuffer(0);
+        b.put(sprite, mapper.scaleOffset, scale, 0, 3);
+    }
+
+    public void setRotate(int sprite, float[] rotate) {
+        ComponentBuffer b = getBuffer(0);
+        b.put(sprite, mapper.rotateOffset, rotate, 0, 3);
     }
 
     @Override
