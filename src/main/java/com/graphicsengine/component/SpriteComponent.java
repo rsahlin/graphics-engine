@@ -67,10 +67,6 @@ public class SpriteComponent extends Component implements Consumer {
     @SerializedName(COUNT)
     protected int count;
 
-    // TODO this is not a property of the SpriteComponent
-    @SerializedName(GRAVITY)
-    public float gravity = DEFAULT_GRAVITY;
-
     /**
      * The sprites common float data storage, this is the sprite visible (mesh) properties such as position, scale and
      * frame, plus entity data needed to process the logic.
@@ -110,7 +106,6 @@ public class SpriteComponent extends Component implements Consumer {
     private void set(SpriteComponent source) {
         super.set(source);
         this.count = source.count;
-        this.gravity = source.gravity;
         if (source.rectangle != null) {
             this.rectangle = new Rectangle(source.rectangle);
         } else {
@@ -235,11 +230,6 @@ public class SpriteComponent extends Component implements Consumer {
      */
     public void setColor(int index, float[] rgba) {
         SimpleLogger.d(getClass(), "Not implemented!!!!!!!!!");
-    }
-
-    public void setSprite(int sprite, float[] data) {
-        ComponentBuffer b = getBuffer(0);
-        b.put(sprite, 0, data, 0, b.getSizePerEntity());
     }
 
     public void setTranslate(int sprite, float[] translate) {
