@@ -254,7 +254,7 @@ public class SpriteComponent extends Component implements Consumer {
     }
 
     @Override
-    public void updateAttributeData() {
-        spriteExpander.updateAttributeData();
+    public void updateAttributeData(NucleusRenderer renderer) {
+        spriteExpander.updateAttributeData(renderer);
     }
 }

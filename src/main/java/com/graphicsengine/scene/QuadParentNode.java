@@ -13,6 +13,7 @@ import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.geometry.Mesh.BufferIndex;
+import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
 import com.nucleus.texturing.Texture2D;
@@ -144,8 +145,8 @@ public class QuadParentNode extends Node implements Consumer {
     }
 
     @Override
-    public void updateAttributeData() {
-        quadExpander.updateAttributeData();
+    public void updateAttributeData(NucleusRenderer renderer) {
+        quadExpander.updateAttributeData(renderer);
     }
 
     @Override
