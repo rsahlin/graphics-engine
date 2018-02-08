@@ -30,7 +30,7 @@ public class PlayfieldProgram extends ShaderProgram {
     private final static int UNIFORM_TEX_OFFSET = 0;
 
     PlayfieldProgram() {
-        super(null, null, CATEGORY, ShaderVariables.values());
+        super(null, null, CATEGORY, ShaderVariables.values(), Shaders.VERTEX_FRAGMENT);
     }
 
     @Override

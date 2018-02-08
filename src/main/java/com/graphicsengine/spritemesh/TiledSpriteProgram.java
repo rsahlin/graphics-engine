@@ -2,6 +2,7 @@ package com.graphicsengine.spritemesh;
 
 import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.Mesh;
+import com.nucleus.opengl.GLESWrapper.GLES20;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.renderer.Pass;
 import com.nucleus.shader.ShaderProgram;
@@ -30,20 +31,20 @@ public class TiledSpriteProgram extends ShaderProgram {
     private final static int UNIFORM_TEX_OFFSET = 0;
 
     TiledSpriteProgram(Texture2D.Shading shading) {
-        super(null, shading, CATEGORY, ShaderVariables.values());
-    }
-
-    protected TiledSpriteProgram(Pass pass, Texture2D.Shading shading, String category) {
-        super(pass, shading, category, ShaderVariables.values());
+        super(null, shading, CATEGORY, ShaderVariables.values(), Shaders.VERTEX_FRAGMENT);
     }
 
     @Override
-    protected String getFragmentShaderSource() {
-        if (function.getPass() != null) {
-            return super.getFragmentShaderSource();
+    protected String getShaderSource(int type) {
+        if (function.getPass() != null || type == GLES20.GL_VERTEX_SHADER) {
+            return super.getShaderSource(type);
         }
-        // Hardcoded fragment shader used by sublcass as well
-        return function.getShadingString() + CATEGORY;
+        // Hardcoded fragment shader used by subclass as well
+        return PROGRAM_DIRECTORY + function.getShadingString() + CATEGORY + FRAGMENT_TYPE + SHADER_SOURCE_SUFFIX;
+    }
+
+    protected TiledSpriteProgram(Pass pass, Texture2D.Shading shading, String category) {
+        super(pass, shading, category, ShaderVariables.values(), Shaders.VERTEX_FRAGMENT);
     }
 
     @Override
