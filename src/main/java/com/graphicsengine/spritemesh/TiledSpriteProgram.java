@@ -6,7 +6,7 @@ import com.nucleus.opengl.GLESWrapper.GLES20;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.renderer.Pass;
 import com.nucleus.shader.ShaderProgram;
-import com.nucleus.shader.ShaderVariables;
+import com.nucleus.shader.CommonShaderVariables;
 import com.nucleus.shader.ShadowPass1Program;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.Texture2D.Shading;
@@ -31,7 +31,7 @@ public class TiledSpriteProgram extends ShaderProgram {
     private final static int UNIFORM_TEX_OFFSET = 0;
 
     TiledSpriteProgram(Texture2D.Shading shading) {
-        super(null, shading, CATEGORY, ShaderVariables.values(), Shaders.VERTEX_FRAGMENT);
+        super(null, shading, CATEGORY, CommonShaderVariables.values(), Shaders.VERTEX_FRAGMENT);
     }
 
     @Override
@@ -44,18 +44,18 @@ public class TiledSpriteProgram extends ShaderProgram {
     }
 
     protected TiledSpriteProgram(Pass pass, Texture2D.Shading shading, String category) {
-        super(pass, shading, category, ShaderVariables.values(), Shaders.VERTEX_FRAGMENT);
+        super(pass, shading, category, CommonShaderVariables.values(), Shaders.VERTEX_FRAGMENT);
     }
 
     @Override
     public void setUniformData(float[] uniforms, Mesh mesh) {
-        setScreenSize(uniforms, shaderVariables[ShaderVariables.uScreenSize.index]);
+        setScreenSize(uniforms, shaderVariables[CommonShaderVariables.uScreenSize.index]);
         setTextureUniforms(uniforms, mesh.getTexture(Texture2D.TEXTURE_0));
     }
 
     protected void setTextureUniforms(float[] uniforms, Texture2D texture) {
         if (texture.getTextureType() == TextureType.TiledTexture2D) {
-            setTextureUniforms((TiledTexture2D) texture, uniforms, shaderVariables[ShaderVariables.uTextureData.index],
+            setTextureUniforms((TiledTexture2D) texture, uniforms, shaderVariables[CommonShaderVariables.uTextureData.index],
                     UNIFORM_TEX_OFFSET);
         }
     }
