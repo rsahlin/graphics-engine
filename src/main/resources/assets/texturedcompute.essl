@@ -2,18 +2,9 @@
 layout(std430) buffer; // Sets the default layout for SSBOs
 layout (local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 
-struct Vector4f {
-      float x;
-      float y;
-      float z;
-      float w;
-};
-
-// Declare the custom data type
 
 struct AttribData {
-      Vector4f v;
-      Vector4f c;
+      vec4 vec;
 };
 
 // Declare input/output buffer from/to wich we will read/write data.
@@ -28,17 +19,19 @@ layout(std430, binding = 0) writeonly buffer Output {
     AttribData data[];
 } outBuffer;
 
+layout(std430, binding = 1) readonly buffer Input {
+    AttribData data[];
+} inBuffer;
+
+uniform ivec4 uConfig;
+
+
 // glDispatchCompute is called from the application.
 void main() {
       // Read current global position for this thread
       uint offset = gl_GlobalInvocationID.x * gl_GlobalInvocationID.y * gl_GlobalInvocationID.z;
-
-
-      outBuffer.data[offset].v.z = 0.0;
-      outBuffer.data[offset].v.w = 1.0;
-      // Assign colour for the vertex
-      outBuffer.data[offset].c.x = 1.0;
-      outBuffer.data[offset].c.y = 0.0;
-      outBuffer.data[offset].c.z = 1.0;
-      outBuffer.data[offset].c.w = 1.0;
+      for (int i = 0; i < uConfig.x; i++) {
+          outBuffer.data[offset].vec = inBuffer.data[offset].vec;
+          offset += 4u;
+      }
 }

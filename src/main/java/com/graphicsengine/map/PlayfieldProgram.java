@@ -5,9 +5,7 @@ import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.renderer.Pass;
 import com.nucleus.shader.ShaderProgram;
-import com.nucleus.shader.ShaderVariable;
 import com.nucleus.shader.ShaderVariables;
-import com.nucleus.shader.VariableMapping;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.Texture2D.Shading;
 import com.nucleus.texturing.TextureType;
@@ -31,11 +29,6 @@ public class PlayfieldProgram extends ShaderProgram {
 
     PlayfieldProgram() {
         super(null, null, CATEGORY, ShaderVariables.values(), Shaders.VERTEX_FRAGMENT);
-    }
-
-    @Override
-    public VariableMapping getVariableMapping(ShaderVariable variable) {
-        return ShaderVariables.valueOf(getVariableName(variable));
     }
 
     @Override
