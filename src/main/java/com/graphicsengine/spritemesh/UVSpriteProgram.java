@@ -1,7 +1,7 @@
 package com.graphicsengine.spritemesh;
 
 import com.nucleus.assets.AssetManager;
-import com.nucleus.renderer.NucleusRenderer;
+import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.renderer.Pass;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.shader.ShadowPass1Program;
@@ -26,14 +26,14 @@ public class UVSpriteProgram extends TiledSpriteProgram {
     }
 
     @Override
-    public ShaderProgram getProgram(NucleusRenderer renderer, Pass pass, Shading shading) {
+    public ShaderProgram getProgram(GLES20Wrapper gles, Pass pass, Shading shading) {
         switch (pass) {
             case UNDEFINED:
             case ALL:
             case MAIN:
                 return this;
             case SHADOW1:
-                return AssetManager.getInstance().getProgram(renderer, new ShadowPass1Program(this, shading, CATEGORY));
+                return AssetManager.getInstance().getProgram(gles, new ShadowPass1Program(this, shading, CATEGORY));
             case SHADOW2:
                 return this;
             default:

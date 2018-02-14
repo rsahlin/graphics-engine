@@ -10,7 +10,6 @@ import com.nucleus.component.ComponentBuffer;
 import com.nucleus.component.ComponentException;
 import com.nucleus.component.ComponentNode;
 import com.nucleus.component.NativeComponentBuffer;
-import com.nucleus.component.QuadExpander;
 import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
@@ -123,7 +122,7 @@ public class SpriteComponent extends Component implements Consumer {
         spritedataSize = mapper.attributesPerVertex;
         ComponentBuffer spriteData = new NativeComponentBuffer(count, mapper.attributesPerVertex);
         ComponentBuffer entityData = new NativeComponentBuffer(count, system.getEntityDataSize());
-        spriteExpander = new QuadExpander(spriteMesh.getTexture(Texture2D.TEXTURE_0), mapper, spriteData, 4);
+        spriteExpander = new QuadExpander(spriteMesh, mapper, spriteData);
         addBuffer(0, spriteData);
         addBuffer(1, entityData);
     }

@@ -115,7 +115,7 @@ public class PlayfieldMesh extends SpriteMesh {
         public Mesh create() throws IOException, GLException {
             if (material.getProgram() == null) {
                 PlayfieldProgram program = new PlayfieldProgram();
-                program = (PlayfieldProgram) AssetManager.getInstance().getProgram(renderer, program);
+                program = (PlayfieldProgram) AssetManager.getInstance().getProgram(renderer.getGLES(), program);
                 material.setProgram(program);
             }
             RectangleConfiguration configuration = new RectangleShapeBuilder.RectangleConfiguration(charRectangle,

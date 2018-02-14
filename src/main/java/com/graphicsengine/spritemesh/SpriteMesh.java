@@ -68,7 +68,7 @@ public class SpriteMesh extends Mesh {
         public Mesh create() throws IOException, GLException {
             if (material.getProgram() == null) {
                 ShaderProgram program = createProgram(texture);
-                program = AssetManager.getInstance().getProgram(renderer, program);
+                program = AssetManager.getInstance().getProgram(renderer.getGLES(), program);
                 material.setProgram(program);
             }
             return super.create();

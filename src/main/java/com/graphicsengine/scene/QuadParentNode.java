@@ -3,12 +3,12 @@ package com.graphicsengine.scene;
 import java.util.ArrayList;
 
 import com.google.gson.annotations.SerializedName;
+import com.graphicsengine.component.QuadExpander;
 import com.graphicsengine.component.SpriteComponent;
 import com.graphicsengine.spritemesh.SpriteMesh;
 import com.nucleus.component.Component;
 import com.nucleus.component.ComponentBuffer;
 import com.nucleus.component.NativeComponentBuffer;
-import com.nucleus.component.QuadExpander;
 import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
@@ -103,7 +103,7 @@ public class QuadParentNode extends Node implements Consumer {
     private void createBuffers(SpriteMesh mesh) {
         mapper = mesh.getMapper();
         ComponentBuffer spriteData = new NativeComponentBuffer(maxQuads, mapper.attributesPerVertex);
-        quadExpander = new QuadExpander(mesh.getTexture(Texture2D.TEXTURE_0), mapper, spriteData, 4);
+        quadExpander = new QuadExpander(mesh, mapper, spriteData);
     }
 
     /**

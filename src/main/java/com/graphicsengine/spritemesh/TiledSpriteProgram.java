@@ -2,11 +2,12 @@ package com.graphicsengine.spritemesh;
 
 import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.Mesh;
+import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.GLESWrapper.GLES20;
-import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.renderer.Pass;
-import com.nucleus.shader.ShaderProgram;
 import com.nucleus.shader.CommonShaderVariables;
+import com.nucleus.shader.QuadExpanderShader;
+import com.nucleus.shader.ShaderProgram;
 import com.nucleus.shader.ShadowPass1Program;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.Texture2D.Shading;
@@ -25,6 +26,9 @@ import com.nucleus.texturing.TiledTexture2D;
 public class TiledSpriteProgram extends ShaderProgram {
 
     protected static final String CATEGORY = "sprite";
+
+    protected QuadExpanderShader expanderShader;
+
     /**
      * Offset into uniform variable data where texture UV are.
      */
@@ -32,6 +36,12 @@ public class TiledSpriteProgram extends ShaderProgram {
 
     TiledSpriteProgram(Texture2D.Shading shading) {
         super(null, shading, CATEGORY, CommonShaderVariables.values(), Shaders.VERTEX_FRAGMENT);
+    }
+
+    @Override
+    public void createProgram(GLES20Wrapper gles) {
+        super.createProgram(gles);
+        expanderShader = (QuadExpanderShader) AssetManager.getInstance().getProgram(gles, new QuadExpanderShader());
     }
 
     @Override
@@ -55,25 +65,35 @@ public class TiledSpriteProgram extends ShaderProgram {
 
     protected void setTextureUniforms(float[] uniforms, Texture2D texture) {
         if (texture.getTextureType() == TextureType.TiledTexture2D) {
-            setTextureUniforms((TiledTexture2D) texture, uniforms, shaderVariables[CommonShaderVariables.uTextureData.index],
+            setTextureUniforms((TiledTexture2D) texture, uniforms,
+                    shaderVariables[CommonShaderVariables.uTextureData.index],
                     UNIFORM_TEX_OFFSET);
         }
     }
 
     @Override
-    public ShaderProgram getProgram(NucleusRenderer renderer, Pass pass, Shading shading) {
+    public ShaderProgram getProgram(GLES20Wrapper gles, Pass pass, Shading shading) {
         switch (pass) {
             case UNDEFINED:
             case ALL:
             case MAIN:
                 return this;
             case SHADOW1:
-                return AssetManager.getInstance().getProgram(renderer, new ShadowPass1Program(this, shading, CATEGORY));
+                return AssetManager.getInstance().getProgram(gles, new ShadowPass1Program(this, shading, CATEGORY));
             case SHADOW2:
-                return AssetManager.getInstance().getProgram(renderer, new ShadowPass2Program(pass, null, shading));
+                return AssetManager.getInstance().getProgram(gles, new ShadowPass2Program(pass, null, shading));
             default:
                 throw new IllegalArgumentException("Invalid pass " + pass);
         }
+    }
+
+    /**
+     * Returns the expander shader to be used with this program.
+     * 
+     * @return
+     */
+    public QuadExpanderShader getExpanderShader() {
+        return expanderShader;
     }
 
 }

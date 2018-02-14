@@ -2,10 +2,9 @@ package com.graphicsengine.map;
 
 import com.nucleus.geometry.Mesh;
 import com.nucleus.opengl.GLES20Wrapper;
-import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.renderer.Pass;
-import com.nucleus.shader.ShaderProgram;
 import com.nucleus.shader.CommonShaderVariables;
+import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.Texture2D.Shading;
 import com.nucleus.texturing.TextureType;
@@ -56,7 +55,7 @@ public class PlayfieldProgram extends ShaderProgram {
     }
 
     @Override
-    public ShaderProgram getProgram(NucleusRenderer renderer, Pass pass, Shading shading) {
+    public ShaderProgram getProgram(GLES20Wrapper gles, Pass pass, Shading shading) {
         switch (pass) {
             case UNDEFINED:
             case ALL:
