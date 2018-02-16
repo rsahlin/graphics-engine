@@ -20,10 +20,6 @@ public class QuadExpander extends AttributeExpander {
 
     protected static QuadExpanderShader expanderShader;
 
-    /**
-     * Storage for 4 UV components
-     */
-    private transient float[][] frames;
     private transient Texture2D texture;
     private transient float[][] uvData;
     private transient float[] entityData;
@@ -37,7 +33,6 @@ public class QuadExpander extends AttributeExpander {
     public QuadExpander(SpriteMesh spriteMesh, PropertyMapper mapper, ComponentBuffer data) {
         super(mapper, data, 4);
         this.texture = spriteMesh.getTexture(Texture2D.TEXTURE_0);
-        this.frames = new float[data.getSizePerEntity()][2 * 4];
         if (texture.getTextureType() == TextureType.UVTexture2D) {
             copyUVAtlas(((UVTexture2D) texture).getUVAtlas());
             entityData = new float[mapper.attributesPerVertex];
@@ -87,14 +82,8 @@ public class QuadExpander extends AttributeExpander {
             // TODO - this is highly unoptimized
             data.put(quad, mapper.frameOffset, new float[] { frame }, 0, 1);
         } else if (texture.textureType == TextureType.UVTexture2D) {
-            setFrame(quad, ((UVTexture2D) texture).getUVAtlas(), frame);
+            // DO nothing
         }
-    }
-
-    void setFrame(int quad, UVAtlas uvAtlas, int frame) {
-        // Fetch the current frames UV into buffer, this will then be used next update when data is expanded in
-        // updateAttributeData()
-        uvAtlas.getUVFrame(frame, frames[quad], 0);
     }
 
 }
