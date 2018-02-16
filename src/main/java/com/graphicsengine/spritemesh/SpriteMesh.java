@@ -28,13 +28,6 @@ import com.nucleus.vecmath.Rectangle;
  */
 public class SpriteMesh extends Mesh {
 
-    /**
-     * Contains attribute data for all sprites - this is a copy of the attribute buffer, since this will double-buffer
-     * the attribute buffer there is no need for syncronization while writing into this buffer.
-     * This data must be mapped into the mesh attribute buffer for changes to take place.
-     */
-    // protected transient FloatBuffer attributeData;
-
     public static class Builder extends Mesh.Builder<SpriteMesh> {
 
         private final static String INVALID_TYPE = "Invalid type: ";
@@ -72,13 +65,6 @@ public class SpriteMesh extends Mesh {
                 material.setProgram(program);
             }
             return super.create();
-            /**
-             * SpriteMesh mesh = new SpriteMesh();
-             * mesh.createMesh(texture, material, vertexCount, indiceCount, mode);
-             * if (Configuration.getInstance().isUseVBO()) {
-             * BufferObjectsFactory.getInstance().createVBOs(renderer, mesh);
-             * }
-             */
         }
 
         @Override
