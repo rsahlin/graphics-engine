@@ -120,6 +120,7 @@ public class PlayfieldMesh extends SpriteMesh {
             }
             RectangleConfiguration configuration = new RectangleShapeBuilder.RectangleConfiguration(charRectangle,
                     RectangleShapeBuilder.DEFAULT_Z, mapSize[0] * mapSize[1], 0);
+            configuration.enableVertexIndex(true);
             RectangleShapeBuilder shapeBuilder = new RectangleShapeBuilder(configuration);
             setShapeBuilder(shapeBuilder);
             PlayfieldMesh mesh = (PlayfieldMesh) super.create();

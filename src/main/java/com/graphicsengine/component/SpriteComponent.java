@@ -15,6 +15,7 @@ import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.geometry.Mesh.BufferIndex;
 import com.nucleus.geometry.RectangleShapeBuilder;
+import com.nucleus.geometry.RectangleShapeBuilder.RectangleConfiguration;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node.MeshType;
@@ -135,9 +136,11 @@ public class SpriteComponent extends Component implements Consumer {
             spriteBuilder.setTexture(parent.getTextureRef());
             spriteBuilder.setMaterial(parent.getMaterial());
             spriteBuilder.setSpriteCount(count);
-            RectangleShapeBuilder shapeBuilder = new RectangleShapeBuilder(
-                    new RectangleShapeBuilder.RectangleConfiguration(rectangle, RectangleShapeBuilder.DEFAULT_Z, count,
-                            0));
+            RectangleConfiguration config = new RectangleShapeBuilder.RectangleConfiguration(rectangle,
+                    RectangleShapeBuilder.DEFAULT_Z, count,
+                    0);
+            config.enableVertexIndex(true);
+            RectangleShapeBuilder shapeBuilder = new RectangleShapeBuilder(config);
             spriteBuilder.setShapeBuilder(shapeBuilder);
             // TODO - Fix generics so that cast is not needed
             spriteMesh = (SpriteMesh) spriteBuilder.create();

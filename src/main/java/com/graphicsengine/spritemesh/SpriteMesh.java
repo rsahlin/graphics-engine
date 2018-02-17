@@ -129,7 +129,7 @@ public class SpriteMesh extends Mesh {
         int vertexStride = program.getVertexStride();
         float[] quadPositions = new float[vertexStride * 4];
         Texture2D texture = getTexture(Texture2D.TEXTURE_0);
-        RectangleShapeBuilder.createQuadArray(rectangle, texture, vertexStride, 0, quadPositions);
+        RectangleShapeBuilder.createQuadArray(rectangle, texture, vertexStride, 0, true, quadPositions);
         MeshBuilder.buildQuads(this, program, 1, index, quadPositions);
     }
 
