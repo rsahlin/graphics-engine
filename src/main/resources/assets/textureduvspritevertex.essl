@@ -40,5 +40,6 @@ void main() {
     gl_Position = uProjectionMatrix * vec4(floor((uScreenSize * vec2(pos)) + 0.5) / uScreenSize, pos.z, pos.w);
     int frame = int(aFrameData.x);
     vec4 uv = uvData[frame];
-    vTexCoord = vec2(aFrameData.x, aFrameData.y);
+    vTexCoord = vec2(uv.x, uv.y);
+//    vTexCoord = vec2(aFrameData.x, aFrameData.y);
 }
