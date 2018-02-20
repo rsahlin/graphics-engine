@@ -55,7 +55,6 @@ public class QuadExpander extends AttributeExpander {
             int uvIndex = 0;
             int frame;
             buffer.getBuffer().position(0);
-            float[] uv = new float[8];
             for (int i = 0; i < data.getSizePerEntity(); i++) {
                 uvIndex = 0;
                 data.get(i, entityData);

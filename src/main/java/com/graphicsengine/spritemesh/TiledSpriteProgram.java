@@ -63,6 +63,12 @@ public class TiledSpriteProgram extends ShaderProgram {
         setTextureUniforms(uniforms, mesh.getTexture(Texture2D.TEXTURE_0));
     }
 
+    /**
+     * Sets the data related to texture uniforms in the uniform float storage
+     * 
+     * @param uniforms
+     * @param texture
+     */
     protected void setTextureUniforms(float[] uniforms, Texture2D texture) {
         if (texture.getTextureType() == TextureType.TiledTexture2D) {
             setTextureUniforms((TiledTexture2D) texture, uniforms,
