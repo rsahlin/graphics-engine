@@ -1,7 +1,6 @@
 package com.graphicsengine.component;
 
 import com.graphicsengine.spritemesh.SpriteMesh;
-import com.graphicsengine.spritemesh.TiledSpriteProgram;
 import com.nucleus.component.AttributeExpander;
 import com.nucleus.component.ComponentBuffer;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
@@ -37,7 +36,7 @@ public class QuadExpander extends AttributeExpander {
             copyUVAtlas(((UVTexture2D) texture).getUVAtlas());
             entityData = new float[mapper.attributesPerVertex];
         }
-        expanderShader = ((TiledSpriteProgram) spriteMesh.getMaterial().getProgram()).getExpanderShader();
+        // expanderShader = ((TiledSpriteProgram) spriteMesh.getMaterial().getProgram()).getExpanderShader();
     }
 
     private void copyUVAtlas(UVAtlas uvAtlas) {
