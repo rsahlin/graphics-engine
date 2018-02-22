@@ -3,6 +3,7 @@ package com.graphicsengine.spritemesh;
 import com.nucleus.assets.AssetManager;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.renderer.Pass;
+import com.nucleus.shader.BlockBuffer;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.shader.ShadowPass1Program;
 import com.nucleus.texturing.Texture2D;
@@ -31,9 +32,11 @@ public class UVSpriteProgram extends TiledSpriteProgram {
     protected void setTextureUniforms(float[] uniforms, Texture2D texture) {
         if (uvTexture == null) {
             uvTexture = (UVTexture2D) texture;
-        }
+            BlockBuffer uvBlock = uvTexture.getUVAtlasBuffer();
 
-        if (uvTexture.getUVAtlasBuffer().isDirty()) {
+        }
+        BlockBuffer uvBlock = uvTexture.getUVAtlasBuffer();
+        if (uvBlock.isDirty()) {
 
         }
     }
