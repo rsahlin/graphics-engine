@@ -28,13 +28,6 @@ import com.nucleus.vecmath.Rectangle;
  */
 public class SpriteMesh extends Mesh {
 
-    /**
-     * Contains attribute data for all sprites - this is a copy of the attribute buffer, since this will double-buffer
-     * the attribute buffer there is no need for syncronization while writing into this buffer.
-     * This data must be mapped into the mesh attribute buffer for changes to take place.
-     */
-    // protected transient FloatBuffer attributeData;
-
     public static class Builder extends Mesh.Builder<SpriteMesh> {
 
         private final static String INVALID_TYPE = "Invalid type: ";
@@ -68,17 +61,10 @@ public class SpriteMesh extends Mesh {
         public Mesh create() throws IOException, GLException {
             if (material.getProgram() == null) {
                 ShaderProgram program = createProgram(texture);
-                program = AssetManager.getInstance().getProgram(renderer, program);
+                program = AssetManager.getInstance().getProgram(renderer.getGLES(), program);
                 material.setProgram(program);
             }
             return super.create();
-            /**
-             * SpriteMesh mesh = new SpriteMesh();
-             * mesh.createMesh(texture, material, vertexCount, indiceCount, mode);
-             * if (Configuration.getInstance().isUseVBO()) {
-             * BufferObjectsFactory.getInstance().createVBOs(renderer, mesh);
-             * }
-             */
         }
 
         @Override
@@ -143,7 +129,7 @@ public class SpriteMesh extends Mesh {
         int vertexStride = program.getVertexStride();
         float[] quadPositions = new float[vertexStride * 4];
         Texture2D texture = getTexture(Texture2D.TEXTURE_0);
-        RectangleShapeBuilder.createQuadArray(rectangle, texture, vertexStride, 0, quadPositions);
+        RectangleShapeBuilder.createQuadArray(rectangle, texture, vertexStride, 0, true, quadPositions);
         MeshBuilder.buildQuads(this, program, 1, index, quadPositions);
     }
 

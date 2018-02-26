@@ -8,6 +8,7 @@ import com.nucleus.scene.RootNode;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TextureType;
 import com.nucleus.vecmath.Rectangle;
+import com.nucleus.vecmath.Transform;
 
 /**
  * A Quad child that has to be appended to QuadNode in order to be rendered.
@@ -60,11 +61,10 @@ public class SharedMeshQuad extends Node {
         this.parent = parent;
         initBounds(parent.buildQuad(index, rectangle));
         if (transform == null) {
-            parent.getExpander().setData(index, 0, 0, 0, 0, 1, 1, 1, frame);
-        } else {
-            parent.getExpander().setData(index, transform);
-            parent.getExpander().setFrame(index, frame);
+            transform = new Transform();
         }
+        parent.getExpander().setData(index, transform);
+        parent.getExpander().setFrame(index, frame);
         Mesh mesh = parent.getMesh(MeshType.MAIN);
         if (mesh.getTexture(Texture2D.TEXTURE_0).textureType == TextureType.Untextured) {
             parent.getExpander().setColor(index,
