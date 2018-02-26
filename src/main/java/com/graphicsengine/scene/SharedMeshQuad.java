@@ -1,16 +1,20 @@
 package com.graphicsengine.scene;
 
 import com.google.gson.annotations.SerializedName;
-import com.graphicsengine.spritemesh.SpriteMesh;
+import com.graphicsengine.component.SpriteComponent;
+import com.nucleus.geometry.Mesh;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TextureType;
 import com.nucleus.vecmath.Rectangle;
+import com.nucleus.vecmath.Transform;
 
 /**
  * A Quad child that has to be appended to QuadNode in order to be rendered.
  * This node will share the mesh from the parent {@link QuadParentNode}
+ * This is for objects that are mostly static, for instance UI elements, and objects that need touch events.
+ * If a large number of objects with shared behavior are needed use {@link SpriteComponent} instead.
  * 
  * @author Richard Sahlin
  *
@@ -25,7 +29,7 @@ public class SharedMeshQuad extends Node {
      * The index of this shared mesh quad node with it's parent.
      */
     transient private int childIndex;
-    transient private SpriteMesh parentMesh;
+    transient private QuadParentNode parent;
     /**
      * The rectangle defining the sprites, all sprites will have same size
      * 4 values = x1,y1 + width and height
@@ -49,30 +53,22 @@ public class SharedMeshQuad extends Node {
      * use it's own mesh
      * TODO Need to provide size and color from scene definition.
      * 
-     * @param mesh The source mesh
+     * @param Parent The parent node holding all quads
      * @param index
      */
-    public void onCreated(SpriteMesh mesh, int index) {
+    public void onCreated(QuadParentNode parent, int index) {
         this.childIndex = index;
-        this.parentMesh = mesh;
-        Texture2D texture = mesh.getTexture(Texture2D.TEXTURE_0);
-        if (rectangle == null && (texture.getTextureType() == TextureType.Untextured || 
-                texture.getWidth() == 0 || texture.getHeight()== 0)) {
-            // Must have size
-            throw new IllegalArgumentException("Node does not define RECT and texture is untextured or size is zero");
-        }
-        Rectangle quadRect = rectangle != null ? rectangle
-                : texture.calculateWindowRectangle();
-        mesh.buildQuad(index, mesh.getMaterial().getProgram(), quadRect);
-        initBounds(quadRect);
+        this.parent = parent;
+        initBounds(parent.buildQuad(index, rectangle));
         if (transform == null) {
-            mesh.setScale(index, 1, 1);
-        } else {
-            mesh.setTransform(index, transform);
+            transform = new Transform();
         }
-        mesh.setFrame(index, frame);
+        parent.getExpander().setData(index, transform);
+        parent.getExpander().setFrame(index, frame);
+        Mesh mesh = parent.getMesh(MeshType.MAIN);
         if (mesh.getTexture(Texture2D.TEXTURE_0).textureType == TextureType.Untextured) {
-            mesh.setColor(index, getMaterial() != null ? getMaterial().getAmbient() : mesh.getMaterial().getAmbient());
+            parent.getExpander().setColor(index,
+                    getMaterial() != null ? getMaterial().getAmbient() : mesh.getMaterial().getAmbient());
         }
     }
 
@@ -84,7 +80,6 @@ public class SharedMeshQuad extends Node {
     public void setChildIndex(int index) {
         this.childIndex = index;
     }
-
 
     @Override
     public Node createInstance(RootNode root) {
@@ -120,22 +115,20 @@ public class SharedMeshQuad extends Node {
     }
 
     /**
-     * Sets the position of this sprite quad in the parent mesh, see {@link QuadParentNode}
-     * and {@link SpriteMesh}
-     * 
-     * @param position
-     */
-    public void setPosition(float[] position) {
-        parentMesh.setPosition(childIndex, position[0], position[1], position[2]);
-    }
-
-    /**
-     * Sets the frame number for this child.
+     * Sets the frame number
      * 
      * @param frame
      */
     public void setFrame(int frame) {
-        parentMesh.setFrame(childIndex, frame);
+        parent.getExpander().setFrame(childIndex, frame);
+    }
+
+    /**
+     * Copies the transform so that the Quad is updated on screen.
+     * Call this after the transform in the Mesh has been changed.
+     */
+    public void updateTransform() {
+        parent.getExpander().setData(childIndex, transform);
     }
 
 }

@@ -1,12 +1,14 @@
 package com.graphicsengine.spritemesh;
 
 import com.nucleus.assets.AssetManager;
-import com.nucleus.renderer.NucleusRenderer;
+import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.renderer.Pass;
+import com.nucleus.shader.BlockBuffer;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.shader.ShadowPass1Program;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.Texture2D.Shading;
+import com.nucleus.texturing.UVTexture2D;
 
 /**
  * This class defines the mapping for the UV sprite vertex and fragment shaders.
@@ -18,35 +20,41 @@ import com.nucleus.texturing.Texture2D.Shading;
  */
 public class UVSpriteProgram extends TiledSpriteProgram {
 
-    private static final String UV = "uv";
+    protected static final String CATEGORY = "uvsprite";
     protected static final String VERTEX_SHADER_NAME = "assets/uvspritevertex.essl";
+    protected UVTexture2D uvTexture;
 
     public UVSpriteProgram() {
-        super(Texture2D.Shading.textured);
+        super(null, Texture2D.Shading.textured, CATEGORY);
     }
 
     @Override
-    protected void setShaderSource(Texture2D.Shading shading) {
-        super.setShaderSource(shading);
-        // Overwrite the vertex shader
-        vertexShaderName = PROGRAM_DIRECTORY + UV + SPRITE + VERTEX + SHADER_SOURCE_SUFFIX;
+    protected void setTextureUniforms(float[] uniforms, Texture2D texture) {
+        if (uvTexture == null) {
+            uvTexture = (UVTexture2D) texture;
+            BlockBuffer uvBlock = uvTexture.getUVAtlasBuffer();
+
+        }
+        BlockBuffer uvBlock = uvTexture.getUVAtlasBuffer();
+        if (uvBlock.isDirty()) {
+
+        }
     }
-    
+
     @Override
-    public ShaderProgram getProgram(NucleusRenderer renderer, Pass pass, Shading shading) {
+    public ShaderProgram getProgram(GLES20Wrapper gles, Pass pass, Shading shading) {
         switch (pass) {
             case UNDEFINED:
             case ALL:
             case MAIN:
                 return this;
-            case SHADOW:
-                return AssetManager.getInstance().getProgram(renderer, new ShadowPass1Program(shading));
+            case SHADOW1:
+                return AssetManager.getInstance().getProgram(gles, new ShadowPass1Program(this, shading, CATEGORY));
             case SHADOW2:
                 return this;
-                default:
-            throw new IllegalArgumentException("Invalid pass " + pass);
+            default:
+                throw new IllegalArgumentException("Invalid pass " + pass);
         }
     }
-    
 
 }

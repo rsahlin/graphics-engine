@@ -7,8 +7,6 @@ import com.graphicsengine.scene.GraphicsEngineNodeType;
 import com.nucleus.SimpleLogger;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.io.ExternalReference;
-import com.nucleus.mmi.MMIEventListener;
-import com.nucleus.mmi.MMIPointerEvent;
 import com.nucleus.mmi.ObjectInputListener;
 import com.nucleus.mmi.PointerData;
 import com.nucleus.mmi.PointerMotionData;
@@ -28,7 +26,7 @@ import com.nucleus.vecmath.Rectangle;
  * @author Richard Sahlin
  *
  */
-public class PlayfieldNode extends Node implements MMIEventListener {
+public class PlayfieldNode extends Node {
 
     public class PlayfieldNodeObjectInputListener implements ObjectInputListener {
 
@@ -36,9 +34,9 @@ public class PlayfieldNode extends Node implements MMIEventListener {
         float[] rgba = new float[] { 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1 };
 
         @Override
-        public boolean onClick(PointerData click) {
+        public boolean onInputEvent(PointerData event) {
             float[] inverse = new float[16];
-            float[] position = click.position;
+            float[] position = event.position;
             if (Matrix.invertM(inverse, 0, getModelMatrix(), 0)) {
                 float[] vec2 = new float[2];
                 Matrix.transformVec2(inverse, 0, position, vec2, 1);
@@ -119,7 +117,6 @@ public class PlayfieldNode extends Node implements MMIEventListener {
         super(root, GraphicsEngineNodeType.playfieldNode);
         setObjectInputListener(new PlayfieldNodeObjectInputListener());
     }
-
 
     @Override
     public PlayfieldNode createInstance(RootNode root) {
@@ -218,12 +215,12 @@ public class PlayfieldNode extends Node implements MMIEventListener {
     public float[] getAnchorOffset() {
         Anchor a = anchor == null ? Anchor.CENTER_XY : anchor;
         switch (a) {
-        case CENTER_XY:
-            return new float[] {
-                    -(getMapSize()[0] >>> 1) * getCharRectangle().getValues()[Rectangle.WIDTH],
-                    (getMapSize()[1] >>> 1) * getCharRectangle().getValues()[Rectangle.HEIGHT] };
-        default:
-            throw new IllegalArgumentException("Not implemented for anchor: " + a);
+            case CENTER_XY:
+                return new float[] {
+                        -(getMapSize()[0] >>> 1) * getCharRectangle().getValues()[Rectangle.WIDTH],
+                        (getMapSize()[1] >>> 1) * getCharRectangle().getValues()[Rectangle.HEIGHT] };
+            default:
+                throw new IllegalArgumentException("Not implemented for anchor: " + a);
         }
 
     }
@@ -266,7 +263,6 @@ public class PlayfieldNode extends Node implements MMIEventListener {
 
     }
 
-
     /**
      * Returns the map x and y position for the specified (normalized) screen position.
      * 
@@ -297,18 +293,5 @@ public class PlayfieldNode extends Node implements MMIEventListener {
         }
         return null;
     }
-
-    @Override
-    public void onInputEvent(MMIPointerEvent event) {
-        switch (event.getAction()) {
-        case MOVE:
-
-        case ZOOM:
-        case ACTIVE:
-        case INACTIVE:
-
-        }
-    }
-
 
 }

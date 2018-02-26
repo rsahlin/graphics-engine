@@ -15,7 +15,6 @@
  * Vertex shader for charmap renderr
  * @author Richard Sahlin
  */
-#version 100
 
 //Put array declaration after name for GLSL compatibility
 uniform mat4 uMVMatrix;
@@ -25,7 +24,7 @@ uniform vec2 uScreenSize; //Width and  height of screen
 uniform vec4 uAmbientLight;
 uniform vec4 uDiffuseLight;
 
-attribute vec3 aVertex; //vertex position
+attribute vec4 aVertex; //vertex position
 attribute vec2 aTexCoord;
 attribute vec3 aTranslate; //char x, char y, z (not used)
 attribute vec2 aFrameData;//frame, flags
@@ -40,7 +39,7 @@ precision mediump int;
 
 void main() {
     int flags = int(aFrameData.y);
-    vec4 pos = uMVMatrix * vec4(aVertex, 1.0) + (uMVMatrix * vec4(aTranslate.x, aTranslate.y,aTranslate.z, 0.0));
+    vec4 pos = uMVMatrix * vec4(aVertex.xyz, 1.0) + (uMVMatrix * vec4(aTranslate.x, aTranslate.y,aTranslate.z, 0.0));
     gl_Position = uProjectionMatrix * vec4(floor((uScreenSize * vec2(pos)) + 0.5) / uScreenSize, pos.z, pos.w);
     vec2 flip = aTexCoord;
     if ((flags - 4) >= 0) {

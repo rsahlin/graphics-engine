@@ -15,7 +15,6 @@
  * Vertex shader for tiled sprite renderer
  * @author Richard Sahlin
  */
-#version 100
 
 //Put array declaration after name for GLSL compatibility
 uniform mat4 uMVMatrix;
@@ -23,7 +22,7 @@ uniform mat4 uProjectionMatrix;
 uniform vec3 uTextureData; //tex width, tex height, frames per line
 uniform vec2 uScreenSize; //Width and height of screen
 
-attribute vec3 aVertex; //vertex position
+attribute vec4 aVertex; //vertex position
 attribute vec2 aTexCoord;
 attribute vec3 aTranslate; //sprite x, sprite y, sprite z
 attribute vec3 aRotate;
@@ -32,12 +31,10 @@ attribute vec2 aFrameData;//frame
 
 varying vec2 vTexCoord;
 
-precision mediump float;
-
 mat3 calculateTransformMatrix(vec3 rotate, vec3 scale);
 
 void main() {
-    vec4 pos = uMVMatrix * (vec4(aTranslate.x, aTranslate.y, aTranslate.z, 1.0) + vec4(calculateTransformMatrix(aRotate, aScale) * aVertex, 0.0));
+    vec4 pos = uMVMatrix * (vec4(aTranslate.x, aTranslate.y, aTranslate.z, 1.0) + vec4(calculateTransformMatrix(aRotate, aScale) * aVertex.xyz, 0.0));
     gl_Position = uProjectionMatrix * vec4(floor((uScreenSize * vec2(pos) + 0.5)) / uScreenSize, pos.z, 1);
     float y = floor(aFrameData.x / uTextureData.z);
     vTexCoord = vec2(aTexCoord.x + 
