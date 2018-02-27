@@ -23,6 +23,7 @@ public class UVSpriteProgram extends TiledSpriteProgram {
     protected static final String CATEGORY = "uvsprite";
     protected static final String VERTEX_SHADER_NAME = "assets/uvspritevertex.essl";
     protected UVTexture2D uvTexture;
+    protected BlockBuffer uvBlock;
 
     public UVSpriteProgram() {
         super(null, Texture2D.Shading.textured, CATEGORY);
@@ -32,11 +33,9 @@ public class UVSpriteProgram extends TiledSpriteProgram {
     protected void setTextureUniforms(float[] uniforms, Texture2D texture) {
         if (uvTexture == null) {
             uvTexture = (UVTexture2D) texture;
-            BlockBuffer uvBlock = uvTexture.getUVAtlasBuffer();
-
+            uvBlock = uvTexture.getUVAtlasBuffer();
         }
-        BlockBuffer uvBlock = uvTexture.getUVAtlasBuffer();
-        if (uvBlock.isDirty()) {
+        if (uvBlock != null && uvBlock.isDirty()) {
 
         }
     }
