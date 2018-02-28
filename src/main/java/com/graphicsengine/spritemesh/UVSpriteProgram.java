@@ -2,6 +2,7 @@ package com.graphicsengine.spritemesh;
 
 import com.nucleus.assets.AssetManager;
 import com.nucleus.opengl.GLES20Wrapper;
+import com.nucleus.opengl.GLESWrapper.Renderers;
 import com.nucleus.renderer.Pass;
 import com.nucleus.shader.BlockBuffer;
 import com.nucleus.shader.ShaderProgram;
@@ -21,12 +22,19 @@ import com.nucleus.texturing.UVTexture2D;
 public class UVSpriteProgram extends TiledSpriteProgram {
 
     protected static final String CATEGORY = "uvsprite";
-    protected static final String VERTEX_SHADER_NAME = "assets/uvspritevertex.essl";
     protected UVTexture2D uvTexture;
     protected BlockBuffer uvBlock;
 
     public UVSpriteProgram() {
         super(null, Texture2D.Shading.textured, CATEGORY);
+    }
+
+    @Override
+    protected String getShaderSourceVersion(Renderers version, int type) {
+        if (version.major >= 3) {
+            return "_v300";
+        }
+        return super.getShaderSourceVersion(version, type);
     }
 
     @Override

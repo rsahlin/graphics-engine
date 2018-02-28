@@ -4,6 +4,7 @@ import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.GLESWrapper.GLES20;
+import com.nucleus.opengl.GLESWrapper.Renderers;
 import com.nucleus.renderer.Pass;
 import com.nucleus.shader.CommonShaderVariables;
 import com.nucleus.shader.QuadExpanderShader;
@@ -47,9 +48,9 @@ public class TiledSpriteProgram extends ShaderProgram {
     }
 
     @Override
-    protected String getShaderSource(int type) {
+    protected String getShaderSource(Renderers version, int type) {
         if (function.getPass() != null || type == GLES20.GL_VERTEX_SHADER) {
-            return super.getShaderSource(type);
+            return super.getShaderSource(version, type);
         }
         // Hardcoded fragment shader used by subclass as well
         return PROGRAM_DIRECTORY + function.getShadingString() + CATEGORY + FRAGMENT_TYPE + SHADER_SOURCE_SUFFIX;
