@@ -53,19 +53,18 @@ public class QuadExpander extends AttributeExpander {
         if (texture.getTextureType() == TextureType.UVTexture2D) {
             int uvIndex = 0;
             int frame;
-            buffer.getBuffer().position(0);
+            buffer.setBufferPosition(0);
             for (int i = 0; i < data.getSizePerEntity(); i++) {
                 uvIndex = 0;
-                data.get(i, entityData);
                 frame = (int) entityData[mapper.frameOffset];
+                data.get(i, entityData);
                 for (int expand = 0; expand < multiplier; expand++) {
                     // Store the UV for the vertex
-                    data.put(i, mapper.frameOffset, uvData[frame], uvIndex, 2);
-                    data.get(i, buffer);
-                    uvIndex += 2;
+                    entityData[mapper.frameOffset] = uvData[frame][uvIndex++];
+                    entityData[mapper.frameOffset + 1] = uvData[frame][uvIndex++];
+                    buffer.put(entityData);
                 }
             }
-            buffer.setDirty(true);
         } else {
             super.updateAttributeData(renderer);
         }
