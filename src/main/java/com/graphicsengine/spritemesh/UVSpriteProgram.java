@@ -1,10 +1,13 @@
 package com.graphicsengine.spritemesh;
 
 import com.nucleus.assets.AssetManager;
+import com.nucleus.geometry.Mesh;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.GLESWrapper.Renderers;
 import com.nucleus.renderer.Pass;
 import com.nucleus.shader.BlockBuffer;
+import com.nucleus.shader.CommonBlockNames;
+import com.nucleus.shader.FloatBlockBuffer;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.shader.ShadowPass1Program;
 import com.nucleus.texturing.Texture2D;
@@ -22,8 +25,6 @@ import com.nucleus.texturing.UVTexture2D;
 public class UVSpriteProgram extends TiledSpriteProgram {
 
     protected static final String CATEGORY = "uvsprite";
-    protected UVTexture2D uvTexture;
-    protected BlockBuffer uvBlock;
 
     public UVSpriteProgram() {
         super(null, Texture2D.Shading.textured, CATEGORY);
@@ -39,13 +40,6 @@ public class UVSpriteProgram extends TiledSpriteProgram {
 
     @Override
     protected void setTextureUniforms(float[] uniforms, Texture2D texture) {
-        if (uvTexture == null) {
-            uvTexture = (UVTexture2D) texture;
-            uvBlock = uvTexture.getUVAtlasBuffer();
-        }
-        if (uvBlock != null && uvBlock.isDirty()) {
-
-        }
     }
 
     @Override
@@ -61,6 +55,35 @@ public class UVSpriteProgram extends TiledSpriteProgram {
                 return this;
             default:
                 throw new IllegalArgumentException("Invalid pass " + pass);
+        }
+    }
+
+    @Override
+    public void initBuffers(Mesh mesh) {
+        BlockBuffer[] blocks = mesh.getBlockBuffers();
+        if (blocks != null) {
+            for (BlockBuffer bb : blocks) {
+                CommonBlockNames blockName = CommonBlockNames.valueOf(bb.getBlockName());
+                switch (blockName) {
+                    case UVData:
+                        /**
+                         * Currently copies data into mesh block storage - could be shared if read only, which is the
+                         * case for uv data
+                         * TODO Share buffer from uvtexture instead of allocating and copying. UVTexture already holds
+                         * native buffer with uvdata
+                         */
+                        bb.position(0);
+                        FloatBlockBuffer source = ((UVTexture2D) mesh.getTexture(Texture2D.TEXTURE_0))
+                                .getUVAtlasBuffer();
+                        source.position(0);
+                        float[] data = new float[source.capacity()];
+                        source.get(data, 0, data.length);
+                        ((FloatBlockBuffer) bb).put(data, 0, data.length);
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Unknown variable block " + blockName);
+                }
+            }
         }
     }
 

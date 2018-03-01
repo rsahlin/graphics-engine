@@ -61,7 +61,8 @@ public class TiledSpriteProgram extends ShaderProgram {
     }
 
     @Override
-    public void setUniformData(float[] uniforms, Mesh mesh) {
+    public void setUniformData(Mesh mesh) {
+        float[] uniforms = mesh.getUniformData();
         setScreenSize(uniforms, shaderVariables[CommonShaderVariables.uScreenSize.index]);
         setTextureUniforms(uniforms, mesh.getTexture(Texture2D.TEXTURE_0));
     }
@@ -103,6 +104,12 @@ public class TiledSpriteProgram extends ShaderProgram {
      */
     public QuadExpanderShader getExpanderShader() {
         return expanderShader;
+    }
+
+    @Override
+    public void initBuffers(Mesh mesh) {
+        // TODO Auto-generated method stub
+
     }
 
 }

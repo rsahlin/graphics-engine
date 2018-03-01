@@ -36,7 +36,8 @@ public class PlayfieldProgram extends ShaderProgram {
     }
 
     @Override
-    public void setUniformData(float[] uniforms, Mesh mesh) {
+    public void setUniformData(Mesh mesh) {
+        float[] uniforms = mesh.getUniformData();
         setScreenSize(uniforms, shaderVariables[CommonShaderVariables.uScreenSize.index]);
         Texture2D texture = mesh.getTexture(Texture2D.TEXTURE_0);
         if (texture.getTextureType() == TextureType.TiledTexture2D) {
@@ -46,7 +47,7 @@ public class PlayfieldProgram extends ShaderProgram {
         } else {
             System.err.println(INVALID_TEXTURE_TYPE + texture);
         }
-        setAmbient(getUniforms(), shaderVariables[CommonShaderVariables.uAmbientLight.index], globalLight.getAmbient());
+        setAmbient(uniforms, shaderVariables[CommonShaderVariables.uAmbientLight.index], globalLight.getAmbient());
     }
 
     @Override
@@ -64,5 +65,11 @@ public class PlayfieldProgram extends ShaderProgram {
             default:
                 throw new IllegalArgumentException("Invalid pass " + pass);
         }
+    }
+
+    @Override
+    public void initBuffers(Mesh mesh) {
+        // TODO Auto-generated method stub
+
     }
 }
