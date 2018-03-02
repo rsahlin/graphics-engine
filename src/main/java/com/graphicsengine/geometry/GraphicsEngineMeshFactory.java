@@ -10,6 +10,7 @@ import com.graphicsengine.spritemesh.SpriteMesh;
 import com.nucleus.bounds.Bounds;
 import com.nucleus.component.ComponentNode;
 import com.nucleus.geometry.DefaultMeshFactory;
+import com.nucleus.geometry.Material;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshFactory;
 import com.nucleus.geometry.RectangleShapeBuilder;
@@ -35,7 +36,6 @@ public class GraphicsEngineMeshFactory extends DefaultMeshFactory implements Mes
         spriteMeshBuilder = new SpriteMesh.Builder(renderer);
     }
 
-
     @Override
     public Mesh createMesh(NucleusRenderer renderer, Node parent) throws IOException, GLException {
 
@@ -56,7 +56,7 @@ public class GraphicsEngineMeshFactory extends DefaultMeshFactory implements Mes
             SpriteMesh.Builder mbuilder = new SpriteMesh.Builder(renderer);
             mbuilder.setSpriteCount(quadParent.getMaxQuads());
             mbuilder.setTexture(parent.getTextureRef());
-            mbuilder.setMaterial(quadParent.getMaterial());
+            mbuilder.setMaterial(quadParent.getMaterial() != null ? quadParent.getMaterial() : new Material());
             RectangleShapeBuilder.RectangleConfiguration config = new RectangleShapeBuilder.RectangleConfiguration(
                     quadParent.getMaxQuads(), 0);
             mbuilder.setShapeBuilder(new RectangleShapeBuilder(config));
@@ -76,6 +76,5 @@ public class GraphicsEngineMeshFactory extends DefaultMeshFactory implements Mes
         }
         return super.createMesh(renderer, parent);
     }
-
 
 }

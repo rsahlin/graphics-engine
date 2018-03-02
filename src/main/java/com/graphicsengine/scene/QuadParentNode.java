@@ -96,7 +96,8 @@ public class QuadParentNode extends Node implements Consumer {
 
     /**
      * Internal method
-     * Creates the arrays for this quad node
+     * Creates the arrays for this quad node, ie the buffers needed to support expanding data from this node
+     * into the sprite mesh.
      * 
      * @param mesh
      */
@@ -132,6 +133,7 @@ public class QuadParentNode extends Node implements Consumer {
         super.onCreated();
         spriteMesh = (SpriteMesh) getMesh(MeshType.MAIN);
         spriteMesh.setAttributeUpdater(this);
+        createBuffers(spriteMesh);
         bindAttributeBuffer(spriteMesh.getVerticeBuffer(BufferIndex.ATTRIBUTES.index));
 
         // Setup all children in this node last
@@ -151,7 +153,6 @@ public class QuadParentNode extends Node implements Consumer {
 
     @Override
     public void bindAttributeBuffer(AttributeBuffer buffer) {
-        createBuffers(spriteMesh);
         quadExpander.bindAttributeBuffer(buffer);
     }
 

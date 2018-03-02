@@ -78,10 +78,6 @@ public class SpriteComponent extends Component implements Consumer {
 
     // TODO move into floatdata
     transient public Vector2D[] moveVector;
-    /**
-     * This is the destination mesh attribute buffer
-     */
-    protected transient AttributeBuffer attributeBuffer;
 
     protected transient PropertyMapper mapper;
     /**
@@ -251,7 +247,6 @@ public class SpriteComponent extends Component implements Consumer {
 
     @Override
     public void bindAttributeBuffer(AttributeBuffer buffer) {
-        attributeBuffer = buffer;
         spriteExpander.bindAttributeBuffer(buffer);
     }
 

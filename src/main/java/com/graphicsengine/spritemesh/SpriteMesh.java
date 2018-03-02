@@ -59,6 +59,7 @@ public class SpriteMesh extends Mesh {
 
         @Override
         public Mesh create() throws IOException, GLException {
+            validate();
             if (material.getProgram() == null) {
                 ShaderProgram program = createProgram(texture);
                 program = AssetManager.getInstance().getProgram(renderer.getGLES(), program);
