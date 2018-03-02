@@ -67,8 +67,7 @@ public class SharedMeshQuad extends Node {
         parent.getExpander().setFrame(index, frame);
         Mesh mesh = parent.getMesh(MeshType.MAIN);
         if (mesh.getTexture(Texture2D.TEXTURE_0).textureType == TextureType.Untextured) {
-            parent.getExpander().setColor(index,
-                    getMaterial() != null ? getMaterial().getAmbient() : mesh.getMaterial().getAmbient());
+            updateAmbient();
         }
     }
 
@@ -129,6 +128,15 @@ public class SharedMeshQuad extends Node {
      */
     public void updateTransform() {
         parent.getExpander().setData(childIndex, transform);
+    }
+
+    /**
+     * If material and ambient color is set it is updated.
+     */
+    public void updateAmbient() {
+        if (getMaterial() != null && getMaterial().getAmbient() != null) {
+            parent.getExpander().setColor(childIndex, getMaterial().getAmbient());
+        }
     }
 
 }
