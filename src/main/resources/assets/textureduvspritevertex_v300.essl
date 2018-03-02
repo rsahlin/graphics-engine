@@ -38,17 +38,17 @@ layout(packed) uniform UVData {
 void main() {
     vec4 pos = uMVMatrix * (vec4(aTranslate.x, aTranslate.y, aTranslate.z, 1.0) + vec4(calculateTransformMatrix(aRotate, aScale) * aVertex.xyz, 0.0));
     gl_Position = uProjectionMatrix * vec4(floor((uScreenSize * vec2(pos)) + 0.5) / uScreenSize, pos.z, pos.w);
-    int frame = int(aFrameData.x);
+    int frame = int(min(0.0,aFrameData.x));
     int index = int(aVertex.w);
     vec4 uv = uvData[frame];
     if (index == 0) {
         vTexCoord = vec2(uv.x, uv.y);
     } else if (index == 1) {
-        vTexCoord = vec2(uv.x, uv.y);
+        vTexCoord = vec2(uv.x + uv.z, uv.y);
     } else if (index == 2) {
-        vTexCoord = vec2(uv.x, uv.y);
+        vTexCoord = vec2(uv.x + uv.z, uv.y + uv.w);
     } else {
-        vTexCoord = vec2(uv.x, uv.y);
+        vTexCoord = vec2(uv.x, uv.y + uv.w);
     }
     
 //    vTexCoord = vec2(aFrameData.x, aFrameData.y);

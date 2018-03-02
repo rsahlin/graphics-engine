@@ -24,7 +24,7 @@ uniform vec2 uScreenSize; //Screen width and height
 attribute vec4 aVertex; //vertex position and quad index (0-3)
 attribute vec3 aTranslate; //sprite x, sprite y, sprite z 
 attribute vec3 aRotate;  
-attribute vec3 aScale;  
+attribute vec3 aScale;
 attribute vec2 aFrameData;//texture u, texture v
 
 varying vec2 vTexCoord;
