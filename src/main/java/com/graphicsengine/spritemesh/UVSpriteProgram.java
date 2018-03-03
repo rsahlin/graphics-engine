@@ -39,10 +39,6 @@ public class UVSpriteProgram extends TiledSpriteProgram {
     }
 
     @Override
-    protected void setTextureUniforms(float[] uniforms, Texture2D texture) {
-    }
-
-    @Override
     public ShaderProgram getProgram(GLES20Wrapper gles, Pass pass, Shading shading) {
         switch (pass) {
             case UNDEFINED:

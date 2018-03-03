@@ -20,7 +20,13 @@ public class QuadExpander extends AttributeExpander {
     protected static QuadExpanderShader expanderShader;
 
     private transient Texture2D texture;
+    /**
+     * Only used if uniform block no uniform block in shader
+     */
     private transient float[][] uvData;
+    /**
+     * Only used if uniform block no uniform block in shader
+     */
     private transient float[] entityData;
 
     /**
@@ -33,8 +39,11 @@ public class QuadExpander extends AttributeExpander {
         super(mapper, data, 4);
         this.texture = spriteMesh.getTexture(Texture2D.TEXTURE_0);
         if (texture.getTextureType() == TextureType.UVTexture2D) {
-            copyUVAtlas(((UVTexture2D) texture).getUVAtlas());
-            entityData = new float[mapper.attributesPerVertex];
+            // If mesh has block buffers then frames will be in uniform block - do not copy here
+            if (spriteMesh.getBlockBuffers() == null) {
+                copyUVAtlas(((UVTexture2D) texture).getUVAtlas());
+                entityData = new float[mapper.attributesPerVertex];
+            }
         }
         // expanderShader = ((TiledSpriteProgram) spriteMesh.getMaterial().getProgram()).getExpanderShader();
     }
@@ -50,7 +59,8 @@ public class QuadExpander extends AttributeExpander {
 
     @Override
     public void updateAttributeData(NucleusRenderer renderer) {
-        if (texture.getTextureType() == TextureType.UVTexture2D) {
+        // Use special case if shader does not support uniform block where the frames are.
+        if (texture.getTextureType() == TextureType.UVTexture2D && entityData != null) {
             int uvIndex = 0;
             int frame;
             buffer.setBufferPosition(0);
