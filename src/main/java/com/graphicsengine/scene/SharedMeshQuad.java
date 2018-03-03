@@ -139,4 +139,13 @@ public class SharedMeshQuad extends Node {
         }
     }
 
+    /**
+     * Returns the number of frames supported in the parent.
+     * 
+     * @return
+     */
+    public int getFrameCount() {
+        return parent.getMesh(MeshType.MAIN).getTexture(Texture2D.TEXTURE_0).getFrameCount();
+    }
+
 }

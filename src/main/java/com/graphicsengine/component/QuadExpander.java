@@ -1,6 +1,7 @@
 package com.graphicsengine.component;
 
 import com.graphicsengine.spritemesh.SpriteMesh;
+import com.nucleus.common.Constants;
 import com.nucleus.component.AttributeExpander;
 import com.nucleus.component.ComponentBuffer;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
@@ -85,11 +86,8 @@ public class QuadExpander extends AttributeExpander {
     }
 
     public void setFrame(int quad, int frame) {
-        if (texture.textureType == TextureType.TiledTexture2D) {
-            // TODO - this is highly unoptimized
+        if (mapper.frameOffset != Constants.NO_VALUE) {
             data.put(quad, mapper.frameOffset, new float[] { frame }, 0, 1);
-        } else if (texture.textureType == TextureType.UVTexture2D) {
-            // DO nothing
         }
     }
 
