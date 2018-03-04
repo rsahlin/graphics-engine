@@ -3,8 +3,6 @@ package com.graphicsengine.spritemesh;
 import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.opengl.GLES20Wrapper;
-import com.nucleus.opengl.GLESWrapper.GLES20;
-import com.nucleus.opengl.GLESWrapper.Renderers;
 import com.nucleus.renderer.Pass;
 import com.nucleus.shader.CommonShaderVariables;
 import com.nucleus.shader.QuadExpanderShader;
@@ -47,22 +45,12 @@ public class TiledSpriteProgram extends ShaderProgram {
         }
     }
 
-    @Override
-    protected String getShaderSource(Renderers version, int type) {
-        if (function.getPass() != null || type == GLES20.GL_VERTEX_SHADER) {
-            return super.getShaderSource(version, type);
-        }
-        // Hardcoded fragment shader used by subclass as well
-        return PROGRAM_DIRECTORY + function.getShadingString() + CATEGORY + FRAGMENT_TYPE + SHADER_SOURCE_SUFFIX;
-    }
-
     protected TiledSpriteProgram(Pass pass, Texture2D.Shading shading, String category) {
         super(pass, shading, category, CommonShaderVariables.values(), Shaders.VERTEX_FRAGMENT);
     }
 
     @Override
     public void setUniformData(Mesh mesh) {
-        float[] uniforms = mesh.getUniformData();
         setScreenSize(uniforms, shaderVariables[CommonShaderVariables.uScreenSize.index]);
         setTextureUniforms(uniforms, mesh.getTexture(Texture2D.TEXTURE_0));
     }

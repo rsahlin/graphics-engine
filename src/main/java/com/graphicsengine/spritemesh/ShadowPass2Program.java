@@ -46,7 +46,6 @@ public class ShadowPass2Program extends TiledSpriteProgram {
 
     @Override
     public void setUniformMatrices(float[][] matrices, Mesh mesh) {
-        float[] uniforms = mesh.getUniformData();
         // Refresh the uniform matrix using light matrix
         System.arraycopy(matrices[0], 0, uniforms,
                 shaderVariables[CommonShaderVariables.uMVMatrix.index].getOffset(),

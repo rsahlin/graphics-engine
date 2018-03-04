@@ -33,9 +33,6 @@ attribute vec4 aColor;
 varying vec2 vTexCoord;
 varying vec4 vAmbientLight;
 
-precision mediump float;
-precision mediump int;
-
 
 void main() {
     int flags = int(aFrameData.y);

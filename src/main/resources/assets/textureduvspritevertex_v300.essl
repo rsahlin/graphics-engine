@@ -16,6 +16,7 @@
  * Vertex shader for tiled sprite renderer
  * @author Richard Sahlin
  */
+precision highp float;
 
 //Put array declaration after name for GLSL compatibility
 uniform mat4 uMVMatrix;
