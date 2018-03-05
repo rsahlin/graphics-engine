@@ -1,3 +1,4 @@
+#version 100
 /* Copyright 2017 Richard Sahlin
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +16,8 @@
  * Vertex shader for tiled sprite renderer
  * @author Richard Sahlin
  */
+
+precision highp float;
 
 //Put array declaration after name for GLSL compatibility
 uniform mat4 uMVMatrix;

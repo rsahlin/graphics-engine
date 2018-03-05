@@ -5,11 +5,11 @@ import java.io.IOException;
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.spritemesh.SpriteMesh;
 import com.nucleus.SimpleLogger;
+import com.nucleus.component.CPUComponentBuffer;
 import com.nucleus.component.Component;
 import com.nucleus.component.ComponentBuffer;
 import com.nucleus.component.ComponentException;
 import com.nucleus.component.ComponentNode;
-import com.nucleus.component.NativeComponentBuffer;
 import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
@@ -117,8 +117,8 @@ public class SpriteComponent extends Component implements Consumer {
      */
     private void createBuffers(com.nucleus.system.System system) {
         spritedataSize = mapper.attributesPerVertex;
-        ComponentBuffer spriteData = new NativeComponentBuffer(count, mapper.attributesPerVertex);
-        ComponentBuffer entityData = new NativeComponentBuffer(count, system.getEntityDataSize());
+        ComponentBuffer spriteData = new CPUComponentBuffer(count, mapper.attributesPerVertex);
+        ComponentBuffer entityData = new CPUComponentBuffer(count, system.getEntityDataSize());
         spriteExpander = new QuadExpander(spriteMesh, mapper, spriteData);
         addBuffer(0, spriteData);
         addBuffer(1, entityData);

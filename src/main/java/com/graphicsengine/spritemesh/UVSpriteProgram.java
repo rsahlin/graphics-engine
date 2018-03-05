@@ -31,11 +31,11 @@ public class UVSpriteProgram extends TiledSpriteProgram {
     }
 
     @Override
-    protected String getShaderSourceVersion(Renderers version, int type) {
+    protected String getSourceNameVersion(Renderers version, int type) {
         if (version.major >= 3) {
             return "_v300";
         }
-        return super.getShaderSourceVersion(version, type);
+        return super.getSourceNameVersion(version, type);
     }
 
     @Override

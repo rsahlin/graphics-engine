@@ -46,9 +46,6 @@ public class QuadExpander extends AttributeExpander {
                 entityData = new float[mapper.attributesPerVertex];
             }
         }
-        // Either use expander shader or cpu buffer
-        // expanderShader = ((TiledSpriteProgram) spriteMesh.getMaterial().getProgram()).getExpanderShader();
-        cpuBuffer = new float[data.getEntityCount() * data.getSizePerEntity()];
     }
 
     private void copyUVAtlas(UVAtlas uvAtlas) {
