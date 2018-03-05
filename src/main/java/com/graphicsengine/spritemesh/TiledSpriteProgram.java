@@ -3,6 +3,7 @@ package com.graphicsengine.spritemesh;
 import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.opengl.GLES20Wrapper;
+import com.nucleus.opengl.GLESWrapper.GLES20;
 import com.nucleus.renderer.Pass;
 import com.nucleus.shader.CommonShaderVariables;
 import com.nucleus.shader.QuadExpanderShader;
@@ -47,6 +48,19 @@ public class TiledSpriteProgram extends ShaderProgram {
 
     protected TiledSpriteProgram(Pass pass, Texture2D.Shading shading, String category) {
         super(pass, shading, category, CommonShaderVariables.values(), Shaders.VERTEX_FRAGMENT);
+    }
+
+    @Override
+    protected Function getFunction(int type) {
+        switch (type) {
+            case GLES20.GL_VERTEX_SHADER:
+                return function;
+            case GLES20.GL_FRAGMENT_SHADER:
+                // For sprite fragment shader ignore the category
+                return new Function(function.getPass(), function.getShading(), null);
+            default:
+                throw new IllegalArgumentException("Not valid for type " + type);
+        }
     }
 
     @Override
