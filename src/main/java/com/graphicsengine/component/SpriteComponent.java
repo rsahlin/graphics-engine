@@ -266,7 +266,6 @@ public class SpriteComponent extends Component implements Consumer {
      */
     public void setTransform(int sprite, float[] transform) {
         spriteExpander.setTransform(sprite, transform);
-
     }
 
     /**
@@ -278,7 +277,7 @@ public class SpriteComponent extends Component implements Consumer {
      * @param data
      */
     public void setSprite(int sprite, float[] data) {
-
+        spriteExpander.setData(sprite, data);
     }
 
     @Override
