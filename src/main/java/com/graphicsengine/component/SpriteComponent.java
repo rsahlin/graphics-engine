@@ -6,6 +6,7 @@ import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.spritemesh.SpriteMesh;
 import com.nucleus.SimpleLogger;
 import com.nucleus.component.CPUComponentBuffer;
+import com.nucleus.component.CPUQuadExpander;
 import com.nucleus.component.Component;
 import com.nucleus.component.ComponentBuffer;
 import com.nucleus.component.ComponentException;
@@ -74,7 +75,7 @@ public class SpriteComponent extends Component implements Consumer {
      * In order to render a mesh with sprites this data is copied one -> four in the mesh.
      * TODO Use java.nio.FloatBuffer instead and perhaps move into a special class to handle 1 -> 4 mapping
      */
-    transient protected QuadExpander spriteExpander;
+    transient protected CPUQuadExpander spriteExpander;
 
     // TODO move into floatdata
     transient public Vector2D[] moveVector;
@@ -99,6 +100,31 @@ public class SpriteComponent extends Component implements Consumer {
         set((SpriteComponent) source);
     }
 
+    public CPUQuadExpander getQuadExpander() {
+        return spriteExpander;
+    }
+
+    /**
+     * Returns the buffer that holds the data for the sprite (mesh)
+     * This is the position, rotation, scale data copied to mesh when {@link #updateAttributeData(NucleusRenderer)} is
+     * called.
+     * 
+     * @return
+     */
+    public ComponentBuffer getSpriteBuffer() {
+        return getBuffer(0);
+    }
+
+    /**
+     * Returns the buffer that holds entity data, this is the object specific data that is used to handle
+     * behavior.
+     * 
+     * @return
+     */
+    public ComponentBuffer getEntityBuffer() {
+        return getBuffer(1);
+    }
+
     private void set(SpriteComponent source) {
         super.set(source);
         this.count = source.count;
@@ -117,9 +143,10 @@ public class SpriteComponent extends Component implements Consumer {
      */
     private void createBuffers(com.nucleus.system.System system) {
         spritedataSize = mapper.attributesPerVertex;
-        ComponentBuffer spriteData = new CPUComponentBuffer(count, mapper.attributesPerVertex);
-        ComponentBuffer entityData = new CPUComponentBuffer(count, system.getEntityDataSize());
-        spriteExpander = new QuadExpander(spriteMesh, mapper, spriteData);
+        CPUComponentBuffer spriteData = new CPUComponentBuffer(count, mapper.attributesPerVertex * 4);
+        CPUComponentBuffer entityData = new CPUComponentBuffer(count,
+                system.getEntityDataSize() + mapper.attributesPerVertex);
+        spriteExpander = new CPUQuadExpander(spriteMesh, mapper, entityData, spriteData);
         addBuffer(0, spriteData);
         addBuffer(1, entityData);
     }
@@ -230,19 +257,28 @@ public class SpriteComponent extends Component implements Consumer {
         SimpleLogger.d(getClass(), "Not implemented!!!!!!!!!");
     }
 
-    public void setTranslate(int sprite, float[] translate) {
-        ComponentBuffer b = getBuffer(0);
-        b.put(sprite, mapper.translateOffset, translate, 0, 3);
+    /**
+     * Sets the transform for a sprite using 3 values for xyz axis, translate.xyz, rotate.xyz, scale.xyz
+     * Use this method for initialization only
+     * 
+     * @param sprite
+     * @param transform 3 axis translate, rotate and scale values
+     */
+    public void setTransform(int sprite, float[] transform) {
+        spriteExpander.setTransform(sprite, transform);
+
     }
 
-    public void setScale(int sprite, float[] scale) {
-        ComponentBuffer b = getBuffer(0);
-        b.put(sprite, mapper.scaleOffset, scale, 0, 3);
-    }
+    /**
+     * Sets the data for the sprite, the data shall be indexed using the mapper for the sprite component.
+     * {@link #getMapper()}
+     * Use this method for initialization only
+     * 
+     * @param sprite
+     * @param data
+     */
+    public void setSprite(int sprite, float[] data) {
 
-    public void setRotate(int sprite, float[] rotate) {
-        ComponentBuffer b = getBuffer(0);
-        b.put(sprite, mapper.rotateOffset, rotate, 0, 3);
     }
 
     @Override
