@@ -34,14 +34,17 @@ public class ShadowPass2Program extends TiledSpriteProgram {
     public ShadowPass2Program(Pass pass, String category, Texture2D.Shading shading) {
         super(pass, shading, category);
         // This defines the texture parameters for the shadow pass.
+        // TODO - this should be from a json definition from the scene.
         shadow = TextureFactory.createTexture(TextureType.Texture2D);
         ExternalReference ref = new ExternalReference(ExternalReference.ID_LOOKUP + "DEPTHshadow");
         shadow.setExternalReference(ref);
-        shadow.set(new TextureParameter(
-                new Parameter[] { Parameter.LINEAR, Parameter.LINEAR, Parameter.CLAMP, Parameter.CLAMP }));
+        TextureParameter texParam = new TextureParameter(
+                new Parameter[] { Parameter.LINEAR, Parameter.LINEAR, Parameter.CLAMP, Parameter.CLAMP });
         ParameterData[] extra = new ParameterData[] {
                 new ParameterData(Target.TEXTURE_2D, Name.TEXTURE_COMPARE_MODE, Param.COMPARE_REF_TO_TEXTURE),
                 new ParameterData(Target.TEXTURE_2D, Name.TEXTURE_COMPARE_FUNC, Param.LESS) };
+        texParam.setParameterData(extra);
+        shadow.set(texParam);
     }
 
     @Override

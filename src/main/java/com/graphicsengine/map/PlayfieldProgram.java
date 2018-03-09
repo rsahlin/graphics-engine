@@ -36,7 +36,7 @@ public class PlayfieldProgram extends ShaderProgram {
     }
 
     @Override
-    public void setUniformData(Mesh mesh) {
+    public void setUniformData(float[] destinationUniform, Mesh mesh) {
         setScreenSize(uniforms, shaderVariables[CommonShaderVariables.uScreenSize.index]);
         Texture2D texture = mesh.getTexture(Texture2D.TEXTURE_0);
         if (texture.getTextureType() == TextureType.TiledTexture2D) {
