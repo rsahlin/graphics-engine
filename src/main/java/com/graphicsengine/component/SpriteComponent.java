@@ -14,6 +14,7 @@ import com.nucleus.component.ComponentNode;
 import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
+import com.nucleus.geometry.Material;
 import com.nucleus.geometry.Mesh.BufferIndex;
 import com.nucleus.geometry.RectangleShapeBuilder;
 import com.nucleus.geometry.RectangleShapeBuilder.RectangleConfiguration;
@@ -157,7 +158,7 @@ public class SpriteComponent extends Component implements Consumer {
         try {
             SpriteMesh.Builder spriteBuilder = new SpriteMesh.Builder(renderer);
             spriteBuilder.setTexture(parent.getTextureRef());
-            spriteBuilder.setMaterial(parent.getMaterial());
+            spriteBuilder.setMaterial(parent.getMaterial() != null ? parent.getMaterial() : new Material());
             spriteBuilder.setSpriteCount(count);
             RectangleConfiguration config = new RectangleShapeBuilder.RectangleConfiguration(rectangle,
                     RectangleShapeBuilder.DEFAULT_Z, count,
