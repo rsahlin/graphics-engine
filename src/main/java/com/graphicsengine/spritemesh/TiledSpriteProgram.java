@@ -4,6 +4,7 @@ import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.GLESWrapper.GLES20;
+import com.nucleus.opengl.GLESWrapper.Renderers;
 import com.nucleus.renderer.Pass;
 import com.nucleus.shader.CommonShaderVariables;
 import com.nucleus.shader.QuadExpanderShader;
@@ -48,6 +49,14 @@ public class TiledSpriteProgram extends ShaderProgram {
 
     protected TiledSpriteProgram(Pass pass, Texture2D.Shading shading, String category) {
         super(pass, shading, category, CommonShaderVariables.values(), Shaders.VERTEX_FRAGMENT);
+    }
+
+    @Override
+    protected String getSourceNameVersion(Renderers version, int type) {
+        if (version.major >= 3) {
+            return "_v300";
+        }
+        return super.getSourceNameVersion(version, type);
     }
 
     @Override

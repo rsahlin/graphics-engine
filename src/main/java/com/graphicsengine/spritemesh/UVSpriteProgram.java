@@ -3,7 +3,6 @@ package com.graphicsengine.spritemesh;
 import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.opengl.GLES20Wrapper;
-import com.nucleus.opengl.GLESWrapper.Renderers;
 import com.nucleus.renderer.Pass;
 import com.nucleus.shader.BlockBuffer;
 import com.nucleus.shader.CommonBlockNames;
@@ -28,14 +27,6 @@ public class UVSpriteProgram extends TiledSpriteProgram {
 
     public UVSpriteProgram() {
         super(null, Texture2D.Shading.textured, CATEGORY);
-    }
-
-    @Override
-    protected String getSourceNameVersion(Renderers version, int type) {
-        if (version.major >= 3) {
-            return "_v300";
-        }
-        return super.getSourceNameVersion(version, type);
     }
 
     @Override
