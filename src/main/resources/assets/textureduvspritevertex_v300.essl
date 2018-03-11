@@ -30,14 +30,14 @@ in vec3 aScale;
 in vec2 aFrameData;//texture u, texture v
 
 out vec2 vTexCoord;
-mat3 calculateTransformMatrix(vec3 rotate, vec3 scale);
+mat4 calculateTransformMatrix(vec3 rotate, vec3 scale, vec3 translate);
 
 layout(packed) uniform UVData {
     vec4 uvData[1024];
 };
 
 void main() {
-    vec4 pos = uMVMatrix * (vec4(aTranslate.x, aTranslate.y, aTranslate.z, 1.0) + vec4(calculateTransformMatrix(aRotate, aScale) * aVertex.xyz, 0.0));
+    vec4 pos =  vec4(aVertex.xyz, 1) * (calculateTransformMatrix(aRotate, aScale, aTranslate) * uMVMatrix);
     gl_Position = uProjectionMatrix * vec4(floor((uScreenSize * vec2(pos)) + 0.5) / uScreenSize, pos.z, pos.w);
     int frame = int(aFrameData.x);
     int index = int(aVertex.w);
