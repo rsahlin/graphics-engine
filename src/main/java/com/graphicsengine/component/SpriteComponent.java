@@ -281,6 +281,17 @@ public class SpriteComponent extends Component implements Consumer {
         spriteExpander.setData(sprite, data);
     }
 
+    /**
+     * Sets the entity specific data for a sprite.
+     * 
+     * @param sprite
+     * @param destOffset Offset in destination.
+     */
+    public void setEntityData(int sprite, int destOffset, float[] data) {
+        ComponentBuffer entityBuffer = getBuffer(1);
+        entityBuffer.put(sprite, destOffset, data, 0, data.length);
+    }
+
     @Override
     public void bindAttributeBuffer(AttributeBuffer buffer) {
         spriteExpander.bindAttributeBuffer(buffer);
