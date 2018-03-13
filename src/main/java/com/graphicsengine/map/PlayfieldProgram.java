@@ -50,11 +50,6 @@ public class PlayfieldProgram extends ShaderProgram {
     }
 
     @Override
-    public void createProgram(GLES20Wrapper gles) {
-        super.createProgram(gles);
-    }
-
-    @Override
     public ShaderProgram getProgram(GLES20Wrapper gles, Pass pass, Shading shading) {
         switch (pass) {
             case UNDEFINED:

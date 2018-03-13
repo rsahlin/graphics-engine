@@ -5,6 +5,7 @@ import com.nucleus.geometry.Mesh;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.GLESWrapper.GLES20;
 import com.nucleus.opengl.GLESWrapper.Renderers;
+import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.Pass;
 import com.nucleus.shader.CommonShaderVariables;
 import com.nucleus.shader.QuadExpanderShader;
@@ -40,7 +41,7 @@ public class TiledSpriteProgram extends ShaderProgram {
     }
 
     @Override
-    public void createProgram(GLES20Wrapper gles) {
+    public void createProgram(GLES20Wrapper gles) throws GLException {
         super.createProgram(gles);
         if (gles.getInfo().getRenderVersion().major > 2) {
             expanderShader = (QuadExpanderShader) AssetManager.getInstance().getProgram(gles, new QuadExpanderShader());
