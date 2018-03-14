@@ -1,6 +1,5 @@
 package com.graphicsengine.io;
 
-import java.io.Reader;
 import java.util.Arrays;
 import java.util.List;
 
@@ -22,7 +21,6 @@ import com.nucleus.io.GSONSceneFactory;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.NodeFactory;
-import com.nucleus.scene.RootNode;
 
 /**
  * Implementation of the scenefactory for the graphics engine, this shall take care of all nodes/datatypes that
@@ -71,13 +69,15 @@ public class GSONGraphicsEngineFactory extends GSONSceneFactory {
      * @param meshFactory
      * @param types Implementation specific types that shall be registered to the {@linkplain TypeResolver}, may be null
      */
-    public GSONGraphicsEngineFactory(NucleusRenderer renderer, NodeFactory nodeFactory, MeshFactory meshFactory, List<Type<?>> types) {
+    public GSONGraphicsEngineFactory(NucleusRenderer renderer, NodeFactory nodeFactory, MeshFactory meshFactory,
+            List<Type<?>> types) {
         super(renderer, nodeFactory, meshFactory, Arrays.asList((Type<?>[]) GraphicsEngineClasses.values()));
         if (types != null) {
             TypeResolver.getInstance().registerTypes(types);
         }
     }
 
+    @Override
     protected void createNodeDeserializer() {
         nodeDeserializer = new NodeDeserializer();
     }
@@ -86,7 +86,6 @@ public class GSONGraphicsEngineFactory extends GSONSceneFactory {
     protected void createNodeExporter() {
         nodeExporter = new GraphicsEngineNodeExporter();
     }
-
 
     @Override
     protected void registerNodeExporters() {
@@ -125,5 +124,5 @@ public class GSONGraphicsEngineFactory extends GSONSceneFactory {
         nodeDeserializer.setGson(gson);
         componentDeserializer.setGson(gson);
     }
-    
+
 }

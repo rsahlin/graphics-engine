@@ -8,6 +8,7 @@ import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.GLESWrapper.GLES20;
 import com.nucleus.opengl.GLESWrapper.GLES30;
 import com.nucleus.opengl.GLException;
+import com.nucleus.renderer.NucleusRenderer.Matrices;
 import com.nucleus.renderer.Pass;
 import com.nucleus.shader.CommonShaderVariables;
 import com.nucleus.texturing.ParameterData;
@@ -50,13 +51,13 @@ public class ShadowPass2Program extends TiledSpriteProgram {
     @Override
     public void setUniformMatrices(float[][] matrices, Mesh mesh) {
         // Refresh the uniform matrix using light matrix
-        System.arraycopy(matrices[0], 0, uniforms,
+        System.arraycopy(matrices[Matrices.MODELVIEW.index], 0, uniforms,
                 shaderVariables[CommonShaderVariables.uMVMatrix.index].getOffset(),
                 Matrix.MATRIX_ELEMENTS);
-        System.arraycopy(matrices[1], 0, uniforms,
+        System.arraycopy(matrices[Matrices.PROJECTION.index], 0, uniforms,
                 shaderVariables[CommonShaderVariables.uProjectionMatrix.index].getOffset(),
                 Matrix.MATRIX_ELEMENTS);
-        System.arraycopy(matrices[2], 0, uniforms,
+        System.arraycopy(matrices[Matrices.RENDERPASS_1.index], 0, uniforms,
                 shaderVariables[CommonShaderVariables.uLightMatrix.index].getOffset(),
                 Matrix.MATRIX_ELEMENTS);
     }

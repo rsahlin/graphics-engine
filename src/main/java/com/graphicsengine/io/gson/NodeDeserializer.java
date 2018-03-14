@@ -13,9 +13,6 @@ import com.nucleus.scene.Node;
 
 public class NodeDeserializer extends NucleusNodeDeserializer implements JsonDeserializer<Node> {
 
-    // TODO where is a good place to store this constant?
-    public final static String NODETYPE_JSON_KEY = "type";
-
     @Override
     public Node deserialize(JsonElement json, Type type, JsonDeserializationContext context)
             throws JsonParseException {
@@ -28,11 +25,10 @@ public class NodeDeserializer extends NucleusNodeDeserializer implements JsonDes
             }
             t = GraphicsEngineNodeType.valueOf(element.getAsString());
         } catch (IllegalArgumentException e) {
-            //Try with super
+            // Try with super
             return super.deserialize(json, type, context);
         }
         return (Node) gson.fromJson(json, t.getTypeClass());
-        
     }
 
 }

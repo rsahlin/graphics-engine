@@ -40,8 +40,7 @@ mat4 calculateTransformMatrix(vec3 rotate, vec3 scale, vec3 translate);
  * Used for objects that are transformed, scaled and rotated - with the translate, rotation and scale being defined from attribute data
  */
 void main() {
-    vec4 pos = (uMVMatrix) * vec4(aVertex.xyz, 1);
-    pos = pos * calculateTransformMatrix(aRotate, aScale, aTranslate);
+    vec4 pos =  vec4(aVertex.xyz, 1) * (calculateTransformMatrix(aRotate, aScale, aTranslate) * uMVMatrix);
     gl_Position = uProjectionMatrix * pos;
     color = aColor;
 }
