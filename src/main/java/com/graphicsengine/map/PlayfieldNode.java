@@ -32,9 +32,10 @@ public class PlayfieldNode extends Node {
 
         float[] rectangle = new float[4];
         float[] rgba = new float[] { 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1 };
+        EventConfiguration config = new EventConfiguration();
 
         @Override
-        public boolean onInputEvent(PointerData event) {
+        public boolean onInputEvent(Node node, PointerData event) {
             float[] inverse = new float[16];
             float[] position = event.position;
             if (Matrix.invertM(inverse, 0, getModelMatrix(), 0)) {
@@ -51,8 +52,8 @@ public class PlayfieldNode extends Node {
         }
 
         @Override
-        public boolean onDrag(PointerMotionData drag) {
-            SimpleLogger.d(getClass(), "onDrag()");
+        public boolean onDrag(Node node, PointerMotionData drag) {
+            SimpleLogger.d(getClass(), "onDrag() " + node.getId());
             float[] down = drag.getFirstPosition();
             float[] current = drag.getCurrentPosition();
             rectangle[0] = down[0];
@@ -64,6 +65,17 @@ public class PlayfieldNode extends Node {
                 lines.setRectangle(0, rectangle, 0f, rgba);
             }
             return true;
+        }
+
+        @Override
+        public boolean onClick(Node node, PointerData event) {
+            SimpleLogger.d(getClass(), "onClick() " + node.getId());
+            return false;
+        }
+
+        @Override
+        public EventConfiguration getConfiguration() {
+            return config;
         }
 
     }
@@ -115,7 +127,6 @@ public class PlayfieldNode extends Node {
 
     private PlayfieldNode(RootNode root) {
         super(root, GraphicsEngineNodeType.playfieldNode);
-        setObjectInputListener(new PlayfieldNodeObjectInputListener());
     }
 
     @Override
