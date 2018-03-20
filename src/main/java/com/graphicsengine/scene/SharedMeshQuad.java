@@ -7,6 +7,7 @@ import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TextureType;
+import com.nucleus.texturing.TiledTexture2D;
 import com.nucleus.vecmath.Rectangle;
 import com.nucleus.vecmath.Transform;
 
@@ -24,6 +25,7 @@ public class SharedMeshQuad extends Node {
     /**
      * The framenumber for this quad, from the texture in the referenced mesh.
      */
+    @SerializedName(TiledTexture2D.FRAME)
     private int frame;
     /**
      * The index of this shared mesh quad node with it's parent.
