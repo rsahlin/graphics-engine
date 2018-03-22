@@ -18,8 +18,8 @@
  */
 precision mediump float;
 
-uniform sampler2D uTexture; //The texture sampler
-uniform sampler2DShadow uShadowTexture;
+uniform lowp sampler2D uTexture; //The texture sampler
+uniform lowp sampler2DShadow uShadowTexture;
 
 in vec2 vTexCoord;
 in vec4 vLightPos;

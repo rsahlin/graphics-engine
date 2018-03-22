@@ -27,7 +27,7 @@ uniform vec2 uScreenSize; //Width and  height of screen
 uniform vec4 uAmbientLight;
 uniform vec4 uDiffuseLight;
 
-attribute vec4 aVertex; //vertex position
+attribute vec4 aVertex; //vertex position + index
 attribute vec2 aTexCoord;
 attribute vec3 aTranslate; //char x, char y, z (not used)
 attribute vec2 aFrameData;//frame, flags
@@ -36,11 +36,12 @@ attribute vec4 aColor;
 varying vec2 vTexCoord;
 varying vec4 vAmbientLight;
 
+mat4 calculateTransformMatrix(vec3 rotate, vec3 scale, vec3 translate);
+
 void main() {
     int flags = int(aFrameData.y);
-    //TODO - simplify since scale and translate is not used
     vec4 pos =  vec4(aVertex.xyz + aTranslate.xyz, 1.0) * uMVMatrix;
-    gl_Position = uProjectionMatrix * vec4(floor((uScreenSize * vec2(pos)) + 0.5) / uScreenSize, pos.z, pos.w);
+    gl_Position = vec4(floor((uScreenSize * vec2(pos)) + 0.5) / uScreenSize, pos.z, 1.0) * uProjectionMatrix;
     vec2 flip = aTexCoord;
     if ((flags - 4) >= 0) {
         //FlipX

@@ -13,8 +13,6 @@ import com.nucleus.shader.ShaderProgram;
 import com.nucleus.shader.ShadowPass1Program;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.Texture2D.Shading;
-import com.nucleus.texturing.TextureType;
-import com.nucleus.texturing.TiledTexture2D;
 
 /**
  * This class defines the mappings for the tile sprite vertex and fragment shaders.
@@ -30,11 +28,6 @@ public class TiledSpriteProgram extends ShaderProgram {
     protected static final String CATEGORY = "sprite";
 
     protected QuadExpanderShader expanderShader;
-
-    /**
-     * Offset into uniform variable data where texture UV are.
-     */
-    private final static int UNIFORM_TEX_OFFSET = 0;
 
     TiledSpriteProgram(Texture2D.Shading shading) {
         super(null, shading, CATEGORY, CommonShaderVariables.values(), Shaders.VERTEX_FRAGMENT);
@@ -77,20 +70,6 @@ public class TiledSpriteProgram extends ShaderProgram {
     public void setUniformData(float[] destinationUniform, Mesh mesh) {
         setScreenSize(destinationUniform, shaderVariables[CommonShaderVariables.uScreenSize.index]);
         setTextureUniforms(destinationUniform, mesh.getTexture(Texture2D.TEXTURE_0));
-    }
-
-    /**
-     * Sets the data related to texture uniforms in the uniform float storage
-     * 
-     * @param uniforms
-     * @param texture
-     */
-    protected void setTextureUniforms(float[] uniforms, Texture2D texture) {
-        if (texture.getTextureType() == TextureType.TiledTexture2D) {
-            setTextureUniforms((TiledTexture2D) texture, uniforms,
-                    shaderVariables[CommonShaderVariables.uTextureData.index],
-                    UNIFORM_TEX_OFFSET);
-        }
     }
 
     @Override

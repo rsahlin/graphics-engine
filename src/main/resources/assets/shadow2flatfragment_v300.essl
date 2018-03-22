@@ -18,15 +18,15 @@
  */
 precision mediump float;
 
-uniform sampler2DShadow uShadowTexture;
+uniform lowp sampler2DShadow uShadowTexture;
 
 in vec4 vLightPos;
 in vec4 color;
 
-out vec4 gl_FragColor;
+out vec4 fragColor;
 
 void main()
 {
     float shadow = texture(uShadowTexture, vec3(vLightPos.xy,gl_FragCoord.z));
-    gl_FragColor = vec4(color.rgb * shadow, 1);
+    fragColor = vec4(color.rgb * shadow, 1);
 }

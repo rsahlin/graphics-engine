@@ -21,11 +21,6 @@ public class PlayfieldProgram extends ShaderProgram {
     public static final String CATEGORY = "charmap";
     private final static String INVALID_TEXTURE_TYPE = "Invalid texture type: ";
 
-    /**
-     * Offset into uniform variable data where texture UV are.
-     */
-    private final static int UNIFORM_TEX_OFFSET = 0;
-
     PlayfieldProgram() {
         super(null, null, CATEGORY, CommonShaderVariables.values(), Shaders.VERTEX_FRAGMENT);
     }
@@ -41,8 +36,7 @@ public class PlayfieldProgram extends ShaderProgram {
         Texture2D texture = mesh.getTexture(Texture2D.TEXTURE_0);
         if (texture.getTextureType() == TextureType.TiledTexture2D) {
             setTextureUniforms((TiledTexture2D) texture, uniforms,
-                    shaderVariables[CommonShaderVariables.uTextureData.index],
-                    UNIFORM_TEX_OFFSET);
+                    shaderVariables[CommonShaderVariables.uTextureData.index]);
         } else {
             System.err.println(INVALID_TEXTURE_TYPE + texture);
         }
