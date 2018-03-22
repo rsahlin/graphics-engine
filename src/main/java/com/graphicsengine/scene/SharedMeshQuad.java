@@ -31,7 +31,7 @@ public class SharedMeshQuad extends Node {
      * The index of this shared mesh quad node with it's parent.
      */
     transient private int childIndex;
-    transient private QuadParentNode parent;
+    transient private QuadParentNode quadParent;
     /**
      * The rectangle defining the sprites, all sprites will have same size
      * 4 values = x1,y1 + width and height
@@ -58,16 +58,18 @@ public class SharedMeshQuad extends Node {
      * @param Parent The parent node holding all quads
      * @param index
      */
-    public void onCreated(QuadParentNode parent, int index) {
-        this.childIndex = index;
-        this.parent = parent;
-        initBounds(parent.buildQuad(index, rectangle));
+    @Override
+    public void onCreated() {
+        // Add this to the quadparentnode
+        quadParent = (QuadParentNode) getParent();
+        childIndex = quadParent.addQuad(this);
+        initBounds(quadParent.buildQuad(childIndex, rectangle));
         if (transform == null) {
             transform = new Transform();
         }
-        parent.getExpander().setData(index, transform);
-        parent.getExpander().setFrame(index, frame);
-        Mesh mesh = parent.getMesh(MeshType.MAIN);
+        quadParent.getExpander().setData(childIndex, transform);
+        quadParent.getExpander().setFrame(childIndex, frame);
+        Mesh mesh = quadParent.getMesh(MeshType.MAIN);
         if (mesh.getTexture(Texture2D.TEXTURE_0).textureType == TextureType.Untextured) {
             updateAmbient();
         }
@@ -121,7 +123,7 @@ public class SharedMeshQuad extends Node {
      * @param frame
      */
     public void setFrame(int frame) {
-        parent.getExpander().setFrame(childIndex, frame);
+        quadParent.getExpander().setFrame(childIndex, frame);
     }
 
     /**
@@ -129,7 +131,7 @@ public class SharedMeshQuad extends Node {
      * Call this after the transform in the Mesh has been changed.
      */
     public void updateTransform() {
-        parent.getExpander().setData(childIndex, transform);
+        quadParent.getExpander().setData(childIndex, transform);
     }
 
     /**
@@ -137,7 +139,7 @@ public class SharedMeshQuad extends Node {
      */
     public void updateAmbient() {
         if (getMaterial() != null && getMaterial().getAmbient() != null) {
-            parent.getExpander().setColor(childIndex, getMaterial().getAmbient());
+            quadParent.getExpander().setColor(childIndex, getMaterial().getAmbient());
         }
     }
 
@@ -147,7 +149,7 @@ public class SharedMeshQuad extends Node {
      * @return
      */
     public int getFrameCount() {
-        return parent.getMesh(MeshType.MAIN).getTexture(Texture2D.TEXTURE_0).getFrameCount();
+        return quadParent.getMesh(MeshType.MAIN).getTexture(Texture2D.TEXTURE_0).getFrameCount();
     }
 
 }

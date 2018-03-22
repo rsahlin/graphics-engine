@@ -83,7 +83,7 @@ public class QuadParentNode extends Node implements Consumer {
         return maxQuads;
     }
 
-    public int addQuad(SharedMeshQuad quadMeshNode) {
+    protected int addQuad(SharedMeshQuad quadMeshNode) {
         int index = quadChildren.size();
         quadChildren.add(quadMeshNode);
         return index;
@@ -135,15 +135,6 @@ public class QuadParentNode extends Node implements Consumer {
         spriteMesh.setAttributeUpdater(this);
         createBuffers(spriteMesh);
         bindAttributeBuffer(spriteMesh.getVerticeBuffer(BufferIndex.ATTRIBUTES.index));
-
-        // Setup all children in this node last
-        for (Node n : getChildren()) {
-            if (n instanceof SharedMeshQuad) {
-                // This is a special case since the mesh belongs to this node.
-                int index = addQuad((SharedMeshQuad) n);
-                ((SharedMeshQuad) n).onCreated(this, index);
-            }
-        }
     }
 
     @Override
