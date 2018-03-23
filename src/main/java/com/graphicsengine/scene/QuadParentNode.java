@@ -131,7 +131,7 @@ public class QuadParentNode extends Node implements Consumer {
     @Override
     public void onCreated() {
         super.onCreated();
-        spriteMesh = (SpriteMesh) getMesh(MeshType.MAIN);
+        spriteMesh = (SpriteMesh) getMesh(MeshIndex.MAIN);
         spriteMesh.setAttributeUpdater(this);
         createBuffers(spriteMesh);
         bindAttributeBuffer(spriteMesh.getVerticeBuffer(BufferIndex.ATTRIBUTES.index));

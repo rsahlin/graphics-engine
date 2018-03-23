@@ -10,6 +10,7 @@ import com.nucleus.renderer.Pass;
 import com.nucleus.shader.CommonShaderVariables;
 import com.nucleus.shader.QuadExpanderShader;
 import com.nucleus.shader.ShaderProgram;
+import com.nucleus.shader.ShaderSource;
 import com.nucleus.shader.ShadowPass1Program;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.Texture2D.Shading;
@@ -48,7 +49,7 @@ public class TiledSpriteProgram extends ShaderProgram {
     @Override
     protected String getSourceNameVersion(Renderers version, int type) {
         if (version.major >= 3) {
-            return "_v300";
+            return ShaderSource.V300;
         }
         return super.getSourceNameVersion(version, type);
     }

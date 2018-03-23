@@ -69,7 +69,7 @@ public class SharedMeshQuad extends Node {
         }
         quadParent.getExpander().setData(childIndex, transform);
         quadParent.getExpander().setFrame(childIndex, frame);
-        Mesh mesh = quadParent.getMesh(MeshType.MAIN);
+        Mesh mesh = quadParent.getMesh(MeshIndex.MAIN);
         if (mesh.getTexture(Texture2D.TEXTURE_0).textureType == TextureType.Untextured) {
             updateAmbient();
         }
@@ -149,7 +149,7 @@ public class SharedMeshQuad extends Node {
      * @return
      */
     public int getFrameCount() {
-        return quadParent.getMesh(MeshType.MAIN).getTexture(Texture2D.TEXTURE_0).getFrameCount();
+        return quadParent.getMesh(MeshIndex.MAIN).getTexture(Texture2D.TEXTURE_0).getFrameCount();
     }
 
 }

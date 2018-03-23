@@ -20,7 +20,7 @@ import com.nucleus.geometry.RectangleShapeBuilder;
 import com.nucleus.geometry.RectangleShapeBuilder.RectangleConfiguration;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
-import com.nucleus.scene.Node.MeshType;
+import com.nucleus.scene.Node.MeshIndex;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TextureType;
@@ -182,7 +182,7 @@ public class SpriteComponent extends Component implements Consumer {
             default:
                 break;
         }
-        parent.addMesh(spriteMesh, MeshType.MAIN);
+        parent.addMesh(spriteMesh, MeshIndex.MAIN);
         createBuffers(system);
         spriteMesh.setAttributeUpdater(this);
         bindAttributeBuffer(spriteMesh.getVerticeBuffer(BufferIndex.ATTRIBUTES.index));
