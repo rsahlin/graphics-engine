@@ -185,7 +185,7 @@ public class SpriteComponent extends Component implements Consumer {
         parent.addMesh(spriteMesh, MeshIndex.MAIN);
         createBuffers(system);
         spriteMesh.setAttributeUpdater(this);
-        bindAttributeBuffer(spriteMesh.getVerticeBuffer(BufferIndex.ATTRIBUTES.index));
+        bindAttributeBuffer(spriteMesh.getAttributeBuffer(BufferIndex.ATTRIBUTES.index));
     }
 
     /**
