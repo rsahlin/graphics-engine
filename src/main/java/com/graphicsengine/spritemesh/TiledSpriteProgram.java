@@ -37,7 +37,7 @@ public class TiledSpriteProgram extends ShaderProgram {
     @Override
     public void createProgram(GLES20Wrapper gles) throws GLException {
         super.createProgram(gles);
-        if (gles.getInfo().getRenderVersion().major > 2) {
+        if (gles.getInfo().getRenderVersion().major > 2 && gles.getInfo().getRenderVersion().minor > 0) {
             expanderShader = (QuadExpanderShader) AssetManager.getInstance().getProgram(gles, new QuadExpanderShader());
         }
     }
