@@ -8,6 +8,7 @@ import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.GLESWrapper.GLES20;
 import com.nucleus.opengl.GLESWrapper.GLES30;
 import com.nucleus.opengl.GLException;
+import com.nucleus.renderer.NucleusRenderer.Matrices;
 import com.nucleus.renderer.Pass;
 import com.nucleus.shader.CommonShaderVariables;
 import com.nucleus.texturing.ParameterData;
@@ -34,26 +35,29 @@ public class ShadowPass2Program extends TiledSpriteProgram {
     public ShadowPass2Program(Pass pass, String category, Texture2D.Shading shading) {
         super(pass, shading, category);
         // This defines the texture parameters for the shadow pass.
+        // TODO - this should be from a json definition from the scene.
         shadow = TextureFactory.createTexture(TextureType.Texture2D);
         ExternalReference ref = new ExternalReference(ExternalReference.ID_LOOKUP + "DEPTHshadow");
         shadow.setExternalReference(ref);
-        shadow.set(new TextureParameter(
-                new Parameter[] { Parameter.LINEAR, Parameter.LINEAR, Parameter.CLAMP, Parameter.CLAMP }));
+        TextureParameter texParam = new TextureParameter(
+                new Parameter[] { Parameter.LINEAR, Parameter.LINEAR, Parameter.CLAMP, Parameter.CLAMP });
         ParameterData[] extra = new ParameterData[] {
                 new ParameterData(Target.TEXTURE_2D, Name.TEXTURE_COMPARE_MODE, Param.COMPARE_REF_TO_TEXTURE),
                 new ParameterData(Target.TEXTURE_2D, Name.TEXTURE_COMPARE_FUNC, Param.LESS) };
+        texParam.setParameterData(extra);
+        shadow.set(texParam);
     }
 
     @Override
-    public void setUniformMatrices(float[] uniforms, float[][] matrices, Mesh mesh) {
+    public void setUniformMatrices(float[][] matrices, Mesh mesh) {
         // Refresh the uniform matrix using light matrix
-        System.arraycopy(matrices[0], 0, getUniforms(),
+        System.arraycopy(matrices[Matrices.MODELVIEW.index], 0, uniforms,
                 shaderVariables[CommonShaderVariables.uMVMatrix.index].getOffset(),
                 Matrix.MATRIX_ELEMENTS);
-        System.arraycopy(matrices[1], 0, getUniforms(),
+        System.arraycopy(matrices[Matrices.PROJECTION.index], 0, uniforms,
                 shaderVariables[CommonShaderVariables.uProjectionMatrix.index].getOffset(),
                 Matrix.MATRIX_ELEMENTS);
-        System.arraycopy(matrices[2], 0, getUniforms(),
+        System.arraycopy(matrices[Matrices.RENDERPASS_1.index], 0, uniforms,
                 shaderVariables[CommonShaderVariables.uLightMatrix.index].getOffset(),
                 Matrix.MATRIX_ELEMENTS);
     }

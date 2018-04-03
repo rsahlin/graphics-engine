@@ -16,42 +16,31 @@
  * Vertex shader for tiled sprite renderer
  * @author Richard Sahlin
  */
+
 precision highp float;
 
 //Put array declaration after name for GLSL compatibility
 uniform mat4 uMVMatrix;
 uniform mat4 uProjectionMatrix;
-uniform vec2 uScreenSize; //Screen width and height
 
-in vec4 aVertex; //vertex position and quad index (0-3)
+in vec4 aVertex; //vertex position
 in vec3 aTranslate; //sprite x, sprite y, sprite z 
-in vec3 aRotate; 
-in vec3 aScale; 
-in vec2 aFrameData;//texture u, texture v
-in vec4 aEmissive; //Emissive color
+in vec3 aRotate;  
+in vec3 aScale;
+in vec4 aColor;
 
-out vec2 vTexCoord;
-out vec4 vEmissive;
+out vec4 color;
+
+/**
+ * From commonvertex.essl
+ */
 mat4 calculateTransformMatrix(vec3 rotate, vec3 scale, vec3 translate);
 
-layout(packed) uniform UVData {
-    vec4 uvData[1024];
-};
-
+/**
+ * Used for objects that are transformed, scaled and rotated - with the translate, rotation and scale being defined from attribute data
+ */
 void main() {
     vec4 pos =  vec4(aVertex.xyz, 1) * (calculateTransformMatrix(aRotate, aScale, aTranslate) * uMVMatrix);
-    gl_Position = uProjectionMatrix * vec4(floor((uScreenSize * vec2(pos)) + 0.5) / uScreenSize, pos.z, pos.w);
-    int frame = int(aFrameData.x);
-    int index = int(aVertex.w);
-    vec4 uv = uvData[frame];
-    if (index == 0) {
-        vTexCoord = vec2(uv.x, uv.y);
-    } else if (index == 1) {
-        vTexCoord = vec2(uv.x + uv.z, uv.y);
-    } else if (index == 2) {
-        vTexCoord = vec2(uv.x + uv.z, uv.y + uv.w);
-    } else {
-        vTexCoord = vec2(uv.x, uv.y + uv.w);
-    }
-    vEmissive = aEmissive;
+    gl_Position = uProjectionMatrix * pos;
+    color = aColor;
 }

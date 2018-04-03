@@ -1,5 +1,5 @@
-#version 100
-/* Copyright 2015 Richard Sahlin
+#version 300 es
+/* Copyright 2017 Richard Sahlin
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +16,32 @@
  * Vertex shader for tiled sprite renderer
  * @author Richard Sahlin
  */
+
 precision highp float;
 
 //Put array declaration after name for GLSL compatibility
 uniform mat4 uMVMatrix;
 uniform mat4 uProjectionMatrix;
-uniform vec2 uScreenSize; //Screen width and height
+uniform vec3 uTextureData; //tex width, tex height, frames per line
+uniform vec2 uScreenSize; //Width and height of screen
 
-attribute vec4 aVertex; //vertex position and quad index (0-3)
-attribute vec3 aTranslate; //sprite x, sprite y, sprite z 
-attribute vec3 aRotate;  
-attribute vec3 aScale;
-attribute vec2 aFrameData;//texture u, texture v
+in vec4 aVertex; //vertex position
+in vec2 aTexCoord;
+in vec3 aTranslate; //sprite x, sprite y, sprite z
+in vec3 aRotate;
+in vec3 aScale;
+in vec2 aFrameData;//frame
 
-varying vec2 vTexCoord;
+out vec2 vTexCoord;
+
 mat4 calculateTransformMatrix(vec3 rotate, vec3 scale, vec3 translate);
 
 void main() {
     vec4 pos =  vec4(aVertex.xyz, 1) * (calculateTransformMatrix(aRotate, aScale, aTranslate) * uMVMatrix);
-    gl_Position = uProjectionMatrix * vec4(floor((uScreenSize * vec2(pos)) + 0.5) / uScreenSize, pos.z, pos.w);
-    vTexCoord = vec2(aFrameData.x, aFrameData.y);
+    gl_Position = uProjectionMatrix * vec4(floor((uScreenSize * vec2(pos) + 0.5)) / uScreenSize, pos.z, 1);
+    float y = floor(aFrameData.x / uTextureData.z);
+    vTexCoord = vec2(aTexCoord.x + 
+                     mod(aFrameData.x, uTextureData.z) * uTextureData.x,
+                     aTexCoord.y + y * uTextureData.y);
+                     
 }

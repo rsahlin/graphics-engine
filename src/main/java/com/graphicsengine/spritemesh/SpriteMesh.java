@@ -59,6 +59,7 @@ public class SpriteMesh extends Mesh {
 
         @Override
         public Mesh create() throws IOException, GLException {
+            validate();
             if (material.getProgram() == null) {
                 ShaderProgram program = createProgram(texture);
                 program = AssetManager.getInstance().getProgram(renderer.getGLES(), program);
@@ -156,7 +157,7 @@ public class SpriteMesh extends Mesh {
      */
     public void setAttribute4(int sprite, int offset, float[] source, int sourceIndex) {
         int index = mapper.attributesPerVertex * 4 * sprite;
-        AttributeBuffer attributeBuffer = getVerticeBuffer(BufferIndex.ATTRIBUTES.index);
+        AttributeBuffer attributeBuffer = getAttributeBuffer(BufferIndex.ATTRIBUTES.index);
         attributeBuffer.setArray(source, sourceIndex, index + offset, 4);
         index += mapper.attributesPerVertex;
         attributeBuffer.setArray(source, sourceIndex, index + offset, 4);
@@ -178,7 +179,7 @@ public class SpriteMesh extends Mesh {
      */
     public void setAttribute3(int sprite, int offset, float[] source, int sourceIndex) {
         int index = mapper.attributesPerVertex * 4 * sprite;
-        AttributeBuffer attributeBuffer = getVerticeBuffer(BufferIndex.ATTRIBUTES.index);
+        AttributeBuffer attributeBuffer = getAttributeBuffer(BufferIndex.ATTRIBUTES.index);
         attributeBuffer.setArray(source, sourceIndex, index + offset, 3);
         index += mapper.attributesPerVertex;
         attributeBuffer.setArray(source, sourceIndex, index + offset, 3);
@@ -200,7 +201,7 @@ public class SpriteMesh extends Mesh {
      */
     public void setAttribute2(int sprite, int offset, float[] source, int sourceIndex) {
         int index = mapper.attributesPerVertex * 4 * sprite;
-        AttributeBuffer attributeBuffer = getVerticeBuffer(BufferIndex.ATTRIBUTES.index);
+        AttributeBuffer attributeBuffer = getAttributeBuffer(BufferIndex.ATTRIBUTES.index);
         attributeBuffer.setArray(source, sourceIndex, index + offset, 2);
         index += mapper.attributesPerVertex;
         attributeBuffer.setArray(source, sourceIndex, index + offset, 2);

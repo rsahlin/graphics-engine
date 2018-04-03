@@ -13,21 +13,20 @@
  */
 
  /**
- * Fragment shader for shadow pass of tiled sprite renderer
+ * Fragment shader for shadow pass of untextured tiled sprite renderer
  * @author Richard Sahlin
  */
 precision mediump float;
 
-uniform sampler2D uTexture; //The texture sampler
-uniform sampler2DShadow uShadowTexture;
+uniform lowp sampler2DShadow uShadowTexture;
 
-in vec2 vTexCoord;
 in vec4 vLightPos;
+in vec4 color;
 
 out vec4 fragColor;
 
 void main()
 {
-    float shadow = texture(uShadowTexture, vec3(vLightPos.xyz));
-    fragColor = texture(uTexture, vTexCoord) * vec4(shadow,shadow,shadow,1.0);
+    float shadow = texture(uShadowTexture, vec3(vLightPos.xy,gl_FragCoord.z));
+    fragColor = vec4(color.rgb * shadow, 1);
 }

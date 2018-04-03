@@ -5,20 +5,22 @@ import java.io.IOException;
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.spritemesh.SpriteMesh;
 import com.nucleus.SimpleLogger;
+import com.nucleus.component.CPUComponentBuffer;
+import com.nucleus.component.CPUQuadExpander;
 import com.nucleus.component.Component;
 import com.nucleus.component.ComponentBuffer;
 import com.nucleus.component.ComponentException;
 import com.nucleus.component.ComponentNode;
-import com.nucleus.component.NativeComponentBuffer;
 import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
+import com.nucleus.geometry.Material;
 import com.nucleus.geometry.Mesh.BufferIndex;
 import com.nucleus.geometry.RectangleShapeBuilder;
 import com.nucleus.geometry.RectangleShapeBuilder.RectangleConfiguration;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
-import com.nucleus.scene.Node.MeshType;
+import com.nucleus.scene.Node.MeshIndex;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TextureType;
@@ -74,14 +76,10 @@ public class SpriteComponent extends Component implements Consumer {
      * In order to render a mesh with sprites this data is copied one -> four in the mesh.
      * TODO Use java.nio.FloatBuffer instead and perhaps move into a special class to handle 1 -> 4 mapping
      */
-    transient protected QuadExpander spriteExpander;
+    transient protected CPUQuadExpander spriteExpander;
 
     // TODO move into floatdata
     transient public Vector2D[] moveVector;
-    /**
-     * This is the destination mesh attribute buffer
-     */
-    protected transient AttributeBuffer attributeBuffer;
 
     protected transient PropertyMapper mapper;
     /**
@@ -103,6 +101,31 @@ public class SpriteComponent extends Component implements Consumer {
         set((SpriteComponent) source);
     }
 
+    public CPUQuadExpander getQuadExpander() {
+        return spriteExpander;
+    }
+
+    /**
+     * Returns the buffer that holds the data for the sprite (mesh)
+     * This is the position, rotation, scale data copied to mesh when {@link #updateAttributeData(NucleusRenderer)} is
+     * called.
+     * 
+     * @return
+     */
+    public ComponentBuffer getSpriteBuffer() {
+        return getBuffer(0);
+    }
+
+    /**
+     * Returns the buffer that holds entity data, this is the object specific data that is used to handle
+     * behavior.
+     * 
+     * @return
+     */
+    public ComponentBuffer getEntityBuffer() {
+        return getBuffer(1);
+    }
+
     private void set(SpriteComponent source) {
         super.set(source);
         this.count = source.count;
@@ -121,9 +144,10 @@ public class SpriteComponent extends Component implements Consumer {
      */
     private void createBuffers(com.nucleus.system.System system) {
         spritedataSize = mapper.attributesPerVertex;
-        ComponentBuffer spriteData = new NativeComponentBuffer(count, mapper.attributesPerVertex);
-        ComponentBuffer entityData = new NativeComponentBuffer(count, system.getEntityDataSize());
-        spriteExpander = new QuadExpander(spriteMesh, mapper, spriteData);
+        CPUComponentBuffer spriteData = new CPUComponentBuffer(count, mapper.attributesPerVertex * 4);
+        CPUComponentBuffer entityData = new CPUComponentBuffer(count,
+                system.getEntityDataSize() + mapper.attributesPerVertex);
+        spriteExpander = new CPUQuadExpander(spriteMesh, mapper, entityData, spriteData);
         addBuffer(0, spriteData);
         addBuffer(1, entityData);
     }
@@ -134,7 +158,7 @@ public class SpriteComponent extends Component implements Consumer {
         try {
             SpriteMesh.Builder spriteBuilder = new SpriteMesh.Builder(renderer);
             spriteBuilder.setTexture(parent.getTextureRef());
-            spriteBuilder.setMaterial(parent.getMaterial());
+            spriteBuilder.setMaterial(parent.getMaterial() != null ? parent.getMaterial() : new Material());
             spriteBuilder.setSpriteCount(count);
             RectangleConfiguration config = new RectangleShapeBuilder.RectangleConfiguration(rectangle,
                     RectangleShapeBuilder.DEFAULT_Z, count,
@@ -158,10 +182,10 @@ public class SpriteComponent extends Component implements Consumer {
             default:
                 break;
         }
-        parent.addMesh(spriteMesh, MeshType.MAIN);
+        parent.addMesh(spriteMesh, MeshIndex.MAIN);
         createBuffers(system);
         spriteMesh.setAttributeUpdater(this);
-        bindAttributeBuffer(spriteMesh.getVerticeBuffer(BufferIndex.ATTRIBUTES.index));
+        bindAttributeBuffer(spriteMesh.getAttributeBuffer(BufferIndex.ATTRIBUTES.index));
     }
 
     /**
@@ -234,24 +258,42 @@ public class SpriteComponent extends Component implements Consumer {
         SimpleLogger.d(getClass(), "Not implemented!!!!!!!!!");
     }
 
-    public void setTranslate(int sprite, float[] translate) {
-        ComponentBuffer b = getBuffer(0);
-        b.put(sprite, mapper.translateOffset, translate, 0, 3);
+    /**
+     * Sets the transform for a sprite using 3 values for xyz axis, translate.xyz, rotate.xyz, scale.xyz
+     * Use this method for initialization only
+     * 
+     * @param sprite
+     * @param transform 3 axis translate, rotate and scale values
+     */
+    public void setTransform(int sprite, float[] transform) {
+        spriteExpander.setTransform(sprite, transform);
     }
 
-    public void setScale(int sprite, float[] scale) {
-        ComponentBuffer b = getBuffer(0);
-        b.put(sprite, mapper.scaleOffset, scale, 0, 3);
+    /**
+     * Sets the data for the sprite, the data shall be indexed using the mapper for the sprite component.
+     * {@link #getMapper()}
+     * Use this method for initialization only
+     * 
+     * @param sprite
+     * @param data
+     */
+    public void setSprite(int sprite, float[] data) {
+        spriteExpander.setData(sprite, data);
     }
 
-    public void setRotate(int sprite, float[] rotate) {
-        ComponentBuffer b = getBuffer(0);
-        b.put(sprite, mapper.rotateOffset, rotate, 0, 3);
+    /**
+     * Sets the entity specific data for a sprite.
+     * 
+     * @param sprite
+     * @param destOffset Offset in destination.
+     */
+    public void setEntityData(int sprite, int destOffset, float[] data) {
+        ComponentBuffer entityBuffer = getBuffer(1);
+        entityBuffer.put(sprite, destOffset, data, 0, data.length);
     }
 
     @Override
     public void bindAttributeBuffer(AttributeBuffer buffer) {
-        attributeBuffer = buffer;
         spriteExpander.bindAttributeBuffer(buffer);
     }
 

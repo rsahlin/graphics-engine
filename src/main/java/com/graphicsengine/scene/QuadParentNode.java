@@ -3,12 +3,11 @@ package com.graphicsengine.scene;
 import java.util.ArrayList;
 
 import com.google.gson.annotations.SerializedName;
-import com.graphicsengine.component.QuadExpander;
 import com.graphicsengine.component.SpriteComponent;
 import com.graphicsengine.spritemesh.SpriteMesh;
+import com.nucleus.component.CPUComponentBuffer;
+import com.nucleus.component.CPUQuadExpander;
 import com.nucleus.component.Component;
-import com.nucleus.component.ComponentBuffer;
-import com.nucleus.component.NativeComponentBuffer;
 import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
@@ -44,7 +43,7 @@ public class QuadParentNode extends Node implements Consumer {
 
     transient SpriteMesh spriteMesh;
     transient PropertyMapper mapper;
-    transient QuadExpander quadExpander;
+    transient CPUQuadExpander quadExpander;
 
     /**
      * Used by GSON and {@link #createInstance(RootNode)} method - do NOT call directly
@@ -84,7 +83,7 @@ public class QuadParentNode extends Node implements Consumer {
         return maxQuads;
     }
 
-    public int addQuad(SharedMeshQuad quadMeshNode) {
+    protected int addQuad(SharedMeshQuad quadMeshNode) {
         int index = quadChildren.size();
         quadChildren.add(quadMeshNode);
         return index;
@@ -96,14 +95,16 @@ public class QuadParentNode extends Node implements Consumer {
 
     /**
      * Internal method
-     * Creates the arrays for this quad node
+     * Creates the arrays for this quad node, ie the buffers needed to support expanding data from this node
+     * into the sprite mesh.
      * 
      * @param mesh
      */
     private void createBuffers(SpriteMesh mesh) {
         mapper = mesh.getMapper();
-        ComponentBuffer spriteData = new NativeComponentBuffer(maxQuads, mapper.attributesPerVertex);
-        quadExpander = new QuadExpander(mesh, mapper, spriteData);
+        CPUComponentBuffer sourceData = new CPUComponentBuffer(maxQuads, mapper.attributesPerVertex);
+        CPUComponentBuffer destinationData = new CPUComponentBuffer(maxQuads, mapper.attributesPerVertex * 4);
+        quadExpander = new CPUQuadExpander(mesh, mapper, sourceData, destinationData);
     }
 
     /**
@@ -130,18 +131,10 @@ public class QuadParentNode extends Node implements Consumer {
     @Override
     public void onCreated() {
         super.onCreated();
-        spriteMesh = (SpriteMesh) getMesh(MeshType.MAIN);
+        spriteMesh = (SpriteMesh) getMesh(MeshIndex.MAIN);
         spriteMesh.setAttributeUpdater(this);
-        bindAttributeBuffer(spriteMesh.getVerticeBuffer(BufferIndex.ATTRIBUTES.index));
-
-        // Setup all children in this node last
-        for (Node n : getChildren()) {
-            if (n instanceof SharedMeshQuad) {
-                // This is a special case since the mesh belongs to this node.
-                int index = addQuad((SharedMeshQuad) n);
-                ((SharedMeshQuad) n).onCreated(this, index);
-            }
-        }
+        createBuffers(spriteMesh);
+        bindAttributeBuffer(spriteMesh.getAttributeBuffer(BufferIndex.ATTRIBUTES.index));
     }
 
     @Override
@@ -151,11 +144,10 @@ public class QuadParentNode extends Node implements Consumer {
 
     @Override
     public void bindAttributeBuffer(AttributeBuffer buffer) {
-        createBuffers(spriteMesh);
         quadExpander.bindAttributeBuffer(buffer);
     }
 
-    public QuadExpander getExpander() {
+    public CPUQuadExpander getExpander() {
         return quadExpander;
     }
 
