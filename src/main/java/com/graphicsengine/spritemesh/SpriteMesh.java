@@ -5,7 +5,6 @@ import java.io.IOException;
 import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.Mesh;
-import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.RectangleShapeBuilder;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
@@ -14,7 +13,6 @@ import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TiledTexture2D;
 import com.nucleus.texturing.UVTexture2D;
 import com.nucleus.texturing.Untextured;
-import com.nucleus.vecmath.Rectangle;
 
 /**
  * A number of quads that will be rendered using the same Mesh, ie all quads in this class are rendered using
@@ -111,27 +109,6 @@ public class SpriteMesh extends Mesh {
      */
     protected SpriteMesh(Mesh source) {
         super(source);
-    }
-
-    /**
-     * This method should be moved to RectangleShapeBuilder
-     * Builds one quad at the specified index, use this call to create the quads to be drawn individually.
-     * Before using this call the indexed buffer (indices) must be built in the mesh, ie this method will only
-     * set the vertex positions and UV for this quad
-     * This will setup the quad according to the specified size and anchor. Texture UV will be built based
-     * on the texture type.
-     * 
-     * @param index
-     * @param program
-     * @param rectangle The rectangle defining the sprite
-     */
-    @Deprecated
-    public void buildQuad(int index, ShaderProgram program, Rectangle rectangle) {
-        int vertexStride = program.getVertexStride();
-        float[] quadPositions = new float[vertexStride * 4];
-        Texture2D texture = getTexture(Texture2D.TEXTURE_0);
-        RectangleShapeBuilder.createQuadArray(rectangle, texture, vertexStride, 0, true, quadPositions);
-        MeshBuilder.buildQuads(this, program, 1, index, quadPositions);
     }
 
     /**

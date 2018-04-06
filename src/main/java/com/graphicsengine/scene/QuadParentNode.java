@@ -12,6 +12,8 @@ import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.geometry.Mesh.BufferIndex;
+import com.nucleus.geometry.RectangleShapeBuilder;
+import com.nucleus.geometry.RectangleShapeBuilder.RectangleConfiguration;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
@@ -44,6 +46,7 @@ public class QuadParentNode extends Node implements Consumer {
     transient SpriteMesh spriteMesh;
     transient PropertyMapper mapper;
     transient CPUQuadExpander quadExpander;
+    transient RectangleShapeBuilder shapeBuilder;
 
     /**
      * Used by GSON and {@link #createInstance(RootNode)} method - do NOT call directly
@@ -124,7 +127,7 @@ public class QuadParentNode extends Node implements Consumer {
         }
         Rectangle quadRect = rectangle != null ? rectangle
                 : texture.calculateWindowRectangle();
-        spriteMesh.buildQuad(quad, spriteMesh.getMaterial().getProgram(), quadRect);
+        shapeBuilder.setStartQuad(quad).setRectangle(quadRect).build(spriteMesh);
         return quadRect;
     }
 
@@ -135,6 +138,8 @@ public class QuadParentNode extends Node implements Consumer {
         spriteMesh.setAttributeUpdater(this);
         createBuffers(spriteMesh);
         bindAttributeBuffer(spriteMesh.getAttributeBuffer(BufferIndex.ATTRIBUTES.index));
+        shapeBuilder = new RectangleShapeBuilder(new RectangleConfiguration(1, 0));
+        shapeBuilder.setEnableVertexIndex(true);
     }
 
     @Override
