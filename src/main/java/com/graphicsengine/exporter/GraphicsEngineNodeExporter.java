@@ -17,13 +17,13 @@ public class GraphicsEngineNodeExporter extends NucleusNodeExporter {
     public Node exportNode(Node source, RootNode rootNode) {
         GraphicsEngineNodeType type = GraphicsEngineNodeType.valueOf(source.getType());
         switch (type) {
-        case playfieldNode:
-            return source.createInstance(rootNode);
-        case quadNode:
+            // case playfieldNode:
+            // return source.createInstance(rootNode);
+            // case quadNode:
             // exportDataReferences((QuadParentNode) source, (GraphicsEngineRootNode) rootNode);
-            return source.createInstance(rootNode);
-        default:
-            throw new IllegalArgumentException(NOT_IMPLEMENTED + type);
+            // return source.createInstance(rootNode);
+            default:
+                throw new IllegalArgumentException(NOT_IMPLEMENTED + type);
         }
     }
 
