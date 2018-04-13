@@ -16,6 +16,7 @@ import com.nucleus.vecmath.Transform;
  * This node will share the mesh from the parent {@link QuadParentNode}
  * This is for objects that are mostly static, for instance UI elements, and objects that need touch events.
  * If a large number of objects with shared behavior are needed use {@link SpriteComponent} instead.
+ * Object visibility cannot be controlled by the Node state value since the quad belongs to the parent mesh.
  * 
  * @author Richard Sahlin
  *
@@ -72,6 +73,9 @@ public class SharedMeshQuad extends Node {
         Mesh mesh = quadParent.getMesh(MeshIndex.MAIN);
         if (mesh.getTexture(Texture2D.TEXTURE_0).textureType == TextureType.Untextured) {
             updateAmbient();
+        }
+        if (getState() != State.ON) {
+            throw new IllegalArgumentException("Node state is set, this nodes state is controlled by parent.");
         }
     }
 
