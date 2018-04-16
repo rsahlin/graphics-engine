@@ -74,8 +74,9 @@ public class SharedMeshQuad extends Node {
         if (mesh.getTexture(Texture2D.TEXTURE_0).textureType == TextureType.Untextured) {
             updateAmbient();
         }
-        if (getState() != State.ON) {
-            throw new IllegalArgumentException("Node state is set, this nodes state is controlled by parent.");
+        if (getState() != null && getState() != State.ON) {
+            throw new IllegalArgumentException(
+                    "Node state is set for id " + getId() + ", this nodes state is controlled by parent.");
         }
     }
 
