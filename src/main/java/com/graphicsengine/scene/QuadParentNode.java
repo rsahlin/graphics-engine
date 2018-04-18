@@ -116,17 +116,20 @@ public class QuadParentNode extends Node implements Consumer {
      * 
      * @param quad
      * @param rectangle Rectangle to build quad from, if null then texture is used.
-     * @param The rectangle used to build the quad, same as rectangle if specified, otherwise texture rectangle.
+     * @param The rectangle used to build the quad, same as rectangle if specified, otherwise texture rectangle based on
+     * frame number
+     * @param frame Initial frame
      */
-    public Rectangle buildQuad(int quad, Rectangle rectangle) {
+    public Rectangle buildQuad(int quad, Rectangle rectangle, int frame) {
         Texture2D texture = spriteMesh.getTexture(Texture2D.TEXTURE_0);
         if (rectangle == null && (texture.getTextureType() == TextureType.Untextured ||
                 texture.getWidth() == 0 || texture.getHeight() == 0)) {
             // Must have size
             throw new IllegalArgumentException("Node does not define RECT and texture is untextured or size is zero");
         }
-        Rectangle quadRect = rectangle != null ? rectangle
-                : texture.calculateWindowRectangle();
+        Rectangle quadRect = (rectangle != null && rectangle.getValues() != null && rectangle.getValues().length >= 4)
+                ? rectangle
+                : texture.calculateRectangle(frame);
         shapeBuilder.setStartQuad(quad).setRectangle(quadRect).build(spriteMesh);
         return quadRect;
     }
@@ -139,7 +142,16 @@ public class QuadParentNode extends Node implements Consumer {
         createBuffers(spriteMesh);
         bindAttributeBuffer(spriteMesh.getAttributeBuffer(BufferIndex.ATTRIBUTES.index));
         shapeBuilder = new RectangleShapeBuilder(new RectangleConfiguration(1, 0));
-        shapeBuilder.setEnableVertexIndex(true);
+        switch (spriteMesh.getTexture(Texture2D.TEXTURE_0).textureType) {
+            case TiledTexture2D:
+            case UVTexture2D:
+            case Untextured:
+                shapeBuilder.setEnableVertexIndex(true);
+                break;
+            case DynamicTexture2D:
+            case Texture2D:
+                break;
+        }
     }
 
     @Override

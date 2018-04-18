@@ -64,7 +64,7 @@ public class SharedMeshQuad extends Node {
         // Add this to the quadparentnode
         quadParent = (QuadParentNode) getParent();
         childIndex = quadParent.addQuad(this);
-        initBounds(quadParent.buildQuad(childIndex, rectangle));
+        initBounds(quadParent.buildQuad(childIndex, rectangle, frame));
         if (transform == null) {
             transform = new Transform();
         }
@@ -155,6 +155,15 @@ public class SharedMeshQuad extends Node {
      */
     public int getFrameCount() {
         return quadParent.getMesh(MeshIndex.MAIN).getTexture(Texture2D.TEXTURE_0).getFrameCount();
+    }
+
+    /**
+     * Returns the frame number for this quad.
+     * 
+     * @return
+     */
+    public int getFrame() {
+        return frame;
     }
 
 }
