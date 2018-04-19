@@ -129,9 +129,20 @@ public class QuadParentNode extends Node implements Consumer {
         }
         Rectangle quadRect = (rectangle != null && rectangle.getValues() != null && rectangle.getValues().length >= 4)
                 ? rectangle
-                : texture.calculateRectangle(frame);
+                : createRectangle(texture, 0);
         shapeBuilder.setStartQuad(quad).setRectangle(quadRect).build(spriteMesh);
         return quadRect;
+    }
+
+    protected Rectangle createRectangle(Texture2D texture, int frame) {
+        Rectangle rect = texture.calculateRectangle(frame);
+        // Check viewfrustum for scale factor - rectangle created using window aspect where y axis is normalized (1)
+        Node view = viewFrustum != null ? this : getParentView();
+        if (view != null) {
+            float scale = view.getViewFrustum().getHeight();
+            rect.scale(scale);
+        }
+        return rect;
     }
 
     @Override
