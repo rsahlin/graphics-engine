@@ -8,7 +8,6 @@ import com.graphicsengine.scene.QuadParentNode;
 import com.graphicsengine.scene.SharedMeshQuad;
 import com.graphicsengine.spritemesh.SpriteMesh;
 import com.nucleus.bounds.Bounds;
-import com.nucleus.component.ComponentNode;
 import com.nucleus.geometry.DefaultMeshFactory;
 import com.nucleus.geometry.Material;
 import com.nucleus.geometry.Mesh;
@@ -16,6 +15,7 @@ import com.nucleus.geometry.MeshFactory;
 import com.nucleus.geometry.RectangleShapeBuilder;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
+import com.nucleus.scene.ComponentNode;
 import com.nucleus.scene.Node;
 
 /**

@@ -3,7 +3,7 @@ package com.graphicsengine.scene;
 import com.graphicsengine.map.PlayfieldNode;
 import com.graphicsengine.ui.Element;
 import com.nucleus.common.Type;
-import com.nucleus.component.ComponentNode;
+import com.nucleus.scene.ComponentNode;
 import com.nucleus.scene.Node;
 
 /**
