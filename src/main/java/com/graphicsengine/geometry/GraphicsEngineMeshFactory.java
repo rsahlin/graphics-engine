@@ -9,10 +9,8 @@ import com.graphicsengine.scene.SharedMeshQuad;
 import com.graphicsengine.spritemesh.SpriteMesh;
 import com.nucleus.bounds.Bounds;
 import com.nucleus.geometry.DefaultMeshFactory;
-import com.nucleus.geometry.Material;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshFactory;
-import com.nucleus.geometry.RectangleShapeBuilder;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.ComponentNode;
@@ -26,40 +24,26 @@ import com.nucleus.scene.Node;
 public class GraphicsEngineMeshFactory extends DefaultMeshFactory implements MeshFactory {
 
     PlayfieldMesh.Builder playfieldBuilder;
-    SpriteMesh.Builder spriteMeshBuilder;
 
     public GraphicsEngineMeshFactory(NucleusRenderer renderer) {
         if (renderer == null) {
             throw new IllegalArgumentException("Renderer may not be null");
         }
-        playfieldBuilder = new PlayfieldMesh.Builder(renderer);
-        spriteMeshBuilder = new SpriteMesh.Builder(renderer);
     }
 
     @Override
     public Mesh createMesh(NucleusRenderer renderer, Node parent) throws IOException, GLException {
 
         if (parent instanceof PlayfieldNode) {
-            PlayfieldNode playfield = (PlayfieldNode) parent;
-
-            playfieldBuilder.setMap(playfield.getMapSize(), playfield.getCharRectangle());
-            playfieldBuilder.setOffset(playfield.getAnchorOffset());
-            playfieldBuilder.setTexture(playfield.getTextureRef());
-            playfieldBuilder.setMaterial(playfield.getMaterial());
-            PlayfieldMesh pmesh = (PlayfieldMesh) playfieldBuilder.create();
-            Bounds bounds = playfieldBuilder.createBounds();
+            PlayfieldMesh.Builder builder = PlayfieldNode.createMeshBuilder(renderer, (PlayfieldNode) parent);
+            PlayfieldMesh pmesh = (PlayfieldMesh) builder.create();
+            Bounds bounds = builder.createBounds();
             parent.initBounds(bounds);
             return pmesh;
         }
         if (parent instanceof QuadParentNode) {
             QuadParentNode quadParent = (QuadParentNode) parent;
-            SpriteMesh.Builder mbuilder = new SpriteMesh.Builder(renderer);
-            mbuilder.setSpriteCount(quadParent.getMaxQuads());
-            mbuilder.setTexture(parent.getTextureRef());
-            mbuilder.setMaterial(quadParent.getMaterial() != null ? quadParent.getMaterial() : new Material());
-            RectangleShapeBuilder.RectangleConfiguration config = new RectangleShapeBuilder.RectangleConfiguration(
-                    quadParent.getMaxQuads(), 0);
-            mbuilder.setShapeBuilder(new RectangleShapeBuilder(config));
+            SpriteMesh.Builder mbuilder = QuadParentNode.createMeshBuilder(renderer, quadParent);
             // TODO Fix generics so that cast is not needed
             SpriteMesh mesh = (SpriteMesh) mbuilder.create();
             return mesh;

@@ -2,6 +2,7 @@ package com.graphicsengine.spritemesh;
 
 import java.io.IOException;
 
+import com.graphicsengine.component.SpriteComponent;
 import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.Mesh;
@@ -26,6 +27,10 @@ import com.nucleus.texturing.Untextured;
  */
 public class SpriteMesh extends Mesh {
 
+    /**
+     * Builder for sprite meshes
+     *
+     */
     public static class Builder extends Mesh.Builder<SpriteMesh> {
 
         private final static String INVALID_TYPE = "Invalid type: ";
@@ -33,10 +38,12 @@ public class SpriteMesh extends Mesh {
         private int spriteCount;
 
         /**
-         * Creates a new SpriteMesh builder
+         * Internal constructor - avoid using directly if the mesh should belong to a specific node type.
+         * Use
+         * {@link SpriteComponent#createMeshBuilder(NucleusRenderer, com.nucleus.scene.ComponentNode, int, com.nucleus.vecmath.Rectangle)}
+         * instead
          * 
          * @param renderer
-         * @throws IllegalArgumentException If renderer is null
          */
         public Builder(NucleusRenderer renderer) {
             super(renderer);

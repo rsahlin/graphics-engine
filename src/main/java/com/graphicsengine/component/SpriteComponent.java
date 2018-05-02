@@ -156,16 +156,7 @@ public class SpriteComponent extends Component implements Consumer {
     public void create(NucleusRenderer renderer, ComponentNode parent, com.nucleus.system.System system)
             throws ComponentException {
         try {
-            SpriteMesh.Builder spriteBuilder = new SpriteMesh.Builder(renderer);
-            spriteBuilder.setTexture(parent.getTextureRef());
-            spriteBuilder.setMaterial(parent.getMaterial() != null ? parent.getMaterial() : new Material());
-            spriteBuilder.setSpriteCount(count);
-            RectangleConfiguration config = new RectangleShapeBuilder.RectangleConfiguration(rectangle,
-                    RectangleShapeBuilder.DEFAULT_Z, count,
-                    0);
-            config.enableVertexIndex(true);
-            RectangleShapeBuilder shapeBuilder = new RectangleShapeBuilder(config);
-            spriteBuilder.setShapeBuilder(shapeBuilder);
+            SpriteMesh.Builder spriteBuilder = createMeshBuilder(renderer, parent, count, rectangle);
             // TODO - Fix generics so that cast is not needed
             spriteMesh = (SpriteMesh) spriteBuilder.create();
         } catch (IOException | GLException e) {
@@ -186,6 +177,30 @@ public class SpriteComponent extends Component implements Consumer {
         createBuffers(system);
         spriteMesh.setAttributeUpdater(this);
         bindAttributeBuffer(spriteMesh.getAttributeBuffer(BufferIndex.ATTRIBUTES.index));
+    }
+
+    /**
+     * Creates a sprite mesh builder for a mesh to the specified componentnode.
+     * 
+     * @param renderer
+     * @param parent The parent node for the sprite mesh
+     * @param count Number of sprites
+     * @param rectangle Sprite shape
+     * @return
+     * @throws IOException If there was an io error creating builder, probably when loading texture
+     */
+    public static SpriteMesh.Builder createMeshBuilder(NucleusRenderer renderer, ComponentNode parent, int count,
+            Rectangle rectangle) throws IOException {
+        SpriteMesh.Builder spriteBuilder = new SpriteMesh.Builder(renderer);
+        spriteBuilder.setTexture(parent.getTextureRef());
+        spriteBuilder.setMaterial(parent.getMaterial() != null ? parent.getMaterial() : new Material());
+        spriteBuilder.setSpriteCount(count);
+        RectangleConfiguration config = new RectangleShapeBuilder.RectangleConfiguration(rectangle,
+                RectangleShapeBuilder.DEFAULT_Z, count, 0);
+        config.enableVertexIndex(true);
+        RectangleShapeBuilder shapeBuilder = new RectangleShapeBuilder(config);
+        spriteBuilder.setShapeBuilder(shapeBuilder);
+        return spriteBuilder;
     }
 
     /**

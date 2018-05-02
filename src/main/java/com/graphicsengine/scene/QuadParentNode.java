@@ -1,5 +1,6 @@
 package com.graphicsengine.scene;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import com.google.gson.annotations.SerializedName;
@@ -11,6 +12,7 @@ import com.nucleus.component.Component;
 import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
+import com.nucleus.geometry.Material;
 import com.nucleus.geometry.Mesh.BufferIndex;
 import com.nucleus.geometry.RectangleShapeBuilder;
 import com.nucleus.geometry.RectangleShapeBuilder.RectangleConfiguration;
@@ -64,6 +66,28 @@ public class QuadParentNode extends Node implements Consumer {
         QuadParentNode copy = new QuadParentNode(root);
         copy.set(this);
         return copy;
+    }
+
+    /**
+     * Creates a sprite mesh builder for the quad parent node.
+     * 
+     * @param renderer
+     * @param parent
+     * @return
+     * @throws IOException If there was an io error creating builder, probably when loading texture
+     */
+    public static SpriteMesh.Builder createMeshBuilder(NucleusRenderer renderer, QuadParentNode parent)
+            throws IOException {
+
+        SpriteMesh.Builder builder = new SpriteMesh.Builder(renderer);
+        builder.setSpriteCount(parent.getMaxQuads());
+        builder.setTexture(parent.getTextureRef());
+        builder.setMaterial(parent.getMaterial() != null ? parent.getMaterial() : new Material());
+        RectangleShapeBuilder.RectangleConfiguration config = new RectangleShapeBuilder.RectangleConfiguration(
+                parent.getMaxQuads(), 0);
+        builder.setShapeBuilder(new RectangleShapeBuilder(config));
+        return builder;
+
     }
 
     /**

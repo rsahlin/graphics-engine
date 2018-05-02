@@ -10,6 +10,7 @@ import com.nucleus.io.ExternalReference;
 import com.nucleus.mmi.ObjectInputListener;
 import com.nucleus.mmi.PointerData;
 import com.nucleus.mmi.PointerMotionData;
+import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.LineDrawerNode;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.NodeException;
@@ -134,6 +135,25 @@ public class PlayfieldNode extends Node {
         PlayfieldNode copy = new PlayfieldNode(root);
         copy.set(this);
         return copy;
+    }
+
+    /**
+     * Creates a playfield mesh builder for the playfield node
+     * 
+     * @param renderer
+     * @param parent
+     * @return
+     * @throws IOException If there was an io error creating builder, probably when loading texture
+     */
+    public static PlayfieldMesh.Builder createMeshBuilder(NucleusRenderer renderer, PlayfieldNode parent)
+            throws IOException {
+
+        PlayfieldMesh.Builder builder = new PlayfieldMesh.Builder(renderer);
+        builder.setMap(parent.getMapSize(), parent.getCharRectangle());
+        builder.setOffset(parent.getAnchorOffset());
+        builder.setTexture(parent.getTextureRef());
+        builder.setMaterial(parent.getMaterial());
+        return builder;
     }
 
     /**

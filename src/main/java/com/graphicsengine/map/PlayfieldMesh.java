@@ -99,6 +99,13 @@ public class PlayfieldMesh extends SpriteMesh {
             return this;
         }
 
+        /**
+         * Internal constructor - avoid using directly if the mesh should belong to a specific node type.
+         * Use
+         * {@link PlayfieldNode#createMeshBuilder(NucleusRenderer, PlayfieldNode)}
+         * 
+         * @param renderer
+         */
         public Builder(NucleusRenderer renderer) {
             super(renderer);
         }

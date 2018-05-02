@@ -2,6 +2,7 @@ package com.graphicsengine.scene;
 
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.component.SpriteComponent;
+import com.nucleus.SimpleLogger;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
@@ -52,8 +53,7 @@ public class SharedMeshQuad extends Node {
     }
 
     /**
-     * Called when the parent node is created - remember that shared mesh quad does not
-     * use it's own mesh
+     * Called when the parent node is created - remember that shared mesh quad does not use it's own mesh
      * TODO Need to provide size and color from scene definition.
      * 
      * @param Parent The parent node holding all quads
@@ -75,8 +75,8 @@ public class SharedMeshQuad extends Node {
             updateAmbient();
         }
         if (getState() != null && getState() != State.ON) {
-            throw new IllegalArgumentException(
-                    "Node state is set for id " + getId() + ", this nodes state is controlled by parent.");
+            SimpleLogger.d(getClass(),
+                    "Node state is set for id " + getId() + ", state handling for shared mesh quad is not implemented");
         }
     }
 
