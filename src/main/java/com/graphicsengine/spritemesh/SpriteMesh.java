@@ -2,7 +2,7 @@ package com.graphicsengine.spritemesh;
 
 import java.io.IOException;
 
-import com.graphicsengine.component.SpriteComponent;
+import com.graphicsengine.component.SpriteAttributeComponent;
 import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.Mesh;
@@ -40,7 +40,7 @@ public class SpriteMesh extends Mesh {
         /**
          * Internal constructor - avoid using directly if the mesh should belong to a specific node type.
          * Use
-         * {@link SpriteComponent#createMeshBuilder(NucleusRenderer, com.nucleus.scene.ComponentNode, int, com.nucleus.vecmath.Rectangle)}
+         * {@link SpriteAttributeComponent#createMeshBuilder(NucleusRenderer, com.nucleus.scene.ComponentNode, int, com.nucleus.vecmath.Rectangle)}
          * instead
          * 
          * @param renderer

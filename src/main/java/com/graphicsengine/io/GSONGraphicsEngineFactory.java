@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.graphicsengine.component.SpriteComponent;
+import com.graphicsengine.component.SpriteAttributeComponent;
 import com.graphicsengine.exporter.GraphicsEngineNodeExporter;
 import com.graphicsengine.geometry.GraphicsEngineMeshFactory;
 import com.graphicsengine.io.gson.ComponentDeserializer;
@@ -38,7 +38,7 @@ public class GSONGraphicsEngineFactory extends GSONSceneFactory {
      */
     public enum GraphicsEngineClasses implements Type<Object> {
 
-        spritecomponent(SpriteComponent.class);
+        spriteattributecomponent(SpriteAttributeComponent.class);
 
         private final Class<?> theClass;
 

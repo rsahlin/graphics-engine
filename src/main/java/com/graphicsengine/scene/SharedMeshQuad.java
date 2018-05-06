@@ -1,7 +1,7 @@
 package com.graphicsengine.scene;
 
 import com.google.gson.annotations.SerializedName;
-import com.graphicsengine.component.SpriteComponent;
+import com.graphicsengine.component.SpriteAttributeComponent;
 import com.nucleus.SimpleLogger;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.scene.Node;
@@ -16,7 +16,7 @@ import com.nucleus.vecmath.Transform;
  * A Quad child that has to be appended to QuadNode in order to be rendered.
  * This node will share the mesh from the parent {@link QuadParentNode}
  * This is for objects that are mostly static, for instance UI elements, and objects that need touch events.
- * If a large number of objects with shared behavior are needed use {@link SpriteComponent} instead.
+ * If a large number of objects with shared behavior are needed use {@link SpriteAttributeComponent} instead.
  * Object visibility cannot be controlled by the Node state value since the quad belongs to the parent mesh.
  * 
  * @author Richard Sahlin
