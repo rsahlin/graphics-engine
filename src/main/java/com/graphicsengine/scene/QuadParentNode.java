@@ -79,7 +79,7 @@ public class QuadParentNode extends Node implements Consumer {
     public static SpriteMesh.Builder createMeshBuilder(NucleusRenderer renderer, QuadParentNode parent)
             throws IOException {
 
-        SpriteMesh.Builder builder = new SpriteMesh.Builder(renderer);
+        SpriteMesh.Builder builder = SpriteMesh.Builder.createBuilder(renderer);
         builder.setSpriteCount(parent.getMaxQuads());
         builder.setTexture(parent.getTextureRef());
         builder.setMaterial(parent.getMaterial() != null ? parent.getMaterial() : new Material());

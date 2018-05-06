@@ -33,9 +33,9 @@ public class SpriteMesh extends Mesh {
      */
     public static class Builder extends Mesh.Builder<SpriteMesh> {
 
-        private final static String INVALID_TYPE = "Invalid type: ";
+        protected final static String INVALID_TYPE = "Invalid type: ";
 
-        private int spriteCount;
+        protected int spriteCount;
 
         /**
          * Internal constructor - avoid using directly if the mesh should belong to a specific node type.
@@ -45,8 +45,21 @@ public class SpriteMesh extends Mesh {
          * 
          * @param renderer
          */
-        public Builder(NucleusRenderer renderer) {
+        Builder(NucleusRenderer renderer) {
             super(renderer);
+        }
+
+        public static Builder createBuilder(NucleusRenderer renderer) {
+            switch (renderer.getGLES().getInfo().getRenderVersion()) {
+                case GLES20:
+                case GLES30:
+                case GLES31:
+                case GLES32:
+                    return new Builder(renderer);
+                default:
+                    throw new IllegalArgumentException(
+                            "Not implemented for " + renderer.getGLES().getInfo().getRenderVersion());
+            }
         }
 
         /**
@@ -57,13 +70,15 @@ public class SpriteMesh extends Mesh {
          */
         public Builder setSpriteCount(int spriteCount) {
             this.spriteCount = spriteCount;
-            setElementMode(Mode.TRIANGLES, spriteCount * RectangleShapeBuilder.QUAD_VERTICES,
-                    spriteCount * RectangleShapeBuilder.QUAD_ELEMENTS);
             return this;
         }
 
         @Override
         public Mesh create() throws IOException, GLException {
+            // Set before validating otherwise vertexcount is wrong, but don't set in setSpriteCount() method
+            // since we will chose type of mesh depending on GL
+            setElementMode(Mode.TRIANGLES, spriteCount * RectangleShapeBuilder.QUAD_VERTICES,
+                    spriteCount * RectangleShapeBuilder.QUAD_ELEMENTS);
             validate();
             if (material.getProgram() == null) {
                 ShaderProgram program = createProgram(texture);

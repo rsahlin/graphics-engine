@@ -191,7 +191,7 @@ public class SpriteComponent extends Component implements Consumer {
      */
     public static SpriteMesh.Builder createMeshBuilder(NucleusRenderer renderer, ComponentNode parent, int count,
             Rectangle rectangle) throws IOException {
-        SpriteMesh.Builder spriteBuilder = new SpriteMesh.Builder(renderer);
+        SpriteMesh.Builder spriteBuilder = SpriteMesh.Builder.createBuilder(renderer);
         spriteBuilder.setTexture(parent.getTextureRef());
         spriteBuilder.setMaterial(parent.getMaterial() != null ? parent.getMaterial() : new Material());
         spriteBuilder.setSpriteCount(count);
