@@ -11,6 +11,9 @@ import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.Mesh.BufferIndex;
 import com.nucleus.geometry.Mesh.Builder;
+import com.nucleus.geometry.RectangleShapeBuilder;
+import com.nucleus.geometry.RectangleShapeBuilder.RectangleConfiguration;
+import com.nucleus.geometry.ShapeBuilder;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.ComponentNode;
@@ -21,6 +24,7 @@ import com.nucleus.texturing.TextureType;
 import com.nucleus.texturing.UVAtlas;
 import com.nucleus.texturing.UVTexture2D;
 import com.nucleus.vecmath.Rectangle;
+import com.nucleus.vecmath.Shape;
 
 /**
  * The actor component, this is a collection of a number of (similar) moving on screen objects that have the data in a
@@ -53,8 +57,8 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
      * The rectangle defining the sprites, all sprites will have same size
      * 4 values = x1,y1 + width and height
      */
-    @SerializedName(Rectangle.RECT)
-    protected Rectangle rectangle;
+    @SerializedName(Shape.SHAPE)
+    protected Shape shape;
 
     transient T mesh;
 
@@ -95,12 +99,13 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
      * 
      * @param renderer
      * @param parent
-     * @param system
+     * @param count
+     * @param shapeBuilder
      * @return
      * @throws ComponentException
      */
     public abstract Builder<T> createMeshBuilder(NucleusRenderer renderer, ComponentNode parent, int count,
-            Rectangle rectangle) throws IOException;
+            ShapeBuilder shapeBuilder) throws IOException;
 
     /**
      * Internal method
@@ -122,9 +127,16 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
     public void create(NucleusRenderer renderer, ComponentNode parent, com.nucleus.system.System system)
             throws ComponentException {
         try {
-            Builder<T> spriteBuilder = createMeshBuilder(renderer, parent, count, rectangle);
-            // TODO - Fix generics so that cast is not needed
-            setMesh((T) spriteBuilder.create());
+            switch (shape.getType()) {
+                case rect:
+                    RectangleConfiguration config = new RectangleShapeBuilder.RectangleConfiguration((Rectangle) shape,
+                            RectangleShapeBuilder.DEFAULT_Z, count, 0);
+                    config.enableVertexIndex(true);
+                    RectangleShapeBuilder shapeBuilder = new RectangleShapeBuilder(config);
+                    Builder<T> spriteBuilder = createMeshBuilder(renderer, parent, count, shapeBuilder);
+                    // TODO - Fix generics so that cast is not needed
+                    setMesh((T) spriteBuilder.create());
+            }
         } catch (IOException | GLException e) {
             throw new ComponentException("Could not create component: " + e.getMessage());
         }
@@ -142,6 +154,15 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
         createBuffers(system);
         mesh.setAttributeUpdater(this);
         bindAttributeBuffer(mesh.getAttributeBuffer(BufferIndex.ATTRIBUTES.index));
+    }
+
+    /**
+     * Returns the number of actors/entities in this component
+     * 
+     * @return
+     */
+    public int getCount() {
+        return count;
     }
 
 }

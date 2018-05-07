@@ -248,8 +248,8 @@ public class PlayfieldNode extends Node {
         switch (a) {
             case CENTER_XY:
                 return new float[] {
-                        -(getMapSize()[0] >>> 1) * getCharRectangle().getValues()[Rectangle.WIDTH],
-                        (getMapSize()[1] >>> 1) * getCharRectangle().getValues()[Rectangle.HEIGHT] };
+                        -(getMapSize()[0] >>> 1) * getCharRectangle().getValues()[Rectangle.INDEX_WIDTH],
+                        (getMapSize()[1] >>> 1) * getCharRectangle().getValues()[Rectangle.INDEX_HEIGHT] };
             default:
                 throw new IllegalArgumentException("Not implemented for anchor: " + a);
         }

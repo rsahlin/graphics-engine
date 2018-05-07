@@ -12,13 +12,12 @@ import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.geometry.Material;
-import com.nucleus.geometry.RectangleShapeBuilder;
-import com.nucleus.geometry.RectangleShapeBuilder.RectangleConfiguration;
+import com.nucleus.geometry.ShapeBuilder;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.ComponentNode;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TextureType;
-import com.nucleus.vecmath.Rectangle;
+import com.nucleus.vecmath.Shape;
 
 /**
  * The old school sprite component, this is a collection of a number of (similar) sprite objects
@@ -81,13 +80,14 @@ public class SpriteAttributeComponent extends ActorComponent<SpriteMesh> impleme
     private void set(SpriteAttributeComponent source) {
         super.set(source);
         this.count = source.count;
-        if (source.rectangle != null) {
-            this.rectangle = new Rectangle(source.rectangle);
+        if (source.shape != null) {
+            this.shape = Shape.createInstance(source.shape);
         } else {
-            rectangle = null;
+            shape = null;
         }
     }
 
+    @Override
     protected void createBuffers(com.nucleus.system.System system) {
         spritedataSize = mapper.attributesPerVertex;
         CPUComponentBuffer spriteData = new CPUComponentBuffer(count, mapper.attributesPerVertex * 4);
@@ -110,26 +110,13 @@ public class SpriteAttributeComponent extends ActorComponent<SpriteMesh> impleme
      */
     @Override
     public SpriteMesh.Builder createMeshBuilder(NucleusRenderer renderer, ComponentNode parent, int count,
-            Rectangle rectangle) throws IOException {
+            ShapeBuilder shapeBuilder) throws IOException {
         SpriteMesh.Builder spriteBuilder = SpriteMesh.Builder.createBuilder(renderer);
         spriteBuilder.setTexture(parent.getTextureRef());
         spriteBuilder.setMaterial(parent.getMaterial() != null ? parent.getMaterial() : new Material());
         spriteBuilder.setSpriteCount(count);
-        RectangleConfiguration config = new RectangleShapeBuilder.RectangleConfiguration(rectangle,
-                RectangleShapeBuilder.DEFAULT_Z, count, 0);
-        config.enableVertexIndex(true);
-        RectangleShapeBuilder shapeBuilder = new RectangleShapeBuilder(config);
         spriteBuilder.setShapeBuilder(shapeBuilder);
         return spriteBuilder;
-    }
-
-    /**
-     * Returns the rectangle defining the sprites
-     * 
-     * @return Rectangle defining sprite, X1, Y1, width, height.
-     */
-    public Rectangle getSpriteRectangle() {
-        return rectangle;
     }
 
     /**
@@ -140,25 +127,6 @@ public class SpriteAttributeComponent extends ActorComponent<SpriteMesh> impleme
      */
     public TextureType getTextureType() {
         return textureType;
-    }
-
-    /**
-     * Internal method, sets the rectangle defining each sprite
-     * This will only set the size parameter, createMesh must be called to actually create the mesh
-     * 
-     * param rectangle values defining sprite, X1, Y1, width, height.
-     */
-    private void setSpriteRectangle(Rectangle rectangle) {
-        this.rectangle = new Rectangle(rectangle);
-    }
-
-    /**
-     * Returns the number of sprites in this component
-     * 
-     * @return
-     */
-    public int getCount() {
-        return count;
     }
 
     /**

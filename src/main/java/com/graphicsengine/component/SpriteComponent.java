@@ -7,10 +7,10 @@ import com.nucleus.component.Component;
 import com.nucleus.component.ComponentBuffer;
 import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.Mesh.Builder;
+import com.nucleus.geometry.ShapeBuilder;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.ComponentNode;
 import com.nucleus.system.System;
-import com.nucleus.vecmath.Rectangle;
 
 public class SpriteComponent extends ActorComponent<SpriteGeometryMesh> {
 
@@ -46,7 +46,7 @@ public class SpriteComponent extends ActorComponent<SpriteGeometryMesh> {
 
     @Override
     public Builder<SpriteGeometryMesh> createMeshBuilder(NucleusRenderer renderer, ComponentNode parent, int count,
-            Rectangle rectangle) throws IOException {
+            ShapeBuilder shapeBuilder) throws IOException {
         // TODO Auto-generated method stub
         return null;
     }
