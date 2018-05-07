@@ -6,7 +6,7 @@ import com.graphicsengine.component.SpriteAttributeComponent;
 import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.Mesh;
-import com.nucleus.geometry.RectangleShapeBuilder;
+import com.nucleus.geometry.shape.RectangleShapeBuilder;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.shader.ShaderProgram;

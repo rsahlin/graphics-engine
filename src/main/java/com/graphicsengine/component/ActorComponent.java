@@ -11,9 +11,9 @@ import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.Mesh.BufferIndex;
 import com.nucleus.geometry.Mesh.Builder;
-import com.nucleus.geometry.RectangleShapeBuilder;
-import com.nucleus.geometry.RectangleShapeBuilder.RectangleConfiguration;
-import com.nucleus.geometry.ShapeBuilder;
+import com.nucleus.geometry.shape.RectangleShapeBuilder;
+import com.nucleus.geometry.shape.ShapeBuilder;
+import com.nucleus.geometry.shape.ShapeBuilderFactory;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.ComponentNode;
@@ -119,7 +119,7 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
      * Default implementation will create meshbuilder using
      * {@link #createMeshBuilder(NucleusRenderer, ComponentNode, int, Rectangle)} method, then call
      * {@link #setMesh(Mesh)}
-     * add mesh to the parent, set 'this' as attributeupdater in the mesh and the call
+     * add mesh to the parent, set 'this' as attributeupdater in the mesh and then call
      * {@link #bindAttributeBuffer(com.nucleus.geometry.AttributeBuffer)}
      * The textureType will be fetched and also the uvAtlas if texture type is UVTexture2D
      */
@@ -129,10 +129,9 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
         try {
             switch (shape.getType()) {
                 case rect:
-                    RectangleConfiguration config = new RectangleShapeBuilder.RectangleConfiguration((Rectangle) shape,
-                            RectangleShapeBuilder.DEFAULT_Z, count, 0);
-                    config.enableVertexIndex(true);
-                    RectangleShapeBuilder shapeBuilder = new RectangleShapeBuilder(config);
+
+                    ShapeBuilder shapeBuilder = ShapeBuilderFactory.createBuilder(shape,
+                            new float[] { RectangleShapeBuilder.DEFAULT_Z }, count, 0);
                     Builder<T> spriteBuilder = createMeshBuilder(renderer, parent, count, shapeBuilder);
                     // TODO - Fix generics so that cast is not needed
                     setMesh((T) spriteBuilder.create());
