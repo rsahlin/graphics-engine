@@ -10,26 +10,22 @@ import com.nucleus.component.Component;
 import com.nucleus.component.ComponentBuffer;
 import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
-import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
-import com.nucleus.geometry.shape.ShapeBuilder;
 import com.nucleus.geometry.Material;
+import com.nucleus.geometry.Mesh;
+import com.nucleus.geometry.shape.ShapeBuilder;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.ComponentNode;
 import com.nucleus.texturing.Texture2D;
-import com.nucleus.texturing.TextureType;
-import com.nucleus.vecmath.Shape;
 
 /**
  * The old school sprite component, this is a collection of a number of (similar) sprite objects
- * that have the data in a shared buffer.
+ * that have the data in a shared buffer, can be rendered using one draw call.
  * SpriteData is mapped one to one for each sprite, whereas the attribute data is one -> four for a quad based sprite.
  * The intention is that the logic processing and update to attributes (quad data) can be done using a Compute shader,
  * or OpenCL
  * This class is mostly used for GLES versions prior to 3.2 when geometry shaders can be used instead.
  * 
  * The class can be serialized using gson
- * 
- * TODO Shall this class have a reference to {@linkplain SpriteMesh} or just reference the attribute data (as is now)
  * 
  * @author Richard Sahlin
  *
@@ -61,6 +57,10 @@ public class SpriteAttributeComponent extends ActorComponent<SpriteMesh> impleme
         set((SpriteAttributeComponent) source);
     }
 
+    private void set(SpriteAttributeComponent source) {
+        super.set(source);
+    }
+
     /**
      * Returns the buffer that holds the data for the sprite (mesh)
      * This is the position, rotation, scale data copied to mesh when {@link #updateAttributeData(NucleusRenderer)} is
@@ -77,16 +77,6 @@ public class SpriteAttributeComponent extends ActorComponent<SpriteMesh> impleme
         return getBuffer(1);
     }
 
-    private void set(SpriteAttributeComponent source) {
-        super.set(source);
-        this.count = source.count;
-        if (source.shape != null) {
-            this.shape = Shape.createInstance(source.shape);
-        } else {
-            shape = null;
-        }
-    }
-
     @Override
     protected void createBuffers(com.nucleus.system.System system) {
         spritedataSize = mapper.attributesPerVertex;
@@ -98,35 +88,14 @@ public class SpriteAttributeComponent extends ActorComponent<SpriteMesh> impleme
         addBuffer(1, entityData);
     }
 
-    /**
-     * Creates a sprite mesh builder for a mesh to the specified componentnode.
-     * 
-     * @param renderer
-     * @param parent The parent node for the sprite mesh
-     * @param count Number of sprites
-     * @param rectangle Sprite shape
-     * @return
-     * @throws IOException If there was an io error creating builder, probably when loading texture
-     */
     @Override
-    public SpriteMesh.Builder createMeshBuilder(NucleusRenderer renderer, ComponentNode parent, int count,
+    public Mesh.Builder<SpriteMesh> createMeshBuilder(NucleusRenderer renderer, ComponentNode parent, int count,
             ShapeBuilder shapeBuilder) throws IOException {
         SpriteMesh.Builder spriteBuilder = SpriteMesh.Builder.createBuilder(renderer);
         spriteBuilder.setTexture(parent.getTextureRef());
         spriteBuilder.setMaterial(parent.getMaterial() != null ? parent.getMaterial() : new Material());
-        spriteBuilder.setSpriteCount(count);
-        spriteBuilder.setShapeBuilder(shapeBuilder);
+        spriteBuilder.setObjectCount(count).setShapeBuilder(shapeBuilder);
         return spriteBuilder;
-    }
-
-    /**
-     * Returns the texture type used for this component.
-     * TODO: Shall this be stored as a Component enum instead?
-     * 
-     * @return Type of texture used
-     */
-    public TextureType getTextureType() {
-        return textureType;
     }
 
     /**
@@ -136,19 +105,6 @@ public class SpriteAttributeComponent extends ActorComponent<SpriteMesh> impleme
      */
     public int getFrameCount() {
         return mesh.getTexture(Texture2D.TEXTURE_0).getFrameCount();
-    }
-
-    /**
-     * Returns the propertymapper for the Mesh used by this component.
-     * If {@link #create(NucleusRenderer, ComponentNode)} has not been called null is returned.
-     * 
-     * @return The PropertyMapper for the Mesh in the node used by this component, or null.
-     */
-    public PropertyMapper getMapper() {
-        if (mesh != null) {
-            return mesh.getMapper();
-        }
-        return null;
     }
 
     /**
@@ -172,18 +128,10 @@ public class SpriteAttributeComponent extends ActorComponent<SpriteMesh> impleme
         spriteExpander.setTransform(sprite, transform);
     }
 
-    /**
-     * Sets the data for the sprite, the data shall be indexed using the mapper for the sprite component.
-     * {@link #getMapper()}
-     * If the component uses an expander this is called to expand data.
-     * Use this method for initialization only
-     * 
-     * @param sprite
-     * @param data
-     */
-    public void setSprite(int sprite, float[] data) {
-        spriteExpander.setData(sprite, data);
-        spriteExpander.expandQuadData(sprite);
+    @Override
+    public void setActor(int actor, float[] data) {
+        spriteExpander.setData(actor, data);
+        spriteExpander.expandQuadData(actor);
     }
 
     /**
@@ -200,7 +148,7 @@ public class SpriteAttributeComponent extends ActorComponent<SpriteMesh> impleme
 
     @Override
     public void setEntityData(int sprite, int destOffset, float[] data) {
-        ComponentBuffer entityBuffer = getBuffer(1);
+        ComponentBuffer entityBuffer = getEntityBuffer();
         entityBuffer.put(sprite, destOffset, data, 0, data.length);
     }
 

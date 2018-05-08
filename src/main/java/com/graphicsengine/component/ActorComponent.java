@@ -69,6 +69,21 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
     transient protected TextureType textureType;
     transient protected UVAtlas uvAtlas;
 
+    /**
+     * Sets data from source into this
+     * 
+     * @param source
+     */
+    protected void set(ActorComponent<T> source) {
+        super.set(source);
+        this.count = source.count;
+        if (source.shape != null) {
+            this.shape = Shape.createInstance(source.shape);
+        } else {
+            shape = null;
+        }
+    }
+
     public T getMesh() {
         return mesh;
     }
@@ -116,6 +131,17 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
     protected abstract void createBuffers(com.nucleus.system.System system);
 
     /**
+     * Sets the data for the actor, the data shall be indexed using the mapper for the sprite component.
+     * {@link #getMapper()}
+     * If the component uses an expander this is called to expand data.
+     * Use this method for initialization only
+     * 
+     * @param actor The actor index to set
+     * @param data Data that can be set using the mapper
+     */
+    public abstract void setActor(int sprite, float[] data);
+
+    /**
      * Default implementation will create meshbuilder using
      * {@link #createMeshBuilder(NucleusRenderer, ComponentNode, int, Rectangle)} method, then call
      * {@link #setMesh(Mesh)}
@@ -127,6 +153,9 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
     public void create(NucleusRenderer renderer, ComponentNode parent, com.nucleus.system.System system)
             throws ComponentException {
         try {
+            if (shape == null) {
+                throw new IllegalArgumentException("Component must define 'shape'");
+            }
             switch (shape.getType()) {
                 case rect:
 
@@ -162,6 +191,19 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
      */
     public int getCount() {
         return count;
+    }
+
+    /**
+     * Returns the propertymapper for the Mesh used by this component.
+     * If {@link #create(NucleusRenderer, ComponentNode)} has not been called null is returned.
+     * 
+     * @return The PropertyMapper for the Mesh in the node used by this component, or null.
+     */
+    public PropertyMapper getMapper() {
+        if (mesh != null) {
+            return mesh.getMapper();
+        }
+        return null;
     }
 
 }

@@ -80,7 +80,7 @@ public class QuadParentNode extends Node implements Consumer {
             throws IOException {
 
         SpriteMesh.Builder builder = SpriteMesh.Builder.createBuilder(renderer);
-        builder.setSpriteCount(parent.getMaxQuads());
+        builder.setObjectCount(parent.getMaxQuads());
         builder.setTexture(parent.getTextureRef());
         builder.setMaterial(parent.getMaterial() != null ? parent.getMaterial() : new Material());
         RectangleShapeBuilder.RectangleConfiguration config = new RectangleShapeBuilder.RectangleConfiguration(

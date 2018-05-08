@@ -17,8 +17,9 @@ import com.nucleus.texturing.Untextured;
 
 /**
  * A number of quads that will be rendered using the same Mesh, ie all quads in this class are rendered using
- * one draw call.
+ * one draw call. This is done by batching the data for each quad.
  * Use the @link {@link TiledSpriteProgram} to render the mesh.
+ * Main usecase is if OpenGLES version is prior to 3.2 and does not support geometry shaders.
  * This can also be used to render chars in a playfield.
  * This class only contains the drawable parts of the sprites - no logic is contained in this class.
  * 
@@ -35,8 +36,6 @@ public class SpriteMesh extends Mesh {
 
         protected final static String INVALID_TYPE = "Invalid type: ";
 
-        protected int spriteCount;
-
         /**
          * Internal constructor - avoid using directly if the mesh should belong to a specific node type.
          * Use
@@ -50,36 +49,13 @@ public class SpriteMesh extends Mesh {
         }
 
         public static Builder createBuilder(NucleusRenderer renderer) {
-            switch (renderer.getGLES().getInfo().getRenderVersion()) {
-                case GLES20:
-                case GLES30:
-                case GLES31:
-                case GLES32:
-                    return new Builder(renderer);
-                default:
-                    throw new IllegalArgumentException(
-                            "Not implemented for " + renderer.getGLES().getInfo().getRenderVersion());
-            }
-        }
-
-        /**
-         * Sets the number of sprites (quads) that the mesh shall support
-         * 
-         * @param spriteCount Number of sprites (quads) to support
-         * @return
-         */
-        public Builder setSpriteCount(int spriteCount) {
-            this.spriteCount = spriteCount;
-            return this;
+            return new Builder(renderer);
         }
 
         @Override
         public Mesh create() throws IOException, GLException {
-            // Set before validating otherwise vertexcount is wrong, but don't set in setSpriteCount() method
-            // since we will chose type of mesh depending on GL
-            setElementMode(Mode.TRIANGLES, spriteCount * RectangleShapeBuilder.QUAD_VERTICES,
-                    spriteCount * RectangleShapeBuilder.QUAD_ELEMENTS);
-            validate();
+            setElementMode(Mode.TRIANGLES, objectCount * RectangleShapeBuilder.QUAD_VERTICES,
+                    objectCount * RectangleShapeBuilder.QUAD_ELEMENTS);
             if (material.getProgram() == null) {
                 ShaderProgram program = createProgram(texture);
                 program = AssetManager.getInstance().getProgram(renderer.getGLES(), program);
