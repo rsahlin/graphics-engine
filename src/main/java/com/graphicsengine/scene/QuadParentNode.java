@@ -12,10 +12,11 @@ import com.nucleus.component.Component;
 import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
-import com.nucleus.geometry.Material;
+import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.Mesh.BufferIndex;
 import com.nucleus.geometry.shape.RectangleShapeBuilder;
 import com.nucleus.geometry.shape.RectangleShapeBuilder.RectangleConfiguration;
+import com.nucleus.geometry.shape.ShapeBuilder;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
@@ -68,25 +69,16 @@ public class QuadParentNode extends Node implements Consumer {
         return copy;
     }
 
-    /**
-     * Creates a sprite mesh builder for the quad parent node.
-     * 
-     * @param renderer
-     * @param parent
-     * @return
-     * @throws IOException If there was an io error creating builder, probably when loading texture
-     */
-    public static SpriteMesh.Builder createMeshBuilder(NucleusRenderer renderer, QuadParentNode parent)
+    @Override
+    public Mesh.Builder<Mesh> createMeshBuilder(NucleusRenderer renderer, Node parent, int count,
+            ShapeBuilder shapeBuilder)
             throws IOException {
 
-        SpriteMesh.Builder builder = SpriteMesh.Builder.createBuilder(renderer);
-        builder.setObjectCount(parent.getMaxQuads());
-        builder.setTexture(parent.getTextureRef());
-        builder.setMaterial(parent.getMaterial() != null ? parent.getMaterial() : new Material());
-        RectangleShapeBuilder.RectangleConfiguration config = new RectangleShapeBuilder.RectangleConfiguration(
-                parent.getMaxQuads(), 0);
-        builder.setShapeBuilder(new RectangleShapeBuilder(config));
-        return builder;
+        if (shapeBuilder == null) {
+            shapeBuilder = new RectangleShapeBuilder(new RectangleConfiguration(count, 0));
+        }
+        Mesh.Builder<Mesh> builder = new SpriteMesh.Builder(renderer);
+        return super.initMeshBuilder(renderer, parent, count, shapeBuilder, builder);
 
     }
 
@@ -149,7 +141,8 @@ public class QuadParentNode extends Node implements Consumer {
         if (rectangle == null && (texture.getTextureType() == TextureType.Untextured ||
                 texture.getWidth() == 0 || texture.getHeight() == 0)) {
             // Must have size
-            throw new IllegalArgumentException("Node does not define RECT and texture is untextured or size is zero");
+            throw new IllegalArgumentException(
+                    "Node " + getId() + " does not define RECT and texture is untextured or size is zero");
         }
         Rectangle quadRect = (rectangle != null && rectangle.getValues() != null && rectangle.getValues().length >= 4)
                 ? rectangle

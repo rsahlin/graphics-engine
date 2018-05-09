@@ -1,9 +1,13 @@
 package com.graphicsengine.scene;
 
+import java.io.IOException;
+
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.component.SpriteAttributeComponent;
 import com.nucleus.SimpleLogger;
 import com.nucleus.geometry.Mesh;
+import com.nucleus.geometry.shape.ShapeBuilder;
+import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
 import com.nucleus.texturing.Texture2D;
@@ -164,6 +168,16 @@ public class SharedMeshQuad extends Node {
      */
     public int getFrame() {
         return frame;
+    }
+
+    @Override
+    public Mesh.Builder<Mesh> createMeshBuilder(NucleusRenderer renderer, Node parent, int count,
+            ShapeBuilder shapeBuilder)
+            throws IOException {
+        /**
+         * Mesh is stored in parent, this node shares that mesh.
+         */
+        return null;
     }
 
 }

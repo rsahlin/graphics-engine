@@ -6,7 +6,6 @@ import com.graphicsengine.map.PlayfieldMesh;
 import com.graphicsengine.map.PlayfieldNode;
 import com.graphicsengine.scene.QuadParentNode;
 import com.graphicsengine.scene.SharedMeshQuad;
-import com.graphicsengine.spritemesh.SpriteMesh;
 import com.nucleus.bounds.Bounds;
 import com.nucleus.geometry.DefaultMeshFactory;
 import com.nucleus.geometry.Mesh;
@@ -34,19 +33,14 @@ public class GraphicsEngineMeshFactory extends DefaultMeshFactory implements Mes
     @Override
     public Mesh createMesh(NucleusRenderer renderer, Node parent) throws IOException, GLException {
 
+        Mesh.Builder<Mesh> builder = null;
+        int count = -1;
+
         if (parent instanceof PlayfieldNode) {
-            PlayfieldMesh.Builder builder = PlayfieldNode.createMeshBuilder(renderer, (PlayfieldNode) parent);
-            PlayfieldMesh pmesh = (PlayfieldMesh) builder.create();
-            Bounds bounds = builder.createBounds();
-            parent.initBounds(bounds);
-            return pmesh;
+            count = 1;
         }
         if (parent instanceof QuadParentNode) {
-            QuadParentNode quadParent = (QuadParentNode) parent;
-            SpriteMesh.Builder mbuilder = QuadParentNode.createMeshBuilder(renderer, quadParent);
-            // TODO Fix generics so that cast is not needed
-            SpriteMesh mesh = (SpriteMesh) mbuilder.create();
-            return mesh;
+            count = ((QuadParentNode) parent).getMaxQuads();
         }
         if (parent instanceof ComponentNode) {
             /**
@@ -57,6 +51,14 @@ public class GraphicsEngineMeshFactory extends DefaultMeshFactory implements Mes
         if (parent instanceof SharedMeshQuad) {
             // This is child to quad parent node, do not create mesh
             return null;
+        }
+        if (count != -1) {
+            builder = parent.createMeshBuilder(renderer, parent, count, null);
+            Mesh mesh = builder.create();
+            Bounds bounds = builder.createBounds();
+            parent.initBounds(bounds);
+            return mesh;
+
         }
         return super.createMesh(renderer, parent);
     }

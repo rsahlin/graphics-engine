@@ -1,7 +1,5 @@
 package com.graphicsengine.component;
 
-import java.io.IOException;
-
 import com.graphicsengine.spritemesh.SpriteMesh;
 import com.nucleus.SimpleLogger;
 import com.nucleus.component.CPUComponentBuffer;
@@ -10,11 +8,9 @@ import com.nucleus.component.Component;
 import com.nucleus.component.ComponentBuffer;
 import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
-import com.nucleus.geometry.Material;
 import com.nucleus.geometry.Mesh;
-import com.nucleus.geometry.shape.ShapeBuilder;
+import com.nucleus.geometry.MeshBuilder.MeshBuilderFactory;
 import com.nucleus.renderer.NucleusRenderer;
-import com.nucleus.scene.ComponentNode;
 import com.nucleus.texturing.Texture2D;
 
 /**
@@ -30,7 +26,7 @@ import com.nucleus.texturing.Texture2D;
  * @author Richard Sahlin
  *
  */
-public class SpriteAttributeComponent extends ActorComponent<SpriteMesh> implements Consumer {
+public class SpriteAttributeComponent extends ActorComponent<SpriteMesh> implements Consumer, MeshBuilderFactory<Mesh> {
 
     public static final String GRAVITY = "gravity";
 
@@ -86,16 +82,6 @@ public class SpriteAttributeComponent extends ActorComponent<SpriteMesh> impleme
         spriteExpander = new CPUQuadExpander(mesh, mapper, entityData, spriteData);
         addBuffer(0, spriteData);
         addBuffer(1, entityData);
-    }
-
-    @Override
-    public Mesh.Builder<SpriteMesh> createMeshBuilder(NucleusRenderer renderer, ComponentNode parent, int count,
-            ShapeBuilder shapeBuilder) throws IOException {
-        SpriteMesh.Builder spriteBuilder = SpriteMesh.Builder.createBuilder(renderer);
-        spriteBuilder.setTexture(parent.getTextureRef());
-        spriteBuilder.setMaterial(parent.getMaterial() != null ? parent.getMaterial() : new Material());
-        spriteBuilder.setObjectCount(count).setShapeBuilder(shapeBuilder);
-        return spriteBuilder;
     }
 
     /**

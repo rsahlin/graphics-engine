@@ -3,27 +3,30 @@ package com.graphicsengine.component;
 import java.io.IOException;
 
 import com.google.gson.annotations.SerializedName;
+import com.graphicsengine.spritemesh.SpriteMesh;
 import com.nucleus.component.Component;
 import com.nucleus.component.ComponentBuffer;
 import com.nucleus.component.ComponentException;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
+import com.nucleus.geometry.Material;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.Mesh.BufferIndex;
 import com.nucleus.geometry.Mesh.Builder;
+import com.nucleus.geometry.MeshBuilder.MeshBuilderFactory;
 import com.nucleus.geometry.shape.RectangleShapeBuilder;
 import com.nucleus.geometry.shape.ShapeBuilder;
 import com.nucleus.geometry.shape.ShapeBuilderFactory;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.ComponentNode;
+import com.nucleus.scene.Node;
 import com.nucleus.scene.Node.MeshIndex;
 import com.nucleus.system.System;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TextureType;
 import com.nucleus.texturing.UVAtlas;
 import com.nucleus.texturing.UVTexture2D;
-import com.nucleus.vecmath.Rectangle;
 import com.nucleus.vecmath.Shape;
 
 /**
@@ -44,7 +47,7 @@ import com.nucleus.vecmath.Shape;
  * @author Richard Sahlin
  *
  */
-public abstract class ActorComponent<T extends Mesh> extends Component implements Consumer {
+public abstract class ActorComponent<T extends Mesh> extends Component implements Consumer, MeshBuilderFactory<Mesh> {
 
     public static final String COUNT = "count";
 
@@ -84,10 +87,6 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
         }
     }
 
-    public T getMesh() {
-        return mesh;
-    }
-
     protected void setMesh(T mesh) {
         this.mesh = mesh;
         mapper = mesh.getMapper();
@@ -110,19 +109,6 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
     public abstract void setEntityData(int entity, int destOffset, float[] data);
 
     /**
-     * Creates the mesh builder
-     * 
-     * @param renderer
-     * @param parent
-     * @param count
-     * @param shapeBuilder
-     * @return
-     * @throws ComponentException
-     */
-    public abstract Builder<T> createMeshBuilder(NucleusRenderer renderer, ComponentNode parent, int count,
-            ShapeBuilder shapeBuilder) throws IOException;
-
-    /**
      * Internal method
      * Creates the arrays for this spritecomponent
      * 
@@ -141,27 +127,18 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
      */
     public abstract void setActor(int sprite, float[] data);
 
-    /**
-     * Default implementation will create meshbuilder using
-     * {@link #createMeshBuilder(NucleusRenderer, ComponentNode, int, Rectangle)} method, then call
-     * {@link #setMesh(Mesh)}
-     * add mesh to the parent, set 'this' as attributeupdater in the mesh and then call
-     * {@link #bindAttributeBuffer(com.nucleus.geometry.AttributeBuffer)}
-     * The textureType will be fetched and also the uvAtlas if texture type is UVTexture2D
-     */
     @Override
     public void create(NucleusRenderer renderer, ComponentNode parent, com.nucleus.system.System system)
             throws ComponentException {
         try {
             if (shape == null) {
-                throw new IllegalArgumentException("Component must define 'shape'");
+                throw new IllegalArgumentException("Component " + parent.getId() + " must define 'shape'");
             }
             switch (shape.getType()) {
                 case rect:
-
                     ShapeBuilder shapeBuilder = ShapeBuilderFactory.createBuilder(shape,
                             new float[] { RectangleShapeBuilder.DEFAULT_Z }, count, 0);
-                    Builder<T> spriteBuilder = createMeshBuilder(renderer, parent, count, shapeBuilder);
+                    Builder<Mesh> spriteBuilder = createMeshBuilder(renderer, parent, count, shapeBuilder);
                     // TODO - Fix generics so that cast is not needed
                     setMesh((T) spriteBuilder.create());
             }
@@ -182,6 +159,16 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
         createBuffers(system);
         mesh.setAttributeUpdater(this);
         bindAttributeBuffer(mesh.getAttributeBuffer(BufferIndex.ATTRIBUTES.index));
+    }
+
+    @Override
+    public Mesh.Builder<Mesh> createMeshBuilder(NucleusRenderer renderer, Node parent, int count,
+            ShapeBuilder shapeBuilder) throws IOException {
+        SpriteMesh.Builder spriteBuilder = new SpriteMesh.Builder(renderer);
+        spriteBuilder.setTexture(parent.getTextureRef());
+        spriteBuilder.setMaterial(parent.getMaterial() != null ? parent.getMaterial() : new Material());
+        spriteBuilder.setObjectCount(count).setShapeBuilder(shapeBuilder);
+        return spriteBuilder;
     }
 
     /**

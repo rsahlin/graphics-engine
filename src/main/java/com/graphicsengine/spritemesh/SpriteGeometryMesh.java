@@ -2,7 +2,6 @@ package com.graphicsengine.spritemesh;
 
 import java.io.IOException;
 
-import com.graphicsengine.component.SpriteAttributeComponent;
 import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.shape.RectangleShapeBuilder;
@@ -27,21 +26,10 @@ public class SpriteGeometryMesh extends SpriteMesh {
      * Builder for sprite meshes
      *
      */
-    public static class Builder extends Mesh.Builder<SpriteGeometryMesh> {
-        /**
-         * Internal constructor - avoid using directly if the mesh should belong to a specific node type.
-         * Use
-         * {@link SpriteAttributeComponent#createMeshBuilder(NucleusRenderer, com.nucleus.scene.ComponentNode, int, com.nucleus.vecmath.Rectangle)}
-         * instead
-         * 
-         * @param renderer
-         */
-        Builder(NucleusRenderer renderer) {
-            super(renderer);
-        }
+    public static class Builder extends Mesh.Builder<Mesh> {
 
-        public static Builder createBuilder(NucleusRenderer renderer) {
-            return new Builder(renderer);
+        public Builder(NucleusRenderer renderer) {
+            super(renderer);
         }
 
         @Override

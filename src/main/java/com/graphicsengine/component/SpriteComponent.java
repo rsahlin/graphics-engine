@@ -1,17 +1,11 @@
 package com.graphicsengine.component;
 
-import java.io.IOException;
-
 import com.graphicsengine.spritemesh.SpriteGeometryMesh;
 import com.nucleus.component.CPUComponentBuffer;
 import com.nucleus.component.Component;
 import com.nucleus.component.ComponentBuffer;
 import com.nucleus.geometry.AttributeBuffer;
-import com.nucleus.geometry.Material;
-import com.nucleus.geometry.Mesh;
-import com.nucleus.geometry.shape.ShapeBuilder;
 import com.nucleus.renderer.NucleusRenderer;
-import com.nucleus.scene.ComponentNode;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TextureType;
 
@@ -55,17 +49,6 @@ public class SpriteComponent extends ActorComponent<SpriteGeometryMesh> {
 
     @Override
     public void updateAttributeData(NucleusRenderer renderer) {
-    }
-
-    @Override
-    public Mesh.Builder<SpriteGeometryMesh> createMeshBuilder(NucleusRenderer renderer,
-            ComponentNode parent, int count,
-            ShapeBuilder shapeBuilder) throws IOException {
-        SpriteGeometryMesh.Builder spriteBuilder = SpriteGeometryMesh.Builder.createBuilder(renderer);
-        spriteBuilder.setTexture(parent.getTextureRef());
-        spriteBuilder.setMaterial(parent.getMaterial() != null ? parent.getMaterial() : new Material());
-        spriteBuilder.setObjectCount(count).setShapeBuilder(shapeBuilder);
-        return spriteBuilder;
     }
 
     /**

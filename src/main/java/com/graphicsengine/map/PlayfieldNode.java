@@ -6,6 +6,8 @@ import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.scene.GraphicsEngineNodeType;
 import com.nucleus.SimpleLogger;
 import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
+import com.nucleus.geometry.Mesh;
+import com.nucleus.geometry.shape.ShapeBuilder;
 import com.nucleus.io.ExternalReference;
 import com.nucleus.mmi.ObjectInputListener;
 import com.nucleus.mmi.PointerData;
@@ -137,23 +139,16 @@ public class PlayfieldNode extends Node {
         return copy;
     }
 
-    /**
-     * Creates a playfield mesh builder for the playfield node
-     * 
-     * @param renderer
-     * @param parent
-     * @return
-     * @throws IOException If there was an io error creating builder, probably when loading texture
-     */
-    public static PlayfieldMesh.Builder createMeshBuilder(NucleusRenderer renderer, PlayfieldNode parent)
+    @Override
+    public Mesh.Builder<Mesh> createMeshBuilder(NucleusRenderer renderer, Node parent, int count,
+            ShapeBuilder shapeBuilder)
             throws IOException {
 
+        PlayfieldNode playfield = (PlayfieldNode) parent;
         PlayfieldMesh.Builder builder = new PlayfieldMesh.Builder(renderer);
-        builder.setMap(parent.getMapSize(), parent.getCharRectangle());
-        builder.setOffset(parent.getAnchorOffset());
-        builder.setTexture(parent.getTextureRef());
-        builder.setMaterial(parent.getMaterial());
-        return builder;
+        builder.setMap(playfield.getMapSize(), playfield.getCharRectangle());
+        builder.setOffset(playfield.getAnchorOffset());
+        return super.initMeshBuilder(renderer, parent, count, shapeBuilder, builder);
     }
 
     /**
