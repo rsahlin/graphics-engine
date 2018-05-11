@@ -40,7 +40,7 @@ public class PlayfieldProgram extends ShaderProgram {
         } else {
             System.err.println(INVALID_TEXTURE_TYPE + texture);
         }
-        setAmbient(uniforms, shaderVariables[CommonShaderVariables.uAmbientLight.index], globalLight.getAmbient());
+        setEmissive(uniforms, shaderVariables[CommonShaderVariables.uAmbientLight.index], globalLight.getAmbient());
     }
 
     @Override

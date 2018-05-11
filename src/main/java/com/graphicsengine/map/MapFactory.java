@@ -22,13 +22,13 @@ public class MapFactory {
      * 
      * @param width
      * @param height
-     * @param ambientMode Storage mode for ambient material
-     * @param ambientFormat Datatype for ambient material VEC3 or VEC4
-     * @throws IllegalArgumentException If ambient is null or ambientFormat is not VEC3 or VEC4
+     * @param emissiveMode Storage mode for emissive material
+     * @param emissiveFormat Datatype for emissive material VEC3 or VEC4
+     * @throws IllegalArgumentException If emissive is null or emissiveFormat is not VEC3 or VEC4
      * @return The created map
      */
-    public static Map createMap(int width, int height, Mode ambientMode, DataType ambientFormat) {
-        return new Map(width, height, ambientMode, ambientFormat);
+    public static Map createMap(int width, int height, Mode emissiveMode, DataType emissiveFormat) {
+        return new Map(width, height, emissiveMode, emissiveFormat);
     }
 
     /**

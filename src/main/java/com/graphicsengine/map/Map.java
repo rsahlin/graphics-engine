@@ -37,7 +37,8 @@ public class Map extends BaseReference implements Serializable {
      *
      */
     public enum Mode {
-        CHAR(1), VERTEX(2);
+        CHAR(1),
+        VERTEX(2);
 
         public final int value;
 
@@ -73,7 +74,7 @@ public class Map extends BaseReference implements Serializable {
          */
         private DataType format;
         private FloatBuffer color;
-        
+
         /**
          * Creates a new color for map
          * 
@@ -97,7 +98,7 @@ public class Map extends BaseReference implements Serializable {
         private void createBuffer() {
             color = ByteBuffer.allocateDirect(length * 4).order(ByteOrder.nativeOrder())
                     .asFloatBuffer();
-            SimpleLogger.d(getClass(), "Created ambient buffer with " + length + " floats");
+            SimpleLogger.d(getClass(), "Created emissive buffer with " + length + " floats");
         }
 
         /**
@@ -127,14 +128,14 @@ public class Map extends BaseReference implements Serializable {
          */
         public void fill(float[] fillColor) {
             switch (format) {
-            case VEC3:
-                fillVEC3(fillColor);
-                break;
-            case VEC4:
-                fillVEC4(fillColor);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid format: " + format);
+                case VEC3:
+                    fillVEC3(fillColor);
+                    break;
+                case VEC4:
+                    fillVEC4(fillColor);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid format: " + format);
             }
         }
 
@@ -164,19 +165,19 @@ public class Map extends BaseReference implements Serializable {
         public int getSizePerChar() {
             int size = format.getSize() / 4;
             switch (mode) {
-            case CHAR:
-                return size;
-            case VERTEX:
-                return size * 4;
-            default:
-                throw new IllegalArgumentException("Invalid mode:" + mode);
+                case CHAR:
+                    return size;
+                case VERTEX:
+                    return size * 4;
+                default:
+                    throw new IllegalArgumentException("Invalid mode:" + mode);
             }
         }
 
         /**
          * Returns number of floats to next vertex, either 0 or depending on format.
          * 
-         * @return Number of floats to step between ambient material values in a char.
+         * @return Number of floats to step between emissive material values in a char.
          */
         public int getVertexStride() {
             if (mode == Mode.CHAR) {
@@ -221,10 +222,6 @@ public class Map extends BaseReference implements Serializable {
     }
 
     public static final String MAPSIZE = "mapSize";
-    public static final String MAPDATA = "mapData";
-    public static final String FLAGS = "flags";
-    public static final String AMBIENT = "ambient";
-    public static final String ARRAYINPUT = "arrayInput";
 
     public static final int FLIP_X = 4;
     public static final int FLIP_Y = 2;
@@ -240,26 +237,26 @@ public class Map extends BaseReference implements Serializable {
 
     private ByteBuffer flags;
 
-    private MapColor ambient;
+    private MapColor emissive;
 
     /**
      * Creates a new empty playfield, with the specified width and height.
-     * Storage for ambient material is created
+     * Storage for emissive material is created
      * 
      * @param width
      * @param height
-     * @param ambientMode Storage mode for ambient material
-     * @param ambientFormat Datatype for ambient material VEC3 or VEC4
-     * @throws IllegalArgumentException If ambient is null or ambientFormat is not VEC3 or VEC4
+     * @param emissiveMode Storage mode for emissive material
+     * @param emissiveFormat Datatype for emissive material VEC3 or VEC4
+     * @throws IllegalArgumentException If emissive is null or emissiveFormat is not VEC3 or VEC4
      */
-    Map(int width, int height, Mode ambientMode, DataType ambientFormat) {
+    Map(int width, int height, Mode emissiveMode, DataType emissiveFormat) {
         mapSize = new int[] { width, height };
-        createBuffers(width, height, ambientMode, ambientFormat);
+        createBuffers(width, height, emissiveMode, emissiveFormat);
     }
 
-    private void createBuffers(int width, int height, Mode ambientMode, DataType ambientFormat) {
+    private void createBuffers(int width, int height, Mode emissiveMode, DataType emissiveFormat) {
         createBuffers(width, height);
-        ambient = new MapColor(width, height, ambientMode, ambientFormat);
+        emissive = new MapColor(width, height, emissiveMode, emissiveFormat);
     }
 
     /**
@@ -276,26 +273,26 @@ public class Map extends BaseReference implements Serializable {
     }
 
     /**
-     * Creats ambient lightmap for the map, map must be initialized with size
+     * Creats emissive lightmap for the map, map must be initialized with size
      * 
      * @param mode
      * @param format
      * @throws IllegalArgumentException If map does not have size
      */
-    public void createAmbient(Mode mode, DataType format) {
+    public void createEmissive(Mode mode, DataType format) {
         if (mapSize == null || mapSize[0] <= 0 || mapSize[1] <= 0) {
             throw new IllegalArgumentException("Map does not have valid size");
         }
-        ambient = new MapColor(mapSize[0], mapSize[1], mode, format);
+        emissive = new MapColor(mapSize[0], mapSize[1], mode, format);
     }
 
     /**
-     * Returns the ambient material color for each char or per vertex, or null if not set.
+     * Returns the emissive material color for each char or per vertex, or null if not set.
      * 
-     * @return Ambient material properties, or null if not set.
+     * @return Emissive material properties, or null if not set.
      */
-    public MapColor getAmbient() {
-        return ambient;
+    public MapColor getEmissive() {
+        return emissive;
     }
 
     /**
@@ -436,7 +433,6 @@ public class Map extends BaseReference implements Serializable {
     public void setMap(int[] src, int offset, int length) {
         mapBuffer.put(src, offset, length);
     }
-    
 
     /**
      * Prints debug message for the map position
@@ -449,23 +445,20 @@ public class Map extends BaseReference implements Serializable {
         if (index >= getLength()) {
             SimpleLogger.d(getClass(), "Outside map for pos: " + x + ", " + y);
         }
-        String ambientStr = "none";
-        if (ambient != null) {
-            switch (ambient.getMode()) {
-            case CHAR:
-                ambientStr = Float.toString(ambient.getColor().get(index));
-                break;
-            case VERTEX:
-                ambientStr = "per vertex";
+        String emissiveStr = "none";
+        if (emissive != null) {
+            switch (emissive.getMode()) {
+                case CHAR:
+                    emissiveStr = Float.toString(emissive.getColor().get(index));
+                    break;
+                case VERTEX:
+                    emissiveStr = "per vertex";
             }
         }
         SimpleLogger.d(getClass(),
                 "Position: " + x + ", " + y + " char:" + mapBuffer.get(index) + ", flags:" + flags.get(index)
-                        + ", ambient:"
-                        +
-                ambientStr);
+                        + ", emissive" + emissiveStr);
     }
-
 
     private void writeObject(java.io.ObjectOutputStream out) throws IOException {
         SimpleLogger.d(getClass(), "writeObject()");
@@ -480,7 +473,7 @@ public class Map extends BaseReference implements Serializable {
         flags.position(0);
         flags.get(flagData);
         out.writeObject(flagData);
-        out.writeObject(ambient);
+        out.writeObject(emissive);
     }
 
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
@@ -494,7 +487,7 @@ public class Map extends BaseReference implements Serializable {
         byte[] flagData = (byte[]) in.readObject();
         flags.position(0);
         flags.put(flagData);
-        ambient = (MapColor) in.readObject();
+        emissive = (MapColor) in.readObject();
     }
 
 }

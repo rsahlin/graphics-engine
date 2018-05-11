@@ -147,8 +147,8 @@ public class SharedMeshQuad extends Node {
      * If material and ambient color is set it is updated.
      */
     public void updateAmbient() {
-        if (getMaterial() != null && getMaterial().getAmbient() != null) {
-            quadParent.getExpander().setColor(childIndex, getMaterial().getAmbient());
+        if (getMaterial() != null && getMaterial().getEmissive() != null) {
+            quadParent.getExpander().setColor(childIndex, getMaterial().getEmissive());
         }
     }
 

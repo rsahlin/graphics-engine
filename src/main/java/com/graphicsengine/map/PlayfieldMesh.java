@@ -222,21 +222,21 @@ public class PlayfieldMesh extends SpriteMesh {
      * @param mapper The attribute property mapper
      * @param map Source map data
      * @param flags Flags
-     * @param ambient Ambient material properties
+     * @param emissive Emissive material properties
      * @param sourceOffset Offset into source where data is read
      * @param destOffset Offset where data is written in this class
      * @param count Number of chars to copy
      * @throws ArrayIndexOutOfBoundsException If source or destination does not contain enough data.
      */
-    public void copyCharmap(PropertyMapper mapper, IntBuffer map, ByteBuffer flags, MapColor ambient, int sourceOffset,
+    public void copyCharmap(PropertyMapper mapper, IntBuffer map, ByteBuffer flags, MapColor emissive, int sourceOffset,
             int destOffset, int count) {
-        int ambientStride = ambient.getVertexStride();
-        int sizePerChar = ambient.getSizePerChar();
-        FloatBuffer color = ambient.getColor();
+        int emissiveStride = emissive.getVertexStride();
+        int sizePerChar = emissive.getSizePerChar();
+        FloatBuffer color = emissive.getColor();
         color.position(0);
         for (int i = 0; i < count; i++) {
             setChar(mapper, destOffset, map.get(sourceOffset), flags.get(sourceOffset));
-            setAmbient(mapper, destOffset, color, destOffset * sizePerChar, ambientStride);
+            setEmissive(mapper, destOffset, color, destOffset * sizePerChar, emissiveStride);
             destOffset++;
             sourceOffset++;
         }
@@ -279,10 +279,10 @@ public class PlayfieldMesh extends SpriteMesh {
 
         int height = Math.min(playfieldSize[Axis.HEIGHT.index], sourceSize[Axis.HEIGHT.index]);
         int width = Math.min(playfieldSize[Axis.WIDTH.index], sourceSize[Axis.WIDTH.index]);
-        MapColor ambient = source.getAmbient();
-        if (ambient != null) {
+        MapColor emissive = source.getEmissive();
+        if (emissive != null) {
             for (int y = 0; y < height; y++) {
-                copyCharmap(mapper, source.getMap(), source.getFlags(), ambient,
+                copyCharmap(mapper, source.getMap(), source.getFlags(), emissive,
                         y * sourceSize[Axis.WIDTH.index], y * playfieldSize[Axis.WIDTH.index], width);
             }
         } else {
@@ -342,20 +342,20 @@ public class PlayfieldMesh extends SpriteMesh {
     }
 
     /**
-     * Internal method to set ambient material property at a character position
+     * Internal method to set emissive material property at a character position
      * This method shall not be used for a large number of chars or when performance is important.
      * 
      * @param mapper Property mapper for attribute indexes
      * @param pos The playfield position, from 0 to width * height.
-     * @param ambient Ambient material
-     * @param index Index into ambient array where material should be read
-     * @param stride Ambient stride to get to values for next ambient, either 0 or size of ambient data.
+     * @param emissive Emissive material
+     * @param index Index into emissive array where material should be read
+     * @param stride Emissive stride to get to values for next emissive, either 0 or size of emissive data.
      */
-    private void setAmbient(PropertyMapper mapper, int pos, FloatBuffer ambient, int index, int stride) {
+    private void setEmissive(PropertyMapper mapper, int pos, FloatBuffer emissive, int index, int stride) {
         float[] color = new float[4];
-        ambient.position(index);
-        ambient.get(color);
-        setAttribute4(pos, mapper.colorAmbientOffset, color, 0);
+        emissive.position(index);
+        emissive.get(color);
+        setAttribute4(pos, mapper.emissiveOffset, color, 0);
     }
 
     @Override
