@@ -1,8 +1,5 @@
 package com.graphicsengine.io;
 
-import java.util.Arrays;
-import java.util.List;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.graphicsengine.component.SpriteAttributeComponent;
@@ -16,9 +13,9 @@ import com.graphicsengine.scene.GraphicsEngineNodeType;
 import com.nucleus.common.Type;
 import com.nucleus.common.TypeResolver;
 import com.nucleus.component.Component;
-import com.nucleus.exporter.NucleusNodeExporter;
 import com.nucleus.geometry.MeshFactory;
 import com.nucleus.io.GSONSceneFactory;
+import com.nucleus.io.SceneSerializer;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.NodeFactory;
@@ -26,6 +23,7 @@ import com.nucleus.scene.NodeFactory;
 /**
  * Implementation of the scenefactory for the graphics engine, this shall take care of all nodes/datatypes that
  * are specific for the graphics engine.
+ * Uses {@link NodeDeserializer} and {@link TypeResolver} to lookup classnames.
  * 
  * @author Richard Sahlin
  *
@@ -61,22 +59,21 @@ public class GSONGraphicsEngineFactory extends GSONSceneFactory {
 
     private ComponentDeserializer componentDeserializer = new ComponentDeserializer();
 
-    /**
-     * Creates a default scenefactory with {@link NucleusNodeExporter}.
-     * Calls {@link #createNodeExporter()} and {@link #registerNodeExporters()}
-     * This constructor will call {@link #init(NucleusRenderer, NodeFactory, MeshFactory)}
-     * 
-     * @param renderer
-     * @param nodeFactory
-     * @param meshFactory
-     * @param types Implementation specific types that shall be registered to the {@linkplain TypeResolver}, may be null
-     */
-    public GSONGraphicsEngineFactory(NucleusRenderer renderer, NodeFactory nodeFactory, MeshFactory meshFactory,
-            List<Type<?>> types) {
-        super(renderer, nodeFactory, meshFactory, Arrays.asList((Type<?>[]) GraphicsEngineClasses.values()));
-        if (types != null) {
-            TypeResolver.getInstance().registerTypes(types);
+    protected GSONGraphicsEngineFactory() {
+        super();
+    }
+
+    public static SceneSerializer getInstance() {
+        if (sceneFactory == null) {
+            sceneFactory = new GSONGraphicsEngineFactory();
         }
+        return sceneFactory;
+    }
+
+    @Override
+    public void init(NucleusRenderer renderer, NodeFactory nodeFactory, MeshFactory meshFactory, Type<?>[] types) {
+        super.init(renderer, nodeFactory, meshFactory, types);
+        registerTypes(GraphicsEngineClasses.values());
     }
 
     @Override
