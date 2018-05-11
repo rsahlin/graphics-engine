@@ -3,7 +3,6 @@ package com.graphicsengine.component;
 import java.io.IOException;
 
 import com.google.gson.annotations.SerializedName;
-import com.graphicsengine.spritemesh.SpriteMesh;
 import com.nucleus.component.Component;
 import com.nucleus.component.ComponentBuffer;
 import com.nucleus.component.ComponentException;
@@ -73,24 +72,12 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
     transient protected UVAtlas uvAtlas;
 
     /**
-     * Sets data from source into this
+     * Creates the instance of a mesh to be used in {@link #createMeshBuilder(NucleusRenderer, Node, int, ShapeBuilder)}
      * 
-     * @param source
+     * @param renderer
+     * @return
      */
-    protected void set(ActorComponent<T> source) {
-        super.set(source);
-        this.count = source.count;
-        if (source.shape != null) {
-            this.shape = Shape.createInstance(source.shape);
-        } else {
-            shape = null;
-        }
-    }
-
-    protected void setMesh(T mesh) {
-        this.mesh = mesh;
-        mapper = mesh.getMapper();
-    }
+    protected abstract Mesh.Builder<Mesh> createBuilderInstance(NucleusRenderer renderer);
 
     /**
      * Returns the buffer that holds entity data, this is the object specific data that is used to handle
@@ -124,8 +111,39 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
      * 
      * @param actor The actor index to set
      * @param data Data that can be set using the mapper
+     * @param offset Offset into data where values are read
      */
-    public abstract void setActor(int sprite, float[] data);
+    public abstract void setActor(int actor, float[] data, int offset);
+
+    /**
+     * Sets actor position
+     * If the component uses an expander this is called to expand data.
+     * 
+     * @param actor The actor index to update
+     * @param position x,y and z
+     * @param offset Offset into position where values are read.
+     */
+    public abstract void setPosition(int actor, float[] position, int offset);
+
+    /**
+     * Sets data from source into this
+     * 
+     * @param source
+     */
+    protected void set(ActorComponent<T> source) {
+        super.set(source);
+        this.count = source.count;
+        if (source.shape != null) {
+            this.shape = Shape.createInstance(source.shape);
+        } else {
+            shape = null;
+        }
+    }
+
+    protected void setMesh(T mesh) {
+        this.mesh = mesh;
+        mapper = mesh.getMapper();
+    }
 
     @Override
     public void create(NucleusRenderer renderer, ComponentNode parent, com.nucleus.system.System system)
@@ -164,7 +182,7 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
     @Override
     public Mesh.Builder<Mesh> createMeshBuilder(NucleusRenderer renderer, Node parent, int count,
             ShapeBuilder shapeBuilder) throws IOException {
-        SpriteMesh.Builder spriteBuilder = new SpriteMesh.Builder(renderer);
+        Mesh.Builder<Mesh> spriteBuilder = createBuilderInstance(renderer);
         spriteBuilder.setTexture(parent.getTextureRef());
         spriteBuilder.setMaterial(parent.getMaterial() != null ? parent.getMaterial() : new Material());
         spriteBuilder.setObjectCount(count).setShapeBuilder(shapeBuilder);

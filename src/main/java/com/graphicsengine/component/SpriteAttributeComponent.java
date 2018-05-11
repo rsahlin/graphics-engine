@@ -9,6 +9,7 @@ import com.nucleus.component.ComponentBuffer;
 import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.Mesh;
+import com.nucleus.geometry.Mesh.Builder;
 import com.nucleus.geometry.MeshBuilder.MeshBuilderFactory;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.texturing.Texture2D;
@@ -115,21 +116,14 @@ public class SpriteAttributeComponent extends ActorComponent<SpriteMesh> impleme
     }
 
     @Override
-    public void setActor(int actor, float[] data) {
-        spriteExpander.setData(actor, data);
+    public void setActor(int actor, float[] data, int offset) {
+        spriteExpander.setData(actor, data, offset);
         spriteExpander.expandQuadData(actor);
     }
 
-    /**
-     * Sets the x and y position
-     * If the component uses an expander this is called to expand data.
-     * 
-     * @param sprite
-     * @param x
-     * @param y
-     */
-    public void setPosition(int sprite, float x, float y) {
-        spriteExpander.setPosition(sprite, x, y);
+    @Override
+    public void setPosition(int actor, float[] position, int offset) {
+        spriteExpander.setPosition(actor, position, offset);
     }
 
     @Override
@@ -146,5 +140,10 @@ public class SpriteAttributeComponent extends ActorComponent<SpriteMesh> impleme
     @Override
     public void updateAttributeData(NucleusRenderer renderer) {
         spriteExpander.updateAttributeData(renderer);
+    }
+
+    @Override
+    protected Builder<Mesh> createBuilderInstance(NucleusRenderer renderer) {
+        return new SpriteMesh.Builder(renderer);
     }
 }
