@@ -1,11 +1,6 @@
 package com.graphicsengine.spritemesh;
 
-import java.io.IOException;
-
-import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.Mesh;
-import com.nucleus.geometry.shape.RectangleShapeBuilder;
-import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.Texture2D;
@@ -26,22 +21,10 @@ public class SpriteGeometryMesh extends SpriteMesh {
      * Builder for sprite meshes
      *
      */
-    public static class Builder extends Mesh.Builder<Mesh> {
+    public static class Builder extends SpriteMesh.Builder {
 
         public Builder(NucleusRenderer renderer) {
             super(renderer);
-        }
-
-        @Override
-        public Mesh create() throws IOException, GLException {
-            setElementMode(Mode.TRIANGLES, objectCount * RectangleShapeBuilder.QUAD_VERTICES,
-                    objectCount * RectangleShapeBuilder.QUAD_ELEMENTS);
-            if (material.getProgram() == null) {
-                ShaderProgram program = createProgram(texture);
-                program = AssetManager.getInstance().getProgram(renderer.getGLES(), program);
-                material.setProgram(program);
-            }
-            return super.create();
         }
 
         @Override
@@ -55,6 +38,7 @@ public class SpriteGeometryMesh extends SpriteMesh {
          * @param texture {@link TiledTexture2D} or {@link UVTexture2D}
          * @return The shader program for the specified texture.
          */
+        @Override
         public ShaderProgram createProgram(Texture2D texture) {
             switch (texture.textureType) {
                 case TiledTexture2D:
@@ -70,8 +54,6 @@ public class SpriteGeometryMesh extends SpriteMesh {
                 default:
                     throw new IllegalArgumentException(INVALID_TYPE + texture.textureType);
             }
-
         }
-
     }
 }
