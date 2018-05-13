@@ -11,6 +11,16 @@ import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TextureType;
 
+/**
+ * Sprite component, this is a collection of a number of (similar) sprite objects that have entity (actor) data and can
+ * be rendered using one draw call.
+ * Target usage is geometry shaders (GLES 3.2) or compute shaders (GLES 3.1)
+ * 
+ * The class can be serialized using gson
+ * 
+ * @author Richard Sahlin
+ *
+ */
 public class SpriteComponent extends ActorComponent<SpriteGeometryMesh> {
 
     transient protected AttributeBuffer attributes;
@@ -83,7 +93,6 @@ public class SpriteComponent extends ActorComponent<SpriteGeometryMesh> {
 
     @Override
     public void setActor(int actor, float[] data, int offset) {
-        // TODO Auto-generated method stub
 
     }
 
