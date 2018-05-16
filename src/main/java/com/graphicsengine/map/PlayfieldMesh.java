@@ -15,6 +15,7 @@ import com.nucleus.geometry.shape.RectangleShapeBuilder;
 import com.nucleus.geometry.shape.RectangleShapeBuilder.RectangleConfiguration;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
+import com.nucleus.shader.ShaderProperty.PropertyMapper;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.vecmath.Axis;
 import com.nucleus.vecmath.Rectangle;
@@ -71,7 +72,7 @@ public class PlayfieldMesh extends SpriteMesh {
             this.mapSize = new int[] { mapSize[0], mapSize[1] };
             this.charRectangle = charRect;
             int charCount = mapSize[0] * mapSize[1];
-            setElementMode(Mode.TRIANGLES, charCount * RectangleShapeBuilder.QUAD_VERTICES,
+            setElementMode(Mode.TRIANGLES, charCount * RectangleShapeBuilder.QUAD_VERTICES, 0,
                     charCount * RectangleShapeBuilder.QUAD_ELEMENTS);
             return this;
         }

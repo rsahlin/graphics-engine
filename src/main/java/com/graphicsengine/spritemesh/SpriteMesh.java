@@ -45,7 +45,7 @@ public class SpriteMesh extends Mesh {
 
         @Override
         public Mesh create() throws IOException, GLException {
-            setElementMode(Mode.TRIANGLES, objectCount * RectangleShapeBuilder.QUAD_VERTICES,
+            setElementMode(Mode.TRIANGLES, objectCount * RectangleShapeBuilder.QUAD_VERTICES, 0,
                     objectCount * RectangleShapeBuilder.QUAD_ELEMENTS);
             if (material.getProgram() == null) {
                 ShaderProgram program = createProgram(texture);

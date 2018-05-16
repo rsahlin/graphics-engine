@@ -36,7 +36,7 @@ public class SpriteGeometryMesh extends SpriteMesh {
 
         @Override
         public Mesh create() throws IOException, GLException {
-            setArrayMode(Mode.POINTS, objectCount);
+            setArrayMode(Mode.POINTS, objectCount, 0);
             if (material.getProgram() == null) {
                 ShaderProgram program = new TransformProgram(null, Shading.textured, TransformProgram.CATEGORY);
                 program = AssetManager.getInstance().getProgram(renderer.getGLES(), program);
