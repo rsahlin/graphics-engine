@@ -40,16 +40,9 @@ public class SpriteComponent extends ActorComponent<SpriteGeometryMesh> {
     }
 
     @Override
-    protected void createBuffers(com.nucleus.system.System system) {
-        CPUComponentBuffer entityData = new CPUComponentBuffer(count,
-                system.getEntityDataSize() + mapper.attributesPerVertex);
+    protected void createBuffers() {
+        CPUComponentBuffer entityData = new CPUComponentBuffer(count, getEntityDataSize());
         addBuffer(0, entityData);
-    }
-
-    @Override
-    public void setEntityData(int sprite, int destOffset, float[] data) {
-        ComponentBuffer entityBuffer = getEntityBuffer();
-        entityBuffer.put(sprite, destOffset, data, 0, data.length);
     }
 
     @Override
@@ -92,14 +85,14 @@ public class SpriteComponent extends ActorComponent<SpriteGeometryMesh> {
     }
 
     @Override
-    public void setActor(int actor, float[] data, int offset) {
+    public void setPosition(int actor, float[] position, int offset) {
 
     }
 
     @Override
-    public void setPosition(int actor, float[] position, int offset) {
-        // TODO Auto-generated method stub
-
+    public void setEntityData(int sprite, int destOffset, float[] data) {
+        ComponentBuffer entityBuffer = getEntityBuffer();
+        entityBuffer.put(sprite, destOffset, data, 0, data.length);
     }
 
 }

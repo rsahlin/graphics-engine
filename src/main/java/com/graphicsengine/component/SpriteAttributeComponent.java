@@ -75,11 +75,10 @@ public class SpriteAttributeComponent extends ActorComponent<SpriteMesh> impleme
     }
 
     @Override
-    protected void createBuffers(com.nucleus.system.System system) {
+    protected void createBuffers() {
         spritedataSize = mapper.attributesPerVertex;
         CPUComponentBuffer spriteData = new CPUComponentBuffer(count, mapper.attributesPerVertex * 4);
-        CPUComponentBuffer entityData = new CPUComponentBuffer(count,
-                system.getEntityDataSize() + mapper.attributesPerVertex);
+        CPUComponentBuffer entityData = new CPUComponentBuffer(count, getEntityDataSize());
         spriteExpander = new CPUQuadExpander(mesh, mapper, entityData, spriteData);
         addBuffer(0, spriteData);
         addBuffer(1, entityData);
@@ -116,12 +115,6 @@ public class SpriteAttributeComponent extends ActorComponent<SpriteMesh> impleme
     }
 
     @Override
-    public void setActor(int actor, float[] data, int offset) {
-        spriteExpander.setData(actor, data, offset);
-        spriteExpander.expandQuadData(actor);
-    }
-
-    @Override
     public void setPosition(int actor, float[] position, int offset) {
         spriteExpander.setPosition(actor, position, offset);
     }
@@ -130,6 +123,7 @@ public class SpriteAttributeComponent extends ActorComponent<SpriteMesh> impleme
     public void setEntityData(int sprite, int destOffset, float[] data) {
         ComponentBuffer entityBuffer = getEntityBuffer();
         entityBuffer.put(sprite, destOffset, data, 0, data.length);
+        spriteExpander.setData(sprite, data, 0);
     }
 
     @Override
@@ -146,4 +140,5 @@ public class SpriteAttributeComponent extends ActorComponent<SpriteMesh> impleme
     protected Builder<Mesh> createBuilderInstance(NucleusRenderer renderer) {
         return new SpriteMesh.Builder(renderer);
     }
+
 }

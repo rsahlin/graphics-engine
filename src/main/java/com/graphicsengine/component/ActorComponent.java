@@ -1,13 +1,13 @@
 package com.graphicsengine.component;
 
 import java.io.IOException;
+import java.util.Random;
 
 import com.google.gson.annotations.SerializedName;
 import com.nucleus.component.Component;
 import com.nucleus.component.ComponentBuffer;
 import com.nucleus.component.ComponentException;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
-import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
 import com.nucleus.geometry.Material;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.Mesh.BufferIndex;
@@ -21,6 +21,7 @@ import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.ComponentNode;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.Node.MeshIndex;
+import com.nucleus.shader.ShaderProperty.PropertyMapper;
 import com.nucleus.system.System;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TextureType;
@@ -48,6 +49,25 @@ import com.nucleus.vecmath.Shape;
  */
 public abstract class ActorComponent<T extends Mesh> extends Component implements Consumer, MeshBuilderFactory<Mesh> {
 
+    public static class EntityMapper extends PropertyMapper {
+
+        public int moveVectorOffset;
+        public int elasticityOffset;
+        public int resistanceOffset;
+        public int rotateSpeedOffset;
+        public int attributesPerEntity;
+
+        public EntityMapper(PropertyMapper source) {
+            super(source);
+            moveVectorOffset = source.attributesPerVertex;
+            elasticityOffset = source.attributesPerVertex + 3;
+            resistanceOffset = source.attributesPerVertex + 4;
+            rotateSpeedOffset = source.attributesPerVertex + 5;
+            attributesPerEntity = rotateSpeedOffset + 1;
+        }
+
+    }
+
     public static final String COUNT = "count";
 
     /**
@@ -67,7 +87,7 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
     /**
      * The mapper used - this shall be set in the {@link #create(NucleusRenderer, ComponentNode, System)} method
      */
-    transient protected PropertyMapper mapper;
+    transient protected EntityMapper mapper;
     transient protected TextureType textureType;
     transient protected UVAtlas uvAtlas;
 
@@ -98,22 +118,11 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
     /**
      * Internal method
      * Creates the arrays for this spritecomponent
+     * TODO Should this method be moved to Component?
      * 
      * @param system
      */
-    protected abstract void createBuffers(com.nucleus.system.System system);
-
-    /**
-     * Sets the data for the actor, the data shall be indexed using the mapper for the sprite component.
-     * {@link #getMapper()}
-     * If the component uses an expander this is called to expand data.
-     * Use this method for initialization only
-     * 
-     * @param actor The actor index to set
-     * @param data Data that can be set using the mapper
-     * @param offset Offset into data where values are read
-     */
-    public abstract void setActor(int actor, float[] data, int offset);
+    protected abstract void createBuffers();
 
     /**
      * Sets actor position
@@ -142,11 +151,11 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
 
     protected void setMesh(T mesh) {
         this.mesh = mesh;
-        mapper = mesh.getMapper();
+        mapper = new EntityMapper(mesh.getMapper());
     }
 
     @Override
-    public void create(NucleusRenderer renderer, ComponentNode parent, com.nucleus.system.System system)
+    public void create(NucleusRenderer renderer, ComponentNode parent)
             throws ComponentException {
         try {
             if (shape == null) {
@@ -174,7 +183,7 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
                 break;
         }
         parent.addMesh(mesh, MeshIndex.MAIN);
-        createBuffers(system);
+        createBuffers();
         mesh.setAttributeUpdater(this);
         bindAttributeBuffer(mesh.getAttributeBuffer(BufferIndex.ATTRIBUTES.index));
     }
@@ -199,16 +208,48 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
     }
 
     /**
-     * Returns the propertymapper for the Mesh used by this component.
+     * Returns the entity mapper for this component.
      * If {@link #create(NucleusRenderer, ComponentNode)} has not been called null is returned.
      * 
-     * @return The PropertyMapper for the Mesh in the node used by this component, or null.
+     * @return The entitymapper used by this component, or null.
      */
-    public PropertyMapper getMapper() {
-        if (mesh != null) {
-            return mesh.getMapper();
-        }
-        return null;
+    public EntityMapper getMapper() {
+        return mapper;
+    }
+
+    @Override
+    public int getEntityDataSize() {
+        EntityMapper mapper = getMapper();
+        return mapper.attributesPerEntity;
+    }
+
+    /**
+     * ****************************************************************
+     * Utility methods
+     * ****************************************************************
+     * TODO Where do these belong?
+     */
+
+    public static void getRandomEntityData(float[] entityData, EntityMapper mapper, Random random) {
+        entityData[mapper.moveVectorOffset] = 0;
+        entityData[mapper.moveVectorOffset + 1] = 0;
+        entityData[mapper.elasticityOffset] = 0.5f + random.nextFloat() * 0.5f;
+        entityData[mapper.resistanceOffset] = random.nextFloat() * 0.03f;
+        entityData[mapper.rotateSpeedOffset] = 0;
+    }
+
+    public static void getRandomSprite(float[] spriteData, float rotate, int frame, float sceneWidth, float sceneHeight,
+            EntityMapper mapper, Random random) {
+        spriteData[mapper.translateOffset] = ((random.nextFloat() * sceneWidth) - sceneWidth / 2);
+        spriteData[mapper.translateOffset + 1] = ((random.nextFloat() * sceneHeight) - sceneHeight / 2);
+        spriteData[mapper.translateOffset + 2] = 1;
+        spriteData[mapper.rotateOffset] = 0;
+        spriteData[mapper.rotateOffset + 1] = 0;
+        spriteData[mapper.rotateOffset + 2] = rotate;
+        spriteData[mapper.scaleOffset] = 1;
+        spriteData[mapper.scaleOffset + 1] = 1;
+        spriteData[mapper.scaleOffset + 2] = 1;
+        spriteData[mapper.frameOffset] = frame;
     }
 
 }
