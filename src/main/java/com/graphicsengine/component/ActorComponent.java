@@ -120,9 +120,10 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
      * Creates the arrays for this spritecomponent
      * TODO Should this method be moved to Component?
      * 
+     * @param mapper
      * @param system
      */
-    protected abstract void createBuffers();
+    protected abstract void createBuffers(EntityMapper mapper);
 
     /**
      * Sets actor position
@@ -151,7 +152,6 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
 
     protected void setMesh(T mesh) {
         this.mesh = mesh;
-        mapper = new EntityMapper(mesh.getMapper());
     }
 
     @Override
@@ -168,6 +168,11 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
                     Builder<Mesh> spriteBuilder = createMeshBuilder(renderer, parent, count, shapeBuilder);
                     // TODO - Fix generics so that cast is not needed
                     setMesh((T) spriteBuilder.create());
+                    if (parent.getProgram() == null) {
+                        parent.setProgram(spriteBuilder.program);
+                    }
+                    mapper = new EntityMapper(new PropertyMapper(parent.getProgram()));
+
             }
         } catch (IOException | GLException e) {
             throw new ComponentException("Could not create component: " + e.getMessage());
@@ -183,7 +188,7 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
                 break;
         }
         parent.addMesh(mesh, MeshIndex.MAIN);
-        createBuffers();
+        createBuffers(mapper);
         mesh.setAttributeUpdater(this);
         bindAttributeBuffer(mesh.getAttributeBuffer(BufferIndex.ATTRIBUTES.index));
     }
@@ -215,12 +220,6 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
      */
     public EntityMapper getMapper() {
         return mapper;
-    }
-
-    @Override
-    public int getEntityDataSize() {
-        EntityMapper mapper = getMapper();
-        return mapper.attributesPerEntity;
     }
 
     /**

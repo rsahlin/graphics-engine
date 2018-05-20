@@ -6,7 +6,6 @@ import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
-import com.nucleus.shader.ShaderProgram;
 import com.nucleus.shader.TransformProgram;
 import com.nucleus.texturing.Texture2D.Shading;
 
@@ -37,10 +36,9 @@ public class SpriteGeometryMesh extends SpriteMesh {
         @Override
         public Mesh create() throws IOException, GLException {
             setArrayMode(Mode.POINTS, objectCount, 0);
-            if (material.getProgram() == null) {
-                ShaderProgram program = new TransformProgram(null, Shading.textured, TransformProgram.CATEGORY);
-                program = AssetManager.getInstance().getProgram(renderer.getGLES(), program);
-                material.setProgram(program);
+            if (program == null) {
+                program = AssetManager.getInstance().getProgram(renderer.getGLES(),
+                        new TransformProgram(null, Shading.textured, TransformProgram.CATEGORY));
             }
             return super.create();
         }

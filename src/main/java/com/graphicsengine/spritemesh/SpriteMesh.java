@@ -47,11 +47,10 @@ public class SpriteMesh extends Mesh {
         public Mesh create() throws IOException, GLException {
             setElementMode(Mode.TRIANGLES, objectCount * RectangleShapeBuilder.QUAD_VERTICES, 0,
                     objectCount * RectangleShapeBuilder.QUAD_ELEMENTS);
-            if (material.getProgram() == null) {
-                ShaderProgram program = createProgram(texture);
-                program = AssetManager.getInstance().getProgram(renderer.getGLES(), program);
-                material.setProgram(program);
-            }
+            // SpriteMesh is a special type of mesh that only works with specific shader program
+            program = createProgram(texture);
+            program = AssetManager.getInstance().getProgram(renderer.getGLES(), program);
+            setAttributesPerVertex(program.getAttributeSizes());
             return super.create();
         }
 
@@ -124,16 +123,17 @@ public class SpriteMesh extends Mesh {
      * @param offset Offset to attribute to set
      * @param source The source array
      * @param sourceIndex Index into source where data is copied from.
+     * @param sizePerVertex
      */
-    public void setAttribute4(int sprite, int offset, float[] source, int sourceIndex) {
-        int index = mapper.attributesPerVertex * 4 * sprite;
+    public void setAttribute4(int sprite, int offset, float[] source, int sourceIndex, int sizePerVertex) {
+        int index = sizePerVertex * 4 * sprite;
         AttributeBuffer attributeBuffer = getAttributeBuffer(BufferIndex.ATTRIBUTES.index);
         attributeBuffer.setArray(source, sourceIndex, index + offset, 4);
-        index += mapper.attributesPerVertex;
+        index += sizePerVertex;
         attributeBuffer.setArray(source, sourceIndex, index + offset, 4);
-        index += mapper.attributesPerVertex;
+        index += sizePerVertex;
         attributeBuffer.setArray(source, sourceIndex, index + offset, 4);
-        index += mapper.attributesPerVertex;
+        index += sizePerVertex;
         attributeBuffer.setArray(source, sourceIndex, index + offset, 4);
         attributeBuffer.setDirty(true);
     }
@@ -146,16 +146,17 @@ public class SpriteMesh extends Mesh {
      * @param offset Offset to attribute to set
      * @param source The source array
      * @param sourceIndex Index into source where data is copied from.
+     * @param sizePerVertex
      */
-    public void setAttribute3(int sprite, int offset, float[] source, int sourceIndex) {
-        int index = mapper.attributesPerVertex * 4 * sprite;
+    public void setAttribute3(int sprite, int offset, float[] source, int sourceIndex, int sizePerVertex) {
+        int index = sizePerVertex * 4 * sprite;
         AttributeBuffer attributeBuffer = getAttributeBuffer(BufferIndex.ATTRIBUTES.index);
         attributeBuffer.setArray(source, sourceIndex, index + offset, 3);
-        index += mapper.attributesPerVertex;
+        index += sizePerVertex;
         attributeBuffer.setArray(source, sourceIndex, index + offset, 3);
-        index += mapper.attributesPerVertex;
+        index += sizePerVertex;
         attributeBuffer.setArray(source, sourceIndex, index + offset, 3);
-        index += mapper.attributesPerVertex;
+        index += sizePerVertex;
         attributeBuffer.setArray(source, sourceIndex, index + offset, 3);
         attributeBuffer.setDirty(true);
     }
@@ -168,16 +169,17 @@ public class SpriteMesh extends Mesh {
      * @param offset Offset to attribute to set
      * @param source The source array
      * @param sourceIndex Index into source where data is copied from.
+     * @param sizePerVertex
      */
-    public void setAttribute2(int sprite, int offset, float[] source, int sourceIndex) {
-        int index = mapper.attributesPerVertex * 4 * sprite;
+    public void setAttribute2(int sprite, int offset, float[] source, int sourceIndex, int sizePerVertex) {
+        int index = sizePerVertex * 4 * sprite;
         AttributeBuffer attributeBuffer = getAttributeBuffer(BufferIndex.ATTRIBUTES.index);
         attributeBuffer.setArray(source, sourceIndex, index + offset, 2);
-        index += mapper.attributesPerVertex;
+        index += sizePerVertex;
         attributeBuffer.setArray(source, sourceIndex, index + offset, 2);
-        index += mapper.attributesPerVertex;
+        index += sizePerVertex;
         attributeBuffer.setArray(source, sourceIndex, index + offset, 2);
-        index += mapper.attributesPerVertex;
+        index += sizePerVertex;
         attributeBuffer.setArray(source, sourceIndex, index + offset, 2);
         attributeBuffer.setDirty(true);
     }

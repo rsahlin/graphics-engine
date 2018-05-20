@@ -175,7 +175,9 @@ public class PlayfieldNode extends Node {
         try {
             map = MapFactory.createMap(mapRef);
             PlayfieldMesh playfield = (PlayfieldMesh) getMesh(MeshIndex.MAIN);
-            PropertyMapper mapper = playfield.getMapper();
+            if (mapper == null) {
+                mapper = new PropertyMapper(program);
+            }
             if (map.getMap() != null && map.getMapSize() != null) {
                 playfield.copyCharmap(mapper, map);
             }

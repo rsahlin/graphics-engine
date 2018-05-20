@@ -55,6 +55,9 @@ public class GraphicsEngineMeshFactory extends DefaultMeshFactory implements Mes
         if (count != -1) {
             builder = parent.createMeshBuilder(renderer, parent, count, null);
             Mesh mesh = builder.create();
+            if (parent.getProgram() == null) {
+                parent.setProgram(builder.program);
+            }
             Bounds bounds = builder.createBounds();
             parent.initBounds(bounds);
             return mesh;

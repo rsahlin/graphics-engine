@@ -121,10 +121,8 @@ public class PlayfieldMesh extends SpriteMesh {
 
         @Override
         public Mesh create() throws IOException, GLException {
-            if (material.getProgram() == null) {
-                PlayfieldProgram program = new PlayfieldProgram();
-                program = (PlayfieldProgram) AssetManager.getInstance().getProgram(renderer.getGLES(), program);
-                material.setProgram(program);
+            if (program == null) {
+                program = AssetManager.getInstance().getProgram(renderer.getGLES(), new PlayfieldProgram());
             }
             RectangleConfiguration configuration = new RectangleShapeBuilder.RectangleConfiguration(charRectangle,
                     RectangleShapeBuilder.DEFAULT_Z, mapSize[0] * mapSize[1], 0);
@@ -133,7 +131,7 @@ public class PlayfieldMesh extends SpriteMesh {
             setShapeBuilder(shapeBuilder);
             PlayfieldMesh mesh = (PlayfieldMesh) super.create();
             mesh.playfieldSize = mapSize;
-            mesh.setupCharmap(charRectangle.getSize(), offset);
+            mesh.setupCharmap(new PropertyMapper(program), charRectangle.getSize(), offset);
             return mesh;
         }
 
@@ -191,11 +189,12 @@ public class PlayfieldMesh extends SpriteMesh {
      * The chars will be laid out sequentially across the x axis (row based)
      * Before rendering the attributes in the mesh must be updated with attribute data from this class.
      * 
+     * @param mapper
      * @param charSize width and height of each char
      * @param offset Start position of the upper left char, ie the upper left char will have this position.
      * @throws IllegalArgumentException If the size of the map does not match number of chars in this class
      */
-    public void setupCharmap(float[] charSize, float[] offset) {
+    public void setupCharmap(PropertyMapper mapper, float[] charSize, float[] offset) {
         if (playfieldSize == null || playfieldSize[0] == 0 || playfieldSize[1] == 0) {
             throw new IllegalArgumentException(
                     "Invalid map size " + (playfieldSize != null ? playfieldSize[0] + playfieldSize[1] : "null"));
@@ -206,7 +205,7 @@ public class PlayfieldMesh extends SpriteMesh {
         for (int y = 0; y < playfieldSize[1]; y++) {
             position[1] = startY;
             for (int x = 0; x < playfieldSize[0]; x++) {
-                setAttribute3(charNumber++, mapper.translateOffset, position, 0);
+                setAttribute3(charNumber++, mapper.translateOffset, position, 0, mapper.attributesPerVertex);
                 position[0] += charSize[Axis.WIDTH.index];
             }
             position[0] = offset[0];
@@ -339,7 +338,7 @@ public class PlayfieldMesh extends SpriteMesh {
      */
     private void setChar(PropertyMapper mapper, int pos, int chr, int flags) {
         map.getMap().put(pos, chr);
-        setAttribute2(pos, mapper.frameOffset, new float[] { chr, flags }, 0);
+        setAttribute2(pos, mapper.frameOffset, new float[] { chr, flags }, 0, mapper.attributesPerVertex);
     }
 
     /**
@@ -356,7 +355,7 @@ public class PlayfieldMesh extends SpriteMesh {
         float[] color = new float[4];
         emissive.position(index);
         emissive.get(color);
-        setAttribute4(pos, mapper.emissiveOffset, color, 0);
+        setAttribute4(pos, mapper.emissiveOffset, color, 0, mapper.attributesPerVertex);
     }
 
     @Override
