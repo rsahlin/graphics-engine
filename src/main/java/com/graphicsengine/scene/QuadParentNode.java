@@ -47,7 +47,6 @@ public class QuadParentNode extends Node implements Consumer {
     transient private ArrayList<SharedMeshQuad> quadChildren = new ArrayList<>();
 
     transient SpriteMesh spriteMesh;
-    transient PropertyMapper mapper;
     transient CPUQuadExpander quadExpander;
     transient RectangleShapeBuilder shapeBuilder;
 
@@ -120,7 +119,7 @@ public class QuadParentNode extends Node implements Consumer {
      * @param mesh
      */
     private void createBuffers(SpriteMesh mesh) {
-        mapper = mesh.getMapper();
+        mapper = new PropertyMapper(getProgram());
         CPUComponentBuffer sourceData = new CPUComponentBuffer(maxQuads, mapper.attributesPerVertex);
         CPUComponentBuffer destinationData = new CPUComponentBuffer(maxQuads, mapper.attributesPerVertex * 4);
         quadExpander = new CPUQuadExpander(mesh, mapper, sourceData, destinationData);

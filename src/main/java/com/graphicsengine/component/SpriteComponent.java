@@ -40,8 +40,8 @@ public class SpriteComponent extends ActorComponent<SpriteGeometryMesh> {
     }
 
     @Override
-    protected void createBuffers() {
-        CPUComponentBuffer entityData = new CPUComponentBuffer(count, getEntityDataSize());
+    protected void createBuffers(EntityMapper mapper) {
+        CPUComponentBuffer entityData = new CPUComponentBuffer(count, mapper.attributesPerEntity);
         addBuffer(0, entityData);
     }
 

@@ -75,10 +75,10 @@ public class SpriteAttributeComponent extends ActorComponent<SpriteMesh> impleme
     }
 
     @Override
-    protected void createBuffers() {
+    protected void createBuffers(EntityMapper mapper) {
         spritedataSize = mapper.attributesPerVertex;
         CPUComponentBuffer spriteData = new CPUComponentBuffer(count, mapper.attributesPerVertex * 4);
-        CPUComponentBuffer entityData = new CPUComponentBuffer(count, getEntityDataSize());
+        CPUComponentBuffer entityData = new CPUComponentBuffer(count, mapper.attributesPerEntity);
         spriteExpander = new CPUQuadExpander(mesh, mapper, entityData, spriteData);
         addBuffer(0, spriteData);
         addBuffer(1, entityData);

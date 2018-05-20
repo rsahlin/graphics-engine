@@ -25,6 +25,8 @@ public class UVSpriteProgram extends TiledSpriteProgram {
 
     protected static final String CATEGORY = "uvsprite";
 
+    transient protected boolean initialized = false;
+
     public UVSpriteProgram() {
         super(null, Texture2D.Shading.textured, CATEGORY);
     }
@@ -46,8 +48,17 @@ public class UVSpriteProgram extends TiledSpriteProgram {
     }
 
     @Override
+    public void updateUniformData(float[] destinationUniform, Mesh mesh) {
+        if (!initialized) {
+            initBuffers(mesh);
+            initialized = true;
+        }
+        super.updateUniformData(destinationUniform, mesh);
+    }
+
+    @Override
     public void initBuffers(Mesh mesh) {
-        BlockBuffer[] blocks = mesh.getBlockBuffers();
+        BlockBuffer[] blocks = uniformBlockBuffers;
         if (blocks != null) {
             for (BlockBuffer bb : blocks) {
                 CommonBlockNames blockName = CommonBlockNames.valueOf(bb.getBlockName());
