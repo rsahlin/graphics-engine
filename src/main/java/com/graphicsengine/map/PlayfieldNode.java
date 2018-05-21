@@ -6,6 +6,8 @@ import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.scene.GraphicsEngineNodeType;
 import com.nucleus.SimpleLogger;
 import com.nucleus.geometry.Mesh;
+import com.nucleus.geometry.shape.RectangleShapeBuilder;
+import com.nucleus.geometry.shape.RectangleShapeBuilder.RectangleConfiguration;
 import com.nucleus.geometry.shape.ShapeBuilder;
 import com.nucleus.io.ExternalReference;
 import com.nucleus.mmi.ObjectInputListener;
@@ -150,7 +152,16 @@ public class PlayfieldNode extends Node {
         builder.setMap(mapSize, playfield.getCharRectangle());
         builder.setOffset(playfield.getAnchorOffset());
         int charCount = mapSize[0] * mapSize[1];
-        return super.initMeshBuilder(renderer, parent, charCount, shapeBuilder, builder);
+        super.initMeshBuilder(renderer, parent, charCount, shapeBuilder, builder);
+        if (shapeBuilder == null) {
+            RectangleConfiguration configuration = new RectangleShapeBuilder.RectangleConfiguration(
+                    playfield.getCharRectangle(), RectangleShapeBuilder.DEFAULT_Z, mapSize[0] * mapSize[1], 0);
+            configuration.enableVertexIndex(true);
+            shapeBuilder = new CharmapBuilder(configuration, new PropertyMapper(program), playfield.getAnchorOffset());
+            builder.setShapeBuilder(shapeBuilder);
+        }
+        return builder;
+
     }
 
     /**

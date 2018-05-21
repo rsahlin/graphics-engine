@@ -7,14 +7,13 @@ import java.nio.IntBuffer;
 
 import com.graphicsengine.map.Map.MapColor;
 import com.graphicsengine.spritemesh.SpriteMesh;
-import com.nucleus.assets.AssetManager;
 import com.nucleus.bounds.Bounds;
 import com.nucleus.bounds.RectangularBounds;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.shape.RectangleShapeBuilder;
-import com.nucleus.geometry.shape.RectangleShapeBuilder.RectangleConfiguration;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
+import com.nucleus.shader.ShaderProgram;
 import com.nucleus.shader.ShaderProperty.PropertyMapper;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.vecmath.Axis;
@@ -121,23 +120,18 @@ public class PlayfieldMesh extends SpriteMesh {
 
         @Override
         public Mesh create() throws IOException, GLException {
-            if (program == null) {
-                program = AssetManager.getInstance().getProgram(renderer.getGLES(), new PlayfieldProgram());
-            }
-            RectangleConfiguration configuration = new RectangleShapeBuilder.RectangleConfiguration(charRectangle,
-                    RectangleShapeBuilder.DEFAULT_Z, mapSize[0] * mapSize[1], 0);
-            configuration.enableVertexIndex(true);
-            RectangleShapeBuilder shapeBuilder = new RectangleShapeBuilder(configuration);
-            setShapeBuilder(shapeBuilder);
             PlayfieldMesh mesh = (PlayfieldMesh) super.create();
-            mesh.playfieldSize = mapSize;
-            mesh.setupCharmap(new PropertyMapper(program), charRectangle.getSize(), offset);
             return mesh;
         }
 
         @Override
+        public ShaderProgram createProgram(Texture2D texture) {
+            return new PlayfieldProgram();
+        }
+
+        @Override
         protected Mesh createMesh() {
-            return new PlayfieldMesh();
+            return new PlayfieldMesh(mapSize);
         }
 
         @Override
@@ -153,9 +147,13 @@ public class PlayfieldMesh extends SpriteMesh {
 
     /**
      * Creates a new instance of an empty playfield mesh.
+     * 
+     * @param mapSize
      */
-    protected PlayfieldMesh() {
+    protected PlayfieldMesh(int[] mapSize) {
         super();
+        this.playfieldSize[0] = mapSize[0];
+        this.playfieldSize[1] = mapSize[1];
     }
 
     /**
@@ -197,7 +195,7 @@ public class PlayfieldMesh extends SpriteMesh {
     public void setupCharmap(PropertyMapper mapper, float[] charSize, float[] offset) {
         if (playfieldSize == null || playfieldSize[0] == 0 || playfieldSize[1] == 0) {
             throw new IllegalArgumentException(
-                    "Invalid map size " + (playfieldSize != null ? playfieldSize[0] + playfieldSize[1] : "null"));
+                    "Invalid map size " + (playfieldSize != null ? playfieldSize[0] * playfieldSize[1] : "null"));
         }
         int charNumber = 0;
         float[] position = new float[] { offset[0], offset[1], 0 };

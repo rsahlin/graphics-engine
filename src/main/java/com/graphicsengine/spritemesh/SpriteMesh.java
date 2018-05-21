@@ -6,6 +6,7 @@ import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.shape.RectangleShapeBuilder;
+import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.shader.ShaderProgram;
@@ -47,13 +48,13 @@ public class SpriteMesh extends Mesh {
         public Mesh create() throws IOException, GLException {
             setElementMode(Mode.TRIANGLES, objectCount * RectangleShapeBuilder.QUAD_VERTICES, 0,
                     objectCount * RectangleShapeBuilder.QUAD_ELEMENTS);
-            // SpriteMesh is a special type of mesh that only works with specific shader program
-            if (program == null) {
-                program = createProgram(texture);
-                program = AssetManager.getInstance().getProgram(renderer.getGLES(), program);
-            }
-            setAttributesPerVertex(program.getAttributeSizes());
             return super.create();
+        }
+
+        @Override
+        public ShaderProgram createProgram(GLES20Wrapper gles) {
+            // SpriteMesh is a special type of mesh that only works with specific shader program
+            return AssetManager.getInstance().getProgram(gles, createProgram(texture));
         }
 
         @Override
