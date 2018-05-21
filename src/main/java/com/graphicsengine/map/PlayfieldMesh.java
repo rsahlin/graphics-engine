@@ -39,7 +39,7 @@ public class PlayfieldMesh extends SpriteMesh {
 
     private transient int[] playfieldSize = new int[2];
 
-    public static class Builder extends Mesh.Builder<Mesh> {
+    public static class Builder extends SpriteMesh.Builder {
 
         protected int[] mapSize;
         protected Rectangle charRectangle;

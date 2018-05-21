@@ -48,8 +48,10 @@ public class SpriteMesh extends Mesh {
             setElementMode(Mode.TRIANGLES, objectCount * RectangleShapeBuilder.QUAD_VERTICES, 0,
                     objectCount * RectangleShapeBuilder.QUAD_ELEMENTS);
             // SpriteMesh is a special type of mesh that only works with specific shader program
-            program = createProgram(texture);
-            program = AssetManager.getInstance().getProgram(renderer.getGLES(), program);
+            if (program == null) {
+                program = createProgram(texture);
+                program = AssetManager.getInstance().getProgram(renderer.getGLES(), program);
+            }
             setAttributesPerVertex(program.getAttributeSizes());
             return super.create();
         }

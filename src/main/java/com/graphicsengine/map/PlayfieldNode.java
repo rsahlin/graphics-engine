@@ -146,9 +146,11 @@ public class PlayfieldNode extends Node {
 
         PlayfieldNode playfield = (PlayfieldNode) parent;
         PlayfieldMesh.Builder builder = new PlayfieldMesh.Builder(renderer);
-        builder.setMap(playfield.getMapSize(), playfield.getCharRectangle());
+        int[] mapSize = playfield.getMapSize();
+        builder.setMap(mapSize, playfield.getCharRectangle());
         builder.setOffset(playfield.getAnchorOffset());
-        return super.initMeshBuilder(renderer, parent, count, shapeBuilder, builder);
+        int charCount = mapSize[0] * mapSize[1];
+        return super.initMeshBuilder(renderer, parent, charCount, shapeBuilder, builder);
     }
 
     /**
