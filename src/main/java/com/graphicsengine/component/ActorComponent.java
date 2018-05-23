@@ -12,9 +12,7 @@ import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.Mesh.BufferIndex;
 import com.nucleus.geometry.Mesh.Builder;
 import com.nucleus.geometry.MeshBuilder.MeshBuilderFactory;
-import com.nucleus.geometry.shape.RectangleShapeBuilder;
 import com.nucleus.geometry.shape.ShapeBuilder;
-import com.nucleus.geometry.shape.ShapeBuilderFactory;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.ComponentNode;
@@ -29,7 +27,7 @@ import com.nucleus.texturing.UVTexture2D;
 import com.nucleus.vecmath.Shape;
 
 /**
- * The actor component, this is a collection of a number of (similar) moving on screen objects that have the data in a
+ * The actor component, this is a collection of a number of (similar) moving/on screen objects that have the data in a
  * shared buffer.
  * The component can be seen as a container for the data needed to process the actors - but not the behavior itself.
  * This class is used by implementations of {@link System} to process behavior, the System is where the logic is and
@@ -47,6 +45,27 @@ import com.nucleus.vecmath.Shape;
  *
  */
 public abstract class ActorComponent<T extends Mesh> extends Component implements Consumer, MeshBuilderFactory<Mesh> {
+
+    /**
+     * Initialization methods for entity dataset - these should NOT be used to update the data, only for init purposes.
+     *
+     */
+    public interface EntityData {
+
+        /**
+         * Copies length number of values from data, beginning at offset and storing for the entity, beginning to write
+         * at entityOffset
+         * Use this method for init purposes - it is not optimized for updating a large number of entities at runtime.
+         * 
+         * @param entity
+         * @param entityOffset
+         * @param data
+         * @param offset
+         * @param length
+         */
+        public void setEntity(int entity, int entityOffset, float[] data, int offset, int length);
+
+    }
 
     public static class EntityMapper extends PropertyMapper {
 
@@ -99,20 +118,18 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
     protected abstract Mesh.Builder<Mesh> createBuilderInstance(NucleusRenderer renderer);
 
     /**
+     * Creates the ShapeBuilder to be used to create shapes, or null if no builder shall be used - for instance
+     * if mode is points.
+     */
+    protected abstract ShapeBuilder createShapeBuilder();
+
+    /**
      * Returns the buffer that holds entity data, this is the object specific data that is used to handle
      * behavior.
      * 
      * @return The buffer with actor (entity) data
      */
     public abstract ComponentBuffer getEntityBuffer();
-
-    /**
-     * Sets the entity specific data for a sprite.
-     * 
-     * @param entity The entity index
-     * @param destOffset Offset in destination where data is copied.
-     */
-    public abstract void setEntityData(int entity, int destOffset, float[] data);
 
     /**
      * Internal method
@@ -123,16 +140,6 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
      * @param system
      */
     protected abstract void createBuffers(EntityMapper mapper);
-
-    /**
-     * Sets actor position
-     * If the component uses an expander this is called to expand data.
-     * 
-     * @param actor The actor index to update
-     * @param position x,y and z
-     * @param offset Offset into position where values are read.
-     */
-    public abstract void setPosition(int actor, float[] position, int offset);
 
     /**
      * Sets data from source into this
@@ -162,9 +169,7 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
             }
             switch (shape.getType()) {
                 case rect:
-                    ShapeBuilder shapeBuilder = ShapeBuilderFactory.createBuilder(shape,
-                            new float[] { RectangleShapeBuilder.DEFAULT_Z }, count, 0);
-                    Builder<Mesh> spriteBuilder = createMeshBuilder(renderer, parent, count, shapeBuilder);
+                    Builder<Mesh> spriteBuilder = createMeshBuilder(renderer, parent, count, createShapeBuilder());
                     // TODO - Fix generics so that cast is not needed
                     setMesh((T) spriteBuilder.create());
                     mapper = new EntityMapper(new PropertyMapper(parent.getProgram()));
@@ -236,13 +241,19 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
         spriteData[mapper.translateOffset] = ((random.nextFloat() * sceneWidth) - sceneWidth / 2);
         spriteData[mapper.translateOffset + 1] = ((random.nextFloat() * sceneHeight) - sceneHeight / 2);
         spriteData[mapper.translateOffset + 2] = 1;
-        spriteData[mapper.rotateOffset] = 0;
-        spriteData[mapper.rotateOffset + 1] = 0;
-        spriteData[mapper.rotateOffset + 2] = rotate;
-        spriteData[mapper.scaleOffset] = 1;
-        spriteData[mapper.scaleOffset + 1] = 1;
-        spriteData[mapper.scaleOffset + 2] = 1;
-        spriteData[mapper.frameOffset] = frame;
+        if (mapper.rotateOffset > -1) {
+            spriteData[mapper.rotateOffset] = 0;
+            spriteData[mapper.rotateOffset + 1] = 0;
+            spriteData[mapper.rotateOffset + 2] = rotate;
+        }
+        if (mapper.scaleOffset > -1) {
+            spriteData[mapper.scaleOffset] = 1;
+            spriteData[mapper.scaleOffset + 1] = 1;
+            spriteData[mapper.scaleOffset + 2] = 1;
+        }
+        if (mapper.frameOffset > -1) {
+            spriteData[mapper.frameOffset] = frame;
+        }
     }
 
 }

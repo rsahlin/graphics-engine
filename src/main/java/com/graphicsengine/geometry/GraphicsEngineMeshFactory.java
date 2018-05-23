@@ -38,17 +38,14 @@ public class GraphicsEngineMeshFactory extends DefaultMeshFactory implements Mes
 
         if (parent instanceof PlayfieldNode) {
             count = 1;
-        }
-        if (parent instanceof QuadParentNode) {
+        } else if (parent instanceof QuadParentNode) {
             count = ((QuadParentNode) parent).getMaxQuads();
-        }
-        if (parent instanceof ComponentNode) {
+        } else if (parent instanceof ComponentNode) {
             /**
              * If ComponentNode then don't create mesh, mesh is created when create on component is called.
              */
             return null;
-        }
-        if (parent instanceof SharedMeshQuad) {
+        } else if (parent instanceof SharedMeshQuad) {
             // This is child to quad parent node, do not create mesh
             return null;
         }

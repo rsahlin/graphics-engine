@@ -1,5 +1,6 @@
 package com.graphicsengine.component;
 
+import com.graphicsengine.component.ActorComponent.EntityData;
 import com.graphicsengine.spritemesh.SpriteMesh;
 import com.nucleus.SimpleLogger;
 import com.nucleus.component.CPUComponentBuffer;
@@ -11,6 +12,9 @@ import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.Mesh.Builder;
 import com.nucleus.geometry.MeshBuilder.MeshBuilderFactory;
+import com.nucleus.geometry.shape.RectangleShapeBuilder;
+import com.nucleus.geometry.shape.ShapeBuilder;
+import com.nucleus.geometry.shape.ShapeBuilderFactory;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.texturing.Texture2D;
 
@@ -27,7 +31,8 @@ import com.nucleus.texturing.Texture2D;
  * @author Richard Sahlin
  *
  */
-public class SpriteAttributeComponent extends ActorComponent<SpriteMesh> implements Consumer, MeshBuilderFactory<Mesh> {
+public class SpriteAttributeComponent extends ActorComponent<SpriteMesh>
+        implements Consumer, MeshBuilderFactory<Mesh>, EntityData {
 
     public static final String GRAVITY = "gravity";
 
@@ -103,29 +108,6 @@ public class SpriteAttributeComponent extends ActorComponent<SpriteMesh> impleme
         SimpleLogger.d(getClass(), "Not implemented!!!!!!!!!");
     }
 
-    /**
-     * Sets the transform for a sprite using 3 values for xyz axis, translate.xyz, rotate.xyz, scale.xyz
-     * Use this method for initialization only
-     * 
-     * @param sprite
-     * @param transform 3 axis translate, rotate and scale values
-     */
-    public void setTransform(int sprite, float[] transform) {
-        spriteExpander.setTransform(sprite, transform);
-    }
-
-    @Override
-    public void setPosition(int actor, float[] position, int offset) {
-        spriteExpander.setPosition(actor, position, offset);
-    }
-
-    @Override
-    public void setEntityData(int sprite, int destOffset, float[] data) {
-        ComponentBuffer entityBuffer = getEntityBuffer();
-        entityBuffer.put(sprite, destOffset, data, 0, data.length);
-        spriteExpander.setData(sprite, data, 0);
-    }
-
     @Override
     public void bindAttributeBuffer(AttributeBuffer buffer) {
         spriteExpander.bindAttributeBuffer(buffer);
@@ -139,6 +121,19 @@ public class SpriteAttributeComponent extends ActorComponent<SpriteMesh> impleme
     @Override
     protected Builder<Mesh> createBuilderInstance(NucleusRenderer renderer) {
         return new SpriteMesh.Builder(renderer);
+    }
+
+    @Override
+    protected ShapeBuilder createShapeBuilder() {
+        return ShapeBuilderFactory.createBuilder(shape,
+                new float[] { RectangleShapeBuilder.DEFAULT_Z }, count, 0);
+    }
+
+    @Override
+    public void setEntity(int entity, int entityOffset, float[] data, int offset, int length) {
+        ComponentBuffer entityBuffer = getEntityBuffer();
+        entityBuffer.put(entity, entityOffset, data, offset, length);
+        spriteExpander.setData(entity, entityOffset, data, offset, length);
     }
 
 }

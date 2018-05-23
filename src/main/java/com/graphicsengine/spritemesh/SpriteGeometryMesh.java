@@ -2,12 +2,13 @@ package com.graphicsengine.spritemesh;
 
 import java.io.IOException;
 
+import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.Mesh;
+import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.shader.ShaderProgram;
-import com.nucleus.shader.TransformProgram;
-import com.nucleus.texturing.Texture2D;
+import com.nucleus.shader.TranslateProgram;
 import com.nucleus.texturing.Texture2D.Shading;
 
 /**
@@ -23,7 +24,7 @@ public class SpriteGeometryMesh extends SpriteMesh {
      * Builder for sprite meshes
      *
      */
-    public static class Builder extends SpriteMesh.Builder {
+    public static class Builder extends Mesh.Builder<Mesh> {
 
         public Builder(NucleusRenderer renderer) {
             super(renderer);
@@ -41,8 +42,9 @@ public class SpriteGeometryMesh extends SpriteMesh {
         }
 
         @Override
-        public ShaderProgram createProgram(Texture2D texture) {
-            return new TransformProgram(null, Shading.textured, TransformProgram.CATEGORY);
+        public ShaderProgram createProgram(GLES20Wrapper gles) {
+            return AssetManager.getInstance().getProgram(gles,
+                    new TranslateProgram(Shading.flat));
         }
 
     }

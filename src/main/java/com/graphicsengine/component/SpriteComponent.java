@@ -1,5 +1,6 @@
 package com.graphicsengine.component;
 
+import com.graphicsengine.component.ActorComponent.EntityData;
 import com.graphicsengine.spritemesh.SpriteGeometryMesh;
 import com.nucleus.component.CPUComponentBuffer;
 import com.nucleus.component.Component;
@@ -7,6 +8,7 @@ import com.nucleus.component.ComponentBuffer;
 import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.Mesh.Builder;
+import com.nucleus.geometry.shape.ShapeBuilder;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TextureType;
@@ -21,9 +23,10 @@ import com.nucleus.texturing.TextureType;
  * @author Richard Sahlin
  *
  */
-public class SpriteComponent extends ActorComponent<SpriteGeometryMesh> {
+public class SpriteComponent extends ActorComponent<SpriteGeometryMesh> implements EntityData {
 
     transient protected AttributeBuffer attributes;
+    transient protected CPUComponentBuffer entityData;
 
     @Override
     public Component createInstance() {
@@ -41,7 +44,7 @@ public class SpriteComponent extends ActorComponent<SpriteGeometryMesh> {
 
     @Override
     protected void createBuffers(EntityMapper mapper) {
-        CPUComponentBuffer entityData = new CPUComponentBuffer(count, mapper.attributesPerEntity);
+        entityData = new CPUComponentBuffer(count, mapper.attributesPerEntity);
         addBuffer(0, entityData);
     }
 
@@ -57,7 +60,8 @@ public class SpriteComponent extends ActorComponent<SpriteGeometryMesh> {
 
     @Override
     public void updateAttributeData(NucleusRenderer renderer) {
-
+        attributes.setBufferPosition(0);
+        attributes.put(entityData.getData());
     }
 
     /**
@@ -85,14 +89,15 @@ public class SpriteComponent extends ActorComponent<SpriteGeometryMesh> {
     }
 
     @Override
-    public void setPosition(int actor, float[] position, int offset) {
-
+    protected ShapeBuilder createShapeBuilder() {
+        // We are using point mode - do not create shapebuilder
+        return null;
     }
 
     @Override
-    public void setEntityData(int sprite, int destOffset, float[] data) {
+    public void setEntity(int entity, int entityOffset, float[] data, int offset, int length) {
         ComponentBuffer entityBuffer = getEntityBuffer();
-        entityBuffer.put(sprite, destOffset, data, 0, data.length);
+        entityBuffer.put(entity, entityOffset, data, offset, length);
     }
 
 }
