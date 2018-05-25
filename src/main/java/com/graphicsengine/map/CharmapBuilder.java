@@ -2,7 +2,7 @@ package com.graphicsengine.map;
 
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.shape.RectangleShapeBuilder;
-import com.nucleus.shader.ShaderProperty.PropertyMapper;
+import com.nucleus.shader.AttributeIndexer.Indexer;
 
 /**
  * Special shapebuilder for playfield charmap - will also setup the charmap.
@@ -12,10 +12,10 @@ import com.nucleus.shader.ShaderProperty.PropertyMapper;
  */
 public class CharmapBuilder extends RectangleShapeBuilder {
 
-    protected PropertyMapper mapper;
+    protected Indexer mapper;
     protected float[] offset;
 
-    public CharmapBuilder(RectangleConfiguration configuration, PropertyMapper mapper, float[] offset) {
+    public CharmapBuilder(RectangleConfiguration configuration, Indexer mapper, float[] offset) {
         super(configuration);
         this.mapper = mapper;
         this.offset = offset;

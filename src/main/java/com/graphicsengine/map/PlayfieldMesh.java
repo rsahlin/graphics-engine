@@ -13,8 +13,8 @@ import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.shape.RectangleShapeBuilder;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
+import com.nucleus.shader.AttributeIndexer.Indexer;
 import com.nucleus.shader.ShaderProgram;
-import com.nucleus.shader.ShaderProperty.PropertyMapper;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.vecmath.Axis;
 import com.nucleus.vecmath.Rectangle;
@@ -192,7 +192,7 @@ public class PlayfieldMesh extends SpriteMesh {
      * @param offset Start position of the upper left char, ie the upper left char will have this position.
      * @throws IllegalArgumentException If the size of the map does not match number of chars in this class
      */
-    public void setupCharmap(PropertyMapper mapper, float[] charSize, float[] offset) {
+    public void setupCharmap(Indexer mapper, float[] charSize, float[] offset) {
         if (playfieldSize == null || playfieldSize[0] == 0 || playfieldSize[1] == 0) {
             throw new IllegalArgumentException(
                     "Invalid map size " + (playfieldSize != null ? playfieldSize[0] * playfieldSize[1] : "null"));
@@ -203,7 +203,7 @@ public class PlayfieldMesh extends SpriteMesh {
         for (int y = 0; y < playfieldSize[1]; y++) {
             position[1] = startY;
             for (int x = 0; x < playfieldSize[0]; x++) {
-                setAttribute3(charNumber++, mapper.translateOffset, position, 0, mapper.attributesPerVertex);
+                setAttribute3(charNumber++, mapper.translate, position, 0, mapper.attributesPerVertex);
                 position[0] += charSize[Axis.WIDTH.index];
             }
             position[0] = offset[0];
@@ -226,7 +226,7 @@ public class PlayfieldMesh extends SpriteMesh {
      * @param count Number of chars to copy
      * @throws ArrayIndexOutOfBoundsException If source or destination does not contain enough data.
      */
-    public void copyCharmap(PropertyMapper mapper, IntBuffer map, ByteBuffer flags, MapColor emissive, int sourceOffset,
+    public void copyCharmap(Indexer mapper, IntBuffer map, ByteBuffer flags, MapColor emissive, int sourceOffset,
             int destOffset, int count) {
         int emissiveStride = emissive.getVertexStride();
         int sizePerChar = emissive.getSizePerChar();
@@ -253,7 +253,7 @@ public class PlayfieldMesh extends SpriteMesh {
      * @param count Number of chars to copy
      * @throws ArrayIndexOutOfBoundsException If source or destination does not contain enough data.
      */
-    public void copyCharmap(PropertyMapper mapper, IntBuffer map, ByteBuffer flags, int sourceOffset,
+    public void copyCharmap(Indexer mapper, IntBuffer map, ByteBuffer flags, int sourceOffset,
             int destOffset, int count) {
         for (int i = 0; i < count; i++) {
             setChar(mapper, destOffset++, map.get(sourceOffset), flags.getInt(sourceOffset));
@@ -268,7 +268,7 @@ public class PlayfieldMesh extends SpriteMesh {
      * @param mapper The attribute property mapper
      * @param source Map data will be copied from this
      */
-    public void copyCharmap(PropertyMapper mapper, Map source) {
+    public void copyCharmap(Indexer mapper, Map source) {
         if (source == null || source.getMapSize() == null) {
             return;
         }
@@ -305,7 +305,7 @@ public class PlayfieldMesh extends SpriteMesh {
      * @param height Height of area to fill
      * @param fill Fill value
      */
-    public void fill(PropertyMapper mapper, int x, int y, int width, int height, int fill, int flags, int[] mapSize) {
+    public void fill(Indexer mapper, int x, int y, int width, int height, int fill, int flags, int[] mapSize) {
         if (x > mapSize[Axis.WIDTH.index] || y > mapSize[Axis.HEIGHT.index]) {
             // Completely outside
             return;
@@ -334,9 +334,9 @@ public class PlayfieldMesh extends SpriteMesh {
      * @param chr The char to set.
      * @param flags Flags for the char
      */
-    private void setChar(PropertyMapper mapper, int pos, int chr, int flags) {
+    private void setChar(Indexer mapper, int pos, int chr, int flags) {
         map.getMap().put(pos, chr);
-        setAttribute2(pos, mapper.frameOffset, new float[] { chr, flags }, 0, mapper.attributesPerVertex);
+        setAttribute2(pos, mapper.frame, new float[] { chr, flags }, 0, mapper.attributesPerVertex);
     }
 
     /**
@@ -349,11 +349,11 @@ public class PlayfieldMesh extends SpriteMesh {
      * @param index Index into emissive array where material should be read
      * @param stride Emissive stride to get to values for next emissive, either 0 or size of emissive data.
      */
-    private void setEmissive(PropertyMapper mapper, int pos, FloatBuffer emissive, int index, int stride) {
+    private void setEmissive(Indexer mapper, int pos, FloatBuffer emissive, int index, int stride) {
         float[] color = new float[4];
         emissive.position(index);
         emissive.get(color);
-        setAttribute4(pos, mapper.emissiveOffset, color, 0, mapper.attributesPerVertex);
+        setAttribute4(pos, mapper.emissive, color, 0, mapper.attributesPerVertex);
     }
 
     @Override

@@ -18,7 +18,7 @@ import com.nucleus.scene.LineDrawerNode;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.NodeException;
 import com.nucleus.scene.RootNode;
-import com.nucleus.shader.ShaderProperty.PropertyMapper;
+import com.nucleus.shader.AttributeIndexer.Indexer;
 import com.nucleus.vecmath.Matrix;
 import com.nucleus.vecmath.Rectangle;
 
@@ -157,7 +157,7 @@ public class PlayfieldNode extends Node {
             RectangleConfiguration configuration = new RectangleShapeBuilder.RectangleConfiguration(
                     playfield.getCharRectangle(), RectangleShapeBuilder.DEFAULT_Z, mapSize[0] * mapSize[1], 0);
             configuration.enableVertexIndex(true);
-            shapeBuilder = new CharmapBuilder(configuration, new PropertyMapper(program), playfield.getAnchorOffset());
+            shapeBuilder = new CharmapBuilder(configuration, new Indexer(program), playfield.getAnchorOffset());
             builder.setShapeBuilder(shapeBuilder);
         }
         return builder;
@@ -189,7 +189,7 @@ public class PlayfieldNode extends Node {
             map = MapFactory.createMap(mapRef);
             PlayfieldMesh playfield = (PlayfieldMesh) getMesh(MeshIndex.MAIN);
             if (mapper == null) {
-                mapper = new PropertyMapper(program);
+                mapper = new Indexer(program);
             }
             if (map.getMap() != null && map.getMapSize() != null) {
                 playfield.copyCharmap(mapper, map);

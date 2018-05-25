@@ -18,7 +18,7 @@ import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.ComponentNode;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.Node.MeshIndex;
-import com.nucleus.shader.ShaderProperty.PropertyMapper;
+import com.nucleus.shader.AttributeIndexer.Indexer;
 import com.nucleus.system.System;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TextureType;
@@ -67,7 +67,7 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
 
     }
 
-    public static class EntityMapper extends PropertyMapper {
+    public static class EntityMapper extends Indexer {
 
         public int moveVectorOffset;
         public int elasticityOffset;
@@ -75,7 +75,7 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
         public int rotateSpeedOffset;
         public int attributesPerEntity;
 
-        public EntityMapper(PropertyMapper source) {
+        public EntityMapper(Indexer source) {
             super(source);
             moveVectorOffset = source.attributesPerVertex;
             elasticityOffset = source.attributesPerVertex + 3;
@@ -172,7 +172,7 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
                     Builder<Mesh> spriteBuilder = createMeshBuilder(renderer, parent, count, createShapeBuilder());
                     // TODO - Fix generics so that cast is not needed
                     setMesh((T) spriteBuilder.create());
-                    mapper = new EntityMapper(new PropertyMapper(parent.getProgram()));
+                    mapper = new EntityMapper(new Indexer(parent.getProgram()));
 
             }
         } catch (IOException | GLException e) {
@@ -238,21 +238,21 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
 
     public static void getRandomSprite(float[] spriteData, float rotate, int frame, float sceneWidth, float sceneHeight,
             EntityMapper mapper, Random random) {
-        spriteData[mapper.translateOffset] = ((random.nextFloat() * sceneWidth) - sceneWidth / 2);
-        spriteData[mapper.translateOffset + 1] = ((random.nextFloat() * sceneHeight) - sceneHeight / 2);
-        spriteData[mapper.translateOffset + 2] = 1;
-        if (mapper.rotateOffset > -1) {
-            spriteData[mapper.rotateOffset] = 0;
-            spriteData[mapper.rotateOffset + 1] = 0;
-            spriteData[mapper.rotateOffset + 2] = rotate;
+        spriteData[mapper.vertex] = ((random.nextFloat() * sceneWidth) - sceneWidth / 2);
+        spriteData[mapper.vertex + 1] = ((random.nextFloat() * sceneHeight) - sceneHeight / 2);
+        spriteData[mapper.vertex + 2] = 1;
+        if (mapper.rotate > -1) {
+            spriteData[mapper.rotate] = 0;
+            spriteData[mapper.rotate + 1] = 0;
+            spriteData[mapper.rotate + 2] = rotate;
         }
-        if (mapper.scaleOffset > -1) {
-            spriteData[mapper.scaleOffset] = 1;
-            spriteData[mapper.scaleOffset + 1] = 1;
-            spriteData[mapper.scaleOffset + 2] = 1;
+        if (mapper.scale > -1) {
+            spriteData[mapper.scale] = 1;
+            spriteData[mapper.scale + 1] = 1;
+            spriteData[mapper.scale + 2] = 1;
         }
-        if (mapper.frameOffset > -1) {
-            spriteData[mapper.frameOffset] = frame;
+        if (mapper.frame > -1) {
+            spriteData[mapper.frame] = frame;
         }
     }
 
