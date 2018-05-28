@@ -237,10 +237,10 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
     }
 
     public static void getRandomSprite(float[] spriteData, float rotate, int frame, float sceneWidth, float sceneHeight,
-            EntityMapper mapper, Random random) {
+            Indexer mapper, Random random) {
         spriteData[mapper.vertex] = ((random.nextFloat() * sceneWidth) - sceneWidth / 2);
         spriteData[mapper.vertex + 1] = ((random.nextFloat() * sceneHeight) - sceneHeight / 2);
-        spriteData[mapper.vertex + 2] = 1;
+        spriteData[mapper.vertex + 2] = 0;
         if (mapper.rotate > -1) {
             spriteData[mapper.rotate] = 0;
             spriteData[mapper.rotate + 1] = 0;
