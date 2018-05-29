@@ -39,9 +39,9 @@ mat4 calculateTransformMatrix(vec3 rotate, vec3 scale, vec3 translate);
 
 void main() {
     vec4 pos =  vec4(aVertex.xyz, 1) * (calculateTransformMatrix(aRotate, aScale, aTranslate) * uMVMatrix);
-    gl_Position = uProjectionMatrix * vec4(floor((uScreenSize * vec2(pos) + 0.5)) / uScreenSize, pos.z, pos.w);
+    gl_Position = vec4(floor((uScreenSize * vec2(pos) + 0.5)) / uScreenSize, pos.z, pos.w) * uProjectionMatrix;
     
-    vLightPos = uLightMatrix * pos;
+    vLightPos = pos * uLightMatrix;
     
     float y = floor(aFrameData.x / uTextureData.z);
     vTexCoord = vec2(aTexCoord.x + 

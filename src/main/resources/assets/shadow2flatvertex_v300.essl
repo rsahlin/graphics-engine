@@ -38,7 +38,7 @@ mat4 calculateTransformMatrix(vec3 rotate, vec3 scale, vec3 translate);
 
 void main() {
     vec4 pos =  vec4(aVertex.xyz, 1) * (calculateTransformMatrix(aRotate, aScale, aTranslate) * uMVMatrix);
-    gl_Position = uProjectionMatrix * pos;
+    gl_Position = pos * uProjectionMatrix;
 //    vLightPos = uLightMatrix * pos * vec4(0.5,0.5,1,1) + vec4(0.5,0.5,0,0);
     vLightPos = uLightMatrix * pos;
     color = aColor;

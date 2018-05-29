@@ -37,7 +37,7 @@ public class SpriteGeometryMesh extends SpriteMesh {
 
         @Override
         public Mesh create() throws IOException, GLException {
-            setArrayMode(Mode.POINTS, objectCount, 0);
+            setArrayMode(Mode.LINES, objectCount, 0);
             return super.create();
         }
 
