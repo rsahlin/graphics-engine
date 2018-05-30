@@ -9,7 +9,7 @@ import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.shader.GenericShaderProgram;
 import com.nucleus.shader.ShaderProgram;
-import com.nucleus.shader.ShaderProgram.Shaders;
+import com.nucleus.shader.ShaderProgram.ProgramType;
 
 /**
  * SpriteMesh using a geometry shader
@@ -37,14 +37,15 @@ public class SpriteGeometryMesh extends SpriteMesh {
 
         @Override
         public Mesh create() throws IOException, GLException {
-            setArrayMode(Mode.LINES, objectCount, 0);
+            setArrayMode(Mode.POINTS, objectCount, 0);
             return super.create();
         }
 
         @Override
         public ShaderProgram createProgram(GLES20Wrapper gles) {
             return AssetManager.getInstance().getProgram(gles,
-                    new GenericShaderProgram("flatline", null, Shaders.VERTEX_FRAGMENT));
+                    new GenericShaderProgram(new String[] { "flatpoint", "flat" },
+                            ProgramType.VERTEX_FRAGMENT));
         }
 
     }

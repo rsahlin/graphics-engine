@@ -22,7 +22,7 @@ public class PlayfieldProgram extends ShaderProgram {
     private final static String INVALID_TEXTURE_TYPE = "Invalid texture type: ";
 
     PlayfieldProgram() {
-        super(null, null, CATEGORY, CommonShaderVariables.values(), Shaders.VERTEX_FRAGMENT);
+        super(null, null, CATEGORY, CommonShaderVariables.values(), ProgramType.VERTEX_FRAGMENT);
     }
 
     @Override

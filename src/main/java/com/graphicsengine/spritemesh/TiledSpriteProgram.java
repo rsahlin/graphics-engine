@@ -32,11 +32,11 @@ public class TiledSpriteProgram extends ShaderProgram {
     protected QuadExpanderShader expanderShader;
 
     TiledSpriteProgram(Texture2D.Shading shading) {
-        super(null, shading, CATEGORY, CommonShaderVariables.values(), Shaders.VERTEX_FRAGMENT);
+        super(null, shading, CATEGORY, CommonShaderVariables.values(), ProgramType.VERTEX_FRAGMENT);
     }
 
     protected TiledSpriteProgram(Pass pass, Texture2D.Shading shading, String category) {
-        super(pass, shading, category, CommonShaderVariables.values(), Shaders.VERTEX_FRAGMENT);
+        super(pass, shading, category, CommonShaderVariables.values(), ProgramType.VERTEX_FRAGMENT);
     }
 
     @Override
@@ -59,16 +59,16 @@ public class TiledSpriteProgram extends ShaderProgram {
     }
 
     @Override
-    protected Function getFunction(int type) {
-        switch (type) {
+    protected String getShaderSource(int shaderType) {
+        switch (shaderType) {
             case GLES20.GL_VERTEX_SHADER:
             case GLES32.GL_GEOMETRY_SHADER:
-                return function;
+                return function.toString();
             case GLES20.GL_FRAGMENT_SHADER:
                 // For sprite fragment shader ignore the category
-                return new Function(function.getPass(), function.getShading(), null);
+                return function.getPassString() + function.getShadingString();
             default:
-                throw new IllegalArgumentException("Not valid for type " + type);
+                throw new IllegalArgumentException("Not valid for type " + shaderType);
         }
     }
 
