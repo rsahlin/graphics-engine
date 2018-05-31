@@ -48,6 +48,8 @@ public class SpriteAttributeComponent extends ActorComponent<SpriteMesh>
     transient protected CPUQuadExpander spriteExpander;
 
     transient protected int spritedataSize;
+    transient protected CPUComponentBuffer spriteBuffer;
+    transient protected CPUComponentBuffer entityBuffer;
 
     @Override
     public Component createInstance() {
@@ -71,22 +73,20 @@ public class SpriteAttributeComponent extends ActorComponent<SpriteMesh>
      * @return
      */
     public ComponentBuffer getSpriteBuffer() {
-        return getBuffer(0);
+        return spriteBuffer;
     }
 
     @Override
     public ComponentBuffer getEntityBuffer() {
-        return getBuffer(1);
+        return entityBuffer;
     }
 
     @Override
     protected void createBuffers(EntityMapper mapper) {
         spritedataSize = mapper.attributesPerVertex;
-        CPUComponentBuffer spriteData = new CPUComponentBuffer(count, mapper.attributesPerVertex * 4);
-        CPUComponentBuffer entityData = new CPUComponentBuffer(count, mapper.attributesPerEntity);
-        spriteExpander = new CPUQuadExpander(mesh, mapper, entityData, spriteData);
-        addBuffer(0, spriteData);
-        addBuffer(1, entityData);
+        spriteBuffer = new CPUComponentBuffer(count, mapper.attributesPerVertex * 4);
+        entityBuffer = new CPUComponentBuffer(count, mapper.attributesPerEntity);
+        spriteExpander = new CPUQuadExpander(mesh, mapper, entityBuffer, spriteBuffer);
     }
 
     /**
@@ -131,7 +131,6 @@ public class SpriteAttributeComponent extends ActorComponent<SpriteMesh>
 
     @Override
     public void setEntity(int entity, int entityOffset, float[] data, int offset, int length) {
-        ComponentBuffer entityBuffer = getEntityBuffer();
         entityBuffer.put(entity, entityOffset, data, offset, length);
         spriteExpander.setData(entity, entityOffset, data, offset, length);
     }
