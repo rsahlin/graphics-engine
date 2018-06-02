@@ -32,15 +32,15 @@ public class PlayfieldProgram extends ShaderProgram {
 
     @Override
     public void updateUniformData(float[] destinationUniform, Mesh mesh) {
-        setScreenSize(uniforms, shaderVariables[CommonShaderVariables.uScreenSize.index]);
+        setScreenSize(uniforms, getUniformByName("uScreenSize"));
         Texture2D texture = mesh.getTexture(Texture2D.TEXTURE_0);
         if (texture.getTextureType() == TextureType.TiledTexture2D) {
             setTextureUniforms((TiledTexture2D) texture, uniforms,
-                    shaderVariables[CommonShaderVariables.uTextureData.index]);
+                    getUniformByName("uTextureData"));
         } else {
             System.err.println(INVALID_TEXTURE_TYPE + texture);
         }
-        setEmissive(uniforms, shaderVariables[CommonShaderVariables.uAmbientLight.index], globalLight.getAmbient());
+        setEmissive(uniforms, getUniformByName("uAmbientLight"), globalLight.getAmbient());
     }
 
     @Override

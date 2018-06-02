@@ -74,7 +74,7 @@ public class TiledSpriteProgram extends ShaderProgram {
 
     @Override
     public void updateUniformData(float[] destinationUniform, Mesh mesh) {
-        setScreenSize(destinationUniform, shaderVariables[CommonShaderVariables.uScreenSize.index]);
+        setScreenSize(destinationUniform, getUniformByName("uScreenSize"));
         setTextureUniforms(destinationUniform, mesh.getTexture(Texture2D.TEXTURE_0));
     }
 
