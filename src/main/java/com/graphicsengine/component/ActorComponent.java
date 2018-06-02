@@ -67,21 +67,30 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
 
     }
 
-    public static class EntityMapper extends Indexer {
+    /**
+     * Indexing of variables used by entity/actor
+     * 
+     * TODO How to specify the datatype (size)
+     *
+     */
+    public static class EntityIndexer extends Indexer {
 
-        public int moveVectorOffset;
-        public int elasticityOffset;
-        public int resistanceOffset;
-        public int rotateSpeedOffset;
+        public int moveVector;
+        public int elasticity;
+        public int resistance;
+        public int rotateSpeed;
+        public int boundingBox;
         public int attributesPerEntity;
 
-        public EntityMapper(Indexer source) {
+        public EntityIndexer(Indexer source) {
             super(source);
-            moveVectorOffset = source.attributesPerVertex;
-            elasticityOffset = source.attributesPerVertex + 3;
-            resistanceOffset = source.attributesPerVertex + 4;
-            rotateSpeedOffset = source.attributesPerVertex + 5;
-            attributesPerEntity = rotateSpeedOffset + 1;
+            moveVector = source.attributesPerVertex;
+            elasticity = source.attributesPerVertex + 3;
+            resistance = source.attributesPerVertex + 4;
+            rotateSpeed = source.attributesPerVertex + 5;
+            boundingBox = source.attributesPerVertex + 6;
+            // TODO This shall be calculated from variable sizes
+            attributesPerEntity = boundingBox + 4;
         }
 
     }
@@ -105,7 +114,7 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
     /**
      * The mapper used - this shall be set in the {@link #create(NucleusRenderer, ComponentNode, System)} method
      */
-    transient protected EntityMapper mapper;
+    transient protected EntityIndexer mapper;
     transient protected TextureType textureType;
     transient protected UVAtlas uvAtlas;
 
@@ -139,7 +148,7 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
      * @param mapper
      * @param system
      */
-    protected abstract void createBuffers(EntityMapper mapper);
+    protected abstract void createBuffers(EntityIndexer mapper);
 
     /**
      * Sets data from source into this
@@ -172,7 +181,7 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
                     Builder<Mesh> spriteBuilder = createMeshBuilder(renderer, parent, count, createShapeBuilder());
                     // TODO - Fix generics so that cast is not needed
                     setMesh((T) spriteBuilder.create());
-                    mapper = new EntityMapper(new Indexer(parent.getProgram()));
+                    mapper = new EntityIndexer(new Indexer(parent.getProgram()));
 
             }
         } catch (IOException | GLException e) {
@@ -217,8 +226,36 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
      * 
      * @return The entitymapper used by this component, or null.
      */
-    public EntityMapper getMapper() {
+    public EntityIndexer getMapper() {
         return mapper;
+    }
+
+    /**
+     * Returns the shape for actors
+     * 
+     * @return
+     */
+    public Shape getShape() {
+        return shape;
+    }
+
+    /**
+     * Fetch 2D rectangle bounds for the shape
+     * 
+     * @param bounds Array of, at least, 4 values for x,y,width,height
+     */
+    public void get2DBounds(float[] bounds) {
+        float[] values = shape.getValues();
+        switch (shape.getType()) {
+            case rect:
+                bounds[0] = values[0];
+                bounds[1] = values[1];
+                bounds[2] = values[2];
+                bounds[3] = values[3];
+                break;
+            default:
+                throw new IllegalArgumentException("Not implemented for type: " + shape.getType());
+        }
     }
 
     /**
@@ -228,15 +265,20 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
      * TODO Where do these belong?
      */
 
-    public static void getRandomEntityData(float[] entityData, EntityMapper mapper, Random random) {
-        entityData[mapper.moveVectorOffset] = 0;
-        entityData[mapper.moveVectorOffset + 1] = 0;
-        entityData[mapper.elasticityOffset] = 0.5f + random.nextFloat() * 0.5f;
-        entityData[mapper.resistanceOffset] = random.nextFloat() * 0.03f;
-        entityData[mapper.rotateSpeedOffset] = 0;
+    public static void getRandomEntityData(float[] entityData, float[] rectBounds, float rotateSpeed,
+            EntityIndexer mapper, Random random) {
+        entityData[mapper.moveVector] = 0;
+        entityData[mapper.moveVector + 1] = 0;
+        entityData[mapper.elasticity] = 0.5f + random.nextFloat() * 0.5f;
+        entityData[mapper.resistance] = random.nextFloat() * 0.03f;
+        entityData[mapper.rotateSpeed] = rotateSpeed * random.nextFloat();
+        if (rectBounds != null) {
+            java.lang.System.arraycopy(rectBounds, 0, entityData, mapper.boundingBox, 4);
+        }
     }
 
-    public static void getRandomSprite(float[] spriteData, float rotate, int frame, float sceneWidth, float sceneHeight,
+    public static void getRandomSprite(float[] spriteData, float rotate, int frame, float scaleRandom, float minScale,
+            float sceneWidth, float sceneHeight,
             Indexer mapper, Random random) {
         spriteData[mapper.vertex] = ((random.nextFloat() * sceneWidth) - sceneWidth / 2);
         spriteData[mapper.vertex + 1] = ((random.nextFloat() * sceneHeight) - sceneHeight / 2);
@@ -247,8 +289,9 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
             spriteData[mapper.rotate + 2] = rotate;
         }
         if (mapper.scale > -1) {
-            spriteData[mapper.scale] = 1;
-            spriteData[mapper.scale + 1] = 1;
+            float scale = scaleRandom * random.nextFloat() + minScale;
+            spriteData[mapper.scale] = scale;
+            spriteData[mapper.scale + 1] = scale;
             spriteData[mapper.scale + 2] = 1;
         }
         if (mapper.frame > -1) {
