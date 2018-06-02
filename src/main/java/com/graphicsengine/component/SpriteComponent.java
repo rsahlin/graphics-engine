@@ -28,7 +28,7 @@ public class SpriteComponent extends ActorComponent<SpriteGeometryMesh> implemen
     transient protected AttributeBuffer attributes;
     transient protected CPUComponentBuffer entityData;
     transient protected CPUComponentBuffer spriteData;
-    transient protected EntityMapper mapper;
+    transient protected EntityIndexer mapper;
 
     @Override
     public Component createInstance() {
@@ -45,7 +45,7 @@ public class SpriteComponent extends ActorComponent<SpriteGeometryMesh> implemen
     }
 
     @Override
-    protected void createBuffers(EntityMapper mapper) {
+    protected void createBuffers(EntityIndexer mapper) {
         spriteData = new CPUComponentBuffer(count, mapper.attributesPerVertex);
         entityData = new CPUComponentBuffer(count, mapper.attributesPerEntity);
         addBuffer(0, spriteData);
