@@ -18,7 +18,7 @@ import com.nucleus.scene.LineDrawerNode;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.NodeException;
 import com.nucleus.scene.RootNode;
-import com.nucleus.shader.AttributeIndexer.Indexer;
+import com.nucleus.shader.VariableIndexer.Indexer;
 import com.nucleus.vecmath.Matrix;
 import com.nucleus.vecmath.Rectangle;
 

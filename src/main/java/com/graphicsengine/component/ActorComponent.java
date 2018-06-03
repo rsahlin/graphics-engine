@@ -18,7 +18,7 @@ import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.ComponentNode;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.Node.MeshIndex;
-import com.nucleus.shader.AttributeIndexer.Indexer;
+import com.nucleus.shader.VariableIndexer.Indexer;
 import com.nucleus.system.System;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TextureType;
@@ -272,7 +272,7 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
         entityData[mapper.elasticity] = 0.5f + random.nextFloat() * 0.5f;
         entityData[mapper.resistance] = random.nextFloat() * 0.03f;
         entityData[mapper.rotateSpeed] = rotateSpeed * random.nextFloat();
-        if (rectBounds != null) {
+        if (rectBounds != null && mapper.scale != -1) {
             entityData[mapper.boundingBox] = rectBounds[0] * entityData[mapper.scale];
             entityData[mapper.boundingBox + 1] = rectBounds[1] * entityData[mapper.scale + 1];
             entityData[mapper.boundingBox + 2] = rectBounds[2] * entityData[mapper.scale];
