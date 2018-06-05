@@ -8,7 +8,6 @@ import com.nucleus.opengl.GLESWrapper.GLES32;
 import com.nucleus.opengl.GLESWrapper.Renderers;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.Pass;
-import com.nucleus.shader.CommonShaderVariables;
 import com.nucleus.shader.QuadExpanderShader;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.shader.ShaderSource;
@@ -32,19 +31,23 @@ public class TiledSpriteProgram extends ShaderProgram {
     protected QuadExpanderShader expanderShader;
 
     TiledSpriteProgram(Texture2D.Shading shading) {
-        super(null, shading, CATEGORY, CommonShaderVariables.values(), ProgramType.VERTEX_FRAGMENT);
+        // super(null, shading, CATEGORY, CommonShaderVariables.values(), ProgramType.VERTEX_FRAGMENT);
+        super(null, shading, CATEGORY, ProgramType.VERTEX_FRAGMENT);
+        setIndexer(new TiledSpriteIndexer());
     }
 
     protected TiledSpriteProgram(Pass pass, Texture2D.Shading shading, String category) {
-        super(pass, shading, category, CommonShaderVariables.values(), ProgramType.VERTEX_FRAGMENT);
+        // super(pass, shading, category, CommonShaderVariables.values(), ProgramType.VERTEX_FRAGMENT);
+        super(pass, shading, category, ProgramType.VERTEX_FRAGMENT);
+        setIndexer(new TiledSpriteIndexer());
     }
 
     @Override
     public void createProgram(GLES20Wrapper gles) throws GLException {
         if (GLES20Wrapper.getInfo().getRenderVersion().major >= 3
                 && GLES20Wrapper.getInfo().getRenderVersion().minor >= 1) {
-            expanderShader = (QuadExpanderShader) AssetManager.getInstance().getProgram(gles,
-                    new QuadExpanderShader());
+            // expanderShader = (QuadExpanderShader) AssetManager.getInstance().getProgram(gles,
+            // new QuadExpanderShader());
         }
         super.createProgram(gles);
 
