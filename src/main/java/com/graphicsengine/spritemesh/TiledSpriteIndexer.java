@@ -20,7 +20,7 @@ public class TiledSpriteIndexer extends VariableIndexer {
     protected final static BufferIndex[] BUFFERINDEXES = new BufferIndex[] { BufferIndex.ATTRIBUTES_STATIC,
             BufferIndex.ATTRIBUTES_STATIC, BufferIndex.ATTRIBUTES, BufferIndex.ATTRIBUTES, BufferIndex.ATTRIBUTES,
             BufferIndex.ATTRIBUTES, BufferIndex.ATTRIBUTES };
-    protected final static int[] SIZEPERVERTEX = new int[] { 17, 6 };
+    protected final static int[] SIZEPERVERTEX = new int[] { 18, 6 };
 
     public TiledSpriteIndexer() {
         super(NAMES, OFFSETS, TYPES, BUFFERINDEXES, SIZEPERVERTEX);

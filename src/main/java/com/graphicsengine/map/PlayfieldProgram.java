@@ -1,9 +1,9 @@
 package com.graphicsengine.map;
 
+import com.graphicsengine.spritemesh.TiledSpriteIndexer;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.renderer.Pass;
-import com.nucleus.shader.CommonShaderVariables;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.Texture2D.Shading;
@@ -22,12 +22,9 @@ public class PlayfieldProgram extends ShaderProgram {
     private final static String INVALID_TEXTURE_TYPE = "Invalid texture type: ";
 
     PlayfieldProgram() {
-        super(null, null, CATEGORY, CommonShaderVariables.values(), ProgramType.VERTEX_FRAGMENT);
-    }
-
-    @Override
-    public int getVariableCount() {
-        return CommonShaderVariables.values().length;
+        // super(null, null, CATEGORY, CommonShaderVariables.values(), ProgramType.VERTEX_FRAGMENT);
+        super(null, null, CATEGORY, ProgramType.VERTEX_FRAGMENT);
+        setIndexer(new TiledSpriteIndexer());
     }
 
     @Override

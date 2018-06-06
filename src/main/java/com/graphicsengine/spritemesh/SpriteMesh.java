@@ -77,9 +77,10 @@ public class SpriteMesh extends Mesh {
                 case Untextured:
                     return new TiledSpriteProgram(((Untextured) texture).getShading());
                 case Texture2D:
-                    // TODO - fix so that transformprogram loads the correct shader - 'transformvertex', currently
-                    // loads texturedvertex. Use tiled or uv texture in the meantime.
-                    // return new TransformProgram(null, Texture2D.Shading.textured, null);
+                    return new UVSpriteProgram();
+                // TODO - fix so that transformprogram loads the correct shader - 'transformvertex', currently
+                // loads texturedvertex. Use tiled or uv texture in the meantime.
+                // return new TransformProgram(null, Texture2D.Shading.textured, null);
                 default:
                     throw new IllegalArgumentException(INVALID_TYPE + texture.textureType);
             }

@@ -125,8 +125,10 @@ public class SpriteAttributeComponent extends ActorComponent<SpriteMesh>
 
     @Override
     protected ShapeBuilder createShapeBuilder() {
-        return ShapeBuilderFactory.createBuilder(shape,
-                new float[] { RectangleShapeBuilder.DEFAULT_Z }, count, 0);
+        // Need to know the builder or config impl so the setEnableVertex() index can be called.
+        ShapeBuilder builder = ShapeBuilderFactory.createBuilder(shape, count, 0);
+        ((RectangleShapeBuilder) builder).setEnableVertexIndex(true);
+        return builder;
     }
 
     @Override
