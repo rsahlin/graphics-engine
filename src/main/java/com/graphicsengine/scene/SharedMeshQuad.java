@@ -4,10 +4,12 @@ import java.io.IOException;
 
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.component.SpriteAttributeComponent;
+import com.graphicsengine.renderer.SharedMeshNodeRenderer;
 import com.nucleus.SimpleLogger;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.shape.ShapeBuilder;
 import com.nucleus.renderer.NucleusRenderer;
+import com.nucleus.renderer.NucleusRenderer.NodeRenderer;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
 import com.nucleus.texturing.Texture2D;
@@ -82,6 +84,14 @@ public class SharedMeshQuad extends Node {
             SimpleLogger.d(getClass(),
                     "Node state is set for id " + getId() + ", state handling for shared mesh quad is not implemented");
         }
+        if (nodeRenderer == null) {
+            nodeRenderer = createNodeRenderer();
+        }
+    }
+
+    @Override
+    protected NodeRenderer createNodeRenderer() {
+        return new SharedMeshNodeRenderer();
     }
 
     /**

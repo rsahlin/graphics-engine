@@ -188,11 +188,11 @@ public class PlayfieldNode extends Node {
         try {
             map = MapFactory.createMap(mapRef);
             PlayfieldMesh playfield = (PlayfieldMesh) getMesh(MeshIndex.MAIN);
-            if (mapper == null) {
-                mapper = new Indexer(program);
+            if (indexer == null) {
+                indexer = new Indexer(program);
             }
             if (map.getMap() != null && map.getMapSize() != null) {
-                playfield.copyCharmap(mapper, map);
+                playfield.copyCharmap(indexer, map);
             }
         } catch (IOException | ClassNotFoundException e) {
             throw new NodeException(e);
