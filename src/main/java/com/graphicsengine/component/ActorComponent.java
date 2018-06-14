@@ -280,23 +280,49 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
         }
     }
 
-    public static void getRandomSprite(float[] spriteData, float rotate, int frame, float scaleRandom, float minScale,
-            float sceneWidth, float sceneHeight,
-            Indexer mapper, Random random) {
-        spriteData[mapper.vertex] = ((random.nextFloat() * sceneWidth) - sceneWidth / 2);
-        spriteData[mapper.vertex + 1] = ((random.nextFloat() * sceneHeight) - sceneHeight / 2);
-        spriteData[mapper.vertex + 2] = 0;
+    public static void getRandomPos(float[] spriteData, float xMax, float yMax, float zMax, Indexer mapper,
+            Random random) {
+        spriteData[mapper.vertex] = ((random.nextFloat() * xMax) - xMax / 2);
+        spriteData[mapper.vertex + 1] = ((random.nextFloat() * yMax) - yMax / 2);
+        spriteData[mapper.vertex + 2] = random.nextFloat() * zMax;
+
+    }
+
+    public static void setRotate(float[] spriteData, float x, float y, float z, Indexer mapper) {
         if (mapper.rotate > -1) {
-            spriteData[mapper.rotate] = 0;
-            spriteData[mapper.rotate + 1] = 0;
-            spriteData[mapper.rotate + 2] = rotate;
+            spriteData[mapper.rotate] = x;
+            spriteData[mapper.rotate + 1] = y;
+            spriteData[mapper.rotate + 2] = z;
         }
+    }
+
+    public static void setScale2D(float[] spriteData, float scaleRandom, float minScale, Indexer mapper,
+            Random random) {
         if (mapper.scale > -1) {
             float scale = scaleRandom * random.nextFloat() + minScale;
             spriteData[mapper.scale] = scale;
             spriteData[mapper.scale + 1] = scale;
             spriteData[mapper.scale + 2] = 1;
         }
+
+    }
+
+    public static void getRandomSprite(float[] spriteData, float rotate, int frame, float scaleRandom, float minScale,
+            float sceneWidth, float sceneHeight,
+            Indexer mapper, Random random) {
+        ActorComponent.getRandomPos(spriteData, sceneWidth, sceneHeight, 0, mapper, random);
+        ActorComponent.setRotate(spriteData, 0, 0, rotate, mapper);
+        ActorComponent.setScale2D(spriteData, scaleRandom, minScale, mapper, random);
+        if (mapper.frame > -1) {
+            spriteData[mapper.frame] = frame;
+        }
+    }
+
+    public static void getRandomSprite3D(float[] spriteData, float rotate, int frame, float scaleRandom, float minScale,
+            float sceneWidth, float sceneHeight, float maxZ, Indexer mapper, Random random) {
+        ActorComponent.getRandomPos(spriteData, sceneWidth, sceneHeight, maxZ, mapper, random);
+        ActorComponent.setRotate(spriteData, 0, 0, rotate, mapper);
+        ActorComponent.setScale2D(spriteData, scaleRandom, minScale, mapper, random);
         if (mapper.frame > -1) {
             spriteData[mapper.frame] = frame;
         }
