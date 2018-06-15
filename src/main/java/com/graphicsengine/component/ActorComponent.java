@@ -18,6 +18,7 @@ import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.ComponentNode;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.Node.MeshIndex;
+import com.nucleus.shader.ShaderProgram;
 import com.nucleus.shader.VariableIndexer.Indexer;
 import com.nucleus.system.System;
 import com.nucleus.texturing.Texture2D;
@@ -93,6 +94,22 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
             attributesPerEntity = boundingBox + 4;
         }
 
+        /**
+         * Internal constructor
+         * 
+         * @param values
+         */
+        protected EntityIndexer(int[] values) {
+            super(values);
+            moveVector = attributesPerVertex;
+            elasticity = attributesPerVertex + 3;
+            resistance = attributesPerVertex + 4;
+            rotateSpeed = attributesPerVertex + 5;
+            boundingBox = attributesPerVertex + 6;
+            // TODO This shall be calculated from variable sizes
+            attributesPerEntity = boundingBox + 4;
+        }
+
     }
 
     public static final String COUNT = "count";
@@ -115,6 +132,8 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
      * The mapper used - this shall be set in the {@link #create(NucleusRenderer, ComponentNode, System)} method
      */
     transient protected EntityIndexer mapper;
+    @Deprecated
+    transient protected ShaderProgram program;
     transient protected TextureType textureType;
     transient protected UVAtlas uvAtlas;
 
@@ -201,6 +220,7 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
         createBuffers(mapper);
         mesh.setAttributeUpdater(this);
         bindAttributeBuffer(mesh.getAttributeBuffer(BufferIndex.ATTRIBUTES.index));
+        program = parent.getProgram();
     }
 
     @Override
@@ -228,6 +248,11 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
      */
     public EntityIndexer getMapper() {
         return mapper;
+    }
+
+    @Deprecated
+    public ShaderProgram getProgram() {
+        return program;
     }
 
     /**

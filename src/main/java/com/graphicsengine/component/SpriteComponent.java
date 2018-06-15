@@ -27,7 +27,6 @@ public class SpriteComponent extends ActorComponent<SpriteGeometryMesh> implemen
 
     transient protected AttributeBuffer attributes;
     transient protected CPUComponentBuffer entityData;
-    transient protected CPUComponentBuffer spriteData;
     transient protected EntityIndexer mapper;
 
     @Override
@@ -46,16 +45,13 @@ public class SpriteComponent extends ActorComponent<SpriteGeometryMesh> implemen
 
     @Override
     protected void createBuffers(EntityIndexer mapper) {
-        spriteData = new CPUComponentBuffer(count, mapper.attributesPerVertex);
         entityData = new CPUComponentBuffer(count, mapper.attributesPerEntity);
-        addBuffer(0, spriteData);
-        addBuffer(1, entityData);
         this.mapper = mapper;
     }
 
     @Override
     public ComponentBuffer getEntityBuffer() {
-        return getBuffer(1);
+        return entityData;
     }
 
     @Override
@@ -66,7 +62,7 @@ public class SpriteComponent extends ActorComponent<SpriteGeometryMesh> implemen
     @Override
     public void updateAttributeData(NucleusRenderer renderer) {
         attributes.setBufferPosition(0);
-        attributes.put(spriteData.getData());
+        attributes.put(entityData.getData());
     }
 
     /**
@@ -102,10 +98,6 @@ public class SpriteComponent extends ActorComponent<SpriteGeometryMesh> implemen
     @Override
     public void setEntity(int entity, int entityOffset, float[] data, int offset, int length) {
         entityData.put(entity, entityOffset, data, offset, length);
-        if (entityOffset < mapper.attributesPerVertex) {
-            spriteData.put(entity, entityOffset, data, offset, mapper.attributesPerVertex - entityOffset);
-
-        }
     }
 
 }

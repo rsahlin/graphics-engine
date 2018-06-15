@@ -2,6 +2,7 @@ package com.graphicsengine.spritemesh;
 
 import java.io.IOException;
 
+import com.graphicsengine.component.ActorComponent.EntityIndexer;
 import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.opengl.GLES20Wrapper;
@@ -19,6 +20,14 @@ import com.nucleus.shader.ShaderProgram.ProgramType;
 public class SpriteGeometryMesh extends SpriteMesh {
 
     protected final static String INVALID_TYPE = "Invalid type: ";
+
+    public class SpriteGeometryIndexer extends EntityIndexer {
+
+        protected SpriteGeometryIndexer() {
+            super(new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0 });
+        }
+
+    }
 
     /**
      * Builder for sprite meshes
@@ -44,8 +53,8 @@ public class SpriteGeometryMesh extends SpriteMesh {
         @Override
         public ShaderProgram createProgram(GLES20Wrapper gles) {
             return AssetManager.getInstance().getProgram(gles,
-                    new GenericShaderProgram(new String[] { "flatpoint", "flat" },
-                            ProgramType.VERTEX_FRAGMENT));
+                    new GenericShaderProgram(new String[] { "point", "flat", "flat" },
+                            ProgramType.VERTEX_GEOMETRY_FRAGMENT));
         }
 
     }
