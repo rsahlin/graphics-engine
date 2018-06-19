@@ -36,7 +36,6 @@ attribute vec4 aColor;
 varying vec2 vTexCoord;
 varying vec4 vAmbientLight;
 
-mat4 calculateTransformMatrix(vec3 rotate, vec3 scale, vec3 translate);
 
 void main() {
     int flags = int(aFrameData.y);

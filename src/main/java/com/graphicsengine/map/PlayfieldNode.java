@@ -5,15 +5,20 @@ import java.io.IOException;
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.scene.GraphicsEngineNodeType;
 import com.nucleus.SimpleLogger;
-import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
+import com.nucleus.geometry.Mesh;
+import com.nucleus.geometry.shape.RectangleShapeBuilder;
+import com.nucleus.geometry.shape.RectangleShapeBuilder.RectangleConfiguration;
+import com.nucleus.geometry.shape.ShapeBuilder;
 import com.nucleus.io.ExternalReference;
 import com.nucleus.mmi.ObjectInputListener;
 import com.nucleus.mmi.PointerData;
 import com.nucleus.mmi.PointerMotionData;
+import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.LineDrawerNode;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.NodeException;
 import com.nucleus.scene.RootNode;
+import com.nucleus.shader.VariableIndexer.Indexer;
 import com.nucleus.vecmath.Matrix;
 import com.nucleus.vecmath.Rectangle;
 
@@ -136,6 +141,29 @@ public class PlayfieldNode extends Node {
         return copy;
     }
 
+    @Override
+    public Mesh.Builder<Mesh> createMeshBuilder(NucleusRenderer renderer, Node parent, int count,
+            ShapeBuilder shapeBuilder)
+            throws IOException {
+
+        PlayfieldNode playfield = (PlayfieldNode) parent;
+        PlayfieldMesh.Builder builder = new PlayfieldMesh.Builder(renderer);
+        int[] mapSize = playfield.getMapSize();
+        builder.setMap(mapSize, playfield.getCharRectangle());
+        builder.setOffset(playfield.getAnchorOffset());
+        int charCount = mapSize[0] * mapSize[1];
+        super.initMeshBuilder(renderer, parent, charCount, shapeBuilder, builder);
+        if (shapeBuilder == null) {
+            RectangleConfiguration configuration = new RectangleShapeBuilder.RectangleConfiguration(
+                    playfield.getCharRectangle(), RectangleShapeBuilder.DEFAULT_Z, mapSize[0] * mapSize[1], 0);
+            configuration.enableVertexIndex(true);
+            shapeBuilder = new CharmapBuilder(configuration, new Indexer(program), playfield.getAnchorOffset());
+            builder.setShapeBuilder(shapeBuilder);
+        }
+        return builder;
+
+    }
+
     /**
      * Copies the values from the source node to this node, this will not copy transient values.
      * 
@@ -160,9 +188,11 @@ public class PlayfieldNode extends Node {
         try {
             map = MapFactory.createMap(mapRef);
             PlayfieldMesh playfield = (PlayfieldMesh) getMesh(MeshIndex.MAIN);
-            PropertyMapper mapper = playfield.getMapper();
+            if (indexer == null) {
+                indexer = new Indexer(program);
+            }
             if (map.getMap() != null && map.getMapSize() != null) {
-                playfield.copyCharmap(mapper, map);
+                playfield.copyCharmap(indexer, map);
             }
         } catch (IOException | ClassNotFoundException e) {
             throw new NodeException(e);
@@ -228,8 +258,8 @@ public class PlayfieldNode extends Node {
         switch (a) {
             case CENTER_XY:
                 return new float[] {
-                        -(getMapSize()[0] >>> 1) * getCharRectangle().getValues()[Rectangle.WIDTH],
-                        (getMapSize()[1] >>> 1) * getCharRectangle().getValues()[Rectangle.HEIGHT] };
+                        -(getMapSize()[0] >>> 1) * getCharRectangle().getValues()[Rectangle.INDEX_WIDTH],
+                        (getMapSize()[1] >>> 1) * getCharRectangle().getValues()[Rectangle.INDEX_HEIGHT] };
             default:
                 throw new IllegalArgumentException("Not implemented for anchor: " + a);
         }

@@ -1,9 +1,9 @@
 package com.graphicsengine.map;
 
+import com.graphicsengine.spritemesh.TiledSpriteIndexer;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.renderer.Pass;
-import com.nucleus.shader.CommonShaderVariables;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.Texture2D.Shading;
@@ -22,25 +22,22 @@ public class PlayfieldProgram extends ShaderProgram {
     private final static String INVALID_TEXTURE_TYPE = "Invalid texture type: ";
 
     PlayfieldProgram() {
-        super(null, null, CATEGORY, CommonShaderVariables.values(), Shaders.VERTEX_FRAGMENT);
-    }
-
-    @Override
-    public int getVariableCount() {
-        return CommonShaderVariables.values().length;
+        // super(null, null, CATEGORY, CommonShaderVariables.values(), ProgramType.VERTEX_FRAGMENT);
+        super(null, null, CATEGORY, ProgramType.VERTEX_FRAGMENT);
+        setIndexer(new TiledSpriteIndexer());
     }
 
     @Override
     public void updateUniformData(float[] destinationUniform, Mesh mesh) {
-        setScreenSize(uniforms, shaderVariables[CommonShaderVariables.uScreenSize.index]);
+        setScreenSize(uniforms, getUniformByName("uScreenSize"));
         Texture2D texture = mesh.getTexture(Texture2D.TEXTURE_0);
         if (texture.getTextureType() == TextureType.TiledTexture2D) {
             setTextureUniforms((TiledTexture2D) texture, uniforms,
-                    shaderVariables[CommonShaderVariables.uTextureData.index]);
+                    getUniformByName("uTextureData"));
         } else {
             System.err.println(INVALID_TEXTURE_TYPE + texture);
         }
-        setAmbient(uniforms, shaderVariables[CommonShaderVariables.uAmbientLight.index], globalLight.getAmbient());
+        setEmissive(uniforms, getUniformByName("uAmbientLight"), globalLight.getAmbient());
     }
 
     @Override

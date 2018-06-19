@@ -10,7 +10,6 @@ import com.nucleus.opengl.GLESWrapper.GLES30;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer.Matrices;
 import com.nucleus.renderer.Pass;
-import com.nucleus.shader.CommonShaderVariables;
 import com.nucleus.texturing.ParameterData;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TextureFactory;
@@ -52,13 +51,13 @@ public class ShadowPass2Program extends TiledSpriteProgram {
     public void setUniformMatrices(float[][] matrices, Mesh mesh) {
         // Refresh the uniform matrix using light matrix
         System.arraycopy(matrices[Matrices.MODELVIEW.index], 0, uniforms,
-                shaderVariables[CommonShaderVariables.uMVMatrix.index].getOffset(),
+                getUniformByName("uMVMatrix").getOffset(),
                 Matrix.MATRIX_ELEMENTS);
         System.arraycopy(matrices[Matrices.PROJECTION.index], 0, uniforms,
-                shaderVariables[CommonShaderVariables.uProjectionMatrix.index].getOffset(),
+                getUniformByName("uProjectionMatrix").getOffset(),
                 Matrix.MATRIX_ELEMENTS);
         System.arraycopy(matrices[Matrices.RENDERPASS_1.index], 0, uniforms,
-                shaderVariables[CommonShaderVariables.uLightMatrix.index].getOffset(),
+                getUniformByName("uLightMatrix").getOffset(),
                 Matrix.MATRIX_ELEMENTS);
     }
 
@@ -69,14 +68,14 @@ public class ShadowPass2Program extends TiledSpriteProgram {
             AssetManager.getInstance().getIdReference(shadow);
             textureID = shadow.getName();
         }
-        int unit = samplers[shaderVariables[CommonShaderVariables.uShadowTexture.index].getOffset()];
+        int unit = samplers[getUniformByName("uShadowTexture").getOffset()];
         TextureUtils.prepareTexture(gles, shadow, unit);
         gles.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES30.GL_TEXTURE_COMPARE_MODE, GLES30.GL_COMPARE_REF_TO_TEXTURE);
         gles.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES30.GL_TEXTURE_COMPARE_FUNC, GLES20.GL_LESS);
         Texture2D texture = mesh.getTexture(Texture2D.TEXTURE_0);
         if (texture != null && texture.textureType != TextureType.Untextured) {
             TextureUtils.prepareTexture(gles, texture,
-                    samplers[shaderVariables[CommonShaderVariables.uTexture.index].getOffset()]);
+                    samplers[getUniformByName("uTexture").getOffset()]);
         }
     }
 

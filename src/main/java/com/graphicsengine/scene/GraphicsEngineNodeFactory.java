@@ -1,11 +1,10 @@
 package com.graphicsengine.scene;
 
 import com.graphicsengine.map.PlayfieldNode;
-import com.nucleus.camera.ViewFrustum;
 import com.nucleus.component.ComponentException;
-import com.nucleus.component.ComponentNode;
 import com.nucleus.geometry.MeshFactory;
 import com.nucleus.renderer.NucleusRenderer;
+import com.nucleus.scene.ComponentNode;
 import com.nucleus.scene.DefaultNodeFactory;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.NodeException;
@@ -37,16 +36,16 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
         }
         Node created = internalCreateNode(renderer, root, source, meshFactory);
         switch (type) {
-        case playfieldNode:
-            ((PlayfieldNode) created).createMap();
-            break;
-        case spriteComponentNode:
-        case sharedMeshNode:
-        case quadNode:
-        case element:
-            break;
-        default:
-            throw new IllegalArgumentException(NOT_IMPLEMENTED + type);
+            case playfieldNode:
+                ((PlayfieldNode) created).createMap();
+                break;
+            case spriteComponentNode:
+            case sharedMeshNode:
+            case quadNode:
+            case element:
+                break;
+            default:
+                throw new IllegalArgumentException(NOT_IMPLEMENTED + type);
         }
         return created;
     }
@@ -77,24 +76,6 @@ public class GraphicsEngineNodeFactory extends DefaultNodeFactory implements Nod
     protected void internalCreateComponents(NucleusRenderer renderer, ComponentNode node, MeshFactory meshFactory)
             throws ComponentException {
         node.createComponents(renderer);
-    }
-
-    /**
-     * Checks if the node data has viewfrustum data, if it has it is set in the node.
-     * 
-     * @param source The source node containing the viewfrustum
-     * @param node Node to check, or null
-     */
-    @Override
-    protected void setViewFrustum(Node source, Node node) {
-        if (node == null) {
-            return;
-        }
-        ViewFrustum projection = source.getViewFrustum();
-        if (projection == null) {
-            return;
-        }
-        node.setViewFrustum(new ViewFrustum(projection));
     }
 
 }

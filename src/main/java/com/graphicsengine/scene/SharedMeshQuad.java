@@ -1,8 +1,15 @@
 package com.graphicsengine.scene;
 
+import java.io.IOException;
+
 import com.google.gson.annotations.SerializedName;
-import com.graphicsengine.component.SpriteComponent;
+import com.graphicsengine.component.SpriteAttributeComponent;
+import com.graphicsengine.renderer.SharedMeshNodeRenderer;
+import com.nucleus.SimpleLogger;
 import com.nucleus.geometry.Mesh;
+import com.nucleus.geometry.shape.ShapeBuilder;
+import com.nucleus.renderer.NucleusRenderer;
+import com.nucleus.renderer.NucleusRenderer.NodeRenderer;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
 import com.nucleus.texturing.Texture2D;
@@ -15,7 +22,7 @@ import com.nucleus.vecmath.Transform;
  * A Quad child that has to be appended to QuadNode in order to be rendered.
  * This node will share the mesh from the parent {@link QuadParentNode}
  * This is for objects that are mostly static, for instance UI elements, and objects that need touch events.
- * If a large number of objects with shared behavior are needed use {@link SpriteComponent} instead.
+ * If a large number of objects with shared behavior are needed use {@link SpriteAttributeComponent} instead.
  * Object visibility cannot be controlled by the Node state value since the quad belongs to the parent mesh.
  * 
  * @author Richard Sahlin
@@ -52,8 +59,7 @@ public class SharedMeshQuad extends Node {
     }
 
     /**
-     * Called when the parent node is created - remember that shared mesh quad does not
-     * use it's own mesh
+     * Called when the parent node is created - remember that shared mesh quad does not use it's own mesh
      * TODO Need to provide size and color from scene definition.
      * 
      * @param Parent The parent node holding all quads
@@ -75,9 +81,17 @@ public class SharedMeshQuad extends Node {
             updateAmbient();
         }
         if (getState() != null && getState() != State.ON) {
-            throw new IllegalArgumentException(
-                    "Node state is set for id " + getId() + ", this nodes state is controlled by parent.");
+            SimpleLogger.d(getClass(),
+                    "Node state is set for id " + getId() + ", state handling for shared mesh quad is not implemented");
         }
+        if (nodeRenderer == null) {
+            nodeRenderer = createNodeRenderer();
+        }
+    }
+
+    @Override
+    protected NodeRenderer createNodeRenderer() {
+        return new SharedMeshNodeRenderer();
     }
 
     /**
@@ -143,8 +157,8 @@ public class SharedMeshQuad extends Node {
      * If material and ambient color is set it is updated.
      */
     public void updateAmbient() {
-        if (getMaterial() != null && getMaterial().getAmbient() != null) {
-            quadParent.getExpander().setColor(childIndex, getMaterial().getAmbient());
+        if (getMaterial() != null && getMaterial().getEmissive() != null) {
+            quadParent.getExpander().setColor(childIndex, getMaterial().getEmissive());
         }
     }
 
@@ -164,6 +178,16 @@ public class SharedMeshQuad extends Node {
      */
     public int getFrame() {
         return frame;
+    }
+
+    @Override
+    public Mesh.Builder<Mesh> createMeshBuilder(NucleusRenderer renderer, Node parent, int count,
+            ShapeBuilder shapeBuilder)
+            throws IOException {
+        /**
+         * Mesh is stored in parent, this node shares that mesh.
+         */
+        return null;
     }
 
 }

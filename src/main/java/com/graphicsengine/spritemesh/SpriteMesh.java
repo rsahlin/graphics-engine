@@ -5,7 +5,8 @@ import java.io.IOException;
 import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.Mesh;
-import com.nucleus.geometry.RectangleShapeBuilder;
+import com.nucleus.geometry.shape.RectangleShapeBuilder;
+import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.shader.ShaderProgram;
@@ -16,8 +17,9 @@ import com.nucleus.texturing.Untextured;
 
 /**
  * A number of quads that will be rendered using the same Mesh, ie all quads in this class are rendered using
- * one draw call.
+ * one draw call. This is done by batching the data for each quad.
  * Use the @link {@link TiledSpriteProgram} to render the mesh.
+ * Main usecase is if OpenGLES version is prior to 3.2 and does not support geometry shaders.
  * This can also be used to render chars in a playfield.
  * This class only contains the drawable parts of the sprites - no logic is contained in this class.
  * 
@@ -26,44 +28,33 @@ import com.nucleus.texturing.Untextured;
  */
 public class SpriteMesh extends Mesh {
 
-    public static class Builder extends Mesh.Builder<SpriteMesh> {
+    /**
+     * Builder for sprite meshes
+     *
+     */
+    public static class Builder extends Mesh.Builder<Mesh> {
 
-        private final static String INVALID_TYPE = "Invalid type: ";
-
-        private int spriteCount;
+        protected final static String INVALID_TYPE = "Invalid type: ";
 
         /**
-         * Creates a new SpriteMesh builder
          * 
          * @param renderer
-         * @throws IllegalArgumentException If renderer is null
          */
         public Builder(NucleusRenderer renderer) {
             super(renderer);
         }
 
-        /**
-         * Sets the number of sprites (quads) that the mesh shall support
-         * 
-         * @param spriteCount Number of sprites (quads) to support
-         * @return
-         */
-        public Builder setSpriteCount(int spriteCount) {
-            this.spriteCount = spriteCount;
-            setElementMode(Mode.TRIANGLES, spriteCount * RectangleShapeBuilder.QUAD_VERTICES,
-                    spriteCount * RectangleShapeBuilder.QUAD_ELEMENTS);
-            return this;
+        @Override
+        public Mesh create() throws IOException, GLException {
+            setElementMode(Mode.TRIANGLES, objectCount * RectangleShapeBuilder.QUAD_VERTICES, 0,
+                    objectCount * RectangleShapeBuilder.QUAD_ELEMENTS);
+            return super.create();
         }
 
         @Override
-        public Mesh create() throws IOException, GLException {
-            validate();
-            if (material.getProgram() == null) {
-                ShaderProgram program = createProgram(texture);
-                program = AssetManager.getInstance().getProgram(renderer.getGLES(), program);
-                material.setProgram(program);
-            }
-            return super.create();
+        public ShaderProgram createProgram(GLES20Wrapper gles) {
+            // SpriteMesh is a special type of mesh that only works with specific shader program
+            return AssetManager.getInstance().getProgram(gles, createProgram(texture));
         }
 
         @Override
@@ -86,9 +77,10 @@ public class SpriteMesh extends Mesh {
                 case Untextured:
                     return new TiledSpriteProgram(((Untextured) texture).getShading());
                 case Texture2D:
-                    // TODO - fix so that transformprogram loads the correct shader - 'transformvertex', currently
-                    // loads texturedvertex. Use tiled or uv texture in the meantime.
-                    // return new TransformProgram(null, Texture2D.Shading.textured, null);
+                    return new UVSpriteProgram();
+                // TODO - fix so that transformprogram loads the correct shader - 'transformvertex', currently
+                // loads texturedvertex. Use tiled or uv texture in the meantime.
+                // return new TransformProgram(null, Texture2D.Shading.textured, null);
                 default:
                     throw new IllegalArgumentException(INVALID_TYPE + texture.textureType);
             }
@@ -135,16 +127,17 @@ public class SpriteMesh extends Mesh {
      * @param offset Offset to attribute to set
      * @param source The source array
      * @param sourceIndex Index into source where data is copied from.
+     * @param sizePerVertex
      */
-    public void setAttribute4(int sprite, int offset, float[] source, int sourceIndex) {
-        int index = mapper.attributesPerVertex * 4 * sprite;
+    public void setAttribute4(int sprite, int offset, float[] source, int sourceIndex, int sizePerVertex) {
+        int index = sizePerVertex * 4 * sprite;
         AttributeBuffer attributeBuffer = getAttributeBuffer(BufferIndex.ATTRIBUTES.index);
         attributeBuffer.setArray(source, sourceIndex, index + offset, 4);
-        index += mapper.attributesPerVertex;
+        index += sizePerVertex;
         attributeBuffer.setArray(source, sourceIndex, index + offset, 4);
-        index += mapper.attributesPerVertex;
+        index += sizePerVertex;
         attributeBuffer.setArray(source, sourceIndex, index + offset, 4);
-        index += mapper.attributesPerVertex;
+        index += sizePerVertex;
         attributeBuffer.setArray(source, sourceIndex, index + offset, 4);
         attributeBuffer.setDirty(true);
     }
@@ -157,16 +150,17 @@ public class SpriteMesh extends Mesh {
      * @param offset Offset to attribute to set
      * @param source The source array
      * @param sourceIndex Index into source where data is copied from.
+     * @param sizePerVertex
      */
-    public void setAttribute3(int sprite, int offset, float[] source, int sourceIndex) {
-        int index = mapper.attributesPerVertex * 4 * sprite;
+    public void setAttribute3(int sprite, int offset, float[] source, int sourceIndex, int sizePerVertex) {
+        int index = sizePerVertex * 4 * sprite;
         AttributeBuffer attributeBuffer = getAttributeBuffer(BufferIndex.ATTRIBUTES.index);
         attributeBuffer.setArray(source, sourceIndex, index + offset, 3);
-        index += mapper.attributesPerVertex;
+        index += sizePerVertex;
         attributeBuffer.setArray(source, sourceIndex, index + offset, 3);
-        index += mapper.attributesPerVertex;
+        index += sizePerVertex;
         attributeBuffer.setArray(source, sourceIndex, index + offset, 3);
-        index += mapper.attributesPerVertex;
+        index += sizePerVertex;
         attributeBuffer.setArray(source, sourceIndex, index + offset, 3);
         attributeBuffer.setDirty(true);
     }
@@ -179,16 +173,17 @@ public class SpriteMesh extends Mesh {
      * @param offset Offset to attribute to set
      * @param source The source array
      * @param sourceIndex Index into source where data is copied from.
+     * @param sizePerVertex
      */
-    public void setAttribute2(int sprite, int offset, float[] source, int sourceIndex) {
-        int index = mapper.attributesPerVertex * 4 * sprite;
+    public void setAttribute2(int sprite, int offset, float[] source, int sourceIndex, int sizePerVertex) {
+        int index = sizePerVertex * 4 * sprite;
         AttributeBuffer attributeBuffer = getAttributeBuffer(BufferIndex.ATTRIBUTES.index);
         attributeBuffer.setArray(source, sourceIndex, index + offset, 2);
-        index += mapper.attributesPerVertex;
+        index += sizePerVertex;
         attributeBuffer.setArray(source, sourceIndex, index + offset, 2);
-        index += mapper.attributesPerVertex;
+        index += sizePerVertex;
         attributeBuffer.setArray(source, sourceIndex, index + offset, 2);
-        index += mapper.attributesPerVertex;
+        index += sizePerVertex;
         attributeBuffer.setArray(source, sourceIndex, index + offset, 2);
         attributeBuffer.setDirty(true);
     }

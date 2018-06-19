@@ -40,7 +40,7 @@ layout(packed) uniform UVData {
 
 void main() {
     vec4 pos =  vec4(aVertex.xyz, 1) * (calculateTransformMatrix(aRotate, aScale, aTranslate) * uMVMatrix);
-    gl_Position = uProjectionMatrix * vec4(floor((uScreenSize * vec2(pos))) / uScreenSize, pos.z, pos.w);
+    gl_Position = vec4(floor((uScreenSize * vec2(pos)) + 0.5) / uScreenSize, pos.z, pos.w) * uProjectionMatrix;
     int frame = int(aFrameData.x);
     int index = int(aVertex.w);
     vec4 uv = uvData[frame];

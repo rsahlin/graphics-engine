@@ -1,22 +1,25 @@
 package com.graphicsengine.scene;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import com.google.gson.annotations.SerializedName;
-import com.graphicsengine.component.SpriteComponent;
+import com.graphicsengine.component.SpriteAttributeComponent;
 import com.graphicsengine.spritemesh.SpriteMesh;
 import com.nucleus.component.CPUComponentBuffer;
 import com.nucleus.component.CPUQuadExpander;
 import com.nucleus.component.Component;
 import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
-import com.nucleus.geometry.AttributeUpdater.PropertyMapper;
+import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.Mesh.BufferIndex;
-import com.nucleus.geometry.RectangleShapeBuilder;
-import com.nucleus.geometry.RectangleShapeBuilder.RectangleConfiguration;
+import com.nucleus.geometry.shape.RectangleShapeBuilder;
+import com.nucleus.geometry.shape.RectangleShapeBuilder.RectangleConfiguration;
+import com.nucleus.geometry.shape.ShapeBuilder;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
+import com.nucleus.shader.VariableIndexer.Indexer;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TextureType;
 import com.nucleus.vecmath.Rectangle;
@@ -28,7 +31,7 @@ import com.nucleus.vecmath.Rectangle;
  * Use this node for simple objects that does not need to have special behavior and not a large number of objects
  * (roughly < 100) otherwise the overhead will grow.
  * If a large number of objects are needed and/or special behavior then component node, see {@linkplain Component} or
- * {@link SpriteComponent}
+ * {@link SpriteAttributeComponent}
  * This class can be serialized using GSON
  * 
  * @author Richard Sahlin
@@ -44,7 +47,6 @@ public class QuadParentNode extends Node implements Consumer {
     transient private ArrayList<SharedMeshQuad> quadChildren = new ArrayList<>();
 
     transient SpriteMesh spriteMesh;
-    transient PropertyMapper mapper;
     transient CPUQuadExpander quadExpander;
     transient RectangleShapeBuilder shapeBuilder;
 
@@ -64,6 +66,19 @@ public class QuadParentNode extends Node implements Consumer {
         QuadParentNode copy = new QuadParentNode(root);
         copy.set(this);
         return copy;
+    }
+
+    @Override
+    public Mesh.Builder<Mesh> createMeshBuilder(NucleusRenderer renderer, Node parent, int count,
+            ShapeBuilder shapeBuilder)
+            throws IOException {
+
+        if (shapeBuilder == null) {
+            shapeBuilder = new RectangleShapeBuilder(new RectangleConfiguration(count, 0));
+        }
+        Mesh.Builder<Mesh> builder = new SpriteMesh.Builder(renderer);
+        return super.initMeshBuilder(renderer, parent, count, shapeBuilder, builder);
+
     }
 
     /**
@@ -104,10 +119,10 @@ public class QuadParentNode extends Node implements Consumer {
      * @param mesh
      */
     private void createBuffers(SpriteMesh mesh) {
-        mapper = mesh.getMapper();
-        CPUComponentBuffer sourceData = new CPUComponentBuffer(maxQuads, mapper.attributesPerVertex);
-        CPUComponentBuffer destinationData = new CPUComponentBuffer(maxQuads, mapper.attributesPerVertex * 4);
-        quadExpander = new CPUQuadExpander(mesh, mapper, sourceData, destinationData);
+        indexer = new Indexer(getProgram());
+        CPUComponentBuffer sourceData = new CPUComponentBuffer(maxQuads, indexer.attributesPerVertex);
+        CPUComponentBuffer destinationData = new CPUComponentBuffer(maxQuads, indexer.attributesPerVertex * 4);
+        quadExpander = new CPUQuadExpander(mesh, indexer, sourceData, destinationData);
     }
 
     /**
@@ -125,7 +140,8 @@ public class QuadParentNode extends Node implements Consumer {
         if (rectangle == null && (texture.getTextureType() == TextureType.Untextured ||
                 texture.getWidth() == 0 || texture.getHeight() == 0)) {
             // Must have size
-            throw new IllegalArgumentException("Node does not define RECT and texture is untextured or size is zero");
+            throw new IllegalArgumentException(
+                    "Node " + getId() + " does not define RECT and texture is untextured or size is zero");
         }
         Rectangle quadRect = (rectangle != null && rectangle.getValues() != null && rectangle.getValues().length >= 4)
                 ? rectangle

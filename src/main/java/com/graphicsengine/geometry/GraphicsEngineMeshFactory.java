@@ -6,16 +6,13 @@ import com.graphicsengine.map.PlayfieldMesh;
 import com.graphicsengine.map.PlayfieldNode;
 import com.graphicsengine.scene.QuadParentNode;
 import com.graphicsengine.scene.SharedMeshQuad;
-import com.graphicsengine.spritemesh.SpriteMesh;
 import com.nucleus.bounds.Bounds;
-import com.nucleus.component.ComponentNode;
 import com.nucleus.geometry.DefaultMeshFactory;
-import com.nucleus.geometry.Material;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshFactory;
-import com.nucleus.geometry.RectangleShapeBuilder;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
+import com.nucleus.scene.ComponentNode;
 import com.nucleus.scene.Node;
 
 /**
@@ -26,53 +23,38 @@ import com.nucleus.scene.Node;
 public class GraphicsEngineMeshFactory extends DefaultMeshFactory implements MeshFactory {
 
     PlayfieldMesh.Builder playfieldBuilder;
-    SpriteMesh.Builder spriteMeshBuilder;
 
     public GraphicsEngineMeshFactory(NucleusRenderer renderer) {
         if (renderer == null) {
             throw new IllegalArgumentException("Renderer may not be null");
         }
-        playfieldBuilder = new PlayfieldMesh.Builder(renderer);
-        spriteMeshBuilder = new SpriteMesh.Builder(renderer);
     }
 
     @Override
     public Mesh createMesh(NucleusRenderer renderer, Node parent) throws IOException, GLException {
 
-        if (parent instanceof PlayfieldNode) {
-            PlayfieldNode playfield = (PlayfieldNode) parent;
+        Mesh.Builder<Mesh> builder = null;
+        int count = -1;
 
-            playfieldBuilder.setMap(playfield.getMapSize(), playfield.getCharRectangle());
-            playfieldBuilder.setOffset(playfield.getAnchorOffset());
-            playfieldBuilder.setTexture(playfield.getTextureRef());
-            playfieldBuilder.setMaterial(playfield.getMaterial());
-            PlayfieldMesh pmesh = (PlayfieldMesh) playfieldBuilder.create();
-            Bounds bounds = playfieldBuilder.createBounds();
-            parent.initBounds(bounds);
-            return pmesh;
-        }
-        if (parent instanceof QuadParentNode) {
-            QuadParentNode quadParent = (QuadParentNode) parent;
-            SpriteMesh.Builder mbuilder = new SpriteMesh.Builder(renderer);
-            mbuilder.setSpriteCount(quadParent.getMaxQuads());
-            mbuilder.setTexture(parent.getTextureRef());
-            mbuilder.setMaterial(quadParent.getMaterial() != null ? quadParent.getMaterial() : new Material());
-            RectangleShapeBuilder.RectangleConfiguration config = new RectangleShapeBuilder.RectangleConfiguration(
-                    quadParent.getMaxQuads(), 0);
-            mbuilder.setShapeBuilder(new RectangleShapeBuilder(config));
-            // TODO Fix generics so that cast is not needed
-            SpriteMesh mesh = (SpriteMesh) mbuilder.create();
-            return mesh;
-        }
-        if (parent instanceof ComponentNode) {
+        if (parent instanceof PlayfieldNode) {
+            count = 1;
+        } else if (parent instanceof QuadParentNode) {
+            count = ((QuadParentNode) parent).getMaxQuads();
+        } else if (parent instanceof ComponentNode) {
             /**
              * If ComponentNode then don't create mesh, mesh is created when create on component is called.
              */
             return null;
-        }
-        if (parent instanceof SharedMeshQuad) {
+        } else if (parent instanceof SharedMeshQuad) {
             // This is child to quad parent node, do not create mesh
             return null;
+        }
+        if (count != -1) {
+            builder = parent.createMeshBuilder(renderer, parent, count, null);
+            Mesh mesh = builder.create();
+            Bounds bounds = builder.createBounds();
+            parent.initBounds(bounds);
+            return mesh;
         }
         return super.createMesh(renderer, parent);
     }
