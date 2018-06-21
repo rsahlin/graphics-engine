@@ -29,6 +29,8 @@ import com.nucleus.vecmath.Matrix;
  */
 public class ShadowPass2Program extends TiledSpriteProgram {
 
+    public static final String DEPTH_SHADOW_NAME = "DEPTHshadow";
+
     Texture2D shadow;
 
     public ShadowPass2Program(Pass pass, String category, Texture2D.Shading shading) {
@@ -36,7 +38,7 @@ public class ShadowPass2Program extends TiledSpriteProgram {
         // This defines the texture parameters for the shadow pass.
         // TODO - this should be from a json definition from the scene.
         shadow = TextureFactory.createTexture(TextureType.Texture2D);
-        ExternalReference ref = new ExternalReference(ExternalReference.ID_LOOKUP + "DEPTHshadow");
+        ExternalReference ref = new ExternalReference(ExternalReference.ID_LOOKUP + DEPTH_SHADOW_NAME);
         shadow.setExternalReference(ref);
         TextureParameter texParam = new TextureParameter(
                 new Parameter[] { Parameter.LINEAR, Parameter.LINEAR, Parameter.CLAMP, Parameter.CLAMP });
