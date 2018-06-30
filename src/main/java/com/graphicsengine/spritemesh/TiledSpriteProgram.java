@@ -3,7 +3,6 @@ package com.graphicsengine.spritemesh;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.GLESWrapper.GLES20;
-import com.nucleus.opengl.GLESWrapper.GLES32;
 import com.nucleus.opengl.GLESWrapper.Renderers;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.Pass;
@@ -62,16 +61,13 @@ public class TiledSpriteProgram extends ShaderProgram {
     }
 
     @Override
-    protected String getShaderSource(int shaderType) {
+    protected String getShaderSourceName(int shaderType) {
         switch (shaderType) {
-            case GLES20.GL_VERTEX_SHADER:
-            case GLES32.GL_GEOMETRY_SHADER:
-                return function.toString();
             case GLES20.GL_FRAGMENT_SHADER:
                 // For sprite fragment shader ignore the category
                 return function.getPassString() + function.getShadingString();
             default:
-                throw new IllegalArgumentException("Not valid for type " + shaderType);
+                return super.getShaderSourceName(shaderType);
         }
     }
 

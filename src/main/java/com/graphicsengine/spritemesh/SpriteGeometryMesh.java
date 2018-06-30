@@ -5,14 +5,15 @@ import java.io.IOException;
 import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.opengl.GLES20Wrapper;
+import com.nucleus.opengl.GLESWrapper.GLES20;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
+import com.nucleus.renderer.Pass;
 import com.nucleus.shader.GenericShaderProgram;
 import com.nucleus.shader.ShaderProgram;
+import com.nucleus.shader.ShaderProgram.Function;
 import com.nucleus.shader.ShaderProgram.ProgramType;
-import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.Texture2D.Shading;
-import com.nucleus.texturing.TextureType;
 
 /**
  * SpriteMesh using a geometry shader
@@ -20,6 +21,24 @@ import com.nucleus.texturing.TextureType;
  *
  */
 public class SpriteGeometryMesh extends SpriteMesh {
+
+    static class GeometryMeshFunction extends Function {
+
+        public GeometryMeshFunction(Pass pass, Shading shading, String category) {
+            super(pass, shading, category);
+        }
+
+        @Override
+        public String getPath(int shaderType) {
+            switch (shaderType) {
+                case GLES20.GL_FRAGMENT_SHADER:
+                    return "";
+                default:
+                    return super.getPath(shaderType);
+            }
+        }
+
+    }
 
     protected final static String INVALID_TYPE = "Invalid type: ";
 
@@ -47,16 +66,8 @@ public class SpriteGeometryMesh extends SpriteMesh {
         @Override
         public ShaderProgram createProgram(GLES20Wrapper gles) {
             Shading shading = Shading.flat;
-            Texture2D texture = getTexture();
-            if (texture != null && texture.getTextureType() != TextureType.Untextured) {
-
-            } else {
-
-            }
-            ShaderProgram program = new GenericShaderProgram(new String[] { "pointsprite", "flat", "flatsprite" },
-                    null,
-                    shading, null,
-                    ProgramType.VERTEX_GEOMETRY_FRAGMENT);
+            GeometryMeshFunction function = new GeometryMeshFunction(null, shading, "sprite");
+            ShaderProgram program = new GenericShaderProgram(function, ProgramType.VERTEX_GEOMETRY_FRAGMENT);
             return AssetManager.getInstance().getProgram(gles, program);
         }
 
