@@ -1,6 +1,5 @@
 package com.graphicsengine.spritemesh;
 
-import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.GLESWrapper.GLES20;
@@ -11,9 +10,7 @@ import com.nucleus.renderer.Pass;
 import com.nucleus.shader.QuadExpanderShader;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.shader.ShaderSource;
-import com.nucleus.shader.ShadowPass1Program;
 import com.nucleus.texturing.Texture2D;
-import com.nucleus.texturing.Texture2D.Shading;
 
 /**
  * This class defines the mappings for the tile sprite vertex and fragment shaders.
@@ -79,22 +76,6 @@ public class TiledSpriteProgram extends ShaderProgram {
     public void updateUniformData(float[] destinationUniform, Mesh mesh) {
         setScreenSize(destinationUniform, getUniformByName("uScreenSize"));
         setTextureUniforms(destinationUniform, mesh.getTexture(Texture2D.TEXTURE_0));
-    }
-
-    @Override
-    public ShaderProgram getProgram(GLES20Wrapper gles, Pass pass, Shading shading) {
-        switch (pass) {
-            case UNDEFINED:
-            case ALL:
-            case MAIN:
-                return this;
-            case SHADOW1:
-                return AssetManager.getInstance().getProgram(gles, new ShadowPass1Program(this, shading, CATEGORY));
-            case SHADOW2:
-                return AssetManager.getInstance().getProgram(gles, new ShadowPass2Program(pass, null, shading));
-            default:
-                throw new IllegalArgumentException("Invalid pass " + pass);
-        }
     }
 
     /**

@@ -10,6 +10,7 @@ import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.shader.GenericShaderProgram;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.shader.ShaderProgram.ProgramType;
+import com.nucleus.texturing.Texture2D.Shading;
 
 /**
  * SpriteMesh using a geometry shader
@@ -43,7 +44,9 @@ public class SpriteGeometryMesh extends SpriteMesh {
 
         @Override
         public ShaderProgram createProgram(GLES20Wrapper gles) {
-            ShaderProgram program = new GenericShaderProgram(new String[] { "point", "flat", "flat" },
+            ShaderProgram program = new GenericShaderProgram(new String[] { "pointsprite", "flat", "flatsprite" },
+                    null,
+                    Shading.flat, null,
                     ProgramType.VERTEX_GEOMETRY_FRAGMENT);
             return AssetManager.getInstance().getProgram(gles, program);
         }
