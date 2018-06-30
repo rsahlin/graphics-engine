@@ -17,7 +17,10 @@ import com.nucleus.texturing.UVTexture2D;
  */
 public class UVSpriteProgram extends TiledSpriteProgram {
 
-    protected static final String CATEGORY = "uvsprite";
+    /**
+     * This uses gles 20 - deprecated in favour of geometry shader
+     */
+    protected static final String CATEGORY = "uvsprite20";
 
     transient protected boolean initialized = false;
 

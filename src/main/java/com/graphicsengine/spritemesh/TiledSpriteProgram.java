@@ -23,7 +23,10 @@ import com.nucleus.texturing.Texture2D;
  */
 public class TiledSpriteProgram extends ShaderProgram {
 
-    protected static final String CATEGORY = "sprite";
+    /**
+     * This uses gles 20 - deprecated in favour of geometry shader
+     */
+    protected static final String CATEGORY = "tiledsprite20";
 
     protected QuadExpanderShader expanderShader;
 
