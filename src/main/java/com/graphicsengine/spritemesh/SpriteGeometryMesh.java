@@ -11,7 +11,7 @@ import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.renderer.Pass;
 import com.nucleus.shader.GenericShaderProgram;
 import com.nucleus.shader.ShaderProgram;
-import com.nucleus.shader.ShaderProgram.Function;
+import com.nucleus.shader.ShaderProgram.Categorizer;
 import com.nucleus.shader.ShaderProgram.ProgramType;
 import com.nucleus.texturing.Texture2D.Shading;
 
@@ -22,9 +22,9 @@ import com.nucleus.texturing.Texture2D.Shading;
  */
 public class SpriteGeometryMesh extends SpriteMesh {
 
-    static class GeometryMeshFunction extends Function {
+    static class GeometryCategorizer extends Categorizer {
 
-        public GeometryMeshFunction(Pass pass, Shading shading, String category) {
+        public GeometryCategorizer(Pass pass, Shading shading, String category) {
             super(pass, shading, category);
         }
 
@@ -66,7 +66,7 @@ public class SpriteGeometryMesh extends SpriteMesh {
         @Override
         public ShaderProgram createProgram(GLES20Wrapper gles) {
             Shading shading = Shading.flat;
-            GeometryMeshFunction function = new GeometryMeshFunction(null, shading, "sprite");
+            GeometryCategorizer function = new GeometryCategorizer(null, shading, "sprite");
             ShaderProgram program = new GenericShaderProgram(function, ProgramType.VERTEX_GEOMETRY_FRAGMENT);
             return AssetManager.getInstance().getProgram(gles, program);
         }

@@ -10,6 +10,7 @@ import com.nucleus.shader.QuadExpanderShader;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.shader.ShaderSource;
 import com.nucleus.texturing.Texture2D;
+import com.nucleus.texturing.Texture2D.Shading;
 
 /**
  * This class defines the mappings for the tile sprite vertex and fragment shaders.
@@ -22,6 +23,24 @@ import com.nucleus.texturing.Texture2D;
  */
 public class TiledSpriteProgram extends ShaderProgram {
 
+    static class SpriteCategorizer extends Categorizer {
+
+        public SpriteCategorizer(Pass pass, Shading shading, String category) {
+            super(pass, shading, category);
+        }
+
+        @Override
+        public String getShaderSourceName(int shaderType) {
+            switch (shaderType) {
+                case GLES20.GL_FRAGMENT_SHADER:
+                    // Fragment shaders are shared - skip category path
+                    return getPassString() + getShadingString();
+            }
+            return (getPath(shaderType) + getPassString() + getShadingString());
+        }
+
+    }
+
     /**
      * This uses gles 20 - deprecated in favour of geometry shader
      */
@@ -30,14 +49,12 @@ public class TiledSpriteProgram extends ShaderProgram {
     protected QuadExpanderShader expanderShader;
 
     TiledSpriteProgram(Texture2D.Shading shading) {
-        // super(null, shading, CATEGORY, CommonShaderVariables.values(), ProgramType.VERTEX_FRAGMENT);
-        super(null, shading, CATEGORY, ProgramType.VERTEX_FRAGMENT);
+        super(new SpriteCategorizer(null, shading, CATEGORY), ProgramType.VERTEX_FRAGMENT);
         setIndexer(new TiledSpriteIndexer());
     }
 
     protected TiledSpriteProgram(Pass pass, Texture2D.Shading shading, String category) {
-        // super(pass, shading, category, CommonShaderVariables.values(), ProgramType.VERTEX_FRAGMENT);
-        super(pass, shading, category, ProgramType.VERTEX_FRAGMENT);
+        super(new SpriteCategorizer(pass, shading, category), ProgramType.VERTEX_FRAGMENT);
         setIndexer(new TiledSpriteIndexer());
     }
 
@@ -58,17 +75,6 @@ public class TiledSpriteProgram extends ShaderProgram {
             return ShaderSource.V300;
         }
         return super.getSourceNameVersion(version, type);
-    }
-
-    @Override
-    protected String getShaderSourceName(int shaderType) {
-        switch (shaderType) {
-            case GLES20.GL_FRAGMENT_SHADER:
-                // For sprite fragment shader ignore the category
-                return function.getPassString() + function.getShadingString();
-            default:
-                return super.getShaderSourceName(shaderType);
-        }
     }
 
     @Override
