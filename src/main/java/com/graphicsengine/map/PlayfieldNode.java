@@ -13,7 +13,11 @@ import com.nucleus.io.ExternalReference;
 import com.nucleus.mmi.ObjectInputListener;
 import com.nucleus.mmi.PointerData;
 import com.nucleus.mmi.PointerMotionData;
+import com.nucleus.opengl.GLException;
+import com.nucleus.renderer.NucleusNodeRenderer;
 import com.nucleus.renderer.NucleusRenderer;
+import com.nucleus.renderer.NucleusRenderer.NodeRenderer;
+import com.nucleus.renderer.Pass;
 import com.nucleus.scene.LineDrawerNode;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.NodeException;
@@ -32,6 +36,8 @@ import com.nucleus.vecmath.Rectangle;
  *
  */
 public class PlayfieldNode extends Node {
+
+    transient static NodeRenderer<PlayfieldNode> nodeRenderer = new NucleusNodeRenderer<PlayfieldNode>();
 
     public class PlayfieldNodeObjectInputListener implements ObjectInputListener {
 
@@ -333,6 +339,16 @@ public class PlayfieldNode extends Node {
             SimpleLogger.d(getClass(), "Could not invert matrix!!!!!!!!!!!!!!!!");
         }
         return null;
+    }
+
+    @Override
+    public NodeRenderer<?> getNodeRenderer() {
+        return PlayfieldNode.nodeRenderer;
+    }
+
+    @Override
+    public boolean renderNode(NucleusRenderer renderer, Pass currentPass, float[][] matrices) throws GLException {
+        return false;
     }
 
 }

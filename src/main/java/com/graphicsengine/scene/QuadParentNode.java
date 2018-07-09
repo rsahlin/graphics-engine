@@ -16,8 +16,13 @@ import com.nucleus.geometry.Mesh.BufferIndex;
 import com.nucleus.geometry.shape.RectangleShapeBuilder;
 import com.nucleus.geometry.shape.RectangleShapeBuilder.RectangleConfiguration;
 import com.nucleus.geometry.shape.ShapeBuilder;
+import com.nucleus.opengl.GLException;
+import com.nucleus.renderer.NucleusNodeRenderer;
 import com.nucleus.renderer.NucleusRenderer;
+import com.nucleus.renderer.NucleusRenderer.NodeRenderer;
+import com.nucleus.renderer.Pass;
 import com.nucleus.scene.Node;
+import com.nucleus.scene.RenderableNode;
 import com.nucleus.scene.RootNode;
 import com.nucleus.shader.VariableIndexer.Indexer;
 import com.nucleus.texturing.Texture2D;
@@ -37,7 +42,7 @@ import com.nucleus.vecmath.Rectangle;
  * @author Richard Sahlin
  *
  */
-public class QuadParentNode extends Node implements Consumer {
+public class QuadParentNode extends Node implements Consumer, RenderableNode<Mesh> {
 
     public static final String MAX_QUADS = "maxQuads";
 
@@ -49,6 +54,8 @@ public class QuadParentNode extends Node implements Consumer {
     transient SpriteMesh spriteMesh;
     transient CPUQuadExpander quadExpander;
     transient RectangleShapeBuilder shapeBuilder;
+
+    transient static NodeRenderer<QuadParentNode> nodeRenderer = new NucleusNodeRenderer<QuadParentNode>();
 
     /**
      * Used by GSON and {@link #createInstance(RootNode)} method - do NOT call directly
@@ -193,6 +200,20 @@ public class QuadParentNode extends Node implements Consumer {
 
     public CPUQuadExpander getExpander() {
         return quadExpander;
+    }
+
+    @Override
+    public NodeRenderer<QuadParentNode> getNodeRenderer() {
+        return QuadParentNode.nodeRenderer;
+    }
+
+    @Override
+    public boolean renderNode(NucleusRenderer renderer, Pass currentPass, float[][] matrices) throws GLException {
+        NodeRenderer<QuadParentNode> nodeRenderer = getNodeRenderer();
+        if (nodeRenderer != null) {
+            nodeRenderer.renderNode(renderer, this, currentPass, matrices);
+        }
+        return true;
     }
 
 }
