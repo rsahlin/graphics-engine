@@ -6,6 +6,7 @@ import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.scene.GraphicsEngineNodeType;
 import com.nucleus.SimpleLogger;
 import com.nucleus.geometry.Mesh;
+import com.nucleus.geometry.Mesh.Builder;
 import com.nucleus.geometry.shape.RectangleShapeBuilder;
 import com.nucleus.geometry.shape.RectangleShapeBuilder.RectangleConfiguration;
 import com.nucleus.geometry.shape.ShapeBuilder;
@@ -21,6 +22,8 @@ import com.nucleus.renderer.Pass;
 import com.nucleus.scene.LineDrawerNode;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.NodeException;
+import com.nucleus.scene.NucleusMeshNode;
+import com.nucleus.scene.RenderableNode;
 import com.nucleus.scene.RootNode;
 import com.nucleus.shader.VariableIndexer.Indexer;
 import com.nucleus.vecmath.Matrix;
@@ -35,7 +38,7 @@ import com.nucleus.vecmath.Rectangle;
  * @author Richard Sahlin
  *
  */
-public class PlayfieldNode extends Node {
+public class PlayfieldNode extends NucleusMeshNode<Mesh> {
 
     transient static NodeRenderer<PlayfieldNode> nodeRenderer = new NucleusNodeRenderer<PlayfieldNode>();
 
@@ -148,7 +151,7 @@ public class PlayfieldNode extends Node {
     }
 
     @Override
-    public Mesh.Builder<Mesh> createMeshBuilder(NucleusRenderer renderer, Node parent, int count,
+    public Builder<Mesh> createMeshBuilder(NucleusRenderer renderer, RenderableNode<Mesh> parent, int count,
             ShapeBuilder shapeBuilder)
             throws IOException {
 
@@ -349,6 +352,12 @@ public class PlayfieldNode extends Node {
     @Override
     public boolean renderNode(NucleusRenderer renderer, Pass currentPass, float[][] matrices) throws GLException {
         return false;
+    }
+
+    @Override
+    public void create() {
+        // TODO Auto-generated method stub
+
     }
 
 }

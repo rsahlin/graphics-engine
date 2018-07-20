@@ -1,16 +1,11 @@
 package com.graphicsengine.scene;
 
-import java.io.IOException;
-
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.component.SpriteAttributeComponent;
 import com.nucleus.SimpleLogger;
 import com.nucleus.geometry.Mesh;
-import com.nucleus.geometry.shape.ShapeBuilder;
-import com.nucleus.opengl.GLException;
-import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.renderer.NucleusRenderer.NodeRenderer;
-import com.nucleus.renderer.Pass;
+import com.nucleus.scene.AbstractNode;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
 import com.nucleus.texturing.Texture2D;
@@ -29,7 +24,7 @@ import com.nucleus.vecmath.Transform;
  * @author Richard Sahlin
  *
  */
-public class SharedMeshQuad extends Node {
+public class SharedMeshQuad extends AbstractNode {
 
     /**
      * The framenumber for this quad, from the texture in the referenced mesh.
@@ -174,25 +169,15 @@ public class SharedMeshQuad extends Node {
     }
 
     @Override
-    public Mesh.Builder<Mesh> createMeshBuilder(NucleusRenderer renderer, Node parent, int count,
-            ShapeBuilder shapeBuilder)
-            throws IOException {
-        /**
-         * Mesh is stored in parent, this node shares that mesh.
-         */
-        return null;
-    }
-
-    @Override
     public NodeRenderer<?> getNodeRenderer() {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public boolean renderNode(NucleusRenderer renderer, Pass currentPass, float[][] matrices) throws GLException {
+    public void create() {
         // TODO Auto-generated method stub
-        return false;
+
     }
 
 }

@@ -8,6 +8,7 @@ import com.nucleus.component.Component;
 import com.nucleus.component.ComponentBuffer;
 import com.nucleus.component.ComponentException;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
+import com.nucleus.geometry.Material;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.Mesh.BufferIndex;
 import com.nucleus.geometry.Mesh.Builder;
@@ -15,9 +16,10 @@ import com.nucleus.geometry.MeshBuilder.MeshBuilderFactory;
 import com.nucleus.geometry.shape.ShapeBuilder;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
+import com.nucleus.scene.AbstractNode.MeshIndex;
 import com.nucleus.scene.ComponentNode;
 import com.nucleus.scene.Node;
-import com.nucleus.scene.Node.MeshIndex;
+import com.nucleus.scene.RenderableNode;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.shader.VariableIndexer.Indexer;
 import com.nucleus.system.System;
@@ -224,11 +226,46 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
     }
 
     @Override
-    public Mesh.Builder<Mesh> createMeshBuilder(NucleusRenderer renderer, Node parent, int count,
+    public Builder<Mesh> createMeshBuilder(NucleusRenderer renderer, RenderableNode<Mesh> parent, int count,
             ShapeBuilder shapeBuilder) throws IOException {
         Mesh.Builder<Mesh> spriteBuilder = createBuilderInstance(renderer);
-        parent.initMeshBuilder(renderer, parent, count, shapeBuilder, spriteBuilder);
+        initMeshBuilder(renderer, parent, count, shapeBuilder, spriteBuilder);
         return spriteBuilder;
+    }
+
+    /**
+     * Sets texture, material and shapebuilder from the parent node - if not already set in builder.
+     * Sets objectcount and attribute per vertex size.
+     * If parent does not have program the
+     * {@link com.nucleus.geometry.Mesh.Builder#createProgram(com.nucleus.opengl.GLES20Wrapper)}
+     * method is called to create a suitable program.
+     * The returned builder shall have needed values to create a mesh.
+     * 
+     * @param renderer
+     * @param parent
+     * @param count Number of objects
+     * @param shapeBuilder
+     * @param builder
+     * @throws IOException
+     */
+    protected Mesh.Builder<Mesh> initMeshBuilder(NucleusRenderer renderer, RenderableNode<Mesh> parent, int count,
+            ShapeBuilder shapeBuilder, Mesh.Builder<Mesh> builder)
+            throws IOException {
+        if (builder.getTexture() == null) {
+            builder.setTexture(parent.getTextureRef());
+        }
+        if (builder.getMaterial() == null) {
+            builder.setMaterial(parent.getMaterial() != null ? parent.getMaterial() : new Material());
+        }
+        builder.setObjectCount(count);
+        if (builder.getShapeBuilder() == null) {
+            builder.setShapeBuilder(shapeBuilder);
+        }
+        if (parent.getProgram() == null) {
+            parent.setProgram(builder.createProgram(renderer.getGLES()));
+        }
+        builder.setAttributesPerVertex(parent.getProgram().getAttributeSizes());
+        return builder;
     }
 
     /**

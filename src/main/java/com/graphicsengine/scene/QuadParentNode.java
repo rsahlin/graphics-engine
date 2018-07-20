@@ -22,6 +22,7 @@ import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.renderer.NucleusRenderer.NodeRenderer;
 import com.nucleus.renderer.Pass;
 import com.nucleus.scene.Node;
+import com.nucleus.scene.NucleusMeshNode;
 import com.nucleus.scene.RenderableNode;
 import com.nucleus.scene.RootNode;
 import com.nucleus.shader.VariableIndexer.Indexer;
@@ -42,7 +43,7 @@ import com.nucleus.vecmath.Rectangle;
  * @author Richard Sahlin
  *
  */
-public class QuadParentNode extends Node implements Consumer, RenderableNode<Mesh> {
+public class QuadParentNode extends NucleusMeshNode<Mesh> implements Consumer {
 
     public static final String MAX_QUADS = "maxQuads";
 
@@ -76,7 +77,7 @@ public class QuadParentNode extends Node implements Consumer, RenderableNode<Mes
     }
 
     @Override
-    public Mesh.Builder<Mesh> createMeshBuilder(NucleusRenderer renderer, Node parent, int count,
+    public Mesh.Builder<Mesh> createMeshBuilder(NucleusRenderer renderer, RenderableNode<Mesh> parent, int count,
             ShapeBuilder shapeBuilder)
             throws IOException {
 
@@ -214,6 +215,18 @@ public class QuadParentNode extends Node implements Consumer, RenderableNode<Mes
             nodeRenderer.renderNode(renderer, this, currentPass, matrices);
         }
         return true;
+    }
+
+    @Override
+    public ArrayList<Mesh> getMeshes(ArrayList<Mesh> list) {
+        list.addAll(meshes);
+        return list;
+    }
+
+    @Override
+    public void create() {
+        // TODO Auto-generated method stub
+
     }
 
 }

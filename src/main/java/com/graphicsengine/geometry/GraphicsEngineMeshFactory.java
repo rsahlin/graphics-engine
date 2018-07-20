@@ -9,18 +9,18 @@ import com.graphicsengine.scene.SharedMeshQuad;
 import com.nucleus.bounds.Bounds;
 import com.nucleus.geometry.DefaultMeshFactory;
 import com.nucleus.geometry.Mesh;
-import com.nucleus.geometry.MeshFactory;
+import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.ComponentNode;
-import com.nucleus.scene.Node;
+import com.nucleus.scene.RenderableNode;
 
 /**
  * Mesh factory for graphics-engine meshes
  * This is the main entrypoint for creating graphics-engine meshes
  *
  */
-public class GraphicsEngineMeshFactory extends DefaultMeshFactory implements MeshFactory {
+public class GraphicsEngineMeshFactory extends DefaultMeshFactory {
 
     PlayfieldMesh.Builder playfieldBuilder;
 
@@ -31,9 +31,9 @@ public class GraphicsEngineMeshFactory extends DefaultMeshFactory implements Mes
     }
 
     @Override
-    public Mesh createMesh(NucleusRenderer renderer, Node parent) throws IOException, GLException {
+    public Mesh createMesh(NucleusRenderer renderer, RenderableNode<Mesh> parent) throws IOException, GLException {
 
-        Mesh.Builder<Mesh> builder = null;
+        MeshBuilder<Mesh> builder = null;
         int count = -1;
 
         if (parent instanceof PlayfieldNode) {
@@ -53,7 +53,7 @@ public class GraphicsEngineMeshFactory extends DefaultMeshFactory implements Mes
             builder = parent.createMeshBuilder(renderer, parent, count, null);
             Mesh mesh = builder.create();
             Bounds bounds = builder.createBounds();
-            parent.initBounds(bounds);
+            parent.setBounds(bounds);
             return mesh;
         }
         return super.createMesh(renderer, parent);
