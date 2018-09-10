@@ -129,6 +129,7 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
     protected Shape shape;
 
     transient T mesh;
+    transient private ComponentNode parent;
 
     /**
      * The mapper used - this shall be set in the {@link #create(NucleusRenderer, ComponentNode, System)} method
@@ -193,13 +194,14 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
     @Override
     public void create(NucleusRenderer renderer, ComponentNode parent)
             throws ComponentException {
+        this.parent = parent;
         try {
             if (shape == null) {
                 throw new IllegalArgumentException("Component " + parent.getId() + " must define 'shape'");
             }
             switch (shape.getType()) {
                 case rect:
-                    Builder<Mesh> spriteBuilder = createMeshBuilder(renderer, parent, count, createShapeBuilder());
+                    Builder<Mesh> spriteBuilder = createMeshBuilder(renderer, createShapeBuilder());
                     // TODO - Fix generics so that cast is not needed
                     setMesh((T) spriteBuilder.create());
                     mapper = new EntityIndexer(new Indexer(parent.getProgram()));
@@ -226,8 +228,8 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
     }
 
     @Override
-    public Builder<Mesh> createMeshBuilder(NucleusRenderer renderer, RenderableNode<Mesh> parent, int count,
-            ShapeBuilder shapeBuilder) throws IOException {
+    public Builder<Mesh> createMeshBuilder(NucleusRenderer renderer, ShapeBuilder shapeBuilder)
+            throws IOException {
         Mesh.Builder<Mesh> spriteBuilder = createBuilderInstance(renderer);
         initMeshBuilder(renderer, parent, count, shapeBuilder, spriteBuilder);
         return spriteBuilder;

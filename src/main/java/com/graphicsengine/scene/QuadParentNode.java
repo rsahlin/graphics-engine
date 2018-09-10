@@ -13,6 +13,7 @@ import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.Mesh.BufferIndex;
+import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.shape.RectangleShapeBuilder;
 import com.nucleus.geometry.shape.RectangleShapeBuilder.RectangleConfiguration;
 import com.nucleus.geometry.shape.ShapeBuilder;
@@ -23,7 +24,6 @@ import com.nucleus.renderer.NucleusRenderer.NodeRenderer;
 import com.nucleus.renderer.Pass;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.NucleusMeshNode;
-import com.nucleus.scene.RenderableNode;
 import com.nucleus.scene.RootNode;
 import com.nucleus.shader.VariableIndexer.Indexer;
 import com.nucleus.texturing.Texture2D;
@@ -77,15 +77,14 @@ public class QuadParentNode extends NucleusMeshNode<Mesh> implements Consumer {
     }
 
     @Override
-    public Mesh.Builder<Mesh> createMeshBuilder(NucleusRenderer renderer, RenderableNode<Mesh> parent, int count,
-            ShapeBuilder shapeBuilder)
+    public MeshBuilder<Mesh> createMeshBuilder(NucleusRenderer renderer, ShapeBuilder shapeBuilder)
             throws IOException {
-
+        int count = getMaxQuads();
         if (shapeBuilder == null) {
             shapeBuilder = new RectangleShapeBuilder(new RectangleConfiguration(count, 0));
         }
         Mesh.Builder<Mesh> builder = new SpriteMesh.Builder(renderer);
-        return super.initMeshBuilder(renderer, parent, count, shapeBuilder, builder);
+        return super.initMeshBuilder(renderer, count, shapeBuilder, builder);
 
     }
 

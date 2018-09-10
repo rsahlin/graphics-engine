@@ -48,7 +48,8 @@ public class SpriteMesh extends Mesh {
         public Mesh create() throws IOException, GLException {
             setElementMode(Mode.TRIANGLES, objectCount * RectangleShapeBuilder.QUAD_VERTICES, 0,
                     objectCount * RectangleShapeBuilder.QUAD_ELEMENTS);
-            return super.create();
+            Mesh mesh = super.create();
+            return mesh;
         }
 
         @Override

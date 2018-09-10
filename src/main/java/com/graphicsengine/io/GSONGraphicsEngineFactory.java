@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder;
 import com.graphicsengine.component.SpriteAttributeComponent;
 import com.graphicsengine.component.SpriteComponent;
 import com.graphicsengine.exporter.GraphicsEngineNodeExporter;
-import com.graphicsengine.geometry.GraphicsEngineMeshFactory;
 import com.graphicsengine.io.gson.ComponentDeserializer;
 import com.graphicsengine.io.gson.NodeDeserializer;
 import com.graphicsengine.scene.GraphicsEngineNodeFactory;
@@ -13,7 +12,6 @@ import com.graphicsengine.scene.GraphicsEngineNodeType;
 import com.nucleus.common.Type;
 import com.nucleus.common.TypeResolver;
 import com.nucleus.component.Component;
-import com.nucleus.geometry.MeshFactory;
 import com.nucleus.io.GSONSceneFactory;
 import com.nucleus.io.SceneSerializer;
 import com.nucleus.renderer.NucleusRenderer;
@@ -71,8 +69,8 @@ public class GSONGraphicsEngineFactory extends GSONSceneFactory {
     }
 
     @Override
-    public void init(NucleusRenderer renderer, NodeFactory nodeFactory, MeshFactory meshFactory, Type<?>[] types) {
-        super.init(renderer, nodeFactory, meshFactory, types);
+    public void init(NucleusRenderer renderer, NodeFactory nodeFactory, Type<?>[] types) {
+        super.init(renderer, nodeFactory, types);
         registerTypes(GraphicsEngineClasses.values());
     }
 
@@ -99,15 +97,6 @@ public class GSONGraphicsEngineFactory extends GSONSceneFactory {
      */
     public static NodeFactory getNodeFactory() {
         return new GraphicsEngineNodeFactory();
-    }
-
-    /**
-     * Utility method to get the default mesh factory
-     * 
-     * @return
-     */
-    public static MeshFactory getMeshFactory(NucleusRenderer renderer) {
-        return new GraphicsEngineMeshFactory(renderer);
     }
 
     @Override

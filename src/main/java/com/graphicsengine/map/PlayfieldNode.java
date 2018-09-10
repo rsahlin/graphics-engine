@@ -23,7 +23,6 @@ import com.nucleus.scene.LineDrawerNode;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.NodeException;
 import com.nucleus.scene.NucleusMeshNode;
-import com.nucleus.scene.RenderableNode;
 import com.nucleus.scene.RootNode;
 import com.nucleus.shader.VariableIndexer.Indexer;
 import com.nucleus.vecmath.Matrix;
@@ -151,22 +150,20 @@ public class PlayfieldNode extends NucleusMeshNode<Mesh> {
     }
 
     @Override
-    public Builder<Mesh> createMeshBuilder(NucleusRenderer renderer, RenderableNode<Mesh> parent, int count,
-            ShapeBuilder shapeBuilder)
+    public Builder<Mesh> createMeshBuilder(NucleusRenderer renderer, ShapeBuilder shapeBuilder)
             throws IOException {
 
-        PlayfieldNode playfield = (PlayfieldNode) parent;
         PlayfieldMesh.Builder builder = new PlayfieldMesh.Builder(renderer);
-        int[] mapSize = playfield.getMapSize();
-        builder.setMap(mapSize, playfield.getCharRectangle());
-        builder.setOffset(playfield.getAnchorOffset());
+        int[] mapSize = getMapSize();
+        builder.setMap(mapSize, getCharRectangle());
+        builder.setOffset(getAnchorOffset());
         int charCount = mapSize[0] * mapSize[1];
-        super.initMeshBuilder(renderer, parent, charCount, shapeBuilder, builder);
+        super.initMeshBuilder(renderer, charCount, shapeBuilder, builder);
         if (shapeBuilder == null) {
             RectangleConfiguration configuration = new RectangleShapeBuilder.RectangleConfiguration(
-                    playfield.getCharRectangle(), RectangleShapeBuilder.DEFAULT_Z, mapSize[0] * mapSize[1], 0);
+                    getCharRectangle(), RectangleShapeBuilder.DEFAULT_Z, mapSize[0] * mapSize[1], 0);
             configuration.enableVertexIndex(true);
-            shapeBuilder = new CharmapBuilder(configuration, new Indexer(program), playfield.getAnchorOffset());
+            shapeBuilder = new CharmapBuilder(configuration, new Indexer(program), getAnchorOffset());
             builder.setShapeBuilder(shapeBuilder);
         }
         return builder;
