@@ -169,12 +169,6 @@ public class SharedMeshQuad extends AbstractNode {
     }
 
     @Override
-    public NodeRenderer<?> getNodeRenderer() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
     public void create() {
         // TODO Auto-generated method stub
 
