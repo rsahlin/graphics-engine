@@ -5,7 +5,12 @@ import java.io.IOException;
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.scene.GraphicsEngineNodeType;
 import com.nucleus.SimpleLogger;
+import com.nucleus.geometry.AttributeBuffer;
+import com.nucleus.geometry.ElementBuffer;
+import com.nucleus.geometry.Material;
 import com.nucleus.geometry.Mesh;
+import com.nucleus.geometry.AttributeUpdater.Consumer;
+import com.nucleus.geometry.Mesh.BufferIndex;
 import com.nucleus.geometry.Mesh.Builder;
 import com.nucleus.geometry.shape.RectangleShapeBuilder;
 import com.nucleus.geometry.shape.RectangleShapeBuilder.RectangleConfiguration;
@@ -14,16 +19,18 @@ import com.nucleus.io.ExternalReference;
 import com.nucleus.mmi.ObjectInputListener;
 import com.nucleus.mmi.PointerData;
 import com.nucleus.mmi.PointerMotionData;
+import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.GLException;
-import com.nucleus.renderer.NucleusNodeRenderer;
+import com.nucleus.opengl.GLUtils;
+import com.nucleus.opengl.GLESWrapper.GLES20;
 import com.nucleus.renderer.NucleusRenderer;
-import com.nucleus.renderer.NucleusRenderer.NodeRenderer;
 import com.nucleus.renderer.Pass;
 import com.nucleus.scene.LineDrawerNode;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.NodeException;
 import com.nucleus.scene.NucleusMeshNode;
 import com.nucleus.scene.RootNode;
+import com.nucleus.shader.ShaderProgram;
 import com.nucleus.shader.VariableIndexer.Indexer;
 import com.nucleus.vecmath.Matrix;
 import com.nucleus.vecmath.Rectangle;
@@ -39,7 +46,6 @@ import com.nucleus.vecmath.Rectangle;
  */
 public class PlayfieldNode extends NucleusMeshNode<Mesh> {
 
-    transient static NodeRenderer<PlayfieldNode> nodeRenderer = new NucleusNodeRenderer<PlayfieldNode>();
 
     public class PlayfieldNodeObjectInputListener implements ObjectInputListener {
 
@@ -341,10 +347,6 @@ public class PlayfieldNode extends NucleusMeshNode<Mesh> {
         return null;
     }
 
-    @Override
-    public NodeRenderer<?> getNodeRenderer() {
-        return PlayfieldNode.nodeRenderer;
-    }
 
     @Override
     public boolean renderNode(NucleusRenderer renderer, Pass currentPass, float[][] matrices) throws GLException {
@@ -354,6 +356,51 @@ public class PlayfieldNode extends NucleusMeshNode<Mesh> {
     @Override
     public void create() {
         // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void renderMesh(NucleusRenderer renderer, ShaderProgram program, Mesh mesh, float[][] matrices)
+            throws GLException {
+        GLES20Wrapper gles = renderer.getGLES();
+        Consumer updater = mesh.getAttributeConsumer();
+        if (updater != null) {
+            updater.updateAttributeData(renderer);
+        }
+        if (mesh.getDrawCount() == 0) {
+            return;
+        }
+        Material material = mesh.getMaterial();
+
+        program.updateAttributes(gles, mesh);
+        program.updateUniforms(gles, matrices, mesh);
+        program.prepareTextures(gles, mesh);
+
+        material.setBlendModeSeparate(gles);
+
+        ElementBuffer indices = mesh.getElementBuffer();
+
+        if (indices == null) {
+            gles.glDrawArrays(mesh.getMode().mode, mesh.getOffset(), mesh.getDrawCount());
+            GLUtils.handleError(gles, "glDrawArrays ");
+            timeKeeper.addDrawArrays(mesh.getDrawCount());
+        } else {
+            if (indices.getBufferName() > 0) {
+                gles.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, indices.getBufferName());
+                gles.glDrawElements(mesh.getMode().mode, mesh.getDrawCount(), indices.getType().type,
+                        mesh.getOffset());
+                GLUtils.handleError(gles, "glDrawElements with ElementBuffer ");
+            } else {
+                gles.glDrawElements(mesh.getMode().mode, mesh.getDrawCount(), indices.getType().type,
+                        indices.getBuffer().position(mesh.getOffset()));
+                GLUtils.handleError(gles, "glDrawElements no ElementBuffer ");
+            }
+            AttributeBuffer vertices = mesh.getAttributeBuffer(BufferIndex.ATTRIBUTES_STATIC);
+            if (vertices == null) {
+                vertices = mesh.getAttributeBuffer(BufferIndex.ATTRIBUTES);
+            }
+            timeKeeper.addDrawElements(vertices.getVerticeCount(), mesh.getDrawCount());
+        }
 
     }
 
