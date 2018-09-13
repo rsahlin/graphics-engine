@@ -86,7 +86,7 @@ public class SpriteAttributeComponent extends ActorComponent<SpriteMesh>
         spritedataSize = mapper.attributesPerVertex;
         spriteBuffer = new CPUComponentBuffer(count, mapper.attributesPerVertex * 4);
         entityBuffer = new CPUComponentBuffer(count, mapper.attributesPerEntity);
-        spriteExpander = new CPUQuadExpander(mesh, mapper, entityBuffer, spriteBuffer);
+        spriteExpander = new CPUQuadExpander(mesh.getTexture(Texture2D.TEXTURE_0), mapper, entityBuffer, spriteBuffer);
     }
 
     /**

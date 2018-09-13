@@ -1,6 +1,5 @@
 package com.graphicsengine.spritemesh;
 
-import com.nucleus.geometry.Mesh;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.GLESWrapper.GLES20;
 import com.nucleus.opengl.GLESWrapper.Renderers;
@@ -9,8 +8,11 @@ import com.nucleus.renderer.Pass;
 import com.nucleus.shader.QuadExpanderShader;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.shader.ShaderSource;
+import com.nucleus.shader.ShaderVariable;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.Texture2D.Shading;
+import com.nucleus.texturing.TextureType;
+import com.nucleus.texturing.TiledTexture2D;
 
 /**
  * This class defines the mappings for the tile sprite vertex and fragment shaders.
@@ -23,6 +25,8 @@ import com.nucleus.texturing.Texture2D.Shading;
  */
 public class TiledSpriteProgram extends ShaderProgram {
 
+    protected TiledTexture2D texture;
+    
     static class SpriteCategorizer extends Categorizer {
 
         public SpriteCategorizer(Pass pass, Shading shading, String category) {
@@ -48,12 +52,27 @@ public class TiledSpriteProgram extends ShaderProgram {
 
     protected QuadExpanderShader expanderShader;
 
-    TiledSpriteProgram(Texture2D.Shading shading) {
+    /**
+     * Constructor for TiledSpriteProgram
+     * @param texture
+     * @param shading
+     */
+    TiledSpriteProgram(TiledTexture2D texture, Texture2D.Shading shading) {
         super(new SpriteCategorizer(null, shading, CATEGORY), ProgramType.VERTEX_FRAGMENT);
+        if (texture == null && shading == Texture2D.Shading.textured) {
+            throw new IllegalArgumentException("Texture may not be null for shading: " + shading);
+        }
+        this.texture = texture;
         setIndexer(new TiledSpriteIndexer());
     }
 
-    protected TiledSpriteProgram(Pass pass, Texture2D.Shading shading, String category) {
+    /**
+     * Internal constructor to be used by subclass - DO NOT USE to create instance of TiledSpriteProgram
+     * @param pass
+     * @param shading
+     * @param category
+     */
+    TiledSpriteProgram(Pass pass, Texture2D.Shading shading, String category) {
         super(new SpriteCategorizer(pass, shading, category), ProgramType.VERTEX_FRAGMENT);
         setIndexer(new TiledSpriteIndexer());
     }
@@ -78,12 +97,36 @@ public class TiledSpriteProgram extends ShaderProgram {
     }
 
     @Override
-    public void updateUniformData(float[] destinationUniform, Mesh mesh) {
+    public void updateUniformData(float[] destinationUniform) {
         setScreenSize(destinationUniform, getUniformByName("uScreenSize"));
-        setTextureUniforms(destinationUniform, mesh.getTexture(Texture2D.TEXTURE_0));
+        setTextureUniforms(destinationUniform, texture);
     }
 
     /**
+     * Sets the data related to texture uniforms in the uniform float storage
+     * 
+     * @param uniforms
+     * @param texture
+     */
+    protected void setTextureUniforms(float[] uniforms, TiledTexture2D texture) {
+        if (texture != null && texture.getTextureType() == TextureType.TiledTexture2D) {
+            // TODO - where should the uniform name be defined?
+            ShaderVariable texUniform = getUniformByName("uTextureData");
+            // If null it could be because loaded program does not match with texture usage
+            if (texUniform != null) {
+                setTextureUniforms(texture, uniforms, texUniform);
+            } else {
+                if (function.getShading() == null || function.getShading() == Shading.flat) {
+                    throw new IllegalArgumentException(
+                            "Texture type " + texture.getTextureType() + ", does not match shading " + getShading()
+                                    + " for program:\n" + toString());
+                }
+            }
+        }
+    }
+    
+    /**
+     * 
      * Returns the expander shader to be used with this program.
      * 
      * @return
@@ -93,9 +136,8 @@ public class TiledSpriteProgram extends ShaderProgram {
     }
 
     @Override
-    public void initBuffers(Mesh mesh) {
-        // TODO Auto-generated method stub
-
+    public void initUniformData(float[] destinationUniforms) {
     }
+
 
 }

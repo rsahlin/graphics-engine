@@ -9,6 +9,7 @@ import com.nucleus.geometry.shape.RectangleShapeBuilder;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
+import com.nucleus.scene.RenderableNode;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TiledTexture2D;
@@ -45,11 +46,10 @@ public class SpriteMesh extends Mesh {
         }
 
         @Override
-        public Mesh create() throws IOException, GLException {
+        public Mesh create(RenderableNode<Mesh> parent) throws IOException, GLException {
             setElementMode(Mode.TRIANGLES, objectCount * RectangleShapeBuilder.QUAD_VERTICES, 0,
                     objectCount * RectangleShapeBuilder.QUAD_ELEMENTS);
-            Mesh mesh = super.create();
-            return mesh;
+            return super.create(parent);
         }
 
         @Override
@@ -72,13 +72,14 @@ public class SpriteMesh extends Mesh {
         public ShaderProgram createProgram(Texture2D texture) {
             switch (texture.textureType) {
                 case TiledTexture2D:
-                    return new TiledSpriteProgram(Texture2D.Shading.textured);
+                    return new TiledSpriteProgram((TiledTexture2D) texture, Texture2D.Shading.textured);
                 case UVTexture2D:
-                    return new UVSpriteProgram();
+                    return new UVSpriteProgram((UVTexture2D) texture);
                 case Untextured:
-                    return new TiledSpriteProgram(((Untextured) texture).getShading());
+                    return new TiledSpriteProgram(null, ((Untextured) texture).getShading());
                 case Texture2D:
-                    return new UVSpriteProgram();
+                    throw new IllegalArgumentException("Not supported");
+//                    return new UVSpriteProgram();
                 // TODO - fix so that transformprogram loads the correct shader - 'transformvertex', currently
                 // loads texturedvertex. Use tiled or uv texture in the meantime.
                 // return new TransformProgram(null, Texture2D.Shading.textured, null);

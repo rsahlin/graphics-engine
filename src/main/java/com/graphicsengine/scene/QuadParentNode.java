@@ -10,9 +10,9 @@ import com.nucleus.component.CPUComponentBuffer;
 import com.nucleus.component.CPUQuadExpander;
 import com.nucleus.component.Component;
 import com.nucleus.geometry.AttributeBuffer;
+import com.nucleus.geometry.AttributeUpdater.BufferIndex;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.Mesh;
-import com.nucleus.geometry.Mesh.BufferIndex;
 import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.shape.RectangleShapeBuilder;
 import com.nucleus.geometry.shape.RectangleShapeBuilder.RectangleConfiguration;
@@ -128,7 +128,7 @@ public class QuadParentNode extends AbstractMeshNode<Mesh> implements Consumer {
         indexer = new Indexer(getProgram());
         CPUComponentBuffer sourceData = new CPUComponentBuffer(maxQuads, indexer.attributesPerVertex);
         CPUComponentBuffer destinationData = new CPUComponentBuffer(maxQuads, indexer.attributesPerVertex * 4);
-        quadExpander = new CPUQuadExpander(mesh, indexer, sourceData, destinationData);
+        quadExpander = new CPUQuadExpander(mesh.getTexture(Texture2D.TEXTURE_0), indexer, sourceData, destinationData);
     }
 
     /**

@@ -9,6 +9,7 @@ import com.nucleus.opengl.GLESWrapper.GLES20;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.renderer.Pass;
+import com.nucleus.scene.RenderableNode;
 import com.nucleus.shader.GenericShaderProgram;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.shader.ShaderProgram.Categorizer;
@@ -58,9 +59,9 @@ public class SpriteGeometryMesh extends SpriteMesh {
         }
 
         @Override
-        public Mesh create() throws IOException, GLException {
+        public Mesh create(RenderableNode<Mesh> parent) throws IOException, GLException {
             setArrayMode(Mode.POINTS, objectCount, 0);
-            return super.create();
+            return super.create(parent);
         }
 
         @Override

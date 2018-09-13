@@ -7,10 +7,10 @@ import com.google.gson.annotations.SerializedName;
 import com.nucleus.component.Component;
 import com.nucleus.component.ComponentBuffer;
 import com.nucleus.component.ComponentException;
+import com.nucleus.geometry.AttributeUpdater.BufferIndex;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.Material;
 import com.nucleus.geometry.Mesh;
-import com.nucleus.geometry.Mesh.BufferIndex;
 import com.nucleus.geometry.Mesh.Builder;
 import com.nucleus.geometry.MeshBuilder.MeshBuilderFactory;
 import com.nucleus.geometry.shape.ShapeBuilder;
@@ -202,8 +202,8 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
             switch (shape.getType()) {
                 case rect:
                     Builder<Mesh> spriteBuilder = createMeshBuilder(renderer, createShapeBuilder());
-                    // TODO - Fix generics so that cast is not needed
-                    setMesh((T) spriteBuilder.create());
+                    // TODO - Fix generics so that cast is not needed  
+                    setMesh((T) spriteBuilder.create(null));
                     mapper = new EntityIndexer(new Indexer(parent.getProgram()));
 
             }

@@ -1,6 +1,5 @@
 package com.graphicsengine.map;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -11,11 +10,12 @@ import com.nucleus.bounds.Bounds;
 import com.nucleus.bounds.RectangularBounds;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.shape.RectangleShapeBuilder;
-import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.shader.VariableIndexer.Indexer;
 import com.nucleus.texturing.Texture2D;
+import com.nucleus.texturing.TextureType;
+import com.nucleus.texturing.TiledTexture2D;
 import com.nucleus.vecmath.Axis;
 import com.nucleus.vecmath.Rectangle;
 
@@ -118,15 +118,13 @@ public class PlayfieldMesh extends SpriteMesh {
             }
         }
 
-        @Override
-        public Mesh create() throws IOException, GLException {
-            PlayfieldMesh mesh = (PlayfieldMesh) super.create();
-            return mesh;
-        }
 
         @Override
         public ShaderProgram createProgram(Texture2D texture) {
-            return new PlayfieldProgram();
+            if (texture.getTextureType() == TextureType.TiledTexture2D) {
+                return new PlayfieldProgram((TiledTexture2D) texture);
+            }
+            throw new IllegalArgumentException(INVALID_TYPE + texture.getTextureType());
         }
 
         @Override

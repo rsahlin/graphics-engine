@@ -1,6 +1,6 @@
 package com.graphicsengine.spritemesh;
 
-import com.nucleus.geometry.Mesh.BufferIndex;
+import com.nucleus.geometry.AttributeUpdater.BufferIndex;
 import com.nucleus.shader.ShaderVariable.VariableType;
 import com.nucleus.shader.VariableIndexer;
 
