@@ -152,7 +152,8 @@ public class QuadParentNode extends AbstractMeshNode<Mesh> implements Consumer {
         Rectangle quadRect = (rectangle != null && rectangle.getValues() != null && rectangle.getValues().length >= 4)
                 ? rectangle
                 : createRectangle(texture, 0);
-        shapeBuilder.setStartQuad(quad).setRectangle(quadRect).build(spriteMesh);
+        AttributeBuffer attributes = spriteMesh.getAttributeBuffer(BufferIndex.ATTRIBUTES_STATIC);
+        shapeBuilder.setStartQuad(quad).setRectangle(quadRect).build(attributes, spriteMesh.getTexture(Texture2D.TEXTURE_0), spriteMesh.getElementBuffer(), spriteMesh.getMode());
         return quadRect;
     }
 
