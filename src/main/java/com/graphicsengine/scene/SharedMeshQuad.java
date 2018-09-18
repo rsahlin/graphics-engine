@@ -4,7 +4,6 @@ import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.component.SpriteAttributeComponent;
 import com.nucleus.SimpleLogger;
 import com.nucleus.geometry.Mesh;
-import com.nucleus.renderer.NucleusRenderer.NodeRenderer;
 import com.nucleus.scene.AbstractNode;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;

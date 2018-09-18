@@ -14,11 +14,9 @@ import com.nucleus.io.ExternalReference;
 import com.nucleus.mmi.ObjectInputListener;
 import com.nucleus.mmi.PointerData;
 import com.nucleus.mmi.PointerMotionData;
-import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.MeshRenderer;
 import com.nucleus.renderer.NucleusMeshRenderer;
 import com.nucleus.renderer.NucleusRenderer;
-import com.nucleus.renderer.Pass;
 import com.nucleus.scene.AbstractMeshNode;
 import com.nucleus.scene.LineDrawerNode;
 import com.nucleus.scene.Node;
@@ -339,12 +337,6 @@ public class PlayfieldNode extends AbstractMeshNode<Mesh> {
             SimpleLogger.d(getClass(), "Could not invert matrix!!!!!!!!!!!!!!!!");
         }
         return null;
-    }
-
-
-    @Override
-    public boolean renderNode(NucleusRenderer renderer, Pass currentPass, float[][] matrices) throws GLException {
-        return false;
     }
 
     @Override

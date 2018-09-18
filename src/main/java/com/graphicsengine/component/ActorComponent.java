@@ -14,6 +14,7 @@ import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.Mesh.Builder;
 import com.nucleus.geometry.MeshBuilder.MeshBuilderFactory;
 import com.nucleus.geometry.shape.ShapeBuilder;
+import com.nucleus.io.ExternalReference;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.AbstractNode.MeshIndex;
@@ -231,7 +232,7 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
     public Builder<Mesh> createMeshBuilder(NucleusRenderer renderer, ShapeBuilder shapeBuilder)
             throws IOException {
         Mesh.Builder<Mesh> spriteBuilder = createBuilderInstance(renderer);
-        initMeshBuilder(renderer, parent, count, shapeBuilder, spriteBuilder);
+        initMeshBuilder(renderer, parent, parent.getTextureRef(), count, shapeBuilder, spriteBuilder);
         return spriteBuilder;
     }
 
@@ -250,11 +251,11 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
      * @param builder
      * @throws IOException
      */
-    protected Mesh.Builder<Mesh> initMeshBuilder(NucleusRenderer renderer, RenderableNode<Mesh> parent, int count,
+    protected Mesh.Builder<Mesh> initMeshBuilder(NucleusRenderer renderer, RenderableNode<Mesh> parent, ExternalReference textureRef, int count,
             ShapeBuilder shapeBuilder, Mesh.Builder<Mesh> builder)
             throws IOException {
         if (builder.getTexture() == null) {
-            builder.setTexture(parent.getTextureRef());
+            builder.setTexture(textureRef);
         }
         if (builder.getMaterial() == null) {
             builder.setMaterial(parent.getMaterial() != null ? parent.getMaterial() : new Material());
