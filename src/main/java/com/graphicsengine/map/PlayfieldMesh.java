@@ -128,7 +128,7 @@ public class PlayfieldMesh extends SpriteMesh {
         }
 
         @Override
-        protected Mesh createInstance() {
+        public Mesh createInstance() {
             return new PlayfieldMesh(mapSize);
         }
 

@@ -54,7 +54,7 @@ public class SpriteGeometryMesh extends SpriteMesh {
         }
 
         @Override
-        protected Mesh createInstance() {
+        public Mesh createInstance() {
             return new SpriteGeometryMesh();
         }
 

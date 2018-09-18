@@ -59,7 +59,7 @@ public class SpriteMesh extends Mesh {
         }
 
         @Override
-        protected Mesh createInstance() {
+        public Mesh createInstance() {
             return new SpriteMesh();
         }
 
