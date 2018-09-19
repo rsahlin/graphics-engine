@@ -7,7 +7,6 @@ import com.nucleus.geometry.Mesh;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.GLESWrapper.GLES20;
 import com.nucleus.opengl.GLException;
-import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.renderer.Pass;
 import com.nucleus.scene.RenderableNode;
 import com.nucleus.shader.GenericShaderProgram;
@@ -49,8 +48,8 @@ public class SpriteGeometryMesh extends SpriteMesh {
      */
     public static class Builder extends Mesh.Builder<Mesh> {
 
-        public Builder(NucleusRenderer renderer) {
-            super(renderer);
+        public Builder(GLES20Wrapper gles) {
+            super(gles);
         }
 
         @Override

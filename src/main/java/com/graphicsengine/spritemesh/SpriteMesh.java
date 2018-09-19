@@ -8,7 +8,6 @@ import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.shape.RectangleShapeBuilder;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.GLException;
-import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.RenderableNode;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.Texture2D;
@@ -39,10 +38,10 @@ public class SpriteMesh extends Mesh {
 
         /**
          * 
-         * @param renderer
+         * @param gles
          */
-        public Builder(NucleusRenderer renderer) {
-            super(renderer);
+        public Builder(GLES20Wrapper gles) {
+            super(gles);
         }
 
         @Override

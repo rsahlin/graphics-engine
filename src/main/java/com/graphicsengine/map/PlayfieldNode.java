@@ -14,9 +14,9 @@ import com.nucleus.io.ExternalReference;
 import com.nucleus.mmi.ObjectInputListener;
 import com.nucleus.mmi.PointerData;
 import com.nucleus.mmi.PointerMotionData;
+import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.renderer.MeshRenderer;
 import com.nucleus.renderer.NucleusMeshRenderer;
-import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.AbstractMeshNode;
 import com.nucleus.scene.LineDrawerNode;
 import com.nucleus.scene.Node;
@@ -148,15 +148,15 @@ public class PlayfieldNode extends AbstractMeshNode<Mesh> {
     }
 
     @Override
-    public Builder<Mesh> createMeshBuilder(NucleusRenderer renderer, ShapeBuilder shapeBuilder)
+    public Builder<Mesh> createMeshBuilder(GLES20Wrapper gles, ShapeBuilder shapeBuilder)
             throws IOException {
 
-        PlayfieldMesh.Builder builder = new PlayfieldMesh.Builder(renderer);
+        PlayfieldMesh.Builder builder = new PlayfieldMesh.Builder(gles);
         int[] mapSize = getMapSize();
         builder.setMap(mapSize, getCharRectangle());
         builder.setOffset(getAnchorOffset());
         int charCount = mapSize[0] * mapSize[1];
-        super.initMeshBuilder(renderer, charCount, shapeBuilder, builder);
+        super.initMeshBuilder(gles, charCount, shapeBuilder, builder);
         if (shapeBuilder == null) {
             RectangleConfiguration configuration = new RectangleShapeBuilder.RectangleConfiguration(
                     getCharRectangle(), RectangleShapeBuilder.DEFAULT_Z, mapSize[0] * mapSize[1], 0);

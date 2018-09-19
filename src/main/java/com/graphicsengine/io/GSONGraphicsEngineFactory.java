@@ -14,7 +14,7 @@ import com.nucleus.common.TypeResolver;
 import com.nucleus.component.Component;
 import com.nucleus.io.GSONSceneFactory;
 import com.nucleus.io.SceneSerializer;
-import com.nucleus.renderer.NucleusRenderer;
+import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.NodeFactory;
 
@@ -69,8 +69,8 @@ public class GSONGraphicsEngineFactory extends GSONSceneFactory {
     }
 
     @Override
-    public void init(NucleusRenderer renderer, NodeFactory nodeFactory, Type<?>[] types) {
-        super.init(renderer, nodeFactory, types);
+    public void init(GLES20Wrapper gles, NodeFactory nodeFactory, Type<?>[] types) {
+        super.init(gles, nodeFactory, types);
         registerTypes(GraphicsEngineClasses.values());
     }
 

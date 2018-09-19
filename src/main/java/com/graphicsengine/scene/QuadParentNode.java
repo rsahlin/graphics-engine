@@ -17,6 +17,7 @@ import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.shape.RectangleShapeBuilder;
 import com.nucleus.geometry.shape.RectangleShapeBuilder.RectangleConfiguration;
 import com.nucleus.geometry.shape.ShapeBuilder;
+import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.renderer.MeshRenderer;
 import com.nucleus.renderer.NucleusMeshRenderer;
 import com.nucleus.renderer.NucleusRenderer;
@@ -61,7 +62,7 @@ public class QuadParentNode extends AbstractMeshNode<Mesh> implements Consumer {
      * Used by GSON and {@link #createInstance(RootNode)} method - do NOT call directly
      */
     @Deprecated
-    protected QuadParentNode() {
+    public QuadParentNode() {
     }
 
     private QuadParentNode(RootNode root) {
@@ -76,14 +77,14 @@ public class QuadParentNode extends AbstractMeshNode<Mesh> implements Consumer {
     }
 
     @Override
-    public MeshBuilder<Mesh> createMeshBuilder(NucleusRenderer renderer, ShapeBuilder shapeBuilder)
+    public MeshBuilder<Mesh> createMeshBuilder(GLES20Wrapper gles, ShapeBuilder shapeBuilder)
             throws IOException {
         int count = getMaxQuads();
         if (shapeBuilder == null) {
             shapeBuilder = new RectangleShapeBuilder(new RectangleConfiguration(count, 0));
         }
-        Mesh.Builder<Mesh> builder = new SpriteMesh.Builder(renderer);
-        return super.initMeshBuilder(renderer, count, shapeBuilder, builder);
+        Mesh.Builder<Mesh> builder = new SpriteMesh.Builder(gles);
+        return super.initMeshBuilder(gles, count, shapeBuilder, builder);
 
     }
 

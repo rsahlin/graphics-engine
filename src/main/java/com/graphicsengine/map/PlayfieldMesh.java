@@ -10,6 +10,7 @@ import com.nucleus.bounds.Bounds;
 import com.nucleus.bounds.RectangularBounds;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.shape.RectangleShapeBuilder;
+import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.shader.VariableIndexer.Indexer;
@@ -104,10 +105,10 @@ public class PlayfieldMesh extends SpriteMesh {
          * Use
          * {@link PlayfieldNode#createMeshBuilder(NucleusRenderer, PlayfieldNode)}
          * 
-         * @param renderer
+         * @param gles
          */
-        public Builder(NucleusRenderer renderer) {
-            super(renderer);
+        public Builder(GLES20Wrapper gles) {
+            super(gles);
         }
 
         @Override

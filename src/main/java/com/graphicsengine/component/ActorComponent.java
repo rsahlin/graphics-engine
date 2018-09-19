@@ -15,6 +15,7 @@ import com.nucleus.geometry.Mesh.Builder;
 import com.nucleus.geometry.MeshBuilder.MeshBuilderFactory;
 import com.nucleus.geometry.shape.ShapeBuilder;
 import com.nucleus.io.ExternalReference;
+import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.AbstractNode.MeshIndex;
@@ -142,12 +143,12 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
     transient protected UVAtlas uvAtlas;
 
     /**
-     * Creates the instance of a mesh to be used in {@link #createMeshBuilder(NucleusRenderer, Node, int, ShapeBuilder)}
+     * Creates the instance of a mesh to be used in {@link #createMeshBuilder(GLES20Wrapper, Node, int, ShapeBuilder)}
      * 
-     * @param renderer
+     * @param gles
      * @return
      */
-    protected abstract Mesh.Builder<Mesh> createBuilderInstance(NucleusRenderer renderer);
+    protected abstract Mesh.Builder<Mesh> createBuilderInstance(GLES20Wrapper gles);
 
     /**
      * Creates the ShapeBuilder to be used to create shapes, or null if no builder shall be used - for instance
@@ -193,7 +194,7 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
     }
 
     @Override
-    public void create(NucleusRenderer renderer, ComponentNode parent)
+    public void create(GLES20Wrapper gles, ComponentNode parent)
             throws ComponentException {
         this.parent = parent;
         try {
@@ -202,7 +203,7 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
             }
             switch (shape.getType()) {
                 case rect:
-                    Builder<Mesh> spriteBuilder = createMeshBuilder(renderer, createShapeBuilder());
+                    Builder<Mesh> spriteBuilder = createMeshBuilder(gles, createShapeBuilder());
                     // TODO - Fix generics so that cast is not needed  
                     setMesh((T) spriteBuilder.create(null));
                     mapper = new EntityIndexer(new Indexer(parent.getProgram()));
@@ -229,10 +230,10 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
     }
 
     @Override
-    public Builder<Mesh> createMeshBuilder(NucleusRenderer renderer, ShapeBuilder shapeBuilder)
+    public Builder<Mesh> createMeshBuilder(GLES20Wrapper gles, ShapeBuilder shapeBuilder)
             throws IOException {
-        Mesh.Builder<Mesh> spriteBuilder = createBuilderInstance(renderer);
-        initMeshBuilder(renderer, parent, parent.getTextureRef(), count, shapeBuilder, spriteBuilder);
+        Mesh.Builder<Mesh> spriteBuilder = createBuilderInstance(gles);
+        initMeshBuilder(gles, parent, parent.getTextureRef(), count, shapeBuilder, spriteBuilder);
         return spriteBuilder;
     }
 
@@ -244,14 +245,14 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
      * method is called to create a suitable program.
      * The returned builder shall have needed values to create a mesh.
      * 
-     * @param renderer
+     * @param gles
      * @param parent
      * @param count Number of objects
      * @param shapeBuilder
      * @param builder
      * @throws IOException
      */
-    protected Mesh.Builder<Mesh> initMeshBuilder(NucleusRenderer renderer, RenderableNode<Mesh> parent, ExternalReference textureRef, int count,
+    protected Mesh.Builder<Mesh> initMeshBuilder(GLES20Wrapper gles, RenderableNode<Mesh> parent, ExternalReference textureRef, int count,
             ShapeBuilder shapeBuilder, Mesh.Builder<Mesh> builder)
             throws IOException {
         if (builder.getTexture() == null) {
@@ -265,7 +266,7 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
             builder.setShapeBuilder(shapeBuilder);
         }
         if (parent.getProgram() == null) {
-            parent.setProgram(builder.createProgram(renderer.getGLES()));
+            parent.setProgram(builder.createProgram(gles));
         }
         builder.setAttributesPerVertex(parent.getProgram().getAttributeSizes());
         return builder;

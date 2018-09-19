@@ -46,7 +46,7 @@ public class SharedMeshQuad extends AbstractNode {
      * Used by GSON and {@link #createInstance(RootNode)} method - do NOT call directly
      */
     @Deprecated
-    protected SharedMeshQuad() {
+    public SharedMeshQuad() {
     }
 
     protected SharedMeshQuad(RootNode root) {
