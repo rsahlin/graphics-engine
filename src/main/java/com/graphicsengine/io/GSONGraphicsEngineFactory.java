@@ -7,7 +7,6 @@ import com.graphicsengine.component.SpriteComponent;
 import com.graphicsengine.exporter.GraphicsEngineNodeExporter;
 import com.graphicsengine.io.gson.ComponentDeserializer;
 import com.graphicsengine.io.gson.NodeDeserializer;
-import com.graphicsengine.scene.GraphicsEngineNodeFactory;
 import com.graphicsengine.scene.GraphicsEngineNodeType;
 import com.nucleus.common.Type;
 import com.nucleus.common.TypeResolver;
@@ -16,7 +15,6 @@ import com.nucleus.io.GSONSceneFactory;
 import com.nucleus.io.SceneSerializer;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.scene.Node;
-import com.nucleus.scene.NodeFactory;
 
 /**
  * Implementation of the scenefactory for the graphics engine, this shall take care of all nodes/datatypes that
@@ -69,8 +67,8 @@ public class GSONGraphicsEngineFactory extends GSONSceneFactory {
     }
 
     @Override
-    public void init(GLES20Wrapper gles, NodeFactory nodeFactory, Type<?>[] types) {
-        super.init(gles, nodeFactory, types);
+    public void init(GLES20Wrapper gles, Type<?>[] types) {
+        super.init(gles, types);
         registerTypes(GraphicsEngineClasses.values());
     }
 
@@ -88,15 +86,6 @@ public class GSONGraphicsEngineFactory extends GSONSceneFactory {
     protected void registerNodeExporters() {
         super.registerNodeExporters();
         nodeExporter.registerNodeExporter(GraphicsEngineNodeType.values(), new GraphicsEngineNodeExporter());
-    }
-
-    /**
-     * Utility method to get the default nodefactory
-     * 
-     * @return
-     */
-    public static NodeFactory getNodeFactory() {
-        return new GraphicsEngineNodeFactory();
     }
 
     @Override

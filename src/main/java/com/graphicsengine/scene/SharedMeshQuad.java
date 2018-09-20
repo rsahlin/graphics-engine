@@ -168,7 +168,7 @@ public class SharedMeshQuad extends AbstractNode {
     }
 
     @Override
-    public void create() {
+    public void createTransient() {
         // TODO Auto-generated method stub
 
     }
