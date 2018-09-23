@@ -204,8 +204,7 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
             switch (shape.getType()) {
                 case rect:
                     Builder<Mesh> spriteBuilder = createMeshBuilder(gles, createShapeBuilder());
-                    // TODO - Fix generics so that cast is not needed  
-                    setMesh((T) spriteBuilder.create(null));
+                    setMesh((T) spriteBuilder.create());
                     mapper = new EntityIndexer(new Indexer(parent.getProgram()));
 
             }

@@ -8,7 +8,6 @@ import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.shape.RectangleShapeBuilder;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.GLException;
-import com.nucleus.scene.RenderableNode;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TiledTexture2D;
@@ -45,10 +44,10 @@ public class SpriteMesh extends Mesh {
         }
 
         @Override
-        public Mesh create(RenderableNode<Mesh> parent) throws IOException, GLException {
+        public Mesh create() throws IOException, GLException {
             setElementMode(Mode.TRIANGLES, objectCount * RectangleShapeBuilder.QUAD_VERTICES, 0,
                     objectCount * RectangleShapeBuilder.QUAD_ELEMENTS);
-            return super.create(parent);
+            return super.create();
         }
 
         @Override
