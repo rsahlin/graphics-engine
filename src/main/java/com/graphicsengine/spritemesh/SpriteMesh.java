@@ -51,7 +51,7 @@ public class SpriteMesh extends Mesh {
         }
 
         @Override
-        public ShaderProgram createProgram(GLES20Wrapper gles) {
+        public ShaderProgram createProgram() {
             // SpriteMesh is a special type of mesh that only works with specific shader program
             return AssetManager.getInstance().getProgram(gles, createProgram(texture));
         }
@@ -77,10 +77,10 @@ public class SpriteMesh extends Mesh {
                     return new TiledSpriteProgram(null, ((Untextured) texture).getShading());
                 case Texture2D:
                     throw new IllegalArgumentException("Not supported");
-//                    return new UVSpriteProgram();
-                // TODO - fix so that transformprogram loads the correct shader - 'transformvertex', currently
-                // loads texturedvertex. Use tiled or uv texture in the meantime.
-                // return new TransformProgram(null, Texture2D.Shading.textured, null);
+                    // return new UVSpriteProgram();
+                    // TODO - fix so that transformprogram loads the correct shader - 'transformvertex', currently
+                    // loads texturedvertex. Use tiled or uv texture in the meantime.
+                    // return new TransformProgram(null, Texture2D.Shading.textured, null);
                 default:
                     throw new IllegalArgumentException(INVALID_TYPE + texture.textureType);
             }

@@ -63,7 +63,7 @@ public class SpriteGeometryMesh extends SpriteMesh {
         }
 
         @Override
-        public ShaderProgram createProgram(GLES20Wrapper gles) {
+        public ShaderProgram createProgram() {
             Shading shading = Shading.flat;
             GeometryCategorizer function = new GeometryCategorizer(null, shading, "sprite");
             ShaderProgram program = new GenericShaderProgram(function, ProgramType.VERTEX_GEOMETRY_FRAGMENT);

@@ -251,7 +251,8 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
      * @param builder
      * @throws IOException
      */
-    protected Mesh.Builder<Mesh> initMeshBuilder(GLES20Wrapper gles, RenderableNode<Mesh> parent, ExternalReference textureRef, int count,
+    protected Mesh.Builder<Mesh> initMeshBuilder(GLES20Wrapper gles, RenderableNode<Mesh> parent,
+            ExternalReference textureRef, int count,
             ShapeBuilder shapeBuilder, Mesh.Builder<Mesh> builder)
             throws IOException {
         if (builder.getTexture() == null) {
@@ -265,7 +266,7 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
             builder.setShapeBuilder(shapeBuilder);
         }
         if (parent.getProgram() == null) {
-            parent.setProgram(builder.createProgram(gles));
+            parent.setProgram(builder.createProgram());
         }
         builder.setAttributesPerVertex(parent.getProgram().getAttributeSizes());
         return builder;
