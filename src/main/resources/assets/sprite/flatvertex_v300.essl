@@ -5,7 +5,8 @@
 precision highp float;
 
 //Put array declaration after name for GLSL compatibility
-uniform mat4 uMVMatrix;
+uniform mat4 uModelMatrix;
+uniform mat4 uViewMatrix;
 uniform mat4 uProjectionMatrix;
 
 in vec3 aVertex; 
@@ -19,7 +20,7 @@ out vec4 vRect;
  * Used for objects that uses only position, plus color, for instance lines, points or geometry shader objects
  */
 void main() {
-    gl_Position = (vec4(aVertex, 1.0) * uMVMatrix) * uProjectionMatrix;
+    gl_Position = (vec4(aVertex, 1.0) * uModelMatrix * uViewMatrix) * uProjectionMatrix;
     vColor = aColor;
     vRect = aRect;
 }

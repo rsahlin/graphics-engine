@@ -6,7 +6,8 @@
 precision highp float;
 
 //Put array declaration after name for GLSL compatibility
-uniform mat4 uMVMatrix;
+uniform mat4 uModelMatrix;
+uniform mat4 uViewMatrix;
 uniform mat4 uProjectionMatrix;
 uniform mat4 uLightMatrix; //light pov
 uniform vec3 uTextureData; //tex width, tex height, frames per line
@@ -24,7 +25,7 @@ out vec4 color;
 mat4 calculateTransformMatrix(vec3 rotate, vec3 scale, vec3 translate);
 
 void main() {
-    vec4 pos =  vec4(aVertex.xyz, 1) * (calculateTransformMatrix(aRotate, aScale, aTranslate) * uMVMatrix);
+    vec4 pos =  vec4(aVertex.xyz, 1) * (calculateTransformMatrix(aRotate, aScale, aTranslate) * uModelMatrix * uViewMatrix);
     gl_Position = pos * uProjectionMatrix;
     lightPos = pos * uLightMatrix;
     color = aColor;

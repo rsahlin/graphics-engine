@@ -121,6 +121,9 @@ public class SpriteAttributeComponent extends ActorComponent<SpriteMesh>
 
     @Override
     protected Builder<Mesh> createBuilderInstance(GLES20Wrapper gles) {
+        if (gles.getInfo().getRenderVersion().major > 2) {
+            SimpleLogger.d(getClass(), "Target supports GLES 3 - use SpriteComponent instead!");
+        }
         return new SpriteMesh.Builder(gles);
     }
 

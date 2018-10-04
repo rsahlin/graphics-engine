@@ -6,7 +6,8 @@
 precision highp float;
 
 //Put array declaration after name for GLSL compatibility
-uniform mat4 uMVMatrix;
+uniform mat4 uModelMatrix;
+uniform mat4 uViewMatrix;
 uniform mat4 uProjectionMatrix;
 uniform vec2 uScreenSize; //Screen width and height
 
@@ -24,7 +25,7 @@ layout(packed) uniform UVData {
 };
 
 void main() {
-    vec4 pos =  vec4(aVertex.xyz, 1) * (calculateTransformMatrix(aRotate, aScale, aTranslate) * uMVMatrix);
+    vec4 pos =  vec4(aVertex.xyz, 1) * (calculateTransformMatrix(aRotate, aScale, aTranslate) * uModelMatrix * uViewMatrix);
     gl_Position = vec4(floor((uScreenSize * vec2(pos)) + 0.5) / uScreenSize, pos.z, pos.w) * uProjectionMatrix;
     int frame = int(aFrameData.x);
     int index = int(aVertex.w);

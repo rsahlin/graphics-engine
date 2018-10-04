@@ -7,7 +7,8 @@
 precision highp float;
 
 //Put array declaration after name for GLSL compatibility
-uniform mat4 uMVMatrix;
+uniform mat4 uModelMatrix;
+uniform mat4 uViewMatrix;
 uniform mat4 uProjectionMatrix;
 uniform vec3 uTextureData; //tex width, tex height, frames per line
 uniform vec2 uScreenSize; //Width and  height of screen
@@ -26,7 +27,7 @@ varying vec4 vAmbientLight;
 
 void main() {
     int flags = int(aFrameData.y);
-    vec4 pos =  vec4(aVertex.xyz + aTranslate.xyz, 1.0) * uMVMatrix;
+    vec4 pos =  vec4(aVertex.xyz + aTranslate.xyz, 1.0) * uModelMatrix * uViewMatrix;
     gl_Position = vec4(floor((uScreenSize * vec2(pos)) + 0.5) / uScreenSize, pos.z, 1.0) * uProjectionMatrix;
     vec2 flip = aTexCoord;
     if ((flags - 4) >= 0) {
