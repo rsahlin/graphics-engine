@@ -2,8 +2,9 @@ package com.graphicsengine.map;
 
 import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.ElementBuffer;
-import com.nucleus.geometry.Mesh.Mode;
 import com.nucleus.geometry.shape.RectangleShapeBuilder;
+import com.nucleus.opengl.GLESWrapper;
+import com.nucleus.opengl.GLESWrapper.Mode;
 import com.nucleus.shader.VariableIndexer.Indexer;
 import com.nucleus.texturing.Texture2D;
 
@@ -25,7 +26,7 @@ public class CharmapBuilder extends RectangleShapeBuilder {
     }
 
     @Override
-    public void build(AttributeBuffer attributes, Texture2D texture, ElementBuffer indices, Mode mode) {
+    public void build(AttributeBuffer attributes, Texture2D texture, ElementBuffer indices, GLESWrapper.Mode mode) {
        super.build(attributes, texture, indices, mode);
 //        ((PlayfieldMesh) mesh).setupCharmap(mapper, configuration.getRectangle().getSize(), offset);
        throw new IllegalArgumentException("Not implemented");

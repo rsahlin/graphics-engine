@@ -5,6 +5,7 @@ import java.io.IOException;
 import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.opengl.GLES20Wrapper;
+import com.nucleus.opengl.GLESWrapper;
 import com.nucleus.opengl.GLESWrapper.GLES20;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.Pass;
@@ -58,7 +59,7 @@ public class SpriteGeometryMesh extends SpriteMesh {
 
         @Override
         public Mesh create() throws IOException, GLException {
-            setArrayMode(Mode.POINTS, objectCount, 0);
+            setArrayMode(GLESWrapper.Mode.POINTS, objectCount, 0);
             return super.create();
         }
 

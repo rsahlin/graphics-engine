@@ -7,6 +7,7 @@ import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.shape.RectangleShapeBuilder;
 import com.nucleus.opengl.GLES20Wrapper;
+import com.nucleus.opengl.GLESWrapper;
 import com.nucleus.opengl.GLException;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.Texture2D;
@@ -45,7 +46,7 @@ public class SpriteMesh extends Mesh {
 
         @Override
         public Mesh create() throws IOException, GLException {
-            setElementMode(Mode.TRIANGLES, objectCount * RectangleShapeBuilder.QUAD_VERTICES, 0,
+            setElementMode(GLESWrapper.Mode.TRIANGLES, objectCount * RectangleShapeBuilder.QUAD_VERTICES, 0,
                     objectCount * RectangleShapeBuilder.QUAD_ELEMENTS);
             return super.create();
         }
