@@ -9,7 +9,7 @@ import com.nucleus.common.Type;
 import com.nucleus.common.TypeResolver;
 import com.nucleus.io.GSONSceneFactory;
 import com.nucleus.io.SceneSerializer;
-import com.nucleus.io.gson.NucleusDeserializer;
+import com.nucleus.io.gson.NucleusRootDeserializer;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
@@ -69,7 +69,7 @@ public class GSONGraphicsEngineFactory extends GSONSceneFactory {
     }
 
     @Override
-    protected NucleusDeserializer<Node> createNucleusNodeDeserializer() {
+    protected NucleusRootDeserializer<Node> createNucleusNodeDeserializer() {
         return new GraphicsEngineNodeDeserializer();
     }
 

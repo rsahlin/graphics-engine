@@ -15,8 +15,6 @@ import com.nucleus.mmi.ObjectInputListener;
 import com.nucleus.mmi.PointerData;
 import com.nucleus.mmi.PointerMotionData;
 import com.nucleus.opengl.GLES20Wrapper;
-import com.nucleus.renderer.MeshRenderer;
-import com.nucleus.renderer.NucleusMeshRenderer;
 import com.nucleus.scene.AbstractMeshNode;
 import com.nucleus.scene.LineDrawerNode;
 import com.nucleus.scene.Node;
@@ -36,8 +34,6 @@ import com.nucleus.vecmath.Rectangle;
  *
  */
 public class PlayfieldNode extends AbstractMeshNode<Mesh> {
-
-    transient protected static MeshRenderer<Mesh> meshRenderer;
 
     public class PlayfieldNodeObjectInputListener implements ObjectInputListener {
 
@@ -71,7 +67,7 @@ public class PlayfieldNode extends AbstractMeshNode<Mesh> {
             rectangle[1] = down[1];
             rectangle[2] = current[0] - down[0];
             rectangle[3] = down[1] - current[1];
-            LineDrawerNode lines = (LineDrawerNode) getRootNode().getNodeById("lines");
+            LineDrawerNode lines = getRootNode().getNodeById("lines", LineDrawerNode.class);
             if (lines != null) {
                 lines.setRectangle(0, rectangle, 0f, rgba);
             }
@@ -342,18 +338,6 @@ public class PlayfieldNode extends AbstractMeshNode<Mesh> {
     @Override
     public void createTransient() {
         // TODO Auto-generated method stub
-    }
-
-    @Override
-    protected void createMeshRenderer() {
-        if (meshRenderer == null) {
-            meshRenderer = new NucleusMeshRenderer();
-        }
-    }
-    
-    @Override
-    public MeshRenderer<Mesh> getMeshRenderer() {
-        return meshRenderer;
     }
 
 }

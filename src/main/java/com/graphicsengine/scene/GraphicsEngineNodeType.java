@@ -24,9 +24,9 @@ public enum GraphicsEngineNodeType implements Type<Node> {
      */
     element(Element.class);
 
-    private final Class<?> theClass;
+    public final Class<? extends Node> theClass;
 
-    private GraphicsEngineNodeType(Class<?> theClass) {
+    private GraphicsEngineNodeType(Class<? extends Node> theClass) {
         this.theClass = theClass;
     }
 

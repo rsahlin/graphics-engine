@@ -1,10 +1,15 @@
 package com.graphicsengine.scene;
 
+import java.io.IOException;
+
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.component.SpriteAttributeComponent;
 import com.nucleus.SimpleLogger;
 import com.nucleus.geometry.Mesh;
-import com.nucleus.scene.AbstractNode;
+import com.nucleus.geometry.MeshBuilder;
+import com.nucleus.geometry.shape.ShapeBuilder;
+import com.nucleus.opengl.GLES20Wrapper;
+import com.nucleus.scene.AbstractMeshNode;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
 import com.nucleus.texturing.Texture2D;
@@ -23,7 +28,7 @@ import com.nucleus.vecmath.Transform;
  * @author Richard Sahlin
  *
  */
-public class SharedMeshQuad extends AbstractNode {
+public class SharedMeshQuad extends AbstractMeshNode<Mesh> {
 
     /**
      * The framenumber for this quad, from the texture in the referenced mesh.
@@ -171,6 +176,13 @@ public class SharedMeshQuad extends AbstractNode {
     public void createTransient() {
         // TODO Auto-generated method stub
 
+    }
+
+    @Override
+    public MeshBuilder<Mesh> createMeshBuilder(GLES20Wrapper gles, ShapeBuilder shapeBuilder)
+            throws IOException {
+        // Dont create a meshbuilder since this node uses parents Mesh
+        return null;
     }
 
 }

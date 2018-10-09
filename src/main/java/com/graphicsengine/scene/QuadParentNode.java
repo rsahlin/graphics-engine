@@ -18,11 +18,10 @@ import com.nucleus.geometry.shape.RectangleShapeBuilder;
 import com.nucleus.geometry.shape.RectangleShapeBuilder.RectangleConfiguration;
 import com.nucleus.geometry.shape.ShapeBuilder;
 import com.nucleus.opengl.GLES20Wrapper;
-import com.nucleus.renderer.MeshRenderer;
-import com.nucleus.renderer.NucleusMeshRenderer;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.AbstractMeshNode;
 import com.nucleus.scene.Node;
+import com.nucleus.scene.RenderableNode;
 import com.nucleus.scene.RootNode;
 import com.nucleus.shader.VariableIndexer.Indexer;
 import com.nucleus.texturing.Texture2D;
@@ -44,9 +43,6 @@ import com.nucleus.vecmath.Rectangle;
  */
 public class QuadParentNode extends AbstractMeshNode<Mesh> implements Consumer {
 
-    transient protected static MeshRenderer<Mesh> meshRenderer;
-    
-    
     public static final String MAX_QUADS = "maxQuads";
 
     @SerializedName(MAX_QUADS)
@@ -154,14 +150,15 @@ public class QuadParentNode extends AbstractMeshNode<Mesh> implements Consumer {
                 ? rectangle
                 : createRectangle(texture, 0);
         AttributeBuffer attributes = spriteMesh.getAttributeBuffer(BufferIndex.ATTRIBUTES_STATIC);
-        shapeBuilder.setStartQuad(quad).setRectangle(quadRect).build(attributes, spriteMesh.getTexture(Texture2D.TEXTURE_0), spriteMesh.getElementBuffer(), spriteMesh.getMode());
+        shapeBuilder.setStartQuad(quad).setRectangle(quadRect).build(attributes,
+                spriteMesh.getTexture(Texture2D.TEXTURE_0), spriteMesh.getElementBuffer(), spriteMesh.getMode());
         return quadRect;
     }
 
     protected Rectangle createRectangle(Texture2D texture, int frame) {
         Rectangle rect = texture.calculateRectangle(frame);
         // Check viewfrustum for scale factor - rectangle created using window aspect where y axis is normalized (1)
-        Node view = viewFrustum != null ? this : getParentView();
+        RenderableNode<?> view = viewFrustum != null ? this : getParentView();
         if (view != null) {
             float scale = view.getViewFrustum().getHeight();
             rect.scale(scale);
@@ -213,18 +210,6 @@ public class QuadParentNode extends AbstractMeshNode<Mesh> implements Consumer {
     public void createTransient() {
         // TODO Auto-generated method stub
 
-    }
-    
-    @Override
-    protected void createMeshRenderer() {
-        if (meshRenderer == null) {
-            meshRenderer = new NucleusMeshRenderer();
-        }
-    }
-    
-    @Override
-    public MeshRenderer<Mesh> getMeshRenderer() {
-        return meshRenderer;
     }
 
 }
