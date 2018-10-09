@@ -1,25 +1,23 @@
 package com.graphicsengine.io;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.graphicsengine.component.SpriteAttributeComponent;
 import com.graphicsengine.component.SpriteComponent;
 import com.graphicsengine.exporter.GraphicsEngineNodeExporter;
-import com.graphicsengine.io.gson.ComponentDeserializer;
-import com.graphicsengine.io.gson.NodeDeserializer;
+import com.graphicsengine.io.gson.GraphicsEngineNodeDeserializer;
 import com.graphicsengine.scene.GraphicsEngineNodeType;
 import com.nucleus.common.Type;
 import com.nucleus.common.TypeResolver;
-import com.nucleus.component.Component;
 import com.nucleus.io.GSONSceneFactory;
 import com.nucleus.io.SceneSerializer;
+import com.nucleus.io.gson.NucleusDeserializer;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.scene.Node;
+import com.nucleus.scene.RootNode;
 
 /**
  * Implementation of the scenefactory for the graphics engine, this shall take care of all nodes/datatypes that
  * are specific for the graphics engine.
- * Uses {@link NodeDeserializer} and {@link TypeResolver} to lookup classnames.
+ * Uses {@link GraphicsEngineNodeDeserializer} and {@link TypeResolver} to lookup classnames.
  * 
  * @author Richard Sahlin
  *
@@ -33,8 +31,8 @@ public class GSONGraphicsEngineFactory extends GSONSceneFactory {
      */
     public enum GraphicsEngineClasses implements Type<Object> {
 
-        spriteattributecomponent(SpriteAttributeComponent.class),
-        spritecomponent(SpriteComponent.class);
+    spriteattributecomponent(SpriteAttributeComponent.class),
+    spritecomponent(SpriteComponent.class);
 
         private final Class<?> theClass;
 
@@ -53,13 +51,11 @@ public class GSONGraphicsEngineFactory extends GSONSceneFactory {
         }
     }
 
-    private ComponentDeserializer componentDeserializer = new ComponentDeserializer();
-
     protected GSONGraphicsEngineFactory() {
         super();
     }
 
-    public static SceneSerializer getInstance() {
+    public static SceneSerializer<RootNode> getInstance() {
         if (sceneFactory == null) {
             sceneFactory = new GSONGraphicsEngineFactory();
         }
@@ -73,8 +69,8 @@ public class GSONGraphicsEngineFactory extends GSONSceneFactory {
     }
 
     @Override
-    protected void createNodeDeserializer() {
-        nodeDeserializer = new NodeDeserializer();
+    protected NucleusDeserializer<Node> createNucleusNodeDeserializer() {
+        return new GraphicsEngineNodeDeserializer();
     }
 
     @Override
@@ -86,20 +82,6 @@ public class GSONGraphicsEngineFactory extends GSONSceneFactory {
     protected void registerNodeExporters() {
         super.registerNodeExporters();
         nodeExporter.registerNodeExporter(GraphicsEngineNodeType.values(), new GraphicsEngineNodeExporter());
-    }
-
-    @Override
-    protected void registerTypeAdapter(GsonBuilder builder) {
-        super.registerTypeAdapter(builder);
-        builder.registerTypeAdapter(Node.class, nodeDeserializer);
-        builder.registerTypeAdapter(Component.class, componentDeserializer);
-    }
-
-    @Override
-    protected void setGson(Gson gson) {
-        super.setGson(gson);
-        nodeDeserializer.setGson(gson);
-        componentDeserializer.setGson(gson);
     }
 
 }
