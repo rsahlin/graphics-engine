@@ -10,7 +10,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.nucleus.common.TypeResolver;
 import com.nucleus.component.Component;
-import com.nucleus.io.gson.NucleusDeserializerImpl;
+import com.nucleus.io.gson.AbstractNucleusDeserializerImpl;
 import com.nucleus.scene.Node;
 
 /**
@@ -18,7 +18,7 @@ import com.nucleus.scene.Node;
  * Returns the correct subclass of {@linkplain Component}
  * 
  */
-public class ComponentDeserializer extends NucleusDeserializerImpl<Node> implements JsonDeserializer<Component> {
+public class ComponentDeserializer extends AbstractNucleusDeserializerImpl<Node> implements JsonDeserializer<Component> {
 
     @Override
     public Component deserialize(JsonElement json, Type type, JsonDeserializationContext context)
