@@ -5,7 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
 import com.graphicsengine.scene.GraphicsEngineNodeType;
 import com.nucleus.component.Component;
-import com.nucleus.io.gson.NucleusNodeDeserializer;
+import com.nucleus.io.gson.NucleusRootDeserializerImpl;
 import com.nucleus.scene.Node;
 
 /**
@@ -13,7 +13,7 @@ import com.nucleus.scene.Node;
  * type/name.
  *
  */
-public class GraphicsEngineNodeDeserializer extends NucleusNodeDeserializer implements JsonDeserializer<Node> {
+public class GraphicsEngineNodeDeserializer extends NucleusRootDeserializerImpl implements JsonDeserializer<Node> {
 
     private ComponentDeserializer componentDeserializer = new ComponentDeserializer();
 

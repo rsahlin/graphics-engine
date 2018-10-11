@@ -4,6 +4,7 @@ import com.graphicsengine.scene.GraphicsEngineNodeType;
 import com.nucleus.exporter.NucleusNodeExporter;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
+import com.nucleus.scene.RootNodeImpl;
 
 /**
  * Node exporter for graphics engine nodes
@@ -28,7 +29,7 @@ public class GraphicsEngineNodeExporter extends NucleusNodeExporter {
     }
 
     @Override
-    public void exportObject(Object object, RootNode sceneData) {
+    public void exportObject(Object object, RootNodeImpl sceneData) {
         // TODO Auto-generated method stub
 
     }

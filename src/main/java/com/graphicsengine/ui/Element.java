@@ -1,7 +1,7 @@
 package com.graphicsengine.ui;
 
 import com.graphicsengine.scene.SharedMeshQuad;
-import com.nucleus.scene.RootNode;
+import com.nucleus.scene.RootNodeImpl;
 
 /**
  * Base class for UI elements, this is the base for focus and touch events to UI.
@@ -12,13 +12,13 @@ import com.nucleus.scene.RootNode;
 public class Element extends SharedMeshQuad {
 
     /**
-     * Used by GSON and {@link #createInstance(RootNode)} method - do NOT call directly
+     * Used by GSON and {@link #createInstance(RootNodeImpl)} method - do NOT call directly
      */
 	protected Element() {
 		super();
 	}
 	
-	public Element(RootNode root) {
+	public Element(RootNodeImpl root) {
 		super(root);
 	}
 	
