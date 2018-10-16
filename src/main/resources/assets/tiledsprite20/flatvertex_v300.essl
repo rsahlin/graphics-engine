@@ -7,9 +7,7 @@
 precision highp float;
 
 //Put array declaration after name for GLSL compatibility
-uniform mat4 uModelMatrix;
-uniform mat4 uViewMatrix;
-uniform mat4 uProjectionMatrix;
+uniform mat4 uModelMatrix[3];
 
 in vec4 aVertex; //vertex position
 in vec3 aTranslate; //sprite x, sprite y, sprite z 
@@ -28,7 +26,7 @@ mat4 calculateTransformMatrix(vec3 rotate, vec3 scale, vec3 translate);
  * Used for objects that are transformed, scaled and rotated - with the translate, rotation and scale being defined from attribute data
  */
 void main() {
-    vec4 pos =  vec4(aVertex.xyz, 1) * (calculateTransformMatrix(aRotate, aScale, aTranslate) * uModelMatrix * uViewMatrix);
-    gl_Position = pos * uProjectionMatrix;
+    vec4 pos =  vec4(aVertex.xyz, 1) * (calculateTransformMatrix(aRotate, aScale, aTranslate) * uModelMatrix[0] * uModelMatrix[1]);
+    gl_Position = pos * uModelMatrix[2];
     color = aColor;
 }

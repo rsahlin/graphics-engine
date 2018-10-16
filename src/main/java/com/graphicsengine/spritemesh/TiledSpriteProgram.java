@@ -1,5 +1,7 @@
 package com.graphicsengine.spritemesh;
 
+import java.nio.FloatBuffer;
+
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.GLESWrapper.GLES20;
 import com.nucleus.opengl.GLESWrapper.Renderers;
@@ -26,7 +28,7 @@ import com.nucleus.texturing.TiledTexture2D;
 public class TiledSpriteProgram extends ShaderProgram {
 
     protected TiledTexture2D texture;
-    
+
     static class SpriteCategorizer extends Categorizer {
 
         public SpriteCategorizer(Pass pass, Shading shading, String category) {
@@ -54,6 +56,7 @@ public class TiledSpriteProgram extends ShaderProgram {
 
     /**
      * Constructor for TiledSpriteProgram
+     * 
      * @param texture
      * @param shading
      */
@@ -68,6 +71,7 @@ public class TiledSpriteProgram extends ShaderProgram {
 
     /**
      * Internal constructor to be used by subclass - DO NOT USE to create instance of TiledSpriteProgram
+     * 
      * @param pass
      * @param shading
      * @param category
@@ -97,7 +101,7 @@ public class TiledSpriteProgram extends ShaderProgram {
     }
 
     @Override
-    public void updateUniformData(float[] destinationUniform) {
+    public void updateUniformData(FloatBuffer destinationUniform) {
         setScreenSize(destinationUniform, getUniformByName("uScreenSize"));
         setTextureUniforms(destinationUniform, texture);
     }
@@ -108,7 +112,7 @@ public class TiledSpriteProgram extends ShaderProgram {
      * @param uniforms
      * @param texture
      */
-    protected void setTextureUniforms(float[] uniforms, TiledTexture2D texture) {
+    protected void setTextureUniforms(FloatBuffer uniforms, TiledTexture2D texture) {
         if (texture != null && texture.getTextureType() == TextureType.TiledTexture2D) {
             // TODO - where should the uniform name be defined?
             ShaderVariable texUniform = getUniformByName("uTextureData");
@@ -124,7 +128,7 @@ public class TiledSpriteProgram extends ShaderProgram {
             }
         }
     }
-    
+
     /**
      * 
      * Returns the expander shader to be used with this program.
@@ -136,8 +140,7 @@ public class TiledSpriteProgram extends ShaderProgram {
     }
 
     @Override
-    public void initUniformData(float[] destinationUniforms) {
+    public void initUniformData(FloatBuffer destinationUniforms) {
     }
-
 
 }

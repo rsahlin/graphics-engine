@@ -1,5 +1,7 @@
 package com.graphicsengine.map;
 
+import java.nio.FloatBuffer;
+
 import com.graphicsengine.spritemesh.TiledSpriteIndexer;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.renderer.Pass;
@@ -16,10 +18,9 @@ import com.nucleus.texturing.TiledTexture2D;
 public class PlayfieldProgram extends ShaderProgram {
 
     public static final String CATEGORY = "charmap";
-    
+
     protected TiledTexture2D texture;
-    
-    
+
     PlayfieldProgram(TiledTexture2D texture) {
         // super(null, null, CATEGORY, CommonShaderVariables.values(), ProgramType.VERTEX_FRAGMENT);
         super(null, null, CATEGORY, ProgramType.VERTEX_FRAGMENT);
@@ -27,7 +28,7 @@ public class PlayfieldProgram extends ShaderProgram {
     }
 
     @Override
-    public void updateUniformData(float[] destinationUniform) {
+    public void updateUniformData(FloatBuffer destinationUniform) {
         setScreenSize(uniforms, getUniformByName("uScreenSize"));
         setTextureUniforms(texture, uniforms,
                 getUniformByName("uTextureData"));
@@ -47,7 +48,7 @@ public class PlayfieldProgram extends ShaderProgram {
     }
 
     @Override
-    public void initUniformData(float[] destinationUniforms) {
+    public void initUniformData(FloatBuffer destinationUniforms) {
     }
 
 }
