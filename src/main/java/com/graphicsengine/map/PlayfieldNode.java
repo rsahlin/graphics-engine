@@ -11,7 +11,7 @@ import com.nucleus.geometry.shape.RectangleShapeBuilder;
 import com.nucleus.geometry.shape.RectangleShapeBuilder.RectangleConfiguration;
 import com.nucleus.geometry.shape.ShapeBuilder;
 import com.nucleus.io.ExternalReference;
-import com.nucleus.mmi.ObjectInputListener;
+import com.nucleus.mmi.NodeInputListener;
 import com.nucleus.mmi.PointerData;
 import com.nucleus.mmi.PointerMotionData;
 import com.nucleus.opengl.GLES20Wrapper;
@@ -35,7 +35,7 @@ import com.nucleus.vecmath.Rectangle;
  */
 public class PlayfieldNode extends AbstractMeshNode<Mesh> {
 
-    public class PlayfieldNodeObjectInputListener implements ObjectInputListener {
+    public class PlayfieldNodeObjectInputListener implements NodeInputListener {
 
         float[] rectangle = new float[4];
         float[] rgba = new float[] { 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1 };
@@ -44,7 +44,7 @@ public class PlayfieldNode extends AbstractMeshNode<Mesh> {
         @Override
         public boolean onInputEvent(Node node, PointerData event) {
             float[] inverse = new float[16];
-            float[] position = event.position;
+            float[] position = event.data;
             if (Matrix.invertM(inverse, 0, getModelMatrix(), 0)) {
                 float[] vec2 = new float[2];
                 Matrix.transformVec2(inverse, 0, position, vec2, 1);

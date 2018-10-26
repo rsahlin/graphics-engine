@@ -1,7 +1,6 @@
 package com.graphicsengine.scene;
 
 import com.graphicsengine.map.PlayfieldNode;
-import com.graphicsengine.ui.Element;
 import com.nucleus.common.Type;
 import com.nucleus.scene.ComponentNode;
 import com.nucleus.scene.Node;
@@ -17,12 +16,9 @@ public enum GraphicsEngineNodeType implements Type<Node> {
     playfieldNode(PlayfieldNode.class),
     sharedMeshNode(SharedMeshQuad.class),
     quadNode(QuadParentNode.class),
+    button(SharedMeshButton.class),
     // TODO rename to componentNode - remember to update all json files.
-    spriteComponentNode(ComponentNode.class),
-    /**
-     * UI base node
-     */
-    element(Element.class);
+    spriteComponentNode(ComponentNode.class);
 
     public final Class<? extends Node> theClass;
 
