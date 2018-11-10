@@ -27,6 +27,8 @@ import com.nucleus.texturing.TiledTexture2D;
  */
 public class TiledSpriteProgram extends ShaderProgram {
 
+    public static final String COMMON_VERTEX_SHADER = "commonvertex";
+
     protected TiledTexture2D texture;
 
     static class SpriteCategorizer extends Categorizer {
@@ -79,6 +81,11 @@ public class TiledSpriteProgram extends ShaderProgram {
     TiledSpriteProgram(Pass pass, Texture2D.Shading shading, String category) {
         super(new SpriteCategorizer(pass, shading, category), ProgramType.VERTEX_FRAGMENT);
         setIndexer(new TiledSpriteIndexer());
+    }
+
+    @Override
+    protected String[] getCommonShaderName(ShaderType type) {
+        return new String[] { PROGRAM_DIRECTORY + COMMON_VERTEX_SHADER };
     }
 
     @Override
