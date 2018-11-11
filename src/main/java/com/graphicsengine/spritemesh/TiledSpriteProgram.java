@@ -85,7 +85,12 @@ public class TiledSpriteProgram extends ShaderProgram {
 
     @Override
     protected String[] getCommonShaderName(ShaderType type) {
-        return new String[] { PROGRAM_DIRECTORY + COMMON_VERTEX_SHADER };
+        switch (type) {
+            case VERTEX:
+                return new String[] { PROGRAM_DIRECTORY + COMMON_VERTEX_SHADER };
+            default:
+                return null;
+        }
     }
 
     @Override
