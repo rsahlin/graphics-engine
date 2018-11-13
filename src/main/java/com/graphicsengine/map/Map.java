@@ -9,6 +9,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import com.nucleus.SimpleLogger;
+import com.nucleus.common.BufferUtils;
 import com.nucleus.io.BaseReference;
 import com.nucleus.types.DataType;
 import com.nucleus.vecmath.Axis;
@@ -96,8 +97,7 @@ public class Map extends BaseReference implements Serializable {
         }
 
         private void createBuffer() {
-            color = ByteBuffer.allocateDirect(length * 4).order(ByteOrder.nativeOrder())
-                    .asFloatBuffer();
+            color = BufferUtils.createFloatBuffer(length);
             SimpleLogger.d(getClass(), "Created emissive buffer with " + length + " floats");
         }
 
@@ -266,10 +266,8 @@ public class Map extends BaseReference implements Serializable {
      * @param height
      */
     private void createBuffers(int width, int height) {
-        mapBuffer = ByteBuffer.allocateDirect(width * height * 4)
-                .order(ByteOrder.nativeOrder()).asIntBuffer();
-        flags = ByteBuffer.allocateDirect(width * height)
-                .order(ByteOrder.nativeOrder());
+        mapBuffer = BufferUtils.createIntBuffer(width * height);
+        flags = BufferUtils.createByteBuffer(width * height);
     }
 
     /**
