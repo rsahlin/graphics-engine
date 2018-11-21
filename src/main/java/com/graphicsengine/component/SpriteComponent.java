@@ -9,6 +9,7 @@ import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.Mesh.Builder;
 import com.nucleus.geometry.shape.ShapeBuilder;
+import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TextureType;
@@ -27,6 +28,7 @@ public class SpriteComponent extends ActorComponent<SpriteGeometryMesh> implemen
 
     transient protected AttributeBuffer attributes;
     transient protected CPUComponentBuffer entityData;
+    transient protected CPUComponentBuffer spriteData;
     transient protected EntityIndexer mapper;
 
     @Override
@@ -45,6 +47,7 @@ public class SpriteComponent extends ActorComponent<SpriteGeometryMesh> implemen
 
     @Override
     protected void createBuffers(EntityIndexer mapper) {
+        spriteData = new CPUComponentBuffer(count, mapper.attributesPerVertex);
         entityData = new CPUComponentBuffer(count, mapper.attributesPerEntity);
         this.mapper = mapper;
     }
@@ -62,7 +65,7 @@ public class SpriteComponent extends ActorComponent<SpriteGeometryMesh> implemen
     @Override
     public void updateAttributeData(NucleusRenderer renderer) {
         attributes.setBufferPosition(0);
-        attributes.put(entityData.getData());
+        attributes.put(spriteData.getData());
     }
 
     /**
@@ -85,8 +88,8 @@ public class SpriteComponent extends ActorComponent<SpriteGeometryMesh> implemen
     }
 
     @Override
-    protected Builder<Mesh> createBuilderInstance(NucleusRenderer renderer) {
-        return new SpriteGeometryMesh.Builder(renderer);
+    protected Builder<Mesh> createBuilderInstance(GLES20Wrapper gles) {
+        return new SpriteGeometryMesh.Builder(gles);
     }
 
     @Override
@@ -97,6 +100,13 @@ public class SpriteComponent extends ActorComponent<SpriteGeometryMesh> implemen
 
     @Override
     public void setEntity(int entity, int entityOffset, float[] data, int offset, int length) {
+        /**
+         * TODO - entitydata buffer shall not contain attribute data in spriteData buffer.
+         */
+        if (entityOffset < (mapper.attributesPerVertex)) {
+            spriteData.put(entity, entityOffset, data, offset, mapper.attributesPerVertex - entityOffset);
+
+        }
         entityData.put(entity, entityOffset, data, offset, length);
     }
 

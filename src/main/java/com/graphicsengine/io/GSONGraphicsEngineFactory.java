@@ -1,29 +1,23 @@
 package com.graphicsengine.io;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.graphicsengine.component.SpriteAttributeComponent;
 import com.graphicsengine.component.SpriteComponent;
 import com.graphicsengine.exporter.GraphicsEngineNodeExporter;
-import com.graphicsengine.geometry.GraphicsEngineMeshFactory;
-import com.graphicsengine.io.gson.ComponentDeserializer;
-import com.graphicsengine.io.gson.NodeDeserializer;
-import com.graphicsengine.scene.GraphicsEngineNodeFactory;
+import com.graphicsengine.io.gson.GraphicsEngineNodeDeserializer;
 import com.graphicsengine.scene.GraphicsEngineNodeType;
 import com.nucleus.common.Type;
 import com.nucleus.common.TypeResolver;
-import com.nucleus.component.Component;
-import com.nucleus.geometry.MeshFactory;
 import com.nucleus.io.GSONSceneFactory;
 import com.nucleus.io.SceneSerializer;
-import com.nucleus.renderer.NucleusRenderer;
+import com.nucleus.io.gson.NucleusDeserializer;
+import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.scene.Node;
-import com.nucleus.scene.NodeFactory;
+import com.nucleus.scene.RootNode;
 
 /**
  * Implementation of the scenefactory for the graphics engine, this shall take care of all nodes/datatypes that
  * are specific for the graphics engine.
- * Uses {@link NodeDeserializer} and {@link TypeResolver} to lookup classnames.
+ * Uses {@link GraphicsEngineNodeDeserializer} and {@link TypeResolver} to lookup classnames.
  * 
  * @author Richard Sahlin
  *
@@ -37,8 +31,8 @@ public class GSONGraphicsEngineFactory extends GSONSceneFactory {
      */
     public enum GraphicsEngineClasses implements Type<Object> {
 
-        spriteattributecomponent(SpriteAttributeComponent.class),
-        spritecomponent(SpriteComponent.class);
+    spriteattributecomponent(SpriteAttributeComponent.class),
+    spritecomponent(SpriteComponent.class);
 
         private final Class<?> theClass;
 
@@ -57,13 +51,11 @@ public class GSONGraphicsEngineFactory extends GSONSceneFactory {
         }
     }
 
-    private ComponentDeserializer componentDeserializer = new ComponentDeserializer();
-
     protected GSONGraphicsEngineFactory() {
         super();
     }
 
-    public static SceneSerializer getInstance() {
+    public static SceneSerializer<RootNode> getInstance() {
         if (sceneFactory == null) {
             sceneFactory = new GSONGraphicsEngineFactory();
         }
@@ -71,14 +63,14 @@ public class GSONGraphicsEngineFactory extends GSONSceneFactory {
     }
 
     @Override
-    public void init(NucleusRenderer renderer, NodeFactory nodeFactory, MeshFactory meshFactory, Type<?>[] types) {
-        super.init(renderer, nodeFactory, meshFactory, types);
+    public void init(GLES20Wrapper gles, Type<?>[] types) {
+        super.init(gles, types);
         registerTypes(GraphicsEngineClasses.values());
     }
 
     @Override
-    protected void createNodeDeserializer() {
-        nodeDeserializer = new NodeDeserializer();
+    protected NucleusDeserializer<Node> createNucleusNodeDeserializer() {
+        return new GraphicsEngineNodeDeserializer();
     }
 
     @Override
@@ -90,38 +82,6 @@ public class GSONGraphicsEngineFactory extends GSONSceneFactory {
     protected void registerNodeExporters() {
         super.registerNodeExporters();
         nodeExporter.registerNodeExporter(GraphicsEngineNodeType.values(), new GraphicsEngineNodeExporter());
-    }
-
-    /**
-     * Utility method to get the default nodefactory
-     * 
-     * @return
-     */
-    public static NodeFactory getNodeFactory() {
-        return new GraphicsEngineNodeFactory();
-    }
-
-    /**
-     * Utility method to get the default mesh factory
-     * 
-     * @return
-     */
-    public static MeshFactory getMeshFactory(NucleusRenderer renderer) {
-        return new GraphicsEngineMeshFactory(renderer);
-    }
-
-    @Override
-    protected void registerTypeAdapter(GsonBuilder builder) {
-        super.registerTypeAdapter(builder);
-        builder.registerTypeAdapter(Node.class, nodeDeserializer);
-        builder.registerTypeAdapter(Component.class, componentDeserializer);
-    }
-
-    @Override
-    protected void setGson(Gson gson) {
-        super.setGson(gson);
-        nodeDeserializer.setGson(gson);
-        componentDeserializer.setGson(gson);
     }
 
 }

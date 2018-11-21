@@ -6,14 +6,16 @@ import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.scene.GraphicsEngineNodeType;
 import com.nucleus.SimpleLogger;
 import com.nucleus.geometry.Mesh;
+import com.nucleus.geometry.Mesh.Builder;
 import com.nucleus.geometry.shape.RectangleShapeBuilder;
 import com.nucleus.geometry.shape.RectangleShapeBuilder.RectangleConfiguration;
 import com.nucleus.geometry.shape.ShapeBuilder;
 import com.nucleus.io.ExternalReference;
-import com.nucleus.mmi.ObjectInputListener;
+import com.nucleus.mmi.NodeInputListener;
 import com.nucleus.mmi.PointerData;
 import com.nucleus.mmi.PointerMotionData;
-import com.nucleus.renderer.NucleusRenderer;
+import com.nucleus.opengl.GLES20Wrapper;
+import com.nucleus.scene.AbstractMeshNode;
 import com.nucleus.scene.LineDrawerNode;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.NodeException;
@@ -31,9 +33,9 @@ import com.nucleus.vecmath.Rectangle;
  * @author Richard Sahlin
  *
  */
-public class PlayfieldNode extends Node {
+public class PlayfieldNode extends AbstractMeshNode<Mesh> {
 
-    public class PlayfieldNodeObjectInputListener implements ObjectInputListener {
+    public class PlayfieldNodeObjectInputListener implements NodeInputListener {
 
         float[] rectangle = new float[4];
         float[] rgba = new float[] { 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1 };
@@ -42,7 +44,7 @@ public class PlayfieldNode extends Node {
         @Override
         public boolean onInputEvent(Node node, PointerData event) {
             float[] inverse = new float[16];
-            float[] position = event.position;
+            float[] position = event.data;
             if (Matrix.invertM(inverse, 0, getModelMatrix(), 0)) {
                 float[] vec2 = new float[2];
                 Matrix.transformVec2(inverse, 0, position, vec2, 1);
@@ -65,7 +67,7 @@ public class PlayfieldNode extends Node {
             rectangle[1] = down[1];
             rectangle[2] = current[0] - down[0];
             rectangle[3] = down[1] - current[1];
-            LineDrawerNode lines = (LineDrawerNode) getRootNode().getNodeById("lines");
+            LineDrawerNode lines = getRootNode().getNodeById("lines", LineDrawerNode.class);
             if (lines != null) {
                 lines.setRectangle(0, rectangle, 0f, rgba);
             }
@@ -142,22 +144,20 @@ public class PlayfieldNode extends Node {
     }
 
     @Override
-    public Mesh.Builder<Mesh> createMeshBuilder(NucleusRenderer renderer, Node parent, int count,
-            ShapeBuilder shapeBuilder)
+    public Builder<Mesh> createMeshBuilder(GLES20Wrapper gles, ShapeBuilder shapeBuilder)
             throws IOException {
 
-        PlayfieldNode playfield = (PlayfieldNode) parent;
-        PlayfieldMesh.Builder builder = new PlayfieldMesh.Builder(renderer);
-        int[] mapSize = playfield.getMapSize();
-        builder.setMap(mapSize, playfield.getCharRectangle());
-        builder.setOffset(playfield.getAnchorOffset());
+        PlayfieldMesh.Builder builder = new PlayfieldMesh.Builder(gles);
+        int[] mapSize = getMapSize();
+        builder.setMap(mapSize, getCharRectangle());
+        builder.setOffset(getAnchorOffset());
         int charCount = mapSize[0] * mapSize[1];
-        super.initMeshBuilder(renderer, parent, charCount, shapeBuilder, builder);
+        super.initMeshBuilder(gles, charCount, shapeBuilder, builder);
         if (shapeBuilder == null) {
             RectangleConfiguration configuration = new RectangleShapeBuilder.RectangleConfiguration(
-                    playfield.getCharRectangle(), RectangleShapeBuilder.DEFAULT_Z, mapSize[0] * mapSize[1], 0);
+                    getCharRectangle(), RectangleShapeBuilder.DEFAULT_Z, mapSize[0] * mapSize[1], 0);
             configuration.enableVertexIndex(true);
-            shapeBuilder = new CharmapBuilder(configuration, new Indexer(program), playfield.getAnchorOffset());
+            shapeBuilder = new CharmapBuilder(configuration, new Indexer(program), getAnchorOffset());
             builder.setShapeBuilder(shapeBuilder);
         }
         return builder;
@@ -333,6 +333,11 @@ public class PlayfieldNode extends Node {
             SimpleLogger.d(getClass(), "Could not invert matrix!!!!!!!!!!!!!!!!");
         }
         return null;
+    }
+
+    @Override
+    public void createTransient() {
+        // TODO Auto-generated method stub
     }
 
 }

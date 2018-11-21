@@ -7,8 +7,8 @@ import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.shape.RectangleShapeBuilder;
 import com.nucleus.opengl.GLES20Wrapper;
+import com.nucleus.opengl.GLESWrapper;
 import com.nucleus.opengl.GLException;
-import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TiledTexture2D;
@@ -38,27 +38,27 @@ public class SpriteMesh extends Mesh {
 
         /**
          * 
-         * @param renderer
+         * @param gles
          */
-        public Builder(NucleusRenderer renderer) {
-            super(renderer);
+        public Builder(GLES20Wrapper gles) {
+            super(gles);
         }
 
         @Override
         public Mesh create() throws IOException, GLException {
-            setElementMode(Mode.TRIANGLES, objectCount * RectangleShapeBuilder.QUAD_VERTICES, 0,
+            setElementMode(GLESWrapper.Mode.TRIANGLES, objectCount * RectangleShapeBuilder.QUAD_VERTICES, 0,
                     objectCount * RectangleShapeBuilder.QUAD_ELEMENTS);
             return super.create();
         }
 
         @Override
-        public ShaderProgram createProgram(GLES20Wrapper gles) {
+        public ShaderProgram createProgram() {
             // SpriteMesh is a special type of mesh that only works with specific shader program
             return AssetManager.getInstance().getProgram(gles, createProgram(texture));
         }
 
         @Override
-        protected Mesh createMesh() {
+        public Mesh createInstance() {
             return new SpriteMesh();
         }
 
@@ -71,16 +71,17 @@ public class SpriteMesh extends Mesh {
         public ShaderProgram createProgram(Texture2D texture) {
             switch (texture.textureType) {
                 case TiledTexture2D:
-                    return new TiledSpriteProgram(Texture2D.Shading.textured);
+                    return new TiledSpriteProgram((TiledTexture2D) texture, Texture2D.Shading.textured);
                 case UVTexture2D:
-                    return new UVSpriteProgram();
+                    return new UVSpriteProgram((UVTexture2D) texture);
                 case Untextured:
-                    return new TiledSpriteProgram(((Untextured) texture).getShading());
+                    return new TiledSpriteProgram(null, ((Untextured) texture).getShading());
                 case Texture2D:
-                    return new UVSpriteProgram();
-                // TODO - fix so that transformprogram loads the correct shader - 'transformvertex', currently
-                // loads texturedvertex. Use tiled or uv texture in the meantime.
-                // return new TransformProgram(null, Texture2D.Shading.textured, null);
+                    throw new IllegalArgumentException("Not supported");
+                    // return new UVSpriteProgram();
+                    // TODO - fix so that transformprogram loads the correct shader - 'transformvertex', currently
+                    // loads texturedvertex. Use tiled or uv texture in the meantime.
+                    // return new TransformProgram(null, Texture2D.Shading.textured, null);
                 default:
                     throw new IllegalArgumentException(INVALID_TYPE + texture.textureType);
             }

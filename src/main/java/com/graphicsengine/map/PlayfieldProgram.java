@@ -1,13 +1,12 @@
 package com.graphicsengine.map;
 
+import java.nio.FloatBuffer;
+
 import com.graphicsengine.spritemesh.TiledSpriteIndexer;
-import com.nucleus.geometry.Mesh;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.renderer.Pass;
 import com.nucleus.shader.ShaderProgram;
-import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.Texture2D.Shading;
-import com.nucleus.texturing.TextureType;
 import com.nucleus.texturing.TiledTexture2D;
 
 /**
@@ -19,24 +18,20 @@ import com.nucleus.texturing.TiledTexture2D;
 public class PlayfieldProgram extends ShaderProgram {
 
     public static final String CATEGORY = "charmap";
-    private final static String INVALID_TEXTURE_TYPE = "Invalid texture type: ";
 
-    PlayfieldProgram() {
+    protected TiledTexture2D texture;
+
+    PlayfieldProgram(TiledTexture2D texture) {
         // super(null, null, CATEGORY, CommonShaderVariables.values(), ProgramType.VERTEX_FRAGMENT);
         super(null, null, CATEGORY, ProgramType.VERTEX_FRAGMENT);
         setIndexer(new TiledSpriteIndexer());
     }
 
     @Override
-    public void updateUniformData(float[] destinationUniform, Mesh mesh) {
+    public void updateUniformData(FloatBuffer destinationUniform) {
         setScreenSize(uniforms, getUniformByName("uScreenSize"));
-        Texture2D texture = mesh.getTexture(Texture2D.TEXTURE_0);
-        if (texture.getTextureType() == TextureType.TiledTexture2D) {
-            setTextureUniforms((TiledTexture2D) texture, uniforms,
-                    getUniformByName("uTextureData"));
-        } else {
-            System.err.println(INVALID_TEXTURE_TYPE + texture);
-        }
+        setTextureUniforms(texture, uniforms,
+                getUniformByName("uTextureData"));
         setEmissive(uniforms, getUniformByName("uAmbientLight"), globalLight.getAmbient());
     }
 
@@ -53,8 +48,7 @@ public class PlayfieldProgram extends ShaderProgram {
     }
 
     @Override
-    public void initBuffers(Mesh mesh) {
-        // TODO Auto-generated method stub
-
+    public void initUniformData(FloatBuffer destinationUniforms) {
     }
+
 }

@@ -15,6 +15,7 @@ import com.nucleus.geometry.MeshBuilder.MeshBuilderFactory;
 import com.nucleus.geometry.shape.RectangleShapeBuilder;
 import com.nucleus.geometry.shape.ShapeBuilder;
 import com.nucleus.geometry.shape.ShapeBuilderFactory;
+import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.texturing.Texture2D;
 
@@ -86,7 +87,7 @@ public class SpriteAttributeComponent extends ActorComponent<SpriteMesh>
         spritedataSize = mapper.attributesPerVertex;
         spriteBuffer = new CPUComponentBuffer(count, mapper.attributesPerVertex * 4);
         entityBuffer = new CPUComponentBuffer(count, mapper.attributesPerEntity);
-        spriteExpander = new CPUQuadExpander(mesh, mapper, entityBuffer, spriteBuffer);
+        spriteExpander = new CPUQuadExpander(mesh.getTexture(Texture2D.TEXTURE_0), mapper, entityBuffer, spriteBuffer);
     }
 
     /**
@@ -119,8 +120,11 @@ public class SpriteAttributeComponent extends ActorComponent<SpriteMesh>
     }
 
     @Override
-    protected Builder<Mesh> createBuilderInstance(NucleusRenderer renderer) {
-        return new SpriteMesh.Builder(renderer);
+    protected Builder<Mesh> createBuilderInstance(GLES20Wrapper gles) {
+        if (gles.getInfo().getRenderVersion().major > 2) {
+            SimpleLogger.d(getClass(), "Target supports GLES 3 - use SpriteComponent instead!");
+        }
+        return new SpriteMesh.Builder(gles);
     }
 
     @Override

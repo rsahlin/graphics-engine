@@ -1,16 +1,11 @@
 package com.graphicsengine.spritemesh;
 
-import com.nucleus.assets.AssetManager;
-import com.nucleus.geometry.Mesh;
-import com.nucleus.opengl.GLES20Wrapper;
-import com.nucleus.renderer.Pass;
+import java.nio.FloatBuffer;
+
 import com.nucleus.shader.BlockBuffer;
 import com.nucleus.shader.CommonBlockNames;
 import com.nucleus.shader.FloatBlockBuffer;
-import com.nucleus.shader.ShaderProgram;
-import com.nucleus.shader.ShadowPass1Program;
 import com.nucleus.texturing.Texture2D;
-import com.nucleus.texturing.Texture2D.Shading;
 import com.nucleus.texturing.UVTexture2D;
 
 /**
@@ -18,46 +13,37 @@ import com.nucleus.texturing.UVTexture2D;
  * This program has support for a number of sprites with frames defined by UV coordinates for each sprite corner,
  * this means that the sprites can have different sizes.
  * 
+ * This shader program can only be used with UVTexture2D texture objects.
+ * 
  * @author Richard Sahlin
  *
  */
 public class UVSpriteProgram extends TiledSpriteProgram {
 
-    protected static final String CATEGORY = "uvsprite";
+    /**
+     * This uses gles 20 - deprecated in favor of geometry shader
+     */
+    protected static final String CATEGORY = "uvsprite20";
 
     transient protected boolean initialized = false;
+    transient protected FloatBlockBuffer uvData;
 
-    public UVSpriteProgram() {
+    public UVSpriteProgram(UVTexture2D uvTexture) {
         super(null, Texture2D.Shading.textured, CATEGORY);
+        uvData = uvTexture.getUVAtlasBuffer();
     }
 
     @Override
-    public ShaderProgram getProgram(GLES20Wrapper gles, Pass pass, Shading shading) {
-        switch (pass) {
-            case UNDEFINED:
-            case ALL:
-            case MAIN:
-                return this;
-            case SHADOW1:
-                return AssetManager.getInstance().getProgram(gles, new ShadowPass1Program(this, shading, CATEGORY));
-            case SHADOW2:
-                return this;
-            default:
-                throw new IllegalArgumentException("Invalid pass " + pass);
-        }
+    public void initUniformData(FloatBuffer destinationUniforms) {
+        setUVData(uvData);
     }
 
     @Override
-    public void updateUniformData(float[] destinationUniform, Mesh mesh) {
-        if (!initialized) {
-            initBuffers(mesh);
-            initialized = true;
-        }
-        super.updateUniformData(destinationUniform, mesh);
+    public void updateUniformData(FloatBuffer destinationUniform) {
+        super.updateUniformData(destinationUniform);
     }
 
-    @Override
-    public void initBuffers(Mesh mesh) {
+    protected void setUVData(FloatBlockBuffer source) {
         BlockBuffer[] blocks = uniformBlockBuffers;
         if (blocks != null) {
             for (BlockBuffer bb : blocks) {
@@ -71,8 +57,6 @@ public class UVSpriteProgram extends TiledSpriteProgram {
                          * native buffer with uvdata
                          */
                         bb.position(0);
-                        FloatBlockBuffer source = ((UVTexture2D) mesh.getTexture(Texture2D.TEXTURE_0))
-                                .getUVAtlasBuffer();
                         source.position(0);
                         float[] data = new float[source.capacity()];
                         source.get(data, 0, data.length);

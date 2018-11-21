@@ -4,12 +4,12 @@ import java.io.IOException;
 
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.component.SpriteAttributeComponent;
-import com.graphicsengine.renderer.SharedMeshNodeRenderer;
 import com.nucleus.SimpleLogger;
 import com.nucleus.geometry.Mesh;
+import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.shape.ShapeBuilder;
-import com.nucleus.renderer.NucleusRenderer;
-import com.nucleus.renderer.NucleusRenderer.NodeRenderer;
+import com.nucleus.opengl.GLES20Wrapper;
+import com.nucleus.scene.AbstractMeshNode;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
 import com.nucleus.texturing.Texture2D;
@@ -28,7 +28,7 @@ import com.nucleus.vecmath.Transform;
  * @author Richard Sahlin
  *
  */
-public class SharedMeshQuad extends Node {
+public class SharedMeshQuad extends AbstractMeshNode<Mesh> {
 
     /**
      * The framenumber for this quad, from the texture in the referenced mesh.
@@ -51,7 +51,7 @@ public class SharedMeshQuad extends Node {
      * Used by GSON and {@link #createInstance(RootNode)} method - do NOT call directly
      */
     @Deprecated
-    protected SharedMeshQuad() {
+    public SharedMeshQuad() {
     }
 
     protected SharedMeshQuad(RootNode root) {
@@ -84,14 +84,6 @@ public class SharedMeshQuad extends Node {
             SimpleLogger.d(getClass(),
                     "Node state is set for id " + getId() + ", state handling for shared mesh quad is not implemented");
         }
-        if (nodeRenderer == null) {
-            nodeRenderer = createNodeRenderer();
-        }
-    }
-
-    @Override
-    protected NodeRenderer createNodeRenderer() {
-        return new SharedMeshNodeRenderer();
     }
 
     /**
@@ -181,12 +173,15 @@ public class SharedMeshQuad extends Node {
     }
 
     @Override
-    public Mesh.Builder<Mesh> createMeshBuilder(NucleusRenderer renderer, Node parent, int count,
-            ShapeBuilder shapeBuilder)
+    public void createTransient() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public MeshBuilder<Mesh> createMeshBuilder(GLES20Wrapper gles, ShapeBuilder shapeBuilder)
             throws IOException {
-        /**
-         * Mesh is stored in parent, this node shares that mesh.
-         */
+        // Dont create a meshbuilder since this node uses parents Mesh
         return null;
     }
 

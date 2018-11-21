@@ -10,14 +10,18 @@ import com.nucleus.component.CPUComponentBuffer;
 import com.nucleus.component.CPUQuadExpander;
 import com.nucleus.component.Component;
 import com.nucleus.geometry.AttributeBuffer;
+import com.nucleus.geometry.AttributeUpdater.BufferIndex;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.Mesh;
-import com.nucleus.geometry.Mesh.BufferIndex;
+import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.shape.RectangleShapeBuilder;
 import com.nucleus.geometry.shape.RectangleShapeBuilder.RectangleConfiguration;
 import com.nucleus.geometry.shape.ShapeBuilder;
+import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.renderer.NucleusRenderer;
+import com.nucleus.scene.AbstractMeshNode;
 import com.nucleus.scene.Node;
+import com.nucleus.scene.RenderableNode;
 import com.nucleus.scene.RootNode;
 import com.nucleus.shader.VariableIndexer.Indexer;
 import com.nucleus.texturing.Texture2D;
@@ -37,7 +41,7 @@ import com.nucleus.vecmath.Rectangle;
  * @author Richard Sahlin
  *
  */
-public class QuadParentNode extends Node implements Consumer {
+public class QuadParentNode extends AbstractMeshNode<Mesh> implements Consumer {
 
     public static final String MAX_QUADS = "maxQuads";
 
@@ -54,7 +58,7 @@ public class QuadParentNode extends Node implements Consumer {
      * Used by GSON and {@link #createInstance(RootNode)} method - do NOT call directly
      */
     @Deprecated
-    protected QuadParentNode() {
+    public QuadParentNode() {
     }
 
     private QuadParentNode(RootNode root) {
@@ -69,15 +73,14 @@ public class QuadParentNode extends Node implements Consumer {
     }
 
     @Override
-    public Mesh.Builder<Mesh> createMeshBuilder(NucleusRenderer renderer, Node parent, int count,
-            ShapeBuilder shapeBuilder)
+    public MeshBuilder<Mesh> createMeshBuilder(GLES20Wrapper gles, ShapeBuilder shapeBuilder)
             throws IOException {
-
+        int count = getMaxQuads();
         if (shapeBuilder == null) {
             shapeBuilder = new RectangleShapeBuilder(new RectangleConfiguration(count, 0));
         }
-        Mesh.Builder<Mesh> builder = new SpriteMesh.Builder(renderer);
-        return super.initMeshBuilder(renderer, parent, count, shapeBuilder, builder);
+        Mesh.Builder<Mesh> builder = new SpriteMesh.Builder(gles);
+        return super.initMeshBuilder(gles, count, shapeBuilder, builder);
 
     }
 
@@ -122,7 +125,7 @@ public class QuadParentNode extends Node implements Consumer {
         indexer = new Indexer(getProgram());
         CPUComponentBuffer sourceData = new CPUComponentBuffer(maxQuads, indexer.attributesPerVertex);
         CPUComponentBuffer destinationData = new CPUComponentBuffer(maxQuads, indexer.attributesPerVertex * 4);
-        quadExpander = new CPUQuadExpander(mesh, indexer, sourceData, destinationData);
+        quadExpander = new CPUQuadExpander(mesh.getTexture(Texture2D.TEXTURE_0), indexer, sourceData, destinationData);
     }
 
     /**
@@ -146,14 +149,16 @@ public class QuadParentNode extends Node implements Consumer {
         Rectangle quadRect = (rectangle != null && rectangle.getValues() != null && rectangle.getValues().length >= 4)
                 ? rectangle
                 : createRectangle(texture, 0);
-        shapeBuilder.setStartQuad(quad).setRectangle(quadRect).build(spriteMesh);
+        AttributeBuffer attributes = spriteMesh.getAttributeBuffer(BufferIndex.ATTRIBUTES_STATIC);
+        shapeBuilder.setStartQuad(quad).setRectangle(quadRect).build(attributes,
+                spriteMesh.getTexture(Texture2D.TEXTURE_0), spriteMesh.getElementBuffer(), spriteMesh.getMode());
         return quadRect;
     }
 
     protected Rectangle createRectangle(Texture2D texture, int frame) {
         Rectangle rect = texture.calculateRectangle(frame);
         // Check viewfrustum for scale factor - rectangle created using window aspect where y axis is normalized (1)
-        Node view = viewFrustum != null ? this : getParentView();
+        RenderableNode<?> view = viewFrustum != null ? this : getParentView();
         if (view != null) {
             float scale = view.getViewFrustum().getHeight();
             rect.scale(scale);
@@ -193,6 +198,18 @@ public class QuadParentNode extends Node implements Consumer {
 
     public CPUQuadExpander getExpander() {
         return quadExpander;
+    }
+
+    @Override
+    public ArrayList<Mesh> getMeshes(ArrayList<Mesh> list) {
+        list.addAll(meshes);
+        return list;
+    }
+
+    @Override
+    public void createTransient() {
+        // TODO Auto-generated method stub
+
     }
 
 }
