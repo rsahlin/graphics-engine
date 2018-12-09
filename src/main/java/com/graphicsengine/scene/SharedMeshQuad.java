@@ -5,6 +5,7 @@ import java.io.IOException;
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.component.SpriteAttributeComponent;
 import com.nucleus.SimpleLogger;
+import com.nucleus.common.Type;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.shape.ShapeBuilder;
@@ -54,8 +55,12 @@ public class SharedMeshQuad extends AbstractMeshNode<Mesh> {
     public SharedMeshQuad() {
     }
 
-    protected SharedMeshQuad(RootNode root) {
+    private SharedMeshQuad(RootNode root) {
         super(root, GraphicsEngineNodeType.sharedMeshNode);
+    }
+
+    protected SharedMeshQuad(RootNode root, Type<Node> type) {
+        super(root, type);
     }
 
     /**
@@ -100,7 +105,6 @@ public class SharedMeshQuad extends AbstractMeshNode<Mesh> {
         SharedMeshQuad copy = new SharedMeshQuad(root);
         copy.set(this);
         return copy;
-
     }
 
     /**
