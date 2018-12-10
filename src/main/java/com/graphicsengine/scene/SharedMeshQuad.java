@@ -53,6 +53,7 @@ public class SharedMeshQuad extends AbstractMeshNode<Mesh> {
      */
     @Deprecated
     public SharedMeshQuad() {
+        super();
     }
 
     private SharedMeshQuad(RootNode root) {
@@ -133,9 +134,10 @@ public class SharedMeshQuad extends AbstractMeshNode<Mesh> {
     }
 
     /**
-     * Sets the frame number
+     * Sets the visible frame
+     * Note, this will not update the frame number in this class - {@link #frame}
      * 
-     * @param frame
+     * @param frame Frame to display
      */
     public void setFrame(int frame) {
         quadParent.getExpander().setFrame(childIndex, frame);
