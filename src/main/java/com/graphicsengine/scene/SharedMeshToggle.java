@@ -12,6 +12,14 @@ public class SharedMeshToggle extends SharedMeshQuad implements Toggle {
 
     private ArrayList<ToggleListener> listeners = new ArrayList<>();
 
+    /**
+     * Used by GSON and {@link #createInstance(RootNode)} method - do NOT call directly
+     */
+    @Deprecated
+    public SharedMeshToggle() {
+        super();
+    }
+
     protected SharedMeshToggle(RootNode root) {
         super(root, GraphicsEngineNodeType.toggle);
     }

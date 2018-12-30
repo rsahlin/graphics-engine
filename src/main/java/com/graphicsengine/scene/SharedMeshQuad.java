@@ -53,6 +53,7 @@ public class SharedMeshQuad extends AbstractMeshNode<Mesh> {
      */
     @Deprecated
     public SharedMeshQuad() {
+        super();
     }
 
     private SharedMeshQuad(RootNode root) {
