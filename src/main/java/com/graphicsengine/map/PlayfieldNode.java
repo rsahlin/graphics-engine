@@ -21,6 +21,7 @@ import com.nucleus.scene.Node;
 import com.nucleus.scene.NodeException;
 import com.nucleus.scene.RootNode;
 import com.nucleus.shader.VariableIndexer.Indexer;
+import com.nucleus.ui.Toggle;
 import com.nucleus.vecmath.Matrix;
 import com.nucleus.vecmath.Rectangle;
 
@@ -83,6 +84,11 @@ public class PlayfieldNode extends AbstractMeshNode<Mesh> {
         @Override
         public EventConfiguration getConfiguration() {
             return config;
+        }
+
+        @Override
+        public void onStateChange(Toggle toggle) {
+            SimpleLogger.d(getClass(), "onStateChange() " + toggle.getId());
         }
 
     }

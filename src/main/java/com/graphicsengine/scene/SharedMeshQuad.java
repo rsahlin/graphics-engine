@@ -64,13 +64,6 @@ public class SharedMeshQuad extends AbstractMeshNode<Mesh> {
         super(root, type);
     }
 
-    /**
-     * Called when the parent node is created - remember that shared mesh quad does not use it's own mesh
-     * TODO Need to provide size and color from scene definition.
-     * 
-     * @param Parent The parent node holding all quads
-     * @param index
-     */
     @Override
     public void onCreated() {
         // Add this to the quadparentnode
@@ -134,9 +127,10 @@ public class SharedMeshQuad extends AbstractMeshNode<Mesh> {
     }
 
     /**
-     * Sets the frame number
+     * Sets the visible frame
+     * Note, this will not update the frame number in this class - {@link #frame}
      * 
-     * @param frame
+     * @param frame Frame to display
      */
     public void setFrame(int frame) {
         quadParent.getExpander().setFrame(childIndex, frame);

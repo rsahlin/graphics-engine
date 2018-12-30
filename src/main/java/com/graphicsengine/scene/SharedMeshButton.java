@@ -6,6 +6,10 @@ import com.nucleus.ui.Button;
 
 public class SharedMeshButton extends SharedMeshQuad implements Button {
 
+    public SharedMeshButton() {
+        super();
+    }
+
     protected SharedMeshButton(RootNode root) {
         super(root, GraphicsEngineNodeType.button);
     }
