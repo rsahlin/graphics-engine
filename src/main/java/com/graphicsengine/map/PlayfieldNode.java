@@ -11,9 +11,9 @@ import com.nucleus.geometry.shape.RectangleShapeBuilder;
 import com.nucleus.geometry.shape.RectangleShapeBuilder.RectangleConfiguration;
 import com.nucleus.geometry.shape.ShapeBuilder;
 import com.nucleus.io.ExternalReference;
-import com.nucleus.mmi.NodeInputListener;
-import com.nucleus.mmi.PointerData;
-import com.nucleus.mmi.PointerMotionData;
+import com.nucleus.mmi.UIElementInput;
+import com.nucleus.mmi.Pointer;
+import com.nucleus.mmi.PointerMotion;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.scene.AbstractMeshNode;
 import com.nucleus.scene.LineDrawerNode;
@@ -21,6 +21,7 @@ import com.nucleus.scene.Node;
 import com.nucleus.scene.NodeException;
 import com.nucleus.scene.RootNode;
 import com.nucleus.shader.VariableIndexer.Indexer;
+import com.nucleus.ui.Button;
 import com.nucleus.ui.Toggle;
 import com.nucleus.vecmath.Matrix;
 import com.nucleus.vecmath.Rectangle;
@@ -36,14 +37,14 @@ import com.nucleus.vecmath.Rectangle;
  */
 public class PlayfieldNode extends AbstractMeshNode<Mesh> {
 
-    public class PlayfieldNodeObjectInputListener implements NodeInputListener {
+    public class PlayfieldNodeObjectInputListener implements UIElementInput {
 
         float[] rectangle = new float[4];
         float[] rgba = new float[] { 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1 };
         EventConfiguration config = new EventConfiguration();
 
         @Override
-        public boolean onInputEvent(Node node, PointerData event) {
+        public boolean onInputEvent(Node node, Pointer event) {
             float[] inverse = new float[16];
             float[] position = event.data;
             if (Matrix.invertM(inverse, 0, getModelMatrix(), 0)) {
@@ -60,7 +61,7 @@ public class PlayfieldNode extends AbstractMeshNode<Mesh> {
         }
 
         @Override
-        public boolean onDrag(Node node, PointerMotionData drag) {
+        public boolean onDrag(Node node, PointerMotion drag) {
             SimpleLogger.d(getClass(), "onDrag() " + node.getId());
             float[] down = drag.getFirstPosition();
             float[] current = drag.getCurrentPosition();
@@ -76,7 +77,7 @@ public class PlayfieldNode extends AbstractMeshNode<Mesh> {
         }
 
         @Override
-        public boolean onClick(Node node, PointerData event) {
+        public boolean onClick(Node node, Pointer event) {
             SimpleLogger.d(getClass(), "onClick() " + node.getId());
             return false;
         }
@@ -89,6 +90,11 @@ public class PlayfieldNode extends AbstractMeshNode<Mesh> {
         @Override
         public void onStateChange(Toggle toggle) {
             SimpleLogger.d(getClass(), "onStateChange() " + toggle.getId());
+        }
+
+        @Override
+        public void onPressed(Button button) {
+            SimpleLogger.d(getClass(), "onPressed() " + button.getId());
         }
 
     }

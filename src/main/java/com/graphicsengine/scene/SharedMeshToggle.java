@@ -3,7 +3,6 @@ package com.graphicsengine.scene;
 import java.util.ArrayList;
 
 import com.google.gson.annotations.SerializedName;
-import com.nucleus.mmi.NodeInputListener;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
 import com.nucleus.ui.Toggle;
@@ -70,16 +69,9 @@ public class SharedMeshToggle extends SharedMeshQuad implements Toggle {
             selected = 0;
         }
         setFrame(selectedFrames[selected]);
-
-        // TODO - how shall the case when root has objectinputlistener and one or more listeners are registered in this
-        // object be handled?
-        NodeInputListener nodeListener = getRootNode().getObjectInputListener();
-        if (nodeListener != null) {
-            nodeListener.onStateChange(this);
-        }
         for (ToggleListener l : listeners) {
             if (l != null) {
-                l.onStateChanged(selected);
+                l.onStateChanged(this);
             }
         }
     }

@@ -21,4 +21,8 @@ public class SharedMeshButton extends SharedMeshQuad implements Button {
         return copy;
     }
 
+    @Override
+    public void pressed() {
+    }
+
 }
