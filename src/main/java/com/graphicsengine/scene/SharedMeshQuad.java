@@ -24,7 +24,9 @@ import com.nucleus.vecmath.Transform;
  * This node will share the mesh from the parent {@link QuadParentNode}
  * This is for objects that are mostly static, for instance UI elements, and objects that need touch events.
  * If a large number of objects with shared behavior are needed use {@link SpriteAttributeComponent} instead.
- * Object visibility cannot be controlled by the Node state value since the quad belongs to the parent mesh.
+ * Object visibility, or any other drawCall related settings, cannot be controlled by the Node state value since the
+ * quad belongs to the parent mesh. This means same texture(s) and material is shared.
+ * 
  * 
  * @author Richard Sahlin
  *
@@ -68,6 +70,12 @@ public class SharedMeshQuad extends AbstractMeshNode<Mesh> {
     public void onCreated() {
         // Add this to the quadparentnode
         quadParent = (QuadParentNode) getParent();
+        // If material blend property is defined here, it will not have an effect since this is controlled in the
+        // parent.
+        // Untextured objects take color from emissive property - perhaps this shall be moved?
+        if (material != null) {
+            SimpleLogger.d(getClass(), "Warning - blend property cannot be controlled in shared mesh, id: " + getId());
+        }
         childIndex = quadParent.addQuad(this);
         initBounds(quadParent.buildQuad(childIndex, rectangle, frame));
         if (transform == null) {
