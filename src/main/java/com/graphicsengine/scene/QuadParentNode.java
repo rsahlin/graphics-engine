@@ -188,6 +188,9 @@ public class QuadParentNode extends AbstractMeshNode<Mesh> implements Consumer {
 
     @Override
     public void updateAttributeData(NucleusRenderer renderer) {
+        for (SharedMeshQuad child : quadChildren) {
+            child.prepareRender();
+        }
         quadExpander.updateAttributeData(renderer);
     }
 

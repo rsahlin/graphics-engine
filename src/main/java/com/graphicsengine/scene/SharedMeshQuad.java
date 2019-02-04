@@ -192,4 +192,12 @@ public class SharedMeshQuad extends AbstractMeshNode<Mesh> {
         return null;
     }
 
+    /**
+     * Called by the QuadParentNode before it is rendered - this will give shared meshes chance to update
+     * periodically. Used for instance if shared mesh quad is a ui element.
+     */
+    protected void prepareRender() {
+        // Nothing to do here
+    }
+
 }

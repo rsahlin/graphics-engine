@@ -1,10 +1,15 @@
 package com.graphicsengine.scene;
 
+import com.nucleus.profiling.FrameSampler;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
 import com.nucleus.ui.Button;
 
 public class SharedMeshButton extends SharedMeshQuad implements Button {
+
+    protected static FrameSampler timeKeeper = FrameSampler.getInstance();
+
+    protected Action action = Action.NONE;
 
     public SharedMeshButton() {
         super();
@@ -22,7 +27,21 @@ public class SharedMeshButton extends SharedMeshQuad implements Button {
     }
 
     @Override
-    public void pressed() {
+    public void clicked() {
+        action = Action.CLICKED;
+        this.getTransform().setScale(new float[] { 0.7f, 0.7f, 0.7f });
+        updateTransform();
+    }
+
+    @Override
+    protected void prepareRender() {
+        switch (action) {
+            case CLICKED:
+                float delta = timeKeeper.getDelta();
+                this.getTransform().setScale(new float[] { 1f, 1f, 1f });
+                action = Action.NONE;
+            default:
+        }
     }
 
 }
