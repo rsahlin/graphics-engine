@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import com.google.gson.annotations.SerializedName;
-import com.graphicsengine.component.SpriteAttributeComponent;
+import com.graphicsengine.component.SpriteComponent;
 import com.graphicsengine.spritemesh.SpriteMesh;
 import com.nucleus.component.CPUComponentBuffer;
 import com.nucleus.component.CPUQuadExpander;
@@ -35,7 +35,7 @@ import com.nucleus.vecmath.Rectangle;
  * Use this node for simple objects that does not need to have special behavior and not a large number of objects
  * (roughly < 100) otherwise the overhead will grow.
  * If a large number of objects are needed and/or special behavior then component node, see {@linkplain Component} or
- * {@link SpriteAttributeComponent}
+ * {@link SpriteComponent}
  * This class can be serialized using GSON
  * 
  * @author Richard Sahlin

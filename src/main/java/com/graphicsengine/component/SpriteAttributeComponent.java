@@ -26,12 +26,14 @@ import com.nucleus.texturing.Texture2D;
  * The intention is that the logic processing and update to attributes (quad data) can be done using a Compute shader,
  * or OpenCL
  * This class is mostly used for GLES versions prior to 3.2 when geometry shaders can be used instead.
+ * Deprecated - use {@link SpriteComponent} instead
  * 
  * The class can be serialized using gson
  * 
  * @author Richard Sahlin
  *
  */
+@Deprecated
 public class SpriteAttributeComponent extends ActorComponent<SpriteMesh>
         implements Consumer, MeshBuilderFactory<Mesh>, EntityData {
 
