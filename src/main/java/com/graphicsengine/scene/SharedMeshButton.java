@@ -1,5 +1,7 @@
 package com.graphicsengine.scene;
 
+import com.nucleus.mmi.Pointer;
+import com.nucleus.mmi.UIElementInput;
 import com.nucleus.profiling.FrameSampler;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
@@ -11,7 +13,9 @@ public class SharedMeshButton extends SharedMeshQuad implements Button {
 
     protected Action action = Action.NONE;
     protected float duration;
-    protected float clickAnimTimeout = 0.3f;
+    protected float clickAnimTimeout = 0.1f;
+
+    protected Action nextAction = null;
 
     public SharedMeshButton() {
         super();
@@ -28,33 +32,75 @@ public class SharedMeshButton extends SharedMeshQuad implements Button {
         return copy;
     }
 
-    @Override
-    public void clicked() {
+    /**
+     * The button was clicked, update button on screen and dispatch {@link ButtonListener} if attached.
+     * This will be called on the thread issuing touch events and is not synced to any drawing/update
+     */
+    protected void clicked() {
         switch (action) {
             case NONE:
             case PRESSED:
-                buttonClicked();
-
+                nextAction = Action.CLICKED;
+                break;
+            default:
+                // Nothing to do
         }
     }
 
-    private void buttonClicked() {
-        action = Action.CLICKED;
+    private void beginClicked() {
         this.getTransform().setScale(new float[] { 0.7f, 0.7f, 0.7f });
         updateTransform();
         duration = 0;
     }
 
-    @Override
-    protected void prepareRender() {
+    private void endClicked() {
+        this.getTransform().setScale(new float[] { 1f, 1f, 1f });
+        updateTransform();
+        action = Action.NONE;
+    }
+
+    private Action dispatchAction(Action action) {
+        this.action = action;
         switch (action) {
             case CLICKED:
-                duration += timeKeeper.getDelta();
-                this.getTransform().setScale(new float[] { 1f, 1f, 1f });
-                updateTransform();
-                action = Action.NONE;
+                beginClicked();
+                return null;
             default:
+                return null;
         }
+    }
+
+    @Override
+    protected void prepareRender() {
+        if (nextAction != null) {
+            nextAction = dispatchAction(nextAction);
+        } else {
+            switch (action) {
+                case CLICKED:
+                    duration += timeKeeper.getDelta();
+                    if (duration >= clickAnimTimeout) {
+                        endClicked();
+                    }
+                default:
+            }
+        }
+    }
+
+    @Override
+    public void onInputEvent(Pointer event) {
+    }
+
+    @Override
+    public void onClick(Pointer event, UIElementInput listener) {
+        clicked();
+        if (listener != null) {
+            listener.onPressed(this);
+        }
+    }
+
+    @Override
+    public Type getElementType() {
+        return Type.BUTTON;
     }
 
 }
