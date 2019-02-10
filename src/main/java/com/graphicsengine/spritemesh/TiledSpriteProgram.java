@@ -3,7 +3,6 @@ package com.graphicsengine.spritemesh;
 import java.nio.FloatBuffer;
 
 import com.nucleus.opengl.GLES20Wrapper;
-import com.nucleus.opengl.GLESWrapper.GLES20;
 import com.nucleus.opengl.GLESWrapper.Renderers;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.Pass;
@@ -31,24 +30,6 @@ public class TiledSpriteProgram extends ShaderProgram {
 
     protected TiledTexture2D texture;
 
-    static class SpriteCategorizer extends Categorizer {
-
-        public SpriteCategorizer(Pass pass, Shading shading, String category) {
-            super(pass, shading, category);
-        }
-
-        @Override
-        public String getShaderSourceName(int shaderType) {
-            switch (shaderType) {
-                case GLES20.GL_FRAGMENT_SHADER:
-                    // Fragment shaders are shared - skip category path
-                    return getPassString() + getShadingString();
-            }
-            return (getPath(shaderType) + getPassString() + getShadingString());
-        }
-
-    }
-
     /**
      * This uses gles 20 - deprecated in favour of geometry shader
      */
@@ -63,7 +44,7 @@ public class TiledSpriteProgram extends ShaderProgram {
      * @param shading
      */
     TiledSpriteProgram(TiledTexture2D texture, Texture2D.Shading shading) {
-        super(new SpriteCategorizer(null, shading, CATEGORY), ProgramType.VERTEX_FRAGMENT);
+        super(new SharedfragmentCategorizer(null, shading, CATEGORY), ProgramType.VERTEX_FRAGMENT);
         if (texture == null && shading == Texture2D.Shading.textured) {
             throw new IllegalArgumentException("Texture may not be null for shading: " + shading);
         }
@@ -79,7 +60,7 @@ public class TiledSpriteProgram extends ShaderProgram {
      * @param category
      */
     TiledSpriteProgram(Pass pass, Texture2D.Shading shading, String category) {
-        super(new SpriteCategorizer(pass, shading, category), ProgramType.VERTEX_FRAGMENT);
+        super(new SharedfragmentCategorizer(pass, shading, category), ProgramType.VERTEX_FRAGMENT);
         setIndexer(new TiledSpriteIndexer());
     }
 
