@@ -11,8 +11,10 @@ import com.nucleus.shader.VariableIndexer;
  */
 public class TiledSpriteIndexer extends VariableIndexer {
 
-    protected final static String[] NAMES = new String[] { "aVertex", "aTexCoord", "aTranslate", "aRotate", "aScale",
-            "aColor", "aFrameData" };
+    protected final static String[] NAMES = new String[] { VariableIndexer.Property.VERTEX.name,
+            VariableIndexer.Property.UV.name, VariableIndexer.Property.TRANSLATE.name,
+            VariableIndexer.Property.ROTATE.name, VariableIndexer.Property.SCALE.name,
+            VariableIndexer.Property.ALBEDO.name, VariableIndexer.Property.FRAME.name };
     protected final static int[] OFFSETS = new int[] { 0, 4, 0, 3, 6, 9, 12 };
     protected final static VariableType[] TYPES = new VariableType[] { VariableType.ATTRIBUTE, VariableType.ATTRIBUTE,
             VariableType.ATTRIBUTE, VariableType.ATTRIBUTE, VariableType.ATTRIBUTE, VariableType.ATTRIBUTE,
