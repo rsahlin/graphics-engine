@@ -3,7 +3,8 @@ package com.graphicsengine.scene;
 import java.util.ArrayList;
 
 import com.google.gson.annotations.SerializedName;
-import com.nucleus.mmi.NodeInputListener;
+import com.nucleus.mmi.Pointer;
+import com.nucleus.mmi.UIElementInput;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
 import com.nucleus.ui.Toggle;
@@ -63,23 +64,18 @@ public class SharedMeshToggle extends SharedMeshQuad implements Toggle {
         super.set(source);
     }
 
-    @Override
-    public void toggle() {
+    /**
+     * Selects the next item
+     */
+    protected void toggle() {
         selected++;
         if (selected >= selectedFrames.length) {
             selected = 0;
         }
         setFrame(selectedFrames[selected]);
-
-        // TODO - how shall the case when root has objectinputlistener and one or more listeners are registered in this
-        // object be handled?
-        NodeInputListener nodeListener = getRootNode().getObjectInputListener();
-        if (nodeListener != null) {
-            nodeListener.onStateChange(this);
-        }
         for (ToggleListener l : listeners) {
             if (l != null) {
-                l.onStateChanged(selected);
+                l.onStateChanged(this);
             }
         }
     }
@@ -90,8 +86,25 @@ public class SharedMeshToggle extends SharedMeshQuad implements Toggle {
     }
 
     @Override
+    public void onInputEvent(Pointer event) {
+    }
+
+    @Override
+    public void onClick(Pointer event, UIElementInput listener) {
+        toggle();
+        if (listener != null) {
+            listener.onStateChange(this);
+        }
+    }
+
+    @Override
     public void setSelected(int selected) {
         throw new IllegalArgumentException("Not implemented");
+    }
+
+    @Override
+    public Type getElementType() {
+        return Type.TOGGLE;
     }
 
 }

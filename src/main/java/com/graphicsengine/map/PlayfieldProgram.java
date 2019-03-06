@@ -32,7 +32,7 @@ public class PlayfieldProgram extends ShaderProgram {
         setScreenSize(uniforms, getUniformByName("uScreenSize"));
         setTextureUniforms(texture, uniforms,
                 getUniformByName("uTextureData"));
-        setEmissive(uniforms, getUniformByName("uAmbientLight"), globalLight.getAmbient());
+        // setEmissive(uniforms, getUniformByName("uAmbientLight"), globalLight.getAmbient());
     }
 
     @Override
