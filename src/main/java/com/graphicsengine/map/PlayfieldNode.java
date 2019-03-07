@@ -11,9 +11,9 @@ import com.nucleus.geometry.shape.RectangleShapeBuilder;
 import com.nucleus.geometry.shape.RectangleShapeBuilder.RectangleConfiguration;
 import com.nucleus.geometry.shape.ShapeBuilder;
 import com.nucleus.io.ExternalReference;
-import com.nucleus.mmi.UIElementInput;
 import com.nucleus.mmi.Pointer;
 import com.nucleus.mmi.PointerMotion;
+import com.nucleus.mmi.UIElementInput;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.scene.AbstractMeshNode;
 import com.nucleus.scene.LineDrawerNode;
@@ -95,6 +95,18 @@ public class PlayfieldNode extends AbstractMeshNode<Mesh> {
         @Override
         public void onPressed(Button button) {
             SimpleLogger.d(getClass(), "onPressed() " + button.getId());
+        }
+
+        @Override
+        public void onInflated(Toggle toggle) {
+            // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public void onInflated(Button button) {
+            // TODO Auto-generated method stub
+
         }
 
     }
