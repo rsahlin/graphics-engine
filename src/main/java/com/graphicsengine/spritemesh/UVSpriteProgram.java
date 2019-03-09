@@ -5,7 +5,7 @@ import java.nio.FloatBuffer;
 import com.nucleus.shader.BlockBuffer;
 import com.nucleus.shader.CommonBlockNames;
 import com.nucleus.shader.FloatBlockBuffer;
-import com.nucleus.texturing.Texture2D;
+import com.nucleus.shader.ShaderProgram;
 import com.nucleus.texturing.UVTexture2D;
 
 /**
@@ -29,7 +29,7 @@ public class UVSpriteProgram extends TiledSpriteProgram {
     transient protected FloatBlockBuffer uvData;
 
     public UVSpriteProgram(UVTexture2D uvTexture) {
-        super(null, Texture2D.Shading.textured, CATEGORY);
+        super(null, ShaderProgram.Shading.textured, CATEGORY);
         uvData = uvTexture.getUVAtlasBuffer();
     }
 

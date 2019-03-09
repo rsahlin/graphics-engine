@@ -6,7 +6,7 @@ import com.graphicsengine.spritemesh.TiledSpriteIndexer;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.renderer.Pass;
 import com.nucleus.shader.ShaderProgram;
-import com.nucleus.texturing.Texture2D.Shading;
+import com.nucleus.shader.ShaderProgram.Shading;
 import com.nucleus.texturing.TiledTexture2D;
 
 /**
@@ -23,7 +23,7 @@ public class PlayfieldProgram extends ShaderProgram {
 
     PlayfieldProgram(TiledTexture2D texture) {
         // super(null, null, CATEGORY, CommonShaderVariables.values(), ProgramType.VERTEX_FRAGMENT);
-        super(null, null, CATEGORY, ProgramType.VERTEX_FRAGMENT);
+        super(null, null, CATEGORY, ShaderProgram.ProgramType.VERTEX_FRAGMENT);
         setIndexer(new TiledSpriteIndexer());
     }
 
@@ -36,7 +36,7 @@ public class PlayfieldProgram extends ShaderProgram {
     }
 
     @Override
-    public ShaderProgram getProgram(GLES20Wrapper gles, Pass pass, Shading shading) {
+    public ShaderProgram getProgram(GLES20Wrapper gles, Pass pass, ShaderProgram.Shading shading) {
         switch (pass) {
             case UNDEFINED:
             case ALL:
