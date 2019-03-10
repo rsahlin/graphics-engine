@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 import com.google.gson.annotations.SerializedName;
 import com.nucleus.mmi.Pointer;
-import com.nucleus.mmi.UIElementInput;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
 import com.nucleus.ui.Toggle;
+import com.nucleus.ui.UIElementInput;
 
 public class SharedMeshToggle extends SharedMeshQuad implements Toggle {
 
