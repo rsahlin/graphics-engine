@@ -8,10 +8,9 @@ import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.Pass;
 import com.nucleus.shader.QuadExpanderShader;
 import com.nucleus.shader.ShaderProgram;
+import com.nucleus.shader.ShaderProgram.Shading;
 import com.nucleus.shader.ShaderSource;
 import com.nucleus.shader.ShaderVariable;
-import com.nucleus.texturing.Texture2D;
-import com.nucleus.texturing.Texture2D.Shading;
 import com.nucleus.texturing.TextureType;
 import com.nucleus.texturing.TiledTexture2D;
 
@@ -43,9 +42,9 @@ public class TiledSpriteProgram extends ShaderProgram {
      * @param texture
      * @param shading
      */
-    TiledSpriteProgram(TiledTexture2D texture, Texture2D.Shading shading) {
-        super(new SharedfragmentCategorizer(null, shading, CATEGORY), ProgramType.VERTEX_FRAGMENT);
-        if (texture == null && shading == Texture2D.Shading.textured) {
+    TiledSpriteProgram(TiledTexture2D texture, ShaderProgram.Shading shading) {
+        super(new SharedfragmentCategorizer(null, shading, CATEGORY), ShaderProgram.ProgramType.VERTEX_FRAGMENT);
+        if (texture == null && shading == ShaderProgram.Shading.textured) {
             throw new IllegalArgumentException("Texture may not be null for shading: " + shading);
         }
         this.texture = texture;
@@ -59,8 +58,8 @@ public class TiledSpriteProgram extends ShaderProgram {
      * @param shading
      * @param category
      */
-    TiledSpriteProgram(Pass pass, Texture2D.Shading shading, String category) {
-        super(new SharedfragmentCategorizer(pass, shading, category), ProgramType.VERTEX_FRAGMENT);
+    TiledSpriteProgram(Pass pass, ShaderProgram.Shading shading, String category) {
+        super(new SharedfragmentCategorizer(pass, shading, category), ShaderProgram.ProgramType.VERTEX_FRAGMENT);
         setIndexer(new TiledSpriteIndexer());
     }
 
@@ -113,7 +112,7 @@ public class TiledSpriteProgram extends ShaderProgram {
             if (texUniform != null) {
                 setTextureUniforms(texture, uniforms, texUniform);
             } else {
-                if (function.getShading() == null || function.getShading() == Shading.flat) {
+                if (function.getShading() == null || function.getShading() == ShaderProgram.Shading.flat) {
                     throw new IllegalArgumentException(
                             "Texture type " + texture.getTextureType() + ", does not match shading " + getShading()
                                     + " for program:\n" + toString());

@@ -11,7 +11,6 @@ import com.nucleus.geometry.shape.RectangleShapeBuilder;
 import com.nucleus.geometry.shape.RectangleShapeBuilder.RectangleConfiguration;
 import com.nucleus.geometry.shape.ShapeBuilder;
 import com.nucleus.io.ExternalReference;
-import com.nucleus.mmi.UIElementInput;
 import com.nucleus.mmi.Pointer;
 import com.nucleus.mmi.PointerMotion;
 import com.nucleus.opengl.GLES20Wrapper;
@@ -23,6 +22,7 @@ import com.nucleus.scene.RootNode;
 import com.nucleus.shader.VariableIndexer.Indexer;
 import com.nucleus.ui.Button;
 import com.nucleus.ui.Toggle;
+import com.nucleus.ui.UIElementInput;
 import com.nucleus.vecmath.Matrix;
 import com.nucleus.vecmath.Rectangle;
 

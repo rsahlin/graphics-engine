@@ -71,7 +71,7 @@ public class SpriteMesh extends Mesh {
         public ShaderProgram createProgram(Texture2D texture) {
             switch (texture.textureType) {
                 case TiledTexture2D:
-                    return new TiledSpriteProgram((TiledTexture2D) texture, Texture2D.Shading.textured);
+                    return new TiledSpriteProgram((TiledTexture2D) texture, ShaderProgram.Shading.textured);
                 case UVTexture2D:
                     return new UVSpriteProgram((UVTexture2D) texture);
                 case Untextured:

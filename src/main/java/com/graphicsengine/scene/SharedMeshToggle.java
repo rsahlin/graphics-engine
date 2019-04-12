@@ -4,19 +4,25 @@ import java.util.ArrayList;
 
 import com.google.gson.annotations.SerializedName;
 import com.nucleus.mmi.Pointer;
-import com.nucleus.mmi.UIElementInput;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
 import com.nucleus.ui.Toggle;
+import com.nucleus.ui.UIElementInput;
 
 public class SharedMeshToggle extends SharedMeshQuad implements Toggle {
 
     public final static String SELECTED = "selected";
     public final static String SELECTED_FRAMES = "selectedFrames";
 
+    /**
+     * Default is to start with selected frame 1 which means selected
+     */
     @SerializedName(SELECTED)
-    private int selected = 0;
+    private int selected = 1;
 
+    /**
+     * Index 0 is unselected, index 1 is selected
+     */
     @SerializedName(SELECTED_FRAMES)
     private int selectedFrames[];
 
@@ -47,6 +53,9 @@ public class SharedMeshToggle extends SharedMeshQuad implements Toggle {
     @Override
     public void onCreated() {
         super.onCreated();
+        if (selectedFrames == null || selectedFrames.length > 2) {
+            throw new IllegalArgumentException("Toggle must have 2 selected frames");
+        }
         setFrame(selectedFrames[selected]);
     }
 
@@ -81,8 +90,8 @@ public class SharedMeshToggle extends SharedMeshQuad implements Toggle {
     }
 
     @Override
-    public int getSelected() {
-        return selected;
+    public boolean isSelected() {
+        return selected != 0;
     }
 
     @Override
@@ -98,8 +107,8 @@ public class SharedMeshToggle extends SharedMeshQuad implements Toggle {
     }
 
     @Override
-    public void setSelected(int selected) {
-        throw new IllegalArgumentException("Not implemented");
+    public void setSelected(boolean selected) {
+        this.selected = !selected ? 0 : 1;
     }
 
     @Override
