@@ -22,7 +22,6 @@ jobs:
          name: Build graphics-engine
          command: |
            mvn compile install
-  
 
 workflows:
   version: 2.1
