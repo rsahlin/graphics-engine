@@ -9,7 +9,7 @@ import com.nucleus.common.Type;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.shape.ShapeBuilder;
-import com.nucleus.opengl.GLES20Wrapper;
+import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.AbstractMeshNode;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RootNode;
@@ -186,7 +186,7 @@ public class SharedMeshQuad extends AbstractMeshNode<Mesh> {
     }
 
     @Override
-    public MeshBuilder<Mesh> createMeshBuilder(GLES20Wrapper gles, ShapeBuilder shapeBuilder)
+    public MeshBuilder<Mesh> createMeshBuilder(NucleusRenderer renderer, ShapeBuilder shapeBuilder)
             throws IOException {
         // Dont create a meshbuilder since this node uses parents Mesh
         return null;

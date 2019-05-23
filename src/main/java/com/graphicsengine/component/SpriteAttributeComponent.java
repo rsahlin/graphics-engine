@@ -15,7 +15,6 @@ import com.nucleus.geometry.MeshBuilder.MeshBuilderFactory;
 import com.nucleus.geometry.shape.RectangleShapeBuilder;
 import com.nucleus.geometry.shape.ShapeBuilder;
 import com.nucleus.geometry.shape.ShapeBuilderFactory;
-import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.texturing.Texture2D;
 
@@ -122,11 +121,11 @@ public class SpriteAttributeComponent extends ActorComponent<SpriteMesh>
     }
 
     @Override
-    protected Builder<Mesh> createBuilderInstance(GLES20Wrapper gles) {
-        if (gles.getInfo().getRenderVersion().major > 2) {
+    protected Builder<Mesh> createBuilderInstance(NucleusRenderer renderer) {
+        if (renderer.getGLES().getInfo().getRenderVersion().major > 2) {
             SimpleLogger.d(getClass(), "Target supports GLES 3 - use SpriteComponent instead!");
         }
-        return new SpriteMesh.Builder(gles);
+        return new SpriteMesh.Builder(renderer);
     }
 
     @Override

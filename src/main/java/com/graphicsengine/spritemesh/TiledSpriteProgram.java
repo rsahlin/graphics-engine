@@ -3,7 +3,7 @@ package com.graphicsengine.spritemesh;
 import java.nio.FloatBuffer;
 
 import com.nucleus.opengl.GLES20Wrapper;
-import com.nucleus.opengl.GLESWrapper.Renderers;
+import com.nucleus.renderer.NucleusRenderer.Renderers;
 import com.nucleus.opengl.GLException;
 import com.nucleus.renderer.Pass;
 import com.nucleus.shader.QuadExpanderShader;

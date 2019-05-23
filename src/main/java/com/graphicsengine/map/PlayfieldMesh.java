@@ -10,8 +10,7 @@ import com.nucleus.bounds.Bounds;
 import com.nucleus.bounds.RectangularBounds;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.shape.RectangleShapeBuilder;
-import com.nucleus.opengl.GLES20Wrapper;
-import com.nucleus.opengl.GLESWrapper;
+import com.nucleus.renderer.Backend.DrawMode;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.shader.ShaderProgram;
 import com.nucleus.shader.VariableIndexer.Indexer;
@@ -73,7 +72,7 @@ public class PlayfieldMesh extends SpriteMesh {
             this.mapSize = new int[] { mapSize[0], mapSize[1] };
             this.charRectangle = charRect;
             int charCount = mapSize[0] * mapSize[1];
-            setElementMode(GLESWrapper.Mode.TRIANGLES, charCount * RectangleShapeBuilder.QUAD_VERTICES, 0,
+            setElementMode(DrawMode.TRIANGLES, charCount * RectangleShapeBuilder.QUAD_VERTICES, 0,
                     charCount * RectangleShapeBuilder.QUAD_ELEMENTS);
             return this;
         }
@@ -108,8 +107,8 @@ public class PlayfieldMesh extends SpriteMesh {
          * 
          * @param gles
          */
-        public Builder(GLES20Wrapper gles) {
-            super(gles);
+        public Builder(NucleusRenderer renderer) {
+            super(renderer);
         }
 
         @Override
@@ -119,7 +118,6 @@ public class PlayfieldMesh extends SpriteMesh {
                 throw new IllegalArgumentException("Null argument: " + mapSize + ", " + charRectangle);
             }
         }
-
 
         @Override
         public ShaderProgram createProgram(Texture2D texture) {

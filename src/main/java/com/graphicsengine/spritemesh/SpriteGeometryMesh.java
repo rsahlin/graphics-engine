@@ -4,9 +4,9 @@ import java.io.IOException;
 
 import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.Mesh;
-import com.nucleus.opengl.GLES20Wrapper;
-import com.nucleus.opengl.GLESWrapper;
 import com.nucleus.opengl.GLException;
+import com.nucleus.renderer.Backend.DrawMode;
+import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.renderer.Pass;
 import com.nucleus.shader.GenericShaderProgram;
 import com.nucleus.shader.ShaderProgram;
@@ -47,8 +47,8 @@ public class SpriteGeometryMesh extends SpriteMesh {
      */
     public static class Builder extends Mesh.Builder<Mesh> {
 
-        public Builder(GLES20Wrapper gles) {
-            super(gles);
+        public Builder(NucleusRenderer renderer) {
+            super(renderer);
         }
 
         @Override
@@ -58,7 +58,7 @@ public class SpriteGeometryMesh extends SpriteMesh {
 
         @Override
         public Mesh create() throws IOException, GLException {
-            setArrayMode(GLESWrapper.Mode.POINTS, objectCount, 0);
+            setArrayMode(DrawMode.POINTS, objectCount, 0);
             return super.create();
         }
 
@@ -67,7 +67,7 @@ public class SpriteGeometryMesh extends SpriteMesh {
             ShaderProgram.Shading shading = ShaderProgram.Shading.flat;
             GeometryCategorizer function = new GeometryCategorizer(null, shading, "sprite");
             ShaderProgram program = new GenericShaderProgram(function, ProgramType.VERTEX_GEOMETRY_FRAGMENT);
-            return AssetManager.getInstance().getProgram(gles, program);
+            return AssetManager.getInstance().getProgram(renderer.getGLES(), program);
         }
 
     }

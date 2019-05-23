@@ -13,7 +13,7 @@ import com.nucleus.geometry.shape.ShapeBuilder;
 import com.nucleus.io.ExternalReference;
 import com.nucleus.mmi.Pointer;
 import com.nucleus.mmi.PointerMotion;
-import com.nucleus.opengl.GLES20Wrapper;
+import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.AbstractMeshNode;
 import com.nucleus.scene.LineDrawerNode;
 import com.nucleus.scene.Node;
@@ -156,15 +156,15 @@ public class PlayfieldNode extends AbstractMeshNode<Mesh> {
     }
 
     @Override
-    public Builder<Mesh> createMeshBuilder(GLES20Wrapper gles, ShapeBuilder shapeBuilder)
+    public Builder<Mesh> createMeshBuilder(NucleusRenderer renderer, ShapeBuilder shapeBuilder)
             throws IOException {
 
-        PlayfieldMesh.Builder builder = new PlayfieldMesh.Builder(gles);
+        PlayfieldMesh.Builder builder = new PlayfieldMesh.Builder(renderer);
         int[] mapSize = getMapSize();
         builder.setMap(mapSize, getCharRectangle());
         builder.setOffset(getAnchorOffset());
         int charCount = mapSize[0] * mapSize[1];
-        super.initMeshBuilder(gles, charCount, shapeBuilder, builder);
+        super.initMeshBuilder(renderer, charCount, shapeBuilder, builder);
         if (shapeBuilder == null) {
             RectangleConfiguration configuration = new RectangleShapeBuilder.RectangleConfiguration(
                     getCharRectangle(), RectangleShapeBuilder.DEFAULT_Z, mapSize[0] * mapSize[1], 0);

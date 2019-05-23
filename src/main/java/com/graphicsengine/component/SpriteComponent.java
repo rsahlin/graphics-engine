@@ -9,7 +9,6 @@ import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.Mesh.Builder;
 import com.nucleus.geometry.shape.ShapeBuilder;
-import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TextureType;
@@ -88,8 +87,8 @@ public class SpriteComponent extends ActorComponent<SpriteGeometryMesh> implemen
     }
 
     @Override
-    protected Builder<Mesh> createBuilderInstance(GLES20Wrapper gles) {
-        return new SpriteGeometryMesh.Builder(gles);
+    protected Builder<Mesh> createBuilderInstance(NucleusRenderer renderer) {
+        return new SpriteGeometryMesh.Builder(renderer);
     }
 
     @Override
