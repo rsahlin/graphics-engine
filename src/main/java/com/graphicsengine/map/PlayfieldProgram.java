@@ -4,9 +4,9 @@ import java.nio.FloatBuffer;
 
 import com.graphicsengine.spritemesh.TiledSpriteIndexer;
 import com.nucleus.opengl.GLES20Wrapper;
+import com.nucleus.opengl.shader.ShaderProgram;
+import com.nucleus.opengl.shader.ShaderProgram.Shading;
 import com.nucleus.renderer.Pass;
-import com.nucleus.shader.ShaderProgram;
-import com.nucleus.shader.ShaderProgram.Shading;
 import com.nucleus.texturing.TiledTexture2D;
 
 /**

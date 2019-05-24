@@ -5,11 +5,11 @@ import java.nio.FloatBuffer;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.renderer.NucleusRenderer.Renderers;
 import com.nucleus.opengl.GLException;
+import com.nucleus.opengl.shader.QuadExpanderShader;
+import com.nucleus.opengl.shader.ShaderProgram;
+import com.nucleus.opengl.shader.ShaderSource;
+import com.nucleus.opengl.shader.ShaderVariable;
 import com.nucleus.renderer.Pass;
-import com.nucleus.shader.QuadExpanderShader;
-import com.nucleus.shader.ShaderProgram;
-import com.nucleus.shader.ShaderSource;
-import com.nucleus.shader.ShaderVariable;
 import com.nucleus.texturing.TextureType;
 import com.nucleus.texturing.TiledTexture2D;
 

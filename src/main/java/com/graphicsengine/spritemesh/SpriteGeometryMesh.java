@@ -5,14 +5,14 @@ import java.io.IOException;
 import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.opengl.GLException;
+import com.nucleus.opengl.shader.GenericShaderProgram;
+import com.nucleus.opengl.shader.ShaderProgram;
+import com.nucleus.opengl.shader.ShaderProgram.Categorizer;
+import com.nucleus.opengl.shader.ShaderProgram.ProgramType;
+import com.nucleus.opengl.shader.ShaderProgram.ShaderType;
 import com.nucleus.renderer.Backend.DrawMode;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.renderer.Pass;
-import com.nucleus.shader.GenericShaderProgram;
-import com.nucleus.shader.ShaderProgram;
-import com.nucleus.shader.ShaderProgram.Categorizer;
-import com.nucleus.shader.ShaderProgram.ProgramType;
-import com.nucleus.shader.ShaderProgram.ShaderType;
 
 /**
  * SpriteMesh using a geometry shader
