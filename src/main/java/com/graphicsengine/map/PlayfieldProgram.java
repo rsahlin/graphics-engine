@@ -3,9 +3,8 @@ package com.graphicsengine.map;
 import java.nio.FloatBuffer;
 
 import com.graphicsengine.spritemesh.TiledSpriteIndexer;
-import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.shader.ShaderProgram;
-import com.nucleus.opengl.shader.ShaderProgram.Shading;
+import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.renderer.Pass;
 import com.nucleus.texturing.TiledTexture2D;
 
@@ -36,7 +35,7 @@ public class PlayfieldProgram extends ShaderProgram {
     }
 
     @Override
-    public ShaderProgram getProgram(GLES20Wrapper gles, Pass pass, ShaderProgram.Shading shading) {
+    public ShaderProgram getProgram(NucleusRenderer renderer, Pass pass, ShaderProgram.Shading shading) {
         switch (pass) {
             case UNDEFINED:
             case ALL:

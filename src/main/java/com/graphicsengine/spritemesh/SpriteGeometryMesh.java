@@ -68,7 +68,7 @@ public class SpriteGeometryMesh extends SpriteMesh {
             ShaderProgram.Shading shading = ShaderProgram.Shading.flat;
             GeometryCategorizer function = new GeometryCategorizer(null, shading, "sprite");
             ShaderProgram program = new GenericShaderProgram(function, ProgramType.VERTEX_GEOMETRY_FRAGMENT);
-            return AssetManager.getInstance().getProgram(renderer.getGLES(), program);
+            return AssetManager.getInstance().getProgram(renderer, program);
         }
 
     }
