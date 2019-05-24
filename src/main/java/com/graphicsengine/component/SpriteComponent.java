@@ -7,7 +7,7 @@ import com.nucleus.component.Component;
 import com.nucleus.component.ComponentBuffer;
 import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.Mesh;
-import com.nucleus.geometry.Mesh.Builder;
+import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.shape.ShapeBuilder;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.texturing.Texture2D;
@@ -87,7 +87,7 @@ public class SpriteComponent extends ActorComponent<SpriteGeometryMesh> implemen
     }
 
     @Override
-    protected Builder<Mesh> createBuilderInstance(NucleusRenderer renderer) {
+    protected MeshBuilder<Mesh> createBuilderInstance(NucleusRenderer renderer) {
         return new SpriteGeometryMesh.Builder(renderer);
     }
 

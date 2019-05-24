@@ -11,17 +11,17 @@ import com.nucleus.geometry.AttributeUpdater.BufferIndex;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.Material;
 import com.nucleus.geometry.Mesh;
-import com.nucleus.geometry.Mesh.Builder;
+import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.MeshBuilder.MeshBuilderFactory;
 import com.nucleus.geometry.shape.ShapeBuilder;
 import com.nucleus.io.ExternalReference;
 import com.nucleus.opengl.GLException;
 import com.nucleus.opengl.shader.ShaderProgram;
-import com.nucleus.opengl.shader.VariableIndexer.Indexer;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.AbstractNode.MeshIndex;
 import com.nucleus.scene.ComponentNode;
 import com.nucleus.scene.RenderableNode;
+import com.nucleus.shader.Indexer;
 import com.nucleus.system.System;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TextureType;
@@ -146,7 +146,7 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
      * @param renderer
      * @return
      */
-    protected abstract Mesh.Builder<Mesh> createBuilderInstance(NucleusRenderer renderer);
+    protected abstract MeshBuilder<Mesh> createBuilderInstance(NucleusRenderer renderer);
 
     /**
      * Creates the ShapeBuilder to be used to create shapes, or null if no builder shall be used - for instance
@@ -201,7 +201,7 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
             }
             switch (shape.getType()) {
                 case rect:
-                    Builder<Mesh> spriteBuilder = createMeshBuilder(renderer, createShapeBuilder());
+                    MeshBuilder<Mesh> spriteBuilder = createMeshBuilder(renderer, createShapeBuilder());
                     setMesh((T) spriteBuilder.create());
                     mapper = new EntityIndexer(new Indexer(parent.getProgram()));
 
@@ -227,9 +227,9 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
     }
 
     @Override
-    public Builder<Mesh> createMeshBuilder(NucleusRenderer renderer, ShapeBuilder shapeBuilder)
+    public MeshBuilder<Mesh> createMeshBuilder(NucleusRenderer renderer, ShapeBuilder shapeBuilder)
             throws IOException {
-        Mesh.Builder<Mesh> spriteBuilder = createBuilderInstance(renderer);
+        MeshBuilder<Mesh> spriteBuilder = createBuilderInstance(renderer);
         initMeshBuilder(renderer, parent, parent.getTextureRef(), count, shapeBuilder, spriteBuilder);
         return spriteBuilder;
     }
@@ -249,9 +249,9 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
      * @param builder
      * @throws IOException
      */
-    protected Mesh.Builder<Mesh> initMeshBuilder(NucleusRenderer renderer, RenderableNode<Mesh> parent,
+    protected MeshBuilder<Mesh> initMeshBuilder(NucleusRenderer renderer, RenderableNode<Mesh> parent,
             ExternalReference textureRef, int count,
-            ShapeBuilder shapeBuilder, Mesh.Builder<Mesh> builder)
+            ShapeBuilder shapeBuilder, MeshBuilder<Mesh> builder)
             throws IOException {
         if (builder.getTexture() == null) {
             builder.setTexture(textureRef);

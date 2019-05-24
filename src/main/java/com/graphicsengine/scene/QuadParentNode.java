@@ -16,13 +16,13 @@ import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.shape.RectangleShapeBuilder;
 import com.nucleus.geometry.shape.RectangleShapeBuilder.RectangleConfiguration;
-import com.nucleus.opengl.shader.VariableIndexer.Indexer;
 import com.nucleus.geometry.shape.ShapeBuilder;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.AbstractMeshNode;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RenderableNode;
 import com.nucleus.scene.RootNode;
+import com.nucleus.shader.Indexer;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TextureType;
 import com.nucleus.vecmath.Rectangle;
@@ -78,7 +78,7 @@ public class QuadParentNode extends AbstractMeshNode<Mesh> implements Consumer {
         if (shapeBuilder == null) {
             shapeBuilder = new RectangleShapeBuilder(new RectangleConfiguration(count, 0));
         }
-        Mesh.Builder<Mesh> builder = new SpriteMesh.Builder(renderer);
+        MeshBuilder<Mesh> builder = new SpriteMesh.Builder(renderer);
         return super.initMeshBuilder(renderer, count, shapeBuilder, builder);
 
     }
@@ -121,7 +121,7 @@ public class QuadParentNode extends AbstractMeshNode<Mesh> implements Consumer {
      * @param mesh
      */
     private void createBuffers(SpriteMesh mesh) {
-        indexer = new Indexer(getProgram());
+        Indexer indexer = new Indexer(getProgram());
         CPUComponentBuffer sourceData = new CPUComponentBuffer(maxQuads, indexer.attributesPerVertex);
         CPUComponentBuffer destinationData = new CPUComponentBuffer(maxQuads, indexer.attributesPerVertex * 4);
         quadExpander = new CPUQuadExpander(mesh.getTexture(Texture2D.TEXTURE_0), indexer, sourceData, destinationData);

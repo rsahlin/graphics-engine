@@ -5,6 +5,7 @@ import java.io.IOException;
 import com.nucleus.assets.AssetManager;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.opengl.GLException;
+import com.nucleus.opengl.geometry.GLMesh;
 import com.nucleus.opengl.shader.GenericShaderProgram;
 import com.nucleus.opengl.shader.ShaderProgram;
 import com.nucleus.opengl.shader.ShaderProgram.Categorizer;
@@ -45,7 +46,7 @@ public class SpriteGeometryMesh extends SpriteMesh {
      * Builder for sprite meshes
      *
      */
-    public static class Builder extends Mesh.Builder<Mesh> {
+    public static class Builder extends GLMesh.Builder<Mesh> {
 
         public Builder(NucleusRenderer renderer) {
             super(renderer);

@@ -6,20 +6,20 @@ import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.scene.GraphicsEngineNodeType;
 import com.nucleus.SimpleLogger;
 import com.nucleus.geometry.Mesh;
-import com.nucleus.geometry.Mesh.Builder;
+import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.shape.RectangleShapeBuilder;
 import com.nucleus.geometry.shape.RectangleShapeBuilder.RectangleConfiguration;
 import com.nucleus.geometry.shape.ShapeBuilder;
 import com.nucleus.io.ExternalReference;
 import com.nucleus.mmi.Pointer;
 import com.nucleus.mmi.PointerMotion;
-import com.nucleus.opengl.shader.VariableIndexer.Indexer;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.AbstractMeshNode;
 import com.nucleus.scene.LineDrawerNode;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.NodeException;
 import com.nucleus.scene.RootNode;
+import com.nucleus.shader.Indexer;
 import com.nucleus.ui.Button;
 import com.nucleus.ui.Toggle;
 import com.nucleus.ui.UIElementInput;
@@ -156,7 +156,7 @@ public class PlayfieldNode extends AbstractMeshNode<Mesh> {
     }
 
     @Override
-    public Builder<Mesh> createMeshBuilder(NucleusRenderer renderer, ShapeBuilder shapeBuilder)
+    public MeshBuilder<Mesh> createMeshBuilder(NucleusRenderer renderer, ShapeBuilder shapeBuilder)
             throws IOException {
 
         PlayfieldMesh.Builder builder = new PlayfieldMesh.Builder(renderer);
@@ -198,11 +198,9 @@ public class PlayfieldNode extends AbstractMeshNode<Mesh> {
      */
     public void createMap() throws NodeException {
         try {
+            Indexer indexer = new Indexer(program);
             map = MapFactory.createMap(mapRef);
             PlayfieldMesh playfield = (PlayfieldMesh) getMesh(MeshIndex.MAIN);
-            if (indexer == null) {
-                indexer = new Indexer(program);
-            }
             if (map.getMap() != null && map.getMapSize() != null) {
                 playfield.copyCharmap(indexer, map);
             }

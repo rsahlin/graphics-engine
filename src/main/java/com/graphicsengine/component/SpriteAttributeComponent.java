@@ -10,7 +10,7 @@ import com.nucleus.component.ComponentBuffer;
 import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.Mesh;
-import com.nucleus.geometry.Mesh.Builder;
+import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.MeshBuilder.MeshBuilderFactory;
 import com.nucleus.geometry.shape.RectangleShapeBuilder;
 import com.nucleus.geometry.shape.ShapeBuilder;
@@ -121,7 +121,7 @@ public class SpriteAttributeComponent extends ActorComponent<SpriteMesh>
     }
 
     @Override
-    protected Builder<Mesh> createBuilderInstance(NucleusRenderer renderer) {
+    protected MeshBuilder<Mesh> createBuilderInstance(NucleusRenderer renderer) {
         if (renderer.getGLES().getInfo().getRenderVersion().major > 2) {
             SimpleLogger.d(getClass(), "Target supports GLES 3 - use SpriteComponent instead!");
         }

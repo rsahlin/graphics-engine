@@ -7,6 +7,7 @@ import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.shape.RectangleShapeBuilder;
 import com.nucleus.opengl.GLException;
+import com.nucleus.opengl.geometry.GLMesh;
 import com.nucleus.opengl.shader.ShaderProgram;
 import com.nucleus.renderer.Backend.DrawMode;
 import com.nucleus.renderer.NucleusRenderer;
@@ -26,13 +27,13 @@ import com.nucleus.texturing.Untextured;
  * @author Richard Sahlin
  *
  */
-public class SpriteMesh extends Mesh {
+public class SpriteMesh extends GLMesh {
 
     /**
      * Builder for sprite meshes
      *
      */
-    public static class Builder extends Mesh.Builder<Mesh> {
+    public static class Builder extends GLMesh.Builder<Mesh> {
 
         protected final static String INVALID_TYPE = "Invalid type: ";
 

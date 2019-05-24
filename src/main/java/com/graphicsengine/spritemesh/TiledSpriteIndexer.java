@@ -1,8 +1,9 @@
 package com.graphicsengine.spritemesh;
 
 import com.nucleus.geometry.AttributeUpdater.BufferIndex;
-import com.nucleus.opengl.shader.VariableIndexer;
 import com.nucleus.opengl.shader.ShaderVariable.VariableType;
+import com.nucleus.opengl.shader.VariableIndexer;
+import com.nucleus.shader.Indexer;
 
 /**
  * Layout for the data needed by the tiled sprite program
@@ -11,10 +12,10 @@ import com.nucleus.opengl.shader.ShaderVariable.VariableType;
  */
 public class TiledSpriteIndexer extends VariableIndexer {
 
-    protected final static String[] NAMES = new String[] { VariableIndexer.Property.VERTEX.name,
-            VariableIndexer.Property.UV.name, VariableIndexer.Property.TRANSLATE.name,
-            VariableIndexer.Property.ROTATE.name, VariableIndexer.Property.SCALE.name,
-            VariableIndexer.Property.ALBEDO.name, VariableIndexer.Property.FRAME.name };
+    protected final static String[] NAMES = new String[] { Indexer.Property.VERTEX.name,
+            Indexer.Property.UV.name, Indexer.Property.TRANSLATE.name,
+            Indexer.Property.ROTATE.name, Indexer.Property.SCALE.name,
+            Indexer.Property.ALBEDO.name, Indexer.Property.FRAME.name };
     protected final static int[] OFFSETS = new int[] { 0, 4, 0, 3, 6, 9, 12 };
     protected final static VariableType[] TYPES = new VariableType[] { VariableType.ATTRIBUTE, VariableType.ATTRIBUTE,
             VariableType.ATTRIBUTE, VariableType.ATTRIBUTE, VariableType.ATTRIBUTE, VariableType.ATTRIBUTE,
