@@ -3,13 +3,14 @@ package com.graphicsengine.spritemesh;
 import java.nio.FloatBuffer;
 
 import com.nucleus.opengl.GLES20Wrapper;
-import com.nucleus.renderer.NucleusRenderer.Renderers;
-import com.nucleus.opengl.GLException;
 import com.nucleus.opengl.shader.QuadExpanderShader;
 import com.nucleus.opengl.shader.ShaderProgram;
 import com.nucleus.opengl.shader.ShaderSource;
 import com.nucleus.opengl.shader.ShaderVariable;
+import com.nucleus.renderer.NucleusRenderer;
+import com.nucleus.renderer.NucleusRenderer.Renderers;
 import com.nucleus.renderer.Pass;
+import com.nucleus.renderer.RenderBackendException;
 import com.nucleus.texturing.TextureType;
 import com.nucleus.texturing.TiledTexture2D;
 
@@ -73,13 +74,13 @@ public class TiledSpriteProgram extends ShaderProgram {
     }
 
     @Override
-    public void createProgram(GLES20Wrapper gles) throws GLException {
+    public void createProgram(NucleusRenderer renderer) throws RenderBackendException {
         if (GLES20Wrapper.getInfo().getRenderVersion().major >= 3
                 && GLES20Wrapper.getInfo().getRenderVersion().minor >= 1) {
             // expanderShader = (QuadExpanderShader) AssetManager.getInstance().getProgram(gles,
             // new QuadExpanderShader());
         }
-        super.createProgram(gles);
+        super.createProgram(renderer);
 
     }
 
