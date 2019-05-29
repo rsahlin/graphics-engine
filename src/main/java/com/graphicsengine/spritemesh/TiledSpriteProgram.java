@@ -2,15 +2,15 @@ package com.graphicsengine.spritemesh;
 
 import java.nio.FloatBuffer;
 
+import com.nucleus.BackendException;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.shader.QuadExpanderShader;
-import com.nucleus.opengl.shader.ShaderProgram;
+import com.nucleus.opengl.shader.GLShaderProgram;
 import com.nucleus.opengl.shader.ShaderSource;
 import com.nucleus.opengl.shader.ShaderVariable;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.renderer.NucleusRenderer.Renderers;
 import com.nucleus.renderer.Pass;
-import com.nucleus.renderer.RenderBackendException;
 import com.nucleus.texturing.TextureType;
 import com.nucleus.texturing.TiledTexture2D;
 
@@ -23,7 +23,7 @@ import com.nucleus.texturing.TiledTexture2D;
  * @author Richard Sahlin
  *
  */
-public class TiledSpriteProgram extends ShaderProgram {
+public class TiledSpriteProgram extends GLShaderProgram {
 
     public static final String COMMON_VERTEX_SHADER = "common";
 
@@ -42,9 +42,9 @@ public class TiledSpriteProgram extends ShaderProgram {
      * @param texture
      * @param shading
      */
-    TiledSpriteProgram(TiledTexture2D texture, ShaderProgram.Shading shading) {
-        super(new SharedfragmentCategorizer(null, shading, CATEGORY), ShaderProgram.ProgramType.VERTEX_FRAGMENT);
-        if (texture == null && shading == ShaderProgram.Shading.textured) {
+    TiledSpriteProgram(TiledTexture2D texture, GLShaderProgram.Shading shading) {
+        super(new SharedfragmentCategorizer(null, shading, CATEGORY), GLShaderProgram.ProgramType.VERTEX_FRAGMENT);
+        if (texture == null && shading == GLShaderProgram.Shading.textured) {
             throw new IllegalArgumentException("Texture may not be null for shading: " + shading);
         }
         this.texture = texture;
@@ -58,8 +58,8 @@ public class TiledSpriteProgram extends ShaderProgram {
      * @param shading
      * @param category
      */
-    TiledSpriteProgram(Pass pass, ShaderProgram.Shading shading, String category) {
-        super(new SharedfragmentCategorizer(pass, shading, category), ShaderProgram.ProgramType.VERTEX_FRAGMENT);
+    TiledSpriteProgram(Pass pass, GLShaderProgram.Shading shading, String category) {
+        super(new SharedfragmentCategorizer(pass, shading, category), GLShaderProgram.ProgramType.VERTEX_FRAGMENT);
         setIndexer(new TiledSpriteIndexer());
     }
 
@@ -74,7 +74,7 @@ public class TiledSpriteProgram extends ShaderProgram {
     }
 
     @Override
-    public void createProgram(NucleusRenderer renderer) throws RenderBackendException {
+    public void createProgram(NucleusRenderer renderer) throws BackendException {
         if (GLES20Wrapper.getInfo().getRenderVersion().major >= 3
                 && GLES20Wrapper.getInfo().getRenderVersion().minor >= 1) {
             // expanderShader = (QuadExpanderShader) AssetManager.getInstance().getProgram(gles,
@@ -112,7 +112,7 @@ public class TiledSpriteProgram extends ShaderProgram {
             if (texUniform != null) {
                 setTextureUniforms(texture, uniforms, texUniform);
             } else {
-                if (function.getShading() == null || function.getShading() == ShaderProgram.Shading.flat) {
+                if (function.getShading() == null || function.getShading() == GLShaderProgram.Shading.flat) {
                     throw new IllegalArgumentException(
                             "Texture type " + texture.getTextureType() + ", does not match shading " + getShading()
                                     + " for program:\n" + toString());

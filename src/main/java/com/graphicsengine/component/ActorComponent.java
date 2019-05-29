@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Random;
 
 import com.google.gson.annotations.SerializedName;
+import com.nucleus.BackendException;
 import com.nucleus.component.Component;
 import com.nucleus.component.ComponentBuffer;
 import com.nucleus.component.ComponentException;
@@ -15,8 +16,7 @@ import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.MeshBuilder.MeshBuilderFactory;
 import com.nucleus.geometry.shape.ShapeBuilder;
 import com.nucleus.io.ExternalReference;
-import com.nucleus.opengl.GLException;
-import com.nucleus.opengl.shader.ShaderProgram;
+import com.nucleus.opengl.shader.GLShaderProgram;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.AbstractNode.MeshIndex;
 import com.nucleus.scene.ComponentNode;
@@ -136,7 +136,7 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
      */
     transient protected EntityIndexer mapper;
     @Deprecated
-    transient protected ShaderProgram program;
+    transient protected GLShaderProgram program;
     transient protected TextureType textureType;
     transient protected UVAtlas uvAtlas;
 
@@ -206,7 +206,7 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
                     mapper = new EntityIndexer(new Indexer(parent.getProgram()));
 
             }
-        } catch (IOException | GLException e) {
+        } catch (IOException | BackendException e) {
             throw new ComponentException("Could not create component: " + e.getMessage());
         }
         this.textureType = mesh.getTexture(Texture2D.TEXTURE_0).getTextureType();
@@ -290,7 +290,7 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
     }
 
     @Deprecated
-    public ShaderProgram getProgram() {
+    public GLShaderProgram getProgram() {
         return program;
     }
 

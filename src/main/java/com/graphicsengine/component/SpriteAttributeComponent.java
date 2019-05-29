@@ -2,6 +2,7 @@ package com.graphicsengine.component;
 
 import com.graphicsengine.component.ActorComponent.EntityData;
 import com.graphicsengine.spritemesh.SpriteMesh;
+import com.nucleus.Backend;
 import com.nucleus.SimpleLogger;
 import com.nucleus.component.CPUComponentBuffer;
 import com.nucleus.component.CPUQuadExpander;
@@ -15,7 +16,6 @@ import com.nucleus.geometry.MeshBuilder.MeshBuilderFactory;
 import com.nucleus.geometry.shape.RectangleShapeBuilder;
 import com.nucleus.geometry.shape.ShapeBuilder;
 import com.nucleus.geometry.shape.ShapeBuilderFactory;
-import com.nucleus.renderer.Backend;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.texturing.Texture2D;
 

@@ -3,7 +3,7 @@ package com.graphicsengine.map;
 import java.nio.FloatBuffer;
 
 import com.graphicsengine.spritemesh.TiledSpriteIndexer;
-import com.nucleus.opengl.shader.ShaderProgram;
+import com.nucleus.opengl.shader.GLShaderProgram;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.renderer.Pass;
 import com.nucleus.texturing.TiledTexture2D;
@@ -14,7 +14,7 @@ import com.nucleus.texturing.TiledTexture2D;
  * @author Richard Sahlin
  *
  */
-public class PlayfieldProgram extends ShaderProgram {
+public class PlayfieldProgram extends GLShaderProgram {
 
     public static final String CATEGORY = "charmap";
 
@@ -22,7 +22,7 @@ public class PlayfieldProgram extends ShaderProgram {
 
     PlayfieldProgram(TiledTexture2D texture) {
         // super(null, null, CATEGORY, CommonShaderVariables.values(), ProgramType.VERTEX_FRAGMENT);
-        super(null, null, CATEGORY, ShaderProgram.ProgramType.VERTEX_FRAGMENT);
+        super(null, null, CATEGORY, GLShaderProgram.ProgramType.VERTEX_FRAGMENT);
         setIndexer(new TiledSpriteIndexer());
     }
 
@@ -35,7 +35,7 @@ public class PlayfieldProgram extends ShaderProgram {
     }
 
     @Override
-    public ShaderProgram getProgram(NucleusRenderer renderer, Pass pass, ShaderProgram.Shading shading) {
+    public GLShaderProgram getProgram(NucleusRenderer renderer, Pass pass, GLShaderProgram.Shading shading) {
         switch (pass) {
             case UNDEFINED:
             case ALL:

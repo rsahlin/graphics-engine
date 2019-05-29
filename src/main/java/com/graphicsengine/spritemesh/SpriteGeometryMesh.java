@@ -2,16 +2,15 @@ package com.graphicsengine.spritemesh;
 
 import java.io.IOException;
 
-import com.nucleus.assets.AssetManager;
+import com.nucleus.Backend.DrawMode;
+import com.nucleus.BackendException;
 import com.nucleus.geometry.Mesh;
-import com.nucleus.opengl.GLException;
 import com.nucleus.opengl.geometry.GLMesh;
+import com.nucleus.opengl.shader.GLShaderProgram;
+import com.nucleus.opengl.shader.GLShaderProgram.Categorizer;
+import com.nucleus.opengl.shader.GLShaderProgram.ProgramType;
+import com.nucleus.opengl.shader.GLShaderProgram.ShaderType;
 import com.nucleus.opengl.shader.GenericShaderProgram;
-import com.nucleus.opengl.shader.ShaderProgram;
-import com.nucleus.opengl.shader.ShaderProgram.Categorizer;
-import com.nucleus.opengl.shader.ShaderProgram.ProgramType;
-import com.nucleus.opengl.shader.ShaderProgram.ShaderType;
-import com.nucleus.renderer.Backend.DrawMode;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.renderer.Pass;
 
@@ -24,7 +23,7 @@ public class SpriteGeometryMesh extends SpriteMesh {
 
     static class GeometryCategorizer extends Categorizer {
 
-        public GeometryCategorizer(Pass pass, ShaderProgram.Shading shading, String category) {
+        public GeometryCategorizer(Pass pass, GLShaderProgram.Shading shading, String category) {
             super(pass, shading, category);
         }
 
@@ -58,17 +57,17 @@ public class SpriteGeometryMesh extends SpriteMesh {
         }
 
         @Override
-        public Mesh create() throws IOException, GLException {
+        public Mesh create() throws IOException, BackendException {
             setArrayMode(DrawMode.POINTS, objectCount, 0);
             return super.create();
         }
 
         @Override
-        public ShaderProgram createProgram() {
-            ShaderProgram.Shading shading = ShaderProgram.Shading.flat;
+        public GLShaderProgram createProgram() {
+            GLShaderProgram.Shading shading = GLShaderProgram.Shading.flat;
             GeometryCategorizer function = new GeometryCategorizer(null, shading, "sprite");
-            ShaderProgram program = new GenericShaderProgram(function, ProgramType.VERTEX_GEOMETRY_FRAGMENT);
-            return AssetManager.getInstance().getProgram(renderer, program);
+            GLShaderProgram program = new GenericShaderProgram(function, ProgramType.VERTEX_GEOMETRY_FRAGMENT);
+            return renderer.getAssets().getProgram(renderer, program);
         }
 
     }

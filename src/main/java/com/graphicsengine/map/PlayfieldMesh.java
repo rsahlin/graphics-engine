@@ -6,12 +6,12 @@ import java.nio.IntBuffer;
 
 import com.graphicsengine.map.Map.MapColor;
 import com.graphicsengine.spritemesh.SpriteMesh;
+import com.nucleus.Backend.DrawMode;
 import com.nucleus.bounds.Bounds;
 import com.nucleus.bounds.RectangularBounds;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.shape.RectangleShapeBuilder;
-import com.nucleus.opengl.shader.ShaderProgram;
-import com.nucleus.renderer.Backend.DrawMode;
+import com.nucleus.opengl.shader.GLShaderProgram;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.shader.Indexer;
 import com.nucleus.texturing.Texture2D;
@@ -120,7 +120,7 @@ public class PlayfieldMesh extends SpriteMesh {
         }
 
         @Override
-        public ShaderProgram createProgram(Texture2D texture) {
+        public GLShaderProgram createProgram(Texture2D texture) {
             if (texture.getTextureType() == TextureType.TiledTexture2D) {
                 return new PlayfieldProgram((TiledTexture2D) texture);
             }

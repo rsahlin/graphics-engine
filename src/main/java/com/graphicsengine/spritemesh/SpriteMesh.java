@@ -2,14 +2,13 @@ package com.graphicsengine.spritemesh;
 
 import java.io.IOException;
 
-import com.nucleus.assets.AssetManager;
+import com.nucleus.Backend.DrawMode;
+import com.nucleus.BackendException;
 import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.shape.RectangleShapeBuilder;
-import com.nucleus.opengl.GLException;
 import com.nucleus.opengl.geometry.GLMesh;
-import com.nucleus.opengl.shader.ShaderProgram;
-import com.nucleus.renderer.Backend.DrawMode;
+import com.nucleus.opengl.shader.GLShaderProgram;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TiledTexture2D;
@@ -46,16 +45,16 @@ public class SpriteMesh extends GLMesh {
         }
 
         @Override
-        public Mesh create() throws IOException, GLException {
+        public Mesh create() throws IOException, BackendException {
             setElementMode(DrawMode.TRIANGLES, objectCount * RectangleShapeBuilder.QUAD_VERTICES, 0,
                     objectCount * RectangleShapeBuilder.QUAD_ELEMENTS);
             return super.create();
         }
 
         @Override
-        public ShaderProgram createProgram() {
+        public GLShaderProgram createProgram() {
             // SpriteMesh is a special type of mesh that only works with specific shader program
-            return AssetManager.getInstance().getProgram(renderer, createProgram(texture));
+            return renderer.getAssets().getProgram(renderer, createProgram(texture));
         }
 
         @Override
@@ -69,10 +68,10 @@ public class SpriteMesh extends GLMesh {
          * @param texture {@link TiledTexture2D} or {@link UVTexture2D}
          * @return The shader program for the specified texture.
          */
-        public ShaderProgram createProgram(Texture2D texture) {
+        public GLShaderProgram createProgram(Texture2D texture) {
             switch (texture.textureType) {
                 case TiledTexture2D:
-                    return new TiledSpriteProgram((TiledTexture2D) texture, ShaderProgram.Shading.textured);
+                    return new TiledSpriteProgram((TiledTexture2D) texture, GLShaderProgram.Shading.textured);
                 case UVTexture2D:
                     return new UVSpriteProgram((UVTexture2D) texture);
                 case Untextured:
