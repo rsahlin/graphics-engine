@@ -121,7 +121,7 @@ public class QuadParentNode extends AbstractMeshNode<Mesh> implements Consumer {
      * @param mesh
      */
     private void createBuffers(SpriteMesh mesh) {
-        Indexer indexer = new Indexer(getProgram());
+        Indexer indexer = new Indexer(getPipeline());
         CPUComponentBuffer sourceData = new CPUComponentBuffer(maxQuads, indexer.attributesPerVertex);
         CPUComponentBuffer destinationData = new CPUComponentBuffer(maxQuads, indexer.attributesPerVertex * 4);
         quadExpander = new CPUQuadExpander(mesh.getTexture(Texture2D.TEXTURE_0), indexer, sourceData, destinationData);

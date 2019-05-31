@@ -4,7 +4,9 @@ import java.io.IOException;
 
 import com.nucleus.Backend.DrawMode;
 import com.nucleus.BackendException;
+import com.nucleus.GraphicsPipeline;
 import com.nucleus.geometry.Mesh;
+import com.nucleus.opengl.GLPipeline;
 import com.nucleus.opengl.geometry.GLMesh;
 import com.nucleus.opengl.shader.GLShaderProgram;
 import com.nucleus.opengl.shader.GLShaderProgram.Categorizer;
@@ -63,11 +65,11 @@ public class SpriteGeometryMesh extends SpriteMesh {
         }
 
         @Override
-        public GLShaderProgram createProgram() {
+        public GraphicsPipeline createPipeline() {
             GLShaderProgram.Shading shading = GLShaderProgram.Shading.flat;
             GeometryCategorizer function = new GeometryCategorizer(null, shading, "sprite");
-            GLShaderProgram program = new GenericShaderProgram(function, ProgramType.VERTEX_GEOMETRY_FRAGMENT);
-            return renderer.getAssets().getProgram(renderer, program);
+            GLShaderProgram shader = new GenericShaderProgram(function, ProgramType.VERTEX_GEOMETRY_FRAGMENT);
+            return new GLPipeline(renderer, shader, material, renderer.getRenderState());
         }
 
     }

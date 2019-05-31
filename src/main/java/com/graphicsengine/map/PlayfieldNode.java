@@ -169,7 +169,7 @@ public class PlayfieldNode extends AbstractMeshNode<Mesh> {
             RectangleConfiguration configuration = new RectangleShapeBuilder.RectangleConfiguration(
                     getCharRectangle(), RectangleShapeBuilder.DEFAULT_Z, mapSize[0] * mapSize[1], 0);
             configuration.enableVertexIndex(true);
-            shapeBuilder = new CharmapBuilder(configuration, new Indexer(program), getAnchorOffset());
+            shapeBuilder = new CharmapBuilder(configuration, new Indexer(pipeline), getAnchorOffset());
             builder.setShapeBuilder(shapeBuilder);
         }
         return builder;
@@ -198,7 +198,7 @@ public class PlayfieldNode extends AbstractMeshNode<Mesh> {
      */
     public void createMap() throws NodeException {
         try {
-            Indexer indexer = new Indexer(program);
+            Indexer indexer = new Indexer(pipeline);
             map = MapFactory.createMap(mapRef);
             PlayfieldMesh playfield = (PlayfieldMesh) getMesh(MeshIndex.MAIN);
             if (map.getMap() != null && map.getMapSize() != null) {

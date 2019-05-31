@@ -16,7 +16,6 @@ import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.MeshBuilder.MeshBuilderFactory;
 import com.nucleus.geometry.shape.ShapeBuilder;
 import com.nucleus.io.ExternalReference;
-import com.nucleus.opengl.shader.GLShaderProgram;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.AbstractNode.MeshIndex;
 import com.nucleus.scene.ComponentNode;
@@ -135,8 +134,6 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
      * The mapper used - this shall be set in the {@link #create(NucleusRenderer, ComponentNode, System)} method
      */
     transient protected EntityIndexer mapper;
-    @Deprecated
-    transient protected GLShaderProgram program;
     transient protected TextureType textureType;
     transient protected UVAtlas uvAtlas;
 
@@ -203,7 +200,7 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
                 case rect:
                     MeshBuilder<Mesh> spriteBuilder = createMeshBuilder(renderer, createShapeBuilder());
                     setMesh((T) spriteBuilder.create());
-                    mapper = new EntityIndexer(new Indexer(parent.getProgram()));
+                    mapper = new EntityIndexer(new Indexer(parent.getPipeline()));
 
             }
         } catch (IOException | BackendException e) {
@@ -223,7 +220,6 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
         createBuffers(mapper);
         mesh.setAttributeUpdater(this);
         bindAttributeBuffer(mesh.getAttributeBuffer(BufferIndex.ATTRIBUTES.index));
-        program = parent.getProgram();
     }
 
     @Override
@@ -263,10 +259,10 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
         if (builder.getShapeBuilder() == null) {
             builder.setShapeBuilder(shapeBuilder);
         }
-        if (parent.getProgram() == null) {
-            parent.setProgram(builder.createProgram());
+        if (parent.getPipeline() == null) {
+            parent.setPipeline(builder.createPipeline());
         }
-        builder.setAttributesPerVertex(parent.getProgram().getAttributeSizes());
+        builder.setAttributesPerVertex(parent.getPipeline().getAttributeSizes());
         return builder;
     }
 
@@ -287,11 +283,6 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
      */
     public EntityIndexer getMapper() {
         return mapper;
-    }
-
-    @Deprecated
-    public GLShaderProgram getProgram() {
-        return program;
     }
 
     /**
