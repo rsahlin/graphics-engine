@@ -57,7 +57,7 @@ public class SpriteMesh extends GLMesh {
         public GraphicsPipeline createPipeline() {
             // SpriteMesh is a special type of mesh that only works with specific shader program
             GLShaderProgram shader = renderer.getAssets().getProgram(renderer, createProgram(texture));
-            return new GLPipeline(renderer, shader, material, renderer.getRenderState());
+            return new GLPipeline(renderer, shader, material);
         }
 
         @Override

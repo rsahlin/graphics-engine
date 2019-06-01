@@ -69,7 +69,7 @@ public class SpriteGeometryMesh extends SpriteMesh {
             GLShaderProgram.Shading shading = GLShaderProgram.Shading.flat;
             GeometryCategorizer function = new GeometryCategorizer(null, shading, "sprite");
             GLShaderProgram shader = new GenericShaderProgram(function, ProgramType.VERTEX_GEOMETRY_FRAGMENT);
-            return new GLPipeline(renderer, shader, material, renderer.getRenderState());
+            return new GLPipeline(renderer, shader, material);
         }
 
     }
