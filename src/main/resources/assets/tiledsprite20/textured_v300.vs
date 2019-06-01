@@ -9,7 +9,7 @@ precision highp float;
 //Put array declaration after name for GLSL compatibility
 uniform mat4 uModelMatrix[3];
 uniform vec3 uTextureData[1]; //tex width, tex height, frames per line
-uniform vec2 uScreenSize[1]; //Width and height of screen
+uniform vec2 uScreenSize[2]; //Width and height of screen
 
 in vec4 aVertex; //vertex position
 in vec2 aTexCoord;
