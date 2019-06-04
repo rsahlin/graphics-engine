@@ -4,7 +4,6 @@ import java.nio.FloatBuffer;
 
 import com.nucleus.BackendException;
 import com.nucleus.opengl.GLES20Wrapper;
-import com.nucleus.opengl.shader.QuadExpanderShader;
 import com.nucleus.opengl.shader.GLShaderProgram;
 import com.nucleus.opengl.shader.ShaderSource;
 import com.nucleus.opengl.shader.ShaderVariable;
@@ -33,8 +32,6 @@ public class TiledSpriteProgram extends GLShaderProgram {
      * This uses gles 20 - deprecated in favour of geometry shader
      */
     protected static final String CATEGORY = "tiledsprite20";
-
-    protected QuadExpanderShader expanderShader;
 
     /**
      * Constructor for TiledSpriteProgram
@@ -119,16 +116,6 @@ public class TiledSpriteProgram extends GLShaderProgram {
                 }
             }
         }
-    }
-
-    /**
-     * 
-     * Returns the expander shader to be used with this program.
-     * 
-     * @return
-     */
-    public QuadExpanderShader getExpanderShader() {
-        return expanderShader;
     }
 
     @Override
