@@ -5,7 +5,6 @@ import java.nio.FloatBuffer;
 import com.nucleus.BackendException;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.shader.GLShaderProgram;
-import com.nucleus.opengl.shader.ShaderSource;
 import com.nucleus.opengl.shader.ShaderVariable;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.renderer.NucleusRenderer.Renderers;
@@ -61,7 +60,7 @@ public class TiledSpriteProgram extends GLShaderProgram {
     }
 
     @Override
-    protected String[] getCommonShaderName(ShaderType type) {
+    protected String[] getCommonShaderName(Renderers version, ShaderType type) {
         switch (type) {
             case VERTEX:
                 return new String[] { PROGRAM_DIRECTORY + COMMON_VERTEX_SHADER };
@@ -79,14 +78,6 @@ public class TiledSpriteProgram extends GLShaderProgram {
         }
         super.createProgram(renderer);
 
-    }
-
-    @Override
-    protected String getSourceNameVersion(Renderers version, int type) {
-        if (version.major >= 3) {
-            return ShaderSource.V300;
-        }
-        return super.getSourceNameVersion(version, type);
     }
 
     @Override
