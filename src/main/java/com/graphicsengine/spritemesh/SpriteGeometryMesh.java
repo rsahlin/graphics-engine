@@ -14,6 +14,7 @@ import com.nucleus.opengl.shader.GLShaderProgram.ShaderType;
 import com.nucleus.opengl.shader.GenericShaderProgram;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.renderer.Pass;
+import com.nucleus.shader.Shader.Shading;
 
 /**
  * SpriteMesh using a geometry shader
@@ -24,7 +25,7 @@ public class SpriteGeometryMesh extends SpriteMesh {
 
     static class GeometryCategorizer extends Categorizer {
 
-        public GeometryCategorizer(Pass pass, GLShaderProgram.Shading shading, String category) {
+        public GeometryCategorizer(Pass pass, Shading shading, String category) {
             super(pass, shading, category);
         }
 
@@ -65,7 +66,7 @@ public class SpriteGeometryMesh extends SpriteMesh {
 
         @Override
         public GraphicsPipeline createPipeline() {
-            GLShaderProgram.Shading shading = GLShaderProgram.Shading.flat;
+            Shading shading = Shading.flat;
             GeometryCategorizer function = new GeometryCategorizer(null, shading, "sprite");
             GLShaderProgram shader = new GenericShaderProgram(function, ProgramType.VERTEX_GEOMETRY_FRAGMENT);
             return renderer.getAssets().getPipeline(renderer, shader);

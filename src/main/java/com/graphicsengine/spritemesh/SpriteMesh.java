@@ -8,10 +8,10 @@ import com.nucleus.GraphicsPipeline;
 import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.shape.RectangleShapeBuilder;
-import com.nucleus.opengl.GLPipeline;
 import com.nucleus.opengl.geometry.GLMesh;
 import com.nucleus.opengl.shader.GLShaderProgram;
 import com.nucleus.renderer.NucleusRenderer;
+import com.nucleus.shader.Shader.Shading;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TiledTexture2D;
 import com.nucleus.texturing.UVTexture2D;
@@ -73,7 +73,7 @@ public class SpriteMesh extends GLMesh {
         public GLShaderProgram createProgram(Texture2D texture) {
             switch (texture.textureType) {
                 case TiledTexture2D:
-                    return new TiledSpriteProgram((TiledTexture2D) texture, GLShaderProgram.Shading.textured);
+                    return new TiledSpriteProgram((TiledTexture2D) texture, Shading.textured);
                 case UVTexture2D:
                     return new UVSpriteProgram((UVTexture2D) texture);
                 case Untextured:

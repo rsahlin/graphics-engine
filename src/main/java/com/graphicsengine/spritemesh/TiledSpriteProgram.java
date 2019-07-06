@@ -9,6 +9,7 @@ import com.nucleus.opengl.shader.ShaderVariable;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.renderer.NucleusRenderer.Renderers;
 import com.nucleus.renderer.Pass;
+import com.nucleus.shader.Shader.Shading;
 import com.nucleus.texturing.TextureType;
 import com.nucleus.texturing.TiledTexture2D;
 
@@ -38,9 +39,9 @@ public class TiledSpriteProgram extends GLShaderProgram {
      * @param texture
      * @param shading
      */
-    TiledSpriteProgram(TiledTexture2D texture, GLShaderProgram.Shading shading) {
+    TiledSpriteProgram(TiledTexture2D texture, Shading shading) {
         super(new SharedfragmentCategorizer(null, shading, CATEGORY), GLShaderProgram.ProgramType.VERTEX_FRAGMENT);
-        if (texture == null && shading == GLShaderProgram.Shading.textured) {
+        if (texture == null && shading == Shading.textured) {
             throw new IllegalArgumentException("Texture may not be null for shading: " + shading);
         }
         this.texture = texture;
@@ -54,7 +55,7 @@ public class TiledSpriteProgram extends GLShaderProgram {
      * @param shading
      * @param category
      */
-    TiledSpriteProgram(Pass pass, GLShaderProgram.Shading shading, String category) {
+    TiledSpriteProgram(Pass pass, Shading shading, String category) {
         super(new SharedfragmentCategorizer(pass, shading, category), GLShaderProgram.ProgramType.VERTEX_FRAGMENT);
         setIndexer(new TiledSpriteIndexer());
     }
@@ -100,7 +101,7 @@ public class TiledSpriteProgram extends GLShaderProgram {
             if (texUniform != null) {
                 setTextureUniforms(texture, uniforms, texUniform);
             } else {
-                if (function.getShading() == null || function.getShading() == GLShaderProgram.Shading.flat) {
+                if (function.getShading() == null || function.getShading() == Shading.flat) {
                     throw new IllegalArgumentException(
                             "Texture type " + texture.getTextureType() + ", does not match shading " + getShading()
                                     + " for program:\n" + toString());
