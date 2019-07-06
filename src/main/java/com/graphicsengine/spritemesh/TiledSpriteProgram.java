@@ -5,7 +5,7 @@ import java.nio.FloatBuffer;
 import com.nucleus.BackendException;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.shader.GLShaderProgram;
-import com.nucleus.opengl.shader.ShaderVariable;
+import com.nucleus.opengl.shader.NamedShaderVariable;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.renderer.NucleusRenderer.Renderers;
 import com.nucleus.renderer.Pass;
@@ -96,7 +96,7 @@ public class TiledSpriteProgram extends GLShaderProgram {
     protected void setTextureUniforms(FloatBuffer uniforms, TiledTexture2D texture) {
         if (texture != null && texture.getTextureType() == TextureType.TiledTexture2D) {
             // TODO - where should the uniform name be defined?
-            ShaderVariable texUniform = getUniformByName("uTextureData");
+            NamedShaderVariable texUniform = getUniformByName("uTextureData");
             // If null it could be because loaded program does not match with texture usage
             if (texUniform != null) {
                 setTextureUniforms(texture, uniforms, texUniform);

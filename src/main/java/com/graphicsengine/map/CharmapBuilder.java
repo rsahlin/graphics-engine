@@ -2,7 +2,7 @@ package com.graphicsengine.map;
 
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.shape.RectangleShapeBuilder;
-import com.nucleus.shader.Indexer;
+import com.nucleus.opengl.shader.Indexer;
 
 /**
  * Special shapebuilder for playfield charmap - will also setup the charmap.

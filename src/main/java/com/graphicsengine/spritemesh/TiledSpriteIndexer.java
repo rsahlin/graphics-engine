@@ -1,9 +1,9 @@
 package com.graphicsengine.spritemesh;
 
 import com.nucleus.geometry.AttributeUpdater.BufferIndex;
-import com.nucleus.opengl.shader.ShaderVariable.VariableType;
+import com.nucleus.opengl.shader.Indexer;
 import com.nucleus.opengl.shader.VariableIndexer;
-import com.nucleus.shader.Indexer;
+import com.nucleus.shader.ShaderVariable.VariableType;
 
 /**
  * Layout for the data needed by the tiled sprite program

@@ -2,9 +2,9 @@ package com.graphicsengine.spritemesh;
 
 import java.nio.FloatBuffer;
 
-import com.nucleus.opengl.shader.BlockBuffer;
 import com.nucleus.opengl.shader.CommonBlockNames;
-import com.nucleus.opengl.shader.FloatBlockBuffer;
+import com.nucleus.shader.BlockBuffer;
+import com.nucleus.shader.FloatBlockBuffer;
 import com.nucleus.shader.Shader.Shading;
 import com.nucleus.texturing.UVTexture2D;
 
