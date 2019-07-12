@@ -6,10 +6,12 @@ import com.nucleus.component.CPUComponentBuffer;
 import com.nucleus.component.Component;
 import com.nucleus.component.ComponentBuffer;
 import com.nucleus.geometry.AttributeBuffer;
+import com.nucleus.geometry.AttributeUpdater.BufferIndex;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.shape.ShapeBuilder;
 import com.nucleus.renderer.NucleusRenderer;
+import com.nucleus.shader.VariableIndexer;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TextureType;
 
@@ -28,7 +30,7 @@ public class SpriteComponent extends ActorComponent<SpriteGeometryMesh> implemen
     transient protected AttributeBuffer attributes;
     transient protected CPUComponentBuffer entityData;
     transient protected CPUComponentBuffer spriteData;
-    transient protected EntityIndexer mapper;
+    transient protected VariableIndexer mapper;
 
     @Override
     public Component createInstance() {
@@ -45,9 +47,10 @@ public class SpriteComponent extends ActorComponent<SpriteGeometryMesh> implemen
     }
 
     @Override
-    protected void createBuffers(EntityIndexer mapper) {
-        spriteData = new CPUComponentBuffer(count, mapper.attributesPerVertex);
-        entityData = new CPUComponentBuffer(count, mapper.attributesPerEntity);
+    protected void createBuffers(VariableIndexer mapper) {
+        int size = mapper.getSizePerVertex(BufferIndex.ATTRIBUTES.index);
+        spriteData = new CPUComponentBuffer(count, size);
+        entityData = new CPUComponentBuffer(count, size + ActorVariables.SIZE.offset);
         this.mapper = mapper;
     }
 
@@ -102,10 +105,8 @@ public class SpriteComponent extends ActorComponent<SpriteGeometryMesh> implemen
         /**
          * TODO - entitydata buffer shall not contain attribute data in spriteData buffer.
          */
-        if (entityOffset < (mapper.attributesPerVertex)) {
-            spriteData.put(entity, entityOffset, data, offset, mapper.attributesPerVertex - entityOffset);
-
-        }
+        spriteData.put(entity, entityOffset, data, offset,
+                mapper.getSizePerVertex(BufferIndex.ATTRIBUTES.index) - entityOffset);
         entityData.put(entity, entityOffset, data, offset, length);
     }
 

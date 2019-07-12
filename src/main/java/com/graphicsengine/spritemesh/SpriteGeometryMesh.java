@@ -69,7 +69,7 @@ public class SpriteGeometryMesh extends SpriteMesh {
             Shading shading = Shading.flat;
             GeometryCategorizer function = new GeometryCategorizer(null, shading, "sprite");
             GLShaderProgram shader = new GenericShaderProgram(function, ProgramType.VERTEX_GEOMETRY_FRAGMENT);
-            return renderer.getAssets().getPipeline(renderer, shader);
+            return renderer.getAssets().getGraphicsPipeline(renderer, shader);
         }
 
     }

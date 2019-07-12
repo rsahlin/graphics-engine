@@ -13,7 +13,6 @@ import com.nucleus.geometry.shape.ShapeBuilder;
 import com.nucleus.io.ExternalReference;
 import com.nucleus.mmi.Pointer;
 import com.nucleus.mmi.PointerMotion;
-import com.nucleus.opengl.shader.Indexer;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.AbstractMeshNode;
 import com.nucleus.scene.LineDrawerNode;
@@ -156,7 +155,7 @@ public class PlayfieldNode extends AbstractMeshNode<Mesh> {
     }
 
     @Override
-    public MeshBuilder<Mesh> createMeshBuilder(NucleusRenderer renderer, ShapeBuilder shapeBuilder)
+    public MeshBuilder<Mesh> createMeshBuilder(NucleusRenderer renderer, ShapeBuilder<Mesh> shapeBuilder)
             throws IOException {
 
         PlayfieldMesh.Builder builder = new PlayfieldMesh.Builder(renderer);
@@ -169,7 +168,7 @@ public class PlayfieldNode extends AbstractMeshNode<Mesh> {
             RectangleConfiguration configuration = new RectangleShapeBuilder.RectangleConfiguration(
                     getCharRectangle(), RectangleShapeBuilder.DEFAULT_Z, mapSize[0] * mapSize[1], 0);
             configuration.enableVertexIndex(true);
-            shapeBuilder = new CharmapBuilder(configuration, new Indexer(pipeline), getAnchorOffset());
+            shapeBuilder = new CharmapBuilder(configuration, getAnchorOffset());
             builder.setShapeBuilder(shapeBuilder);
         }
         return builder;
@@ -198,11 +197,10 @@ public class PlayfieldNode extends AbstractMeshNode<Mesh> {
      */
     public void createMap() throws NodeException {
         try {
-            Indexer indexer = new Indexer(pipeline);
             map = MapFactory.createMap(mapRef);
             PlayfieldMesh playfield = (PlayfieldMesh) getMesh(MeshIndex.MAIN);
             if (map.getMap() != null && map.getMapSize() != null) {
-                playfield.copyCharmap(indexer, map);
+                playfield.copyCharmap(getPipeline().getLocationMapping(), map);
             }
         } catch (IOException | ClassNotFoundException e) {
             throw new NodeException(e);

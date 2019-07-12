@@ -1,8 +1,8 @@
 package com.graphicsengine.map;
 
+import com.nucleus.GraphicsPipeline;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.shape.RectangleShapeBuilder;
-import com.nucleus.opengl.shader.Indexer;
 
 /**
  * Special shapebuilder for playfield charmap - will also setup the charmap.
@@ -12,20 +12,18 @@ import com.nucleus.opengl.shader.Indexer;
  */
 public class CharmapBuilder extends RectangleShapeBuilder {
 
-    protected Indexer mapper;
     protected float[] offset;
 
-    public CharmapBuilder(RectangleConfiguration configuration, Indexer mapper, float[] offset) {
+    public CharmapBuilder(RectangleConfiguration configuration, float[] offset) {
         super(configuration);
-        this.mapper = mapper;
         this.offset = offset;
     }
 
     @Override
-    public void build(Mesh mesh) {
-        super.build(mesh);
-        // ((PlayfieldMesh) mesh).setupCharmap(mapper, configuration.getRectangle().getSize(), offset);
-        throw new IllegalArgumentException("Not implemented");
+    public void build(Mesh mesh, GraphicsPipeline pipeline) {
+        super.build(mesh, pipeline);
+        ((PlayfieldMesh) mesh).setupCharmap(pipeline.getLocationMapping(), configuration.getRectangle().getSize(),
+                offset);
     }
 
 }

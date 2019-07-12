@@ -3,13 +3,15 @@ package com.graphicsengine.spritemesh;
 import java.nio.FloatBuffer;
 
 import com.nucleus.BackendException;
+import com.nucleus.geometry.AttributeUpdater.BufferIndex;
 import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.shader.GLShaderProgram;
 import com.nucleus.opengl.shader.NamedShaderVariable;
+import com.nucleus.opengl.shader.NamedVariableIndexer;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.renderer.NucleusRenderer.Renderers;
 import com.nucleus.renderer.Pass;
-import com.nucleus.shader.Shader.Shading;
+import com.nucleus.shader.ShaderVariable.VariableType;
 import com.nucleus.texturing.TextureType;
 import com.nucleus.texturing.TiledTexture2D;
 
@@ -19,10 +21,34 @@ import com.nucleus.texturing.TiledTexture2D;
  * sprite.
  * It is used by the {@link SpriteMesh}
  * 
- * @author Richard Sahlin
- *
  */
 public class TiledSpriteProgram extends GLShaderProgram {
+
+    /**
+     * Layout for the data needed by the tiled sprite program
+     * 
+     *
+     */
+    public static class TiledSpriteIndexer extends NamedVariableIndexer {
+
+        protected final static Property[] PROPERTY = new Property[] { Property.VERTEX, Property.UV,
+                Property.TRANSLATE, Property.ROTATE, Property.SCALE, Property.ALBEDO, Property.FRAME };
+        protected final static int[] OFFSETS = new int[] { 0, 4, 0, 3, 6, 9, 12 };
+        protected final static VariableType[] TYPES = new VariableType[] { VariableType.ATTRIBUTE,
+                VariableType.ATTRIBUTE,
+                VariableType.ATTRIBUTE, VariableType.ATTRIBUTE, VariableType.ATTRIBUTE, VariableType.ATTRIBUTE,
+                VariableType.ATTRIBUTE };
+        protected final static BufferIndex[] BUFFERINDEXES = new BufferIndex[] { BufferIndex.ATTRIBUTES_STATIC,
+                BufferIndex.ATTRIBUTES_STATIC, BufferIndex.ATTRIBUTES, BufferIndex.ATTRIBUTES, BufferIndex.ATTRIBUTES,
+                BufferIndex.ATTRIBUTES, BufferIndex.ATTRIBUTES };
+        protected final static int[] SIZEPERVERTEX = new int[] { 13, 6 };
+
+        private TiledSpriteIndexer() {
+            super();
+            createArrays(PROPERTY, OFFSETS, TYPES, SIZEPERVERTEX, BUFFERINDEXES);
+        }
+
+    }
 
     public static final String COMMON_VERTEX_SHADER = "common";
 

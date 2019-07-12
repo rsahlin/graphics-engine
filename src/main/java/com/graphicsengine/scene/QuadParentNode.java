@@ -16,13 +16,13 @@ import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.shape.RectangleShapeBuilder;
 import com.nucleus.geometry.shape.RectangleShapeBuilder.RectangleConfiguration;
-import com.nucleus.opengl.shader.Indexer;
 import com.nucleus.geometry.shape.ShapeBuilder;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.AbstractMeshNode;
 import com.nucleus.scene.Node;
 import com.nucleus.scene.RenderableNode;
 import com.nucleus.scene.RootNode;
+import com.nucleus.shader.VariableIndexer;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TextureType;
 import com.nucleus.vecmath.Rectangle;
@@ -121,9 +121,11 @@ public class QuadParentNode extends AbstractMeshNode<Mesh> implements Consumer {
      * @param mesh
      */
     private void createBuffers(SpriteMesh mesh) {
-        Indexer indexer = new Indexer(getPipeline());
-        CPUComponentBuffer sourceData = new CPUComponentBuffer(maxQuads, indexer.attributesPerVertex);
-        CPUComponentBuffer destinationData = new CPUComponentBuffer(maxQuads, indexer.attributesPerVertex * 4);
+        VariableIndexer indexer = pipeline.getLocationMapping();
+        CPUComponentBuffer sourceData = new CPUComponentBuffer(maxQuads,
+                indexer.getSizePerVertex(BufferIndex.ATTRIBUTES.index));
+        CPUComponentBuffer destinationData = new CPUComponentBuffer(maxQuads,
+                indexer.getSizePerVertex(BufferIndex.ATTRIBUTES.index) * 4);
         quadExpander = new CPUQuadExpander(mesh.getTexture(Texture2D.TEXTURE_0), indexer, sourceData, destinationData);
     }
 
@@ -148,7 +150,7 @@ public class QuadParentNode extends AbstractMeshNode<Mesh> implements Consumer {
         Rectangle quadRect = (rectangle != null && rectangle.getValues() != null && rectangle.getValues().length >= 4)
                 ? rectangle
                 : createRectangle(texture, 0);
-        shapeBuilder.setStartQuad(quad).setRectangle(quadRect).build(spriteMesh);
+        shapeBuilder.setStartQuad(quad).setRectangle(quadRect).build(spriteMesh, getPipeline());
         return quadRect;
     }
 

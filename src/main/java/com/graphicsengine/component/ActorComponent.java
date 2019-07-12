@@ -16,11 +16,12 @@ import com.nucleus.geometry.MeshBuilder;
 import com.nucleus.geometry.MeshBuilder.MeshBuilderFactory;
 import com.nucleus.geometry.shape.ShapeBuilder;
 import com.nucleus.io.ExternalReference;
-import com.nucleus.opengl.shader.Indexer;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.scene.AbstractNode.MeshIndex;
 import com.nucleus.scene.ComponentNode;
 import com.nucleus.scene.RenderableNode;
+import com.nucleus.shader.VariableIndexer;
+import com.nucleus.shader.VariableIndexer.Property;
 import com.nucleus.system.System;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TextureType;
@@ -69,46 +70,18 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
 
     }
 
-    /**
-     * Indexing of variables used by entity/actor
-     * 
-     * TODO How to specify the datatype (size)
-     *
-     */
-    public static class EntityIndexer extends Indexer {
+    public enum ActorVariables {
+        MOVEVECTOR(0),
+        ELASTICITY(3),
+        RESISTANCE(4),
+        ROTATESPEED(5),
+        BOUNDINGBOX(6),
+        SIZE(BOUNDINGBOX.offset + 4);
 
-        public int moveVector;
-        public int elasticity;
-        public int resistance;
-        public int rotateSpeed;
-        public int boundingBox;
-        public int attributesPerEntity;
+        public final int offset;
 
-        public EntityIndexer(Indexer source) {
-            super(source);
-            moveVector = source.attributesPerVertex;
-            elasticity = source.attributesPerVertex + 3;
-            resistance = source.attributesPerVertex + 4;
-            rotateSpeed = source.attributesPerVertex + 5;
-            boundingBox = source.attributesPerVertex + 6;
-            // TODO This shall be calculated from variable sizes
-            attributesPerEntity = boundingBox + 4;
-        }
-
-        /**
-         * Internal constructor
-         * 
-         * @param values
-         */
-        protected EntityIndexer(int[] values) {
-            super(values);
-            moveVector = attributesPerVertex;
-            elasticity = attributesPerVertex + 3;
-            resistance = attributesPerVertex + 4;
-            rotateSpeed = attributesPerVertex + 5;
-            boundingBox = attributesPerVertex + 6;
-            // TODO This shall be calculated from variable sizes
-            attributesPerEntity = boundingBox + 4;
+        private ActorVariables(int offset) {
+            this.offset = offset;
         }
 
     }
@@ -130,10 +103,6 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
     transient T mesh;
     transient private ComponentNode parent;
 
-    /**
-     * The mapper used - this shall be set in the {@link #create(NucleusRenderer, ComponentNode, System)} method
-     */
-    transient protected EntityIndexer mapper;
     transient protected TextureType textureType;
     transient protected UVAtlas uvAtlas;
 
@@ -149,7 +118,7 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
      * Creates the ShapeBuilder to be used to create shapes, or null if no builder shall be used - for instance
      * if mode is points.
      */
-    protected abstract ShapeBuilder createShapeBuilder();
+    protected abstract ShapeBuilder<Mesh> createShapeBuilder();
 
     /**
      * Returns the buffer that holds entity data, this is the object specific data that is used to handle
@@ -167,7 +136,7 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
      * @param mapper
      * @param system
      */
-    protected abstract void createBuffers(EntityIndexer mapper);
+    protected abstract void createBuffers(VariableIndexer mapper);
 
     /**
      * Sets data from source into this
@@ -200,7 +169,6 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
                 case rect:
                     MeshBuilder<Mesh> spriteBuilder = createMeshBuilder(renderer, createShapeBuilder());
                     setMesh((T) spriteBuilder.create());
-                    mapper = new EntityIndexer(new Indexer(parent.getPipeline()));
 
             }
         } catch (IOException | BackendException e) {
@@ -217,13 +185,13 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
                 break;
         }
         parent.addMesh(mesh, MeshIndex.MAIN);
-        createBuffers(mapper);
+        createBuffers(parent.getPipeline().getLocationMapping());
         mesh.setAttributeUpdater(this);
         bindAttributeBuffer(mesh.getAttributeBuffer(BufferIndex.ATTRIBUTES.index));
     }
 
     @Override
-    public MeshBuilder<Mesh> createMeshBuilder(NucleusRenderer renderer, ShapeBuilder shapeBuilder)
+    public MeshBuilder<Mesh> createMeshBuilder(NucleusRenderer renderer, ShapeBuilder<Mesh> shapeBuilder)
             throws IOException {
         MeshBuilder<Mesh> spriteBuilder = createBuilderInstance(renderer);
         initMeshBuilder(renderer, parent, parent.getTextureRef(), count, shapeBuilder, spriteBuilder);
@@ -276,16 +244,6 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
     }
 
     /**
-     * Returns the entity mapper for this component.
-     * If {@link #create(NucleusRenderer, ComponentNode)} has not been called null is returned.
-     * 
-     * @return The entitymapper used by this component, or null.
-     */
-    public EntityIndexer getMapper() {
-        return mapper;
-    }
-
-    /**
      * Returns the shape for actors
      * 
      * @return
@@ -320,67 +278,67 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
      * TODO Where do these belong?
      */
 
-    public static void getRandomEntityData(float[] entityData, float[] rectBounds, float rotateSpeed,
-            EntityIndexer mapper, Random random) {
-        entityData[mapper.moveVector] = 0;
-        entityData[mapper.moveVector + 1] = 0;
-        entityData[mapper.elasticity] = 0.5f + random.nextFloat() * 0.5f;
-        entityData[mapper.resistance] = random.nextFloat() * 0.03f;
-        entityData[mapper.rotateSpeed] = rotateSpeed * random.nextFloat();
-        if (rectBounds != null && mapper.scale != -1) {
-            entityData[mapper.boundingBox] = rectBounds[0] * entityData[mapper.scale];
-            entityData[mapper.boundingBox + 1] = rectBounds[1] * entityData[mapper.scale + 1];
-            entityData[mapper.boundingBox + 2] = rectBounds[2] * entityData[mapper.scale];
-            entityData[mapper.boundingBox + 3] = rectBounds[3] * entityData[mapper.scale + 1];
+    public static void getRandomEntityData(float[] entityData, float[] rectBounds, float rotateSpeed, Random random,
+            VariableIndexer mapper, int entityOffset) {
+        entityData[entityOffset + ActorVariables.MOVEVECTOR.offset] = 0;
+        entityData[entityOffset + ActorVariables.MOVEVECTOR.offset + 1] = 0;
+        entityData[entityOffset + ActorVariables.ELASTICITY.offset] = 0.5f + random.nextFloat() * 0.5f;
+        entityData[entityOffset + ActorVariables.RESISTANCE.offset] = random.nextFloat() * 0.03f;
+        entityData[entityOffset + ActorVariables.ROTATESPEED.offset] = rotateSpeed * random.nextFloat();
+        if (rectBounds != null) {
+            int scaleOffset = mapper.getOffset(Property.SCALE.getLocation());
+            entityData[entityOffset + ActorVariables.BOUNDINGBOX.offset] = rectBounds[0] * entityData[scaleOffset];
+            entityData[entityOffset + ActorVariables.BOUNDINGBOX.offset + 1] = rectBounds[1]
+                    * entityData[scaleOffset + 1];
+            entityData[entityOffset + ActorVariables.BOUNDINGBOX.offset + 2] = rectBounds[2] * entityData[scaleOffset];
+            entityData[entityOffset + ActorVariables.BOUNDINGBOX.offset + 3] = rectBounds[3]
+                    * entityData[scaleOffset + 1];
         }
     }
 
-    public static void getRandomPos(float[] spriteData, float xMax, float yMax, float zMax, Indexer mapper,
+    public static void getRandomPos(float[] spriteData, float xMax, float yMax, float zMax, int offset,
             Random random) {
-        spriteData[mapper.vertex] = ((random.nextFloat() * xMax) - xMax / 2);
-        spriteData[mapper.vertex + 1] = ((random.nextFloat() * yMax) - yMax / 2);
-        spriteData[mapper.vertex + 2] = random.nextFloat() * zMax;
+        spriteData[offset] = ((random.nextFloat() * xMax) - xMax / 2);
+        spriteData[offset + 1] = ((random.nextFloat() * yMax) - yMax / 2);
+        spriteData[offset + 2] = random.nextFloat() * zMax;
 
     }
 
-    public static void setRotate(float[] spriteData, float x, float y, float z, Indexer mapper) {
-        if (mapper.rotate > -1) {
-            spriteData[mapper.rotate] = x;
-            spriteData[mapper.rotate + 1] = y;
-            spriteData[mapper.rotate + 2] = z;
+    public static void setRotate(float[] spriteData, float x, float y, float z, int offset) {
+        if (offset > -1) {
+            spriteData[offset] = x;
+            spriteData[offset + 1] = y;
+            spriteData[offset + 2] = z;
         }
     }
 
-    public static void setScale2D(float[] spriteData, float scaleRandom, float minScale, Indexer mapper,
-            Random random) {
-        if (mapper.scale > -1) {
+    public static void setScale2D(float[] spriteData, float scaleRandom, float minScale, Random random, int offset) {
+        if (offset > -1) {
             float scale = scaleRandom * random.nextFloat() + minScale;
-            spriteData[mapper.scale] = scale;
-            spriteData[mapper.scale + 1] = scale;
-            spriteData[mapper.scale + 2] = 1;
+            spriteData[offset] = scale;
+            spriteData[offset + 1] = scale;
+            spriteData[offset + 2] = 1;
         }
 
     }
 
     public static void getRandomSprite(float[] spriteData, float rotate, int frame, float scaleRandom, float minScale,
-            float sceneWidth, float sceneHeight,
-            Indexer mapper, Random random) {
-        ActorComponent.getRandomPos(spriteData, sceneWidth, sceneHeight, 0, mapper, random);
-        ActorComponent.setRotate(spriteData, 0, 0, rotate, mapper);
-        ActorComponent.setScale2D(spriteData, scaleRandom, minScale, mapper, random);
-        if (mapper.frame > -1) {
-            spriteData[mapper.frame] = frame;
-        }
+            float sceneWidth, float sceneHeight, Random random, VariableIndexer mapper) {
+        ActorComponent.getRandomPos(spriteData, sceneWidth, sceneHeight, 0,
+                mapper.getOffset(Property.TRANSLATE.getLocation()), random);
+        ActorComponent.setRotate(spriteData, 0, 0, rotate, mapper.getOffset(Property.ROTATE.getLocation()));
+        ActorComponent.setScale2D(spriteData, scaleRandom, minScale, random,
+                mapper.getOffset(Property.SCALE.getLocation()));
+        spriteData[mapper.getOffset(Property.FRAME.getLocation())] = frame;
     }
 
-    public static void getRandomSprite3D(float[] spriteData, float rotate, int frame, float scaleRandom, float minScale,
-            float sceneWidth, float sceneHeight, float maxZ, Indexer mapper, Random random) {
-        ActorComponent.getRandomPos(spriteData, sceneWidth, sceneHeight, maxZ, mapper, random);
-        ActorComponent.setRotate(spriteData, 0, 0, rotate, mapper);
-        ActorComponent.setScale2D(spriteData, scaleRandom, minScale, mapper, random);
-        if (mapper.frame > -1) {
-            spriteData[mapper.frame] = frame;
-        }
+    /**
+     * Returns the parent node
+     * 
+     * @return
+     */
+    public ComponentNode getParent() {
+        return parent;
     }
 
 }

@@ -9,6 +9,7 @@ import com.nucleus.component.CPUQuadExpander;
 import com.nucleus.component.Component;
 import com.nucleus.component.ComponentBuffer;
 import com.nucleus.geometry.AttributeBuffer;
+import com.nucleus.geometry.AttributeUpdater.BufferIndex;
 import com.nucleus.geometry.AttributeUpdater.Consumer;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshBuilder;
@@ -17,6 +18,7 @@ import com.nucleus.geometry.shape.RectangleShapeBuilder;
 import com.nucleus.geometry.shape.ShapeBuilder;
 import com.nucleus.geometry.shape.ShapeBuilderFactory;
 import com.nucleus.renderer.NucleusRenderer;
+import com.nucleus.shader.VariableIndexer;
 import com.nucleus.texturing.Texture2D;
 
 /**
@@ -85,10 +87,10 @@ public class SpriteAttributeComponent extends ActorComponent<SpriteMesh>
     }
 
     @Override
-    protected void createBuffers(EntityIndexer mapper) {
-        spritedataSize = mapper.attributesPerVertex;
-        spriteBuffer = new CPUComponentBuffer(count, mapper.attributesPerVertex * 4);
-        entityBuffer = new CPUComponentBuffer(count, mapper.attributesPerEntity);
+    protected void createBuffers(VariableIndexer mapper) {
+        spritedataSize = mapper.getSizePerVertex(BufferIndex.ATTRIBUTES.index);
+        spriteBuffer = new CPUComponentBuffer(count, spritedataSize * 4);
+        entityBuffer = new CPUComponentBuffer(count, spritedataSize + ActorVariables.SIZE.offset);
         spriteExpander = new CPUQuadExpander(mesh.getTexture(Texture2D.TEXTURE_0), mapper, entityBuffer, spriteBuffer);
     }
 

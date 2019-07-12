@@ -2,11 +2,12 @@ package com.graphicsengine.map;
 
 import java.nio.FloatBuffer;
 
-import com.graphicsengine.spritemesh.TiledSpriteIndexer;
+import com.nucleus.geometry.AttributeUpdater.BufferIndex;
 import com.nucleus.opengl.shader.GLShaderProgram;
+import com.nucleus.opengl.shader.NamedVariableIndexer;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.renderer.Pass;
-import com.nucleus.shader.Shader.Shading;
+import com.nucleus.shader.ShaderVariable.VariableType;
 import com.nucleus.texturing.TiledTexture2D;
 
 /**
@@ -17,14 +18,36 @@ import com.nucleus.texturing.TiledTexture2D;
  */
 public class PlayfieldProgram extends GLShaderProgram {
 
+    /**
+     * Layout for the data needed by the playfield program
+     * 
+     *
+     */
+    public static class PlayfieldIndexer extends NamedVariableIndexer {
+
+        protected final static Property[] PROPERTY = new Property[] { Property.VERTEX, Property.UV,
+                Property.TRANSLATE, Property.EMISSIVE, Property.FRAME };
+        protected final static int[] OFFSETS = new int[] { 0, 4, 0, 3, 7 };
+        protected final static VariableType[] TYPES = new VariableType[] { VariableType.ATTRIBUTE,
+                VariableType.ATTRIBUTE, VariableType.ATTRIBUTE, VariableType.ATTRIBUTE, VariableType.ATTRIBUTE };
+        protected final static BufferIndex[] BUFFERINDEXES = new BufferIndex[] { BufferIndex.ATTRIBUTES_STATIC,
+                BufferIndex.ATTRIBUTES_STATIC, BufferIndex.ATTRIBUTES, BufferIndex.ATTRIBUTES, BufferIndex.ATTRIBUTES };
+        protected final static int[] SIZEPERVERTEX = new int[] { 8, 6 };
+
+        private PlayfieldIndexer() {
+            super();
+            createArrays(PROPERTY, OFFSETS, TYPES, SIZEPERVERTEX, BUFFERINDEXES);
+        }
+
+    }
+
     public static final String CATEGORY = "charmap";
 
     protected TiledTexture2D texture;
 
     PlayfieldProgram(TiledTexture2D texture) {
-        // super(null, null, CATEGORY, CommonShaderVariables.values(), ProgramType.VERTEX_FRAGMENT);
-        super(null, null, CATEGORY, GLShaderProgram.ProgramType.VERTEX_FRAGMENT);
-        setIndexer(new TiledSpriteIndexer());
+        super(null, Shading.textured, CATEGORY, GLShaderProgram.ProgramType.VERTEX_FRAGMENT);
+        setIndexer(new PlayfieldIndexer());
     }
 
     @Override
