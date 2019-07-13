@@ -8,12 +8,12 @@ import com.nucleus.GraphicsPipeline;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.opengl.geometry.GLMesh;
 import com.nucleus.opengl.shader.GLShaderProgram;
-import com.nucleus.opengl.shader.GLShaderProgram.Categorizer;
 import com.nucleus.opengl.shader.GLShaderProgram.ProgramType;
 import com.nucleus.opengl.shader.GLShaderProgram.ShaderType;
 import com.nucleus.opengl.shader.GenericShaderProgram;
 import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.renderer.Pass;
+import com.nucleus.shader.Shader.Categorizer;
 import com.nucleus.shader.Shader.Shading;
 
 /**
