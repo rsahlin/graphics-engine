@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.component.SpriteComponent;
 import com.graphicsengine.spritemesh.SpriteMesh;
+import com.nucleus.BackendException;
 import com.nucleus.component.CPUComponentBuffer;
 import com.nucleus.component.CPUQuadExpander;
 import com.nucleus.component.Component;
@@ -73,7 +74,7 @@ public class QuadParentNode extends AbstractMeshNode<Mesh> implements Consumer {
 
     @Override
     public MeshBuilder<Mesh> createMeshBuilder(NucleusRenderer renderer, ShapeBuilder shapeBuilder)
-            throws IOException {
+            throws IOException, BackendException {
         int count = getMaxQuads();
         if (shapeBuilder == null) {
             shapeBuilder = new RectangleShapeBuilder(new RectangleConfiguration(count, 0));

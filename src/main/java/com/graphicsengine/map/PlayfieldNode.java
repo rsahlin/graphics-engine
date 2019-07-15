@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import com.google.gson.annotations.SerializedName;
 import com.graphicsengine.scene.GraphicsEngineNodeType;
+import com.nucleus.BackendException;
 import com.nucleus.SimpleLogger;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.MeshBuilder;
@@ -156,7 +157,7 @@ public class PlayfieldNode extends AbstractMeshNode<Mesh> {
 
     @Override
     public MeshBuilder<Mesh> createMeshBuilder(NucleusRenderer renderer, ShapeBuilder<Mesh> shapeBuilder)
-            throws IOException {
+            throws IOException, BackendException {
 
         PlayfieldMesh.Builder builder = new PlayfieldMesh.Builder(renderer);
         int[] mapSize = getMapSize();

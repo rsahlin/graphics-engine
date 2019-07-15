@@ -65,7 +65,7 @@ public class SpriteGeometryMesh extends SpriteMesh {
         }
 
         @Override
-        public GraphicsPipeline createPipeline() {
+        public GraphicsPipeline createPipeline() throws BackendException {
             Shading shading = Shading.flat;
             GeometryCategorizer function = new GeometryCategorizer(null, shading, "sprite");
             GLShaderProgram shader = new GenericShaderProgram(function, ProgramType.VERTEX_GEOMETRY_FRAGMENT);

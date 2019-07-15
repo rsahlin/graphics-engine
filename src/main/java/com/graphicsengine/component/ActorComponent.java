@@ -192,7 +192,7 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
 
     @Override
     public MeshBuilder<Mesh> createMeshBuilder(NucleusRenderer renderer, ShapeBuilder<Mesh> shapeBuilder)
-            throws IOException {
+            throws IOException, BackendException {
         MeshBuilder<Mesh> spriteBuilder = createBuilderInstance(renderer);
         initMeshBuilder(renderer, parent, parent.getTextureRef(), count, shapeBuilder, spriteBuilder);
         return spriteBuilder;
@@ -212,11 +212,12 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
      * @param shapeBuilder
      * @param builder
      * @throws IOException
+     * @throws BackendException
      */
     protected MeshBuilder<Mesh> initMeshBuilder(NucleusRenderer renderer, RenderableNode<Mesh> parent,
             ExternalReference textureRef, int count,
-            ShapeBuilder shapeBuilder, MeshBuilder<Mesh> builder)
-            throws IOException {
+            ShapeBuilder<Mesh> shapeBuilder, MeshBuilder<Mesh> builder)
+            throws IOException, BackendException {
         if (builder.getTexture() == null) {
             builder.setTexture(textureRef);
         }

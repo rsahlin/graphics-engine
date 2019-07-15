@@ -5,8 +5,6 @@ import java.nio.FloatBuffer;
 import com.nucleus.geometry.AttributeUpdater.BufferIndex;
 import com.nucleus.opengl.shader.GLShaderProgram;
 import com.nucleus.opengl.shader.NamedVariableIndexer;
-import com.nucleus.renderer.NucleusRenderer;
-import com.nucleus.renderer.Pass;
 import com.nucleus.shader.ShaderVariable.VariableType;
 import com.nucleus.texturing.TiledTexture2D;
 
@@ -56,18 +54,6 @@ public class PlayfieldProgram extends GLShaderProgram {
         setTextureUniforms(texture, uniforms,
                 getUniformByName("uTextureData"));
         // setEmissive(uniforms, getUniformByName("uAmbientLight"), globalLight.getAmbient());
-    }
-
-    @Override
-    public GLShaderProgram getProgram(NucleusRenderer renderer, Pass pass, Shading shading) {
-        switch (pass) {
-            case UNDEFINED:
-            case ALL:
-            case MAIN:
-                return this;
-            default:
-                throw new IllegalArgumentException("Invalid pass " + pass);
-        }
     }
 
     @Override
