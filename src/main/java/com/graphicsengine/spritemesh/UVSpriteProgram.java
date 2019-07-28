@@ -1,11 +1,8 @@
 package com.graphicsengine.spritemesh;
 
-import java.nio.FloatBuffer;
-
 import com.nucleus.opengl.shader.CommonBlockNames;
 import com.nucleus.shader.BlockBuffer;
 import com.nucleus.shader.FloatBlockBuffer;
-import com.nucleus.shader.Shader.Shading;
 import com.nucleus.texturing.UVTexture2D;
 
 /**
@@ -34,13 +31,8 @@ public class UVSpriteProgram extends TiledSpriteProgram {
     }
 
     @Override
-    public void initUniformData(FloatBuffer destinationUniforms) {
+    public void initUniformData() {
         setUVData(uvData);
-    }
-
-    @Override
-    public void updateUniformData(FloatBuffer destinationUniform) {
-        super.updateUniformData(destinationUniform);
     }
 
     protected void setUVData(FloatBlockBuffer source) {

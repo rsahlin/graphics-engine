@@ -11,8 +11,8 @@ import com.nucleus.bounds.Bounds;
 import com.nucleus.bounds.RectangularBounds;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.shape.RectangleShapeBuilder;
-import com.nucleus.opengl.shader.GLShaderProgram;
 import com.nucleus.renderer.NucleusRenderer;
+import com.nucleus.shader.GenericShaderProgram;
 import com.nucleus.shader.VariableIndexer;
 import com.nucleus.shader.VariableIndexer.Property;
 import com.nucleus.texturing.Texture2D;
@@ -121,7 +121,7 @@ public class PlayfieldMesh extends SpriteMesh {
         }
 
         @Override
-        public GLShaderProgram createProgram(Texture2D texture) {
+        public GenericShaderProgram createProgram(Texture2D texture) {
             if (texture.getTextureType() == TextureType.TiledTexture2D) {
                 return new PlayfieldProgram((TiledTexture2D) texture);
             }

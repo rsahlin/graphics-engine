@@ -1,8 +1,8 @@
 package com.graphicsengine.map;
 
-import com.nucleus.GraphicsPipeline;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.shape.RectangleShapeBuilder;
+import com.nucleus.shader.GraphicsShader;
 
 /**
  * Special shapebuilder for playfield charmap - will also setup the charmap.
@@ -20,9 +20,9 @@ public class CharmapBuilder extends RectangleShapeBuilder {
     }
 
     @Override
-    public void build(Mesh mesh, GraphicsPipeline pipeline) {
-        super.build(mesh, pipeline);
-        ((PlayfieldMesh) mesh).setupCharmap(pipeline.getLocationMapping(), configuration.getRectangle().getSize(),
+    public void build(Mesh mesh, GraphicsShader program) {
+        super.build(mesh, program);
+        ((PlayfieldMesh) mesh).setupCharmap(program.getFunction().getIndexer(), configuration.getRectangle().getSize(),
                 offset);
     }
 

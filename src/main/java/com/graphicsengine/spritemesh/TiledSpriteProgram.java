@@ -2,15 +2,13 @@ package com.graphicsengine.spritemesh;
 
 import java.nio.FloatBuffer;
 
-import com.nucleus.BackendException;
 import com.nucleus.geometry.AttributeUpdater.BufferIndex;
-import com.nucleus.opengl.GLES20Wrapper;
 import com.nucleus.opengl.shader.GLShaderProgram;
 import com.nucleus.opengl.shader.NamedShaderVariable;
 import com.nucleus.opengl.shader.NamedVariableIndexer;
-import com.nucleus.renderer.NucleusRenderer;
 import com.nucleus.renderer.NucleusRenderer.Renderers;
 import com.nucleus.renderer.Pass;
+import com.nucleus.shader.GenericShaderProgram;
 import com.nucleus.shader.ShaderVariable.VariableType;
 import com.nucleus.texturing.TextureType;
 import com.nucleus.texturing.TiledTexture2D;
@@ -22,7 +20,7 @@ import com.nucleus.texturing.TiledTexture2D;
  * It is used by the {@link SpriteMesh}
  * 
  */
-public class TiledSpriteProgram extends GLShaderProgram {
+public class TiledSpriteProgram extends GenericShaderProgram {
 
     /**
      * Layout for the data needed by the tiled sprite program
@@ -87,29 +85,19 @@ public class TiledSpriteProgram extends GLShaderProgram {
     }
 
     @Override
-    protected String[] getCommonShaderName(Renderers version, ShaderType type) {
+    protected String[] getLibName(Renderers version, ShaderType type) {
         switch (type) {
             case VERTEX:
-                return new String[] { PROGRAM_DIRECTORY + COMMON_VERTEX_SHADER };
+                return new String[] { COMMON_VERTEX_SHADER };
             default:
                 return null;
         }
     }
 
     @Override
-    public GLShaderProgram createProgram(NucleusRenderer renderer) throws BackendException {
-        if (GLES20Wrapper.getInfo().getRenderVersion().major >= 3
-                && GLES20Wrapper.getInfo().getRenderVersion().minor >= 1) {
-            // expanderShader = (QuadExpanderShader) AssetManager.getInstance().getProgram(gles,
-            // new QuadExpanderShader());
-        }
-        return super.createProgram(renderer);
-    }
-
-    @Override
-    public void updateUniformData(FloatBuffer destinationUniform) {
-        setScreenSize(destinationUniform, getUniformByName("uScreenSize"));
-        setTextureUniforms(destinationUniform, texture);
+    public void updateUniformData() {
+        setScreenSize(uniforms, getUniformByName("uScreenSize"));
+        setTextureUniforms(uniforms, texture);
     }
 
     /**
@@ -128,7 +116,8 @@ public class TiledSpriteProgram extends GLShaderProgram {
             } else {
                 if (function.getShading() == null || function.getShading() == Shading.flat) {
                     throw new IllegalArgumentException(
-                            "Texture type " + texture.getTextureType() + ", does not match shading " + getShading()
+                            "Texture type " + texture.getTextureType() + ", does not match shading "
+                                    + getFunction().getShading()
                                     + " for program:\n" + toString());
                 }
             }
@@ -136,7 +125,7 @@ public class TiledSpriteProgram extends GLShaderProgram {
     }
 
     @Override
-    public void initUniformData(FloatBuffer destinationUniforms) {
+    public void initUniformData() {
     }
 
 }
