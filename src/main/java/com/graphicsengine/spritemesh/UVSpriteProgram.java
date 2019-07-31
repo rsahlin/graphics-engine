@@ -36,7 +36,7 @@ public class UVSpriteProgram extends TiledSpriteProgram {
     }
 
     protected void setUVData(FloatBlockBuffer source) {
-        BlockBuffer[] blocks = uniformBlockBuffers;
+        BlockBuffer[] blocks = pipeline.getUniformBlocks();
         if (blocks != null) {
             for (BlockBuffer bb : blocks) {
                 CommonBlockNames blockName = CommonBlockNames.valueOf(bb.getBlockName());
