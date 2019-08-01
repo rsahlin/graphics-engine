@@ -1,9 +1,9 @@
 package com.graphicsengine.map;
 
 import com.nucleus.geometry.AttributeUpdater.BufferIndex;
-import com.nucleus.opengl.shader.GLShaderProgram;
 import com.nucleus.opengl.shader.NamedVariableIndexer;
 import com.nucleus.shader.GenericShaderProgram;
+import com.nucleus.shader.Shader;
 import com.nucleus.shader.ShaderVariable.VariableType;
 import com.nucleus.texturing.TiledTexture2D;
 
@@ -43,7 +43,7 @@ public class PlayfieldProgram extends GenericShaderProgram {
     protected TiledTexture2D texture;
 
     PlayfieldProgram(TiledTexture2D texture) {
-        super(null, Shading.textured, CATEGORY, GLShaderProgram.ProgramType.VERTEX_FRAGMENT);
+        init(null, null, Shading.textured, CATEGORY, Shader.ProgramType.VERTEX_FRAGMENT);
         setIndexer(new PlayfieldIndexer());
     }
 

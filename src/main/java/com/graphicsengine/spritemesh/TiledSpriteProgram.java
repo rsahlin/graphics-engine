@@ -3,12 +3,12 @@ package com.graphicsengine.spritemesh;
 import java.nio.FloatBuffer;
 
 import com.nucleus.geometry.AttributeUpdater.BufferIndex;
-import com.nucleus.opengl.shader.GLShaderProgram;
 import com.nucleus.opengl.shader.NamedShaderVariable;
 import com.nucleus.opengl.shader.NamedVariableIndexer;
 import com.nucleus.renderer.NucleusRenderer.Renderers;
 import com.nucleus.renderer.Pass;
 import com.nucleus.shader.GenericShaderProgram;
+import com.nucleus.shader.Shader;
 import com.nucleus.shader.ShaderVariable.VariableType;
 import com.nucleus.texturing.TextureType;
 import com.nucleus.texturing.TiledTexture2D;
@@ -64,7 +64,7 @@ public class TiledSpriteProgram extends GenericShaderProgram {
      * @param shading
      */
     TiledSpriteProgram(TiledTexture2D texture, Shading shading) {
-        super(new SharedfragmentCategorizer(null, shading, CATEGORY), GLShaderProgram.ProgramType.VERTEX_FRAGMENT);
+        init(new SharedfragmentCategorizer(null, shading, CATEGORY), Shader.ProgramType.VERTEX_FRAGMENT);
         if (texture == null && shading == Shading.textured) {
             throw new IllegalArgumentException("Texture may not be null for shading: " + shading);
         }
@@ -80,7 +80,7 @@ public class TiledSpriteProgram extends GenericShaderProgram {
      * @param category
      */
     TiledSpriteProgram(Pass pass, Shading shading, String category) {
-        super(new SharedfragmentCategorizer(pass, shading, category), GLShaderProgram.ProgramType.VERTEX_FRAGMENT);
+        init(new SharedfragmentCategorizer(pass, shading, category), Shader.ProgramType.VERTEX_FRAGMENT);
         setIndexer(new TiledSpriteIndexer());
     }
 
