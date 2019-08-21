@@ -122,7 +122,7 @@ public class QuadParentNode extends AbstractMeshNode<Mesh> implements Consumer {
      * @param mesh
      */
     private void createBuffers(SpriteMesh mesh) {
-        VariableIndexer indexer = pipeline.getLocationMapping();
+        VariableIndexer indexer = program.getFunction().getIndexer();
         CPUComponentBuffer sourceData = new CPUComponentBuffer(maxQuads,
                 indexer.getSizePerVertex(BufferIndex.ATTRIBUTES.index));
         CPUComponentBuffer destinationData = new CPUComponentBuffer(maxQuads,
@@ -151,7 +151,7 @@ public class QuadParentNode extends AbstractMeshNode<Mesh> implements Consumer {
         Rectangle quadRect = (rectangle != null && rectangle.getValues() != null && rectangle.getValues().length >= 4)
                 ? rectangle
                 : createRectangle(texture, 0);
-        shapeBuilder.setStartQuad(quad).setRectangle(quadRect).build(spriteMesh, getPipeline());
+        shapeBuilder.setStartQuad(quad).setRectangle(quadRect).build(spriteMesh, getProgram());
         return quadRect;
     }
 

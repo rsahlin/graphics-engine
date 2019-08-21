@@ -201,7 +201,7 @@ public class PlayfieldNode extends AbstractMeshNode<Mesh> {
             map = MapFactory.createMap(mapRef);
             PlayfieldMesh playfield = (PlayfieldMesh) getMesh(MeshIndex.MAIN);
             if (map.getMap() != null && map.getMapSize() != null) {
-                playfield.copyCharmap(getPipeline().getLocationMapping(), map);
+                playfield.copyCharmap(getProgram().getFunction().getIndexer(), map);
             }
         } catch (IOException | ClassNotFoundException e) {
             throw new NodeException(e);

@@ -4,13 +4,13 @@ import java.io.IOException;
 
 import com.nucleus.Backend.DrawMode;
 import com.nucleus.BackendException;
-import com.nucleus.GraphicsPipeline;
 import com.nucleus.geometry.AttributeBuffer;
 import com.nucleus.geometry.Mesh;
 import com.nucleus.geometry.shape.RectangleShapeBuilder;
 import com.nucleus.opengl.geometry.GLMesh;
-import com.nucleus.opengl.shader.GLShaderProgram;
 import com.nucleus.renderer.NucleusRenderer;
+import com.nucleus.shader.GenericShaderProgram;
+import com.nucleus.shader.GraphicsShader;
 import com.nucleus.shader.Shader.Shading;
 import com.nucleus.texturing.Texture2D;
 import com.nucleus.texturing.TiledTexture2D;
@@ -54,7 +54,7 @@ public class SpriteMesh extends GLMesh {
         }
 
         @Override
-        public GraphicsPipeline createPipeline() throws BackendException {
+        public GraphicsShader createProgram() throws BackendException {
             // SpriteMesh is a special type of mesh that only works with specific shader program
             return renderer.getAssets().getGraphicsPipeline(renderer, createProgram(texture));
         }
@@ -70,7 +70,7 @@ public class SpriteMesh extends GLMesh {
          * @param texture {@link TiledTexture2D} or {@link UVTexture2D}
          * @return The shader program for the specified texture.
          */
-        public GLShaderProgram createProgram(Texture2D texture) {
+        public GenericShaderProgram createProgram(Texture2D texture) {
             switch (texture.textureType) {
                 case TiledTexture2D:
                     return new TiledSpriteProgram((TiledTexture2D) texture, Shading.textured);

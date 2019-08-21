@@ -185,7 +185,7 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
                 break;
         }
         parent.addMesh(mesh, MeshIndex.MAIN);
-        createBuffers(parent.getPipeline().getLocationMapping());
+        createBuffers(parent.getProgram().getFunction().getIndexer());
         mesh.setAttributeUpdater(this);
         bindAttributeBuffer(mesh.getAttributeBuffer(BufferIndex.ATTRIBUTES.index));
     }
@@ -228,10 +228,10 @@ public abstract class ActorComponent<T extends Mesh> extends Component implement
         if (builder.getShapeBuilder() == null) {
             builder.setShapeBuilder(shapeBuilder);
         }
-        if (parent.getPipeline() == null) {
-            parent.setPipeline(builder.createPipeline());
+        if (parent.getProgram() == null) {
+            parent.setProgram(builder.createProgram());
         }
-        builder.setAttributesPerVertex(parent.getPipeline().getAttributeSizes());
+        builder.setAttributesPerVertex(parent.getProgram().getPipeline().getAttributeSizes());
         return builder;
     }
 

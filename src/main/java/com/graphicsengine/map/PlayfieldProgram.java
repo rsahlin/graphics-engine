@@ -1,10 +1,9 @@
 package com.graphicsengine.map;
 
-import java.nio.FloatBuffer;
-
 import com.nucleus.geometry.AttributeUpdater.BufferIndex;
-import com.nucleus.opengl.shader.GLShaderProgram;
 import com.nucleus.opengl.shader.NamedVariableIndexer;
+import com.nucleus.shader.GenericShaderProgram;
+import com.nucleus.shader.Shader;
 import com.nucleus.shader.ShaderVariable.VariableType;
 import com.nucleus.texturing.TiledTexture2D;
 
@@ -14,7 +13,7 @@ import com.nucleus.texturing.TiledTexture2D;
  * @author Richard Sahlin
  *
  */
-public class PlayfieldProgram extends GLShaderProgram {
+public class PlayfieldProgram extends GenericShaderProgram {
 
     /**
      * Layout for the data needed by the playfield program
@@ -44,12 +43,12 @@ public class PlayfieldProgram extends GLShaderProgram {
     protected TiledTexture2D texture;
 
     PlayfieldProgram(TiledTexture2D texture) {
-        super(null, Shading.textured, CATEGORY, GLShaderProgram.ProgramType.VERTEX_FRAGMENT);
+        init(null, null, Shading.textured, CATEGORY, Shader.ProgramType.VERTEX_FRAGMENT);
         setIndexer(new PlayfieldIndexer());
     }
 
     @Override
-    public void updateUniformData(FloatBuffer destinationUniform) {
+    public void updateUniformData() {
         setScreenSize(uniforms, getUniformByName("uScreenSize"));
         setTextureUniforms(texture, uniforms,
                 getUniformByName("uTextureData"));
@@ -57,7 +56,7 @@ public class PlayfieldProgram extends GLShaderProgram {
     }
 
     @Override
-    public void initUniformData(FloatBuffer destinationUniforms) {
+    public void initUniformData() {
     }
 
 }
