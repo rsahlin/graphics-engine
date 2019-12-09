@@ -1,10 +1,7 @@
-group = 'com.super2k.graphics-engine'
-version = '0.0.1-SNAPSHOT'
-
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
-    sourceCompatibility = JavaVersion.VERSION_1_7
-    targetCompatibility = JavaVersion.VERSION_1_7
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 apply plugin: 'java'
@@ -14,25 +11,8 @@ repositories {
     jcenter()
 }
 dependencies {
-    compile 'com.google.code.gson:gson:2.5'
-    compile 'com.super2k.vecmath:vecmath:0.0.1-SNAPSHOT'
-    compile 'com.super2k.graphics-by-opengl:graphics-by-opengl-j2se:0.0.1-SNAPSHOT'
-    testCompile 'junit:junit:4.12'
-    testCompile 'com.super2k.graphics-by-opengl:graphics-by-opengl-j2se:0.0.1-SNAPSHOT'
+    implementation 'com.google.code.gson:gson:2.5'
+    testImplementation 'junit:junit:4.12'
+    implementation project(path: ':graphics-by-opengl-j2se')
+    implementation project(path: ':vecmath')
 }
-
-apply plugin: 'maven-publish'
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifact (sourcesAndClasses)
-        }
-    }
-}
-
-task sourcesAndClasses(type: Jar) {
-    from sourceSets.main.output
-    from sourceSets.main.allJava
-}
-
